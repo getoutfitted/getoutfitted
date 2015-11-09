@@ -19,6 +19,22 @@ Package.onUse(function (api) {
   api.use('standard-minifiers');
   api.use('dburles:factory@0.3.10');
   api.use('reactioncommerce:reaction-factories');
+
+  api.addFiles([
+    'server/registry.js'
+  ], 'server');
+
+  api.addFiles([
+    'client/templates/settings/settings.html',
+    'client/templates/settings/settings.js',
+    'client/templates/dashboard/dashboard.html',
+    'client/templates/dashboard/dashboard.js'
+  ], 'client');
+
+  api.addFiles([
+    'common/router.js',
+    'common/collections.js'
+  ], ['client', 'server']);
 });
 
 
@@ -34,7 +50,4 @@ Package.onTest(function (api) {
   api.use('reactioncommerce:core@0.9.4');
   api.use('reactioncommerce:bootstrap-theme');
   api.use('getoutfitted:reaction-shopify-orders');
-
-  api.addFiles('tests/jasmine/server/integration/methods.js', 'server');
-  api.addFiles('tests/jasmine/server/integration/hooks.js', 'server');
 });
