@@ -1,6 +1,7 @@
 Template.shopifyApi.helpers({
   count: function () {
-    if (Session.get('count')) {
+    let stillValid = Session.get('count') === 0;
+    if (Session.get('count') || stillValid) {
       return Session.get('count');
     }
     return '<em>calculating.....</em>';
@@ -22,6 +23,11 @@ Template.shopifyApi.events({
   'click .updateShopifyOrders': function (event) {
     event.preventDefault();
     let date = new Date();
-    Meteor.call('shopifyOrders/updateTimeStamp', date);
+    Meteor.call('shopifyOrders/getOrders', date, function (error, result) {
+      debugger;
+      if (result) {
+        Meteor.call('shopifyOrders/updateTimeStamp', date);
+      }
+    });
   }
 });
