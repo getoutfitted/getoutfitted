@@ -21,14 +21,18 @@ Package.onUse(function (api) {
   api.use('reactioncommerce:reaction-factories');
 
   api.addFiles([
-    'server/registry.js'
+    'server/registry.js',
+    'server/browserPolicy.js',
+    'server/methods/apiCalls.js'
   ], 'server');
 
   api.addFiles([
     'client/templates/settings/settings.html',
     'client/templates/settings/settings.js',
     'client/templates/dashboard/dashboard.html',
-    'client/templates/dashboard/dashboard.js'
+    'client/templates/dashboard/dashboard.js',
+    'client/templates/shopifyApi/shopifyApi.html',
+    'client/templates/shopifyApi/shopifyApi.js'
   ], 'client');
 
   api.addFiles([
