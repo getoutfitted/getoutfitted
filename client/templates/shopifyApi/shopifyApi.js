@@ -1,7 +1,7 @@
 Template.shopifyApi.helpers({
   count: function () {
     if (Session.get('count')) {
-      return JSON.parse(Session.get('count').content).count;
+      return Session.get('count');
     }
     return '<em>calculating.....</em>';
   }
@@ -13,7 +13,7 @@ Template.shopifyApi.onRendered(function () {
     if (error) {
       Session.set('error', error);
     } else {
-      Session.set('count', result);
+      Session.set('count', JSON.parse(result.content).count);
     }
   });
 });
