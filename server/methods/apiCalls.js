@@ -45,5 +45,16 @@ Meteor.methods({
     return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
       auth: key + ':' + password
     });
+  },
+  'shopifyOrders/saveQuery': function (data, dateTo) {
+    check(data, Object);
+    check(dateTo, Date);
+    console.log('data!!!!!!!!!', data);
+    let dateFrom = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public.lastUpdated || new Date('2003-09-20');
+    ReactionCore.Collections.Shopify.insert({
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+      information: data
+    });
   }
 });

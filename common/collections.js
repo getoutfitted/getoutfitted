@@ -1,3 +1,5 @@
+ReactionCore.Collections.Shopify = Shopify = new Mongo.Collection('Shopify');
+
 ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
   ReactionCore.Schemas.PackageConfig, {
     'settings.shopify.key': {
@@ -23,4 +25,20 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
   }
 ]);
 
+ReactionCore.Schemas.Shopify = new SimpleSchema({
+  information: {
+    type: Object,
+    optional: true,
+    blackbox: true
+  },
+  dateFrom: {
+    type: Date,
+    optional: true
+  },
+  dateTo: {
+    type: Date,
+    optional: true
+  }
+});
 
+ReactionCore.Collections.Shopify.attachSchema(ReactionCore.Schemas.Shopify);
