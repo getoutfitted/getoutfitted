@@ -19,8 +19,9 @@ Template.shopifyApi.onRendered(function () {
 });
 
 Template.shopifyApi.events({
-  'click .updateShopifyOrders': function(event) {
+  'click .updateShopifyOrders': function (event) {
     event.preventDefault();
-    console.log('we here!!!!!!!!!')
+    let date = new Date();
+    Meteor.call('shopifyOrders/updateTimeStamp', date);
   }
-})
+});
