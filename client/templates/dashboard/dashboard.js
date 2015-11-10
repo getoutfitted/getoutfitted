@@ -3,8 +3,10 @@ Template.dashboardShopifyOrders.helpers({
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({
       name: 'reaction-shopify-orders'
     });
-    if (shopifyOrders.settings.shopify.key && shopifyOrders.settings.shopify.password && shopifyOrders.settings.shopify.shopname) {
-      return true;
+    if (shopifyOrders.settings) {
+      if (shopifyOrders.settings.shopify.key && shopifyOrders.settings.shopify.password && shopifyOrders.settings.shopify.shopname) {
+        return true;
+      }
     }
     return false;
   }

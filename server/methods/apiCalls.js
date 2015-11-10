@@ -4,18 +4,19 @@ function formatDateForApi(date) {
 Meteor.methods({
   'shopifyOrder/count': function () {
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'});
-    if (shopifyOrders.settings.public.lastUpdated) {
-      let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
-      if (shopifyOrders.settings.shopify.key && shopifyOrders.settings.shopify.password && shopifyOrders.settings.shopify.shopname) {
-        return HTTP.get('https://' + shopifyOrders.settings.shopify.shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: shopifyOrders.settings.shopify.key + ':' + shopifyOrders.settings.shopify.password,
+    if (shopifyOrders.settings.shopify.key && shopifyOrders.settings.shopify.password && shopifyOrders.settings.shopify.shopname) {
+      let key = shopifyOrders.settings.shopify.key;
+      let password = shopifyOrders.settings.shopify.password;
+      let shopname = shopifyOrders.settings.shopify.shopname;
+      if (shopifyOrders.settings.public) {
+        let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+        return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
+          auth: key + ':' + password,
           params: { created_at_min: date}
         });
       }
-    }
-    if (shopifyOrders.settings.shopify.key && shopifyOrders.settings.shopify.password && shopifyOrders.settings.shopify.shopname) {
-      return HTTP.get('https://' + shopifyOrders.settings.shopify.shopname + '.myshopify.com/admin/orders/count.json', {
-        auth: shopifyOrders.settings.shopify.key + ':' + shopifyOrders.settings.shopify.password
+      return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
+        auth: key + ':' + password
       });
     }
   },
