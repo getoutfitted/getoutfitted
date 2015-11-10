@@ -1,7 +1,8 @@
 Template.shopifyApi.helpers({
   count: function () {
-    if (Session.get('count')) {
-      return JSON.parse(Session.get('count').content).count;
+    let stillValid = Session.get('count') === 0;
+    if (Session.get('count') || stillValid) {
+      return Session.get('count');
     }
     return '<em>calculating.....</em>';
   }
@@ -13,14 +14,20 @@ Template.shopifyApi.onRendered(function () {
     if (error) {
       Session.set('error', error);
     } else {
-      Session.set('count', result);
+      Session.set('count', JSON.parse(result.content).count);
     }
   });
 });
 
 Template.shopifyApi.events({
-  'click .updateShopifyOrders': function(event) {
+  'click .updateShopifyOrders': function (event) {
     event.preventDefault();
-    console.log('we here!!!!!!!!!')
+    let date = new Date();
+    Meteor.call('shopifyOrders/getOrders', date, function (error, result) {
+      debugger;
+      if (result) {
+        Meteor.call('shopifyOrders/updateTimeStamp', date);
+      }
+    });
   }
-})
+});

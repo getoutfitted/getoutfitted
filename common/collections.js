@@ -15,10 +15,12 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
       label: 'Shopify Name ',
       optional: true
     },
-    'settings.shopify.updatedA': {
+    'settings.public.lastUpdated': {
       type: Date,
       label: 'Last Time Orders Were Updated',
       optional: true
     }
   }
 ]);
+
+
