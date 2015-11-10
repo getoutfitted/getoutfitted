@@ -9,10 +9,12 @@
         }}
 
       <p>Shopify Account Setup</p>
-
-      {{>afQuickField  name='settings.shopify.key' type='password'}}
+      {{>afQuickField  name='settings.shopify.shopname' placeholder='Ex: "shopname" in shopname.myshopify.com'}}
+      {{>afQuickField  name='settings.shopify.password'}}
+      {{>afQuickField  name='settings.shopify.key'}}
 
       <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
     {{/autoForm}}
   </div>
 </template>
+
