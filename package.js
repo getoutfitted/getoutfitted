@@ -22,7 +22,6 @@ Package.onUse(function (api) {
 
   api.addFiles([
     'server/registry.js',
-    'server/browserPolicy.js',
     'server/methods/apiCalls.js'
   ], 'server');
 
