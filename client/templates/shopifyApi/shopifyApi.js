@@ -8,6 +8,10 @@ function sessionSetter() {
   });
 }
 
+function randomId() {
+  return Random.id();
+}
+
 Template.shopifyApi.helpers({
   count: function () {
     let stillValid = Session.get('count') === 0;
@@ -16,7 +20,6 @@ Template.shopifyApi.helpers({
     }
     return '<em>calculating.....</em>';
   }
-
 });
 
 Template.shopifyApi.onRendered(function () {
@@ -27,12 +30,28 @@ Template.shopifyApi.events({
   'click .updateShopifyOrders': function (event) {
     event.preventDefault();
     let date = new Date();
-    Meteor.call('shopifyOrders/getOrders', date, function (error, result) {
-      if (result) {
-        Meteor.call('shopifyOrders/saveQuery', result.data, date);
-        Meteor.call('shopifyOrders/updateTimeStamp', date);
-        sessionSetter();
-      }
+    let orderCount = Session.get('count');
+    if (orderCount === 0) {
+      Alerts.removeSeen();
+      return Alerts.add('There are no new orders to update.', 'danger', {
+        autoHide: true
+      });
+    }
+    let numberOfPages = Math.ceil(orderCount / 50);
+    let pageNumbers = _.range(1, numberOfPages + 1);
+    let groupId = randomId();
+    _.each(pageNumbers, function (pageNumber) {
+      Meteor.call('shopifyOrders/getOrders', date, pageNumber, function (error, result) {
+        if (result) {
+          Meteor.call('shopifyOrders/saveQuery', result.data, date, pageNumber, numberOfPages, groupId);
+        }
+      });
     });
+    Meteor.call('shopifyOrders/updateTimeStamp', date);
+    Alerts.removeSeen();
+    Alerts.add('Your ' + Session.get('count') + ' Shopify Orders have been saved.', 'success', {
+      autoHide: true
+    });
+    sessionSetter();
   }
 });

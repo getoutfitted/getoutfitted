@@ -38,6 +38,18 @@ ReactionCore.Schemas.Shopify = new SimpleSchema({
   dateTo: {
     type: Date,
     optional: true
+  },
+  pageNumber: {
+    type: Number,
+    optional: true
+  },
+  pageTotal: {
+    type: Number,
+    optional: true
+  },
+  groupId: {
+    type: String,
+    optional: true
   }
 });
 

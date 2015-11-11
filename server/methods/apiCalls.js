@@ -1,7 +1,10 @@
 function formatDateForApi(date) {
-   // return moment(date).format('YYYY-MM-DD HH:mm');
-   return moment(date).format('YYYY-MM-DD') + ' 00:00';
+  // return moment(date).format('YYYY-MM-DD HH:mm');
+  return moment(date).format('YYYY-MM-DD') + ' 00:00';
+  // return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
+
+
 Meteor.methods({
   'shopifyOrder/count': function () {
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'});
@@ -29,8 +32,9 @@ Meteor.methods({
       $set: {'settings.public.lastUpdated': date}
     });
   },
-  'shopifyOrders/getOrders': function (date) {
+  'shopifyOrders/getOrders': function (date, pageNumber) {
     check(date, Date);
+    check(pageNumber, Number);
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'});
     let key = shopifyOrders.settings.shopify.key;
     let password = shopifyOrders.settings.shopify.password;
@@ -39,16 +43,25 @@ Meteor.methods({
       let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
       return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
         auth: key + ':' + password,
-        params: { created_at_min: lastDate}
+        params: {
+          created_at_min: lastDate,
+          page: pageNumber
+        }
       });
     }
     return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-      auth: key + ':' + password
+      auth: key + ':' + password,
+      params: {
+        page: pageNumber
+      }
     });
   },
-  'shopifyOrders/saveQuery': function (data, dateTo) {
+  'shopifyOrders/saveQuery': function (data, dateTo, pageNumber, pageTotal, groupId) {
     check(data, Object);
     check(dateTo, Date);
+    check(pageNumber, Number);
+    check(pageTotal, Number);
+    check(groupId, String);
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings;
     let dateFrom = new Date('2003-09-20'); //This was before Shopify
     if (shopifyOrders.public) {
@@ -57,7 +70,10 @@ Meteor.methods({
     ReactionCore.Collections.Shopify.insert({
       dateFrom: dateFrom,
       dateTo: dateTo,
-      information: data
+      information: data,
+      pageNumber: pageNumber,
+      pageTotal: pageTotal,
+      groupId: groupId
     });
   }
 });
