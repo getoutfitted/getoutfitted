@@ -1,6 +1,6 @@
 function formatDateForApi(date) {
-  // return moment(date).format('YYYY-MM-DD HH:mm');
-   return moment(date).format('YYYY-MM-DD') + ' 00:00';
+   return moment(date).format('YYYY-MM-DD HH:mm');
+   // return moment(date).format('YYYY-MM-DD') + ' 00:00';
 }
 Meteor.methods({
   'shopifyOrder/count': function () {
@@ -49,8 +49,11 @@ Meteor.methods({
   'shopifyOrders/saveQuery': function (data, dateTo) {
     check(data, Object);
     check(dateTo, Date);
-    console.log('data!!!!!!!!!', data);
-    let dateFrom = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public.lastUpdated || new Date('2003-09-20');
+    let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings;
+    let dateFrom = new Date('2003-09-20');
+    if (shopifyOrders.public) {
+      dateFrom = shopifyOrders.public.lastUpdated;
+    }
     ReactionCore.Collections.Shopify.insert({
       dateFrom: dateFrom,
       dateTo: dateTo,

@@ -25,9 +25,9 @@ Template.shopifyApi.events({
     let date = new Date();
     Meteor.call('shopifyOrders/getOrders', date, function (error, result) {
       if (result) {
-        debugger;
         Meteor.call('shopifyOrders/saveQuery', result.data, date);
         Meteor.call('shopifyOrders/updateTimeStamp', date);
+        Session.set('count', 0);
       }
     });
   }

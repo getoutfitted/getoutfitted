@@ -1,4 +1,4 @@
-ReactionCore.Collections.Shopify = Shopify = new Mongo.Collection('Shopify');
+ReactionCore.Collections.Shopify = Shopify = this.Shopify = new Mongo.Collection('Shopify');
 
 ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
   ReactionCore.Schemas.PackageConfig, {
