@@ -24,9 +24,10 @@ Template.shopifyApi.events({
     event.preventDefault();
     let date = new Date();
     Meteor.call('shopifyOrders/getOrders', date, function (error, result) {
-      debugger;
       if (result) {
+        Meteor.call('shopifyOrders/saveQuery', result.data, date);
         Meteor.call('shopifyOrders/updateTimeStamp', date);
+        Session.set('count', 0);
       }
     });
   }
