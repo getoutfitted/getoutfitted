@@ -82,22 +82,6 @@ Meteor.methods({
       });
     }
     Meteor.call('shopifyOrders/updateTimeStamp', date);
-    // if (shopifyOrders.settings.public) {
-    //   let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
-    //   return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-    //     auth: key + ':' + password,
-    //     params: {
-    //       created_at_min: lastDate,
-    //       page: pageNumber
-    //     }
-    //   });
-    // }
-    // return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-    //   auth: key + ':' + password,
-    //   params: {
-    //     page: pageNumber
-    //   }
-    // });
   },
   'shopifyOrders/saveOrdersToShopifyOrders': function (data, dateTo, pageNumber, pageTotal, groupId) {
     check(data, Object);
