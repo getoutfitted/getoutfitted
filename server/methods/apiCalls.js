@@ -42,31 +42,64 @@ Meteor.methods({
       $set: {'settings.public.lastUpdated': date}
     });
   },
-  'shopifyOrders/getOrders': function (date, pageNumber) {
-    check(date, Date);
-    check(pageNumber, Number);
+  'shopifyOrders/getOrders': function () {
+    let date = new Date();
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'});
     let key = shopifyOrders.settings.shopify.key;
     let password = shopifyOrders.settings.shopify.password;
     let shopname = shopifyOrders.settings.shopify.shopname;
-    if (shopifyOrders.settings.public) {
-      let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
-      return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-        auth: key + ':' + password,
-        params: {
-          created_at_min: lastDate,
-          page: pageNumber
-        }
+    let orderCount = shopifyOrders.settings.public.ordersSinceLastUpdate;
+    let numberOfPages = Math.ceil(orderCount / 50);
+    let pageNumbers = _.range(1, numberOfPages + 1);
+    let groupId = Random.id();
+    let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+    if (lastDate) {
+      _.each(pageNumbers, function (pageNumber) {
+        let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
+          auth: key + ':' + password,
+          params: {
+            created_at_min: lastDate,
+            page: pageNumber
+          }
+        }).data;
+        Meteor.call('shopifyOrders/saveOrdersToShopifyOrders', result, date, pageNumber, numberOfPages, groupId);
+        _.each(result.orders, function (order){
+          Meteor.call('shopifyOrders/createReactionOrder', order);
+        })
+      });
+    } else {
+      _.each(pageNumbers, function (pageNumber) {
+        let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
+          auth: key + ':' + password,
+          params: {
+            page: pageNumber
+          }
+        }).data;
+        Meteor.call('shopifyOrders/saveOrdersToShopifyOrders', result, date, pageNumber, numberOfPages, groupId);
+        _.each(result.orders, function (order) {
+          Meteor.call('shopifyOrders/createReactionOrder', order);
+        });
       });
     }
-    return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-      auth: key + ':' + password,
-      params: {
-        page: pageNumber
-      }
-    });
+    Meteor.call('shopifyOrders/updateTimeStamp', date);
+    // if (shopifyOrders.settings.public) {
+    //   let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+    //   return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
+    //     auth: key + ':' + password,
+    //     params: {
+    //       created_at_min: lastDate,
+    //       page: pageNumber
+    //     }
+    //   });
+    // }
+    // return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
+    //   auth: key + ':' + password,
+    //   params: {
+    //     page: pageNumber
+    //   }
+    // });
   },
-  'shopifyOrders/saveQuery': function (data, dateTo, pageNumber, pageTotal, groupId) {
+  'shopifyOrders/saveOrdersToShopifyOrders': function (data, dateTo, pageNumber, pageTotal, groupId) {
     check(data, Object);
     check(dateTo, Date);
     check(pageNumber, Number);
