@@ -44,6 +44,9 @@ Template.shopifyApi.events({
       Meteor.call('shopifyOrders/getOrders', date, pageNumber, function (error, result) {
         if (result) {
           Meteor.call('shopifyOrders/saveQuery', result.data, date, pageNumber, numberOfPages, groupId);
+          _.each(result.data.orders, function (order) {
+            Meteor.call('shopifyOrders/createReactionOrder', order);
+          });
         }
       });
     });
