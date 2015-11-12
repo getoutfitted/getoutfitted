@@ -1,4 +1,4 @@
-ReactionCore.Collections.Shopify = Shopify = this.Shopify = new Mongo.Collection('Shopify');
+ReactionCore.Collections.ShopifyOrders = ShopifyOrders = this.ShopifyOrders = new Mongo.Collection('ShopifyOrders');
 
 ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
   ReactionCore.Schemas.PackageConfig, {
@@ -25,7 +25,7 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
   }
 ]);
 
-ReactionCore.Schemas.Shopify = new SimpleSchema({
+ReactionCore.Schemas.ShopifyOrders = new SimpleSchema({
   information: {
     type: Object,
     optional: true,
@@ -38,7 +38,19 @@ ReactionCore.Schemas.Shopify = new SimpleSchema({
   dateTo: {
     type: Date,
     optional: true
+  },
+  pageNumber: {
+    type: Number,
+    optional: true
+  },
+  pageTotal: {
+    type: Number,
+    optional: true
+  },
+  groupId: {
+    type: String,
+    optional: true
   }
 });
 
-ReactionCore.Collections.Shopify.attachSchema(ReactionCore.Schemas.Shopify);
+ReactionCore.Collections.ShopifyOrders.attachSchema(ReactionCore.Schemas.ShopifyOrders);
