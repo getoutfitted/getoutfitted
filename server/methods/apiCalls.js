@@ -1,7 +1,10 @@
 function formatDateForApi(date) {
+  let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
   // return moment(date).format('YYYY-MM-DD HH:mm');
-  return moment(date).format('YYYY-MM-DD') + ' 00:00';
-  // return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
+  if (shopifyOrders.lastUpdated) {
+    return moment(date).format('YYYY-MM-DD') + ' 00:00';
+  }
+  return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
 
 
@@ -12,15 +15,22 @@ Meteor.methods({
       let key = shopifyOrders.settings.shopify.key;
       let password = shopifyOrders.settings.shopify.password;
       let shopname = shopifyOrders.settings.shopify.shopname;
+      let result;
       if (shopifyOrders.settings.public) {
         let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
-        return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
+        result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
           auth: key + ':' + password,
           params: { created_at_min: date}
         });
+      } else {
+        result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
+          auth: key + ':' + password
+        });
       }
-      return HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-        auth: key + ':' + password
+      ReactionCore.Collections.Packages.update({_id: shopifyOrders._id}, {
+        $set: {
+          'settings.public.ordersSinceLastUpdate': result.data.count
+        }
       });
     }
   },
