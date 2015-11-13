@@ -2,9 +2,9 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm');
+    // return moment(date).format('YYYY-MM-DD HH:mm');
     // return moment(date).format('YYYY-MM-DD') + ' 00:00';
-    // return moment(date).format('2015-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -136,5 +136,6 @@ Meteor.methods({
       });
     }
     Meteor.call('shopifyOrders/updateTimeStamp', date);
+    return true;
   }
 });
