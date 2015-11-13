@@ -11,6 +11,9 @@ Template.shopifyApi.helpers({
       }
     }
     return  '<em>Calculating.....</em>';
+  },
+  importing: function () {
+    return Session.get('importing');
   }
 });
 
@@ -22,6 +25,7 @@ Template.shopifyApi.events({
   'click .updateShopifyOrders': function (event) {
     event.preventDefault();
     // let date = new Date();
+    Session.set('importing', true);
     let orderCount = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public.ordersSinceLastUpdate;
     if (orderCount === 0) {
       Alerts.removeSeen();
@@ -29,11 +33,16 @@ Template.shopifyApi.events({
         autoHide: true
       });
     }
-    Meteor.call('shopifyOrders/getOrders');
+    Meteor.call('shopifyOrders/getOrders', function (error, result) {
+      if (result) {
+        Session.set('importing', false);
+      }
+    });
     Alerts.removeSeen();
     Alerts.add('Your ' + orderCount + ' Shopify Orders have been saved.', 'success', {
       autoHide: true
     });
     setOrderCount();
+    // Session.set('importing', false);
   }
 });
