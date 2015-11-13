@@ -45,12 +45,13 @@ Package.onTest(function (api) {
   api.use('sanjo:jasmine@0.20.2');
   api.use('underscore');
   api.use('dburles:factory@0.3.10');
-  api.use('velocity:html-reporter@0.9.0');
-  api.use('velocity:console-reporter@0.1.3');
+  api.use('velocity:html-reporter');
+  api.use('velocity:console-reporter');
   api.use('velocity:helpers');
   api.use('reactioncommerce:reaction-factories');
 
   api.use('reactioncommerce:core@0.9.4');
   api.use('reactioncommerce:bootstrap-theme');
   api.use('getoutfitted:reaction-shopify-orders');
+  api.addFiles('tests/jasmine/server/integration/methods.js', 'server');
 });

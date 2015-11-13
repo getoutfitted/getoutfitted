@@ -5,7 +5,8 @@ function setOrderCount() {
 Template.shopifyApi.helpers({
   count: function () {
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
-    if (shopifyOrders.ordersSinceLastUpdate) {
+    let stillValidNumber = shopifyOrders.ordersSinceLastUpdate === 0;
+    if (shopifyOrders.ordersSinceLastUpdate ||  stillValidNumber) {
       return shopifyOrders.ordersSinceLastUpdate;
     }
     return  '<em>Calculating.....</em>';
