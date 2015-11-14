@@ -5,11 +5,15 @@ function setOrderCount() {
 Template.shopifyApi.helpers({
   count: function () {
     let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
-    let stillValidNumber = shopifyOrders.ordersSinceLastUpdate === 0;
-    if (shopifyOrders.ordersSinceLastUpdate ||  stillValidNumber) {
-      return shopifyOrders.ordersSinceLastUpdate;
+    if (shopifyOrders) {
+      if (shopifyOrders.ordersSinceLastUpdate ||  shopifyOrders.ordersSinceLastUpdate === 0) {
+        return shopifyOrders.ordersSinceLastUpdate;
+      }
     }
     return  '<em>Calculating.....</em>';
+  },
+  importing: function () {
+    return Session.get('importing');
   }
 });
 
@@ -21,6 +25,7 @@ Template.shopifyApi.events({
   'click .updateShopifyOrders': function (event) {
     event.preventDefault();
     // let date = new Date();
+    Session.set('importing', true);
     let orderCount = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public.ordersSinceLastUpdate;
     if (orderCount === 0) {
       Alerts.removeSeen();
@@ -28,26 +33,16 @@ Template.shopifyApi.events({
         autoHide: true
       });
     }
-    // let numberOfPages = Math.ceil(orderCount / 50);
-    // let pageNumbers = _.range(1, numberOfPages + 1);
-    // let groupId = randomId();
-    // debugger;
-    Meteor.call('shopifyOrders/getOrders');
-    // _.each(pageNumbers, function (pageNumber) {
-    //   Meteor.call('shopifyOrders/getOrders', date, pageNumber, function (error, result) {
-    //     if (result) {
-    //       Meteor.call('shopifyOrders/saveQuery', result.data, date, pageNumber, numberOfPages, groupId);
-    //       _.each(result.data.orders, function (order) {
-    //         Meteor.call('shopifyOrders/createReactionOrder', order);
-    //       });
-    //     }
-    //   });
-    // });
-
+    Meteor.call('shopifyOrders/getOrders', function (error, result) {
+      if (result) {
+        Session.set('importing', false);
+      }
+    });
     Alerts.removeSeen();
     Alerts.add('Your ' + orderCount + ' Shopify Orders have been saved.', 'success', {
       autoHide: true
     });
     setOrderCount();
+    // Session.set('importing', false);
   }
 });
