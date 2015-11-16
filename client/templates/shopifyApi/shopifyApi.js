@@ -28,6 +28,7 @@ Template.shopifyApi.events({
     Session.set('importing', true);
     let orderCount = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public.ordersSinceLastUpdate;
     if (orderCount === 0) {
+      Session.set('importing', false);
       Alerts.removeSeen();
       return Alerts.add('There are no new orders to update.', 'danger', {
         autoHide: true
