@@ -30,6 +30,15 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
   }
 ]);
 
+ReactionCore.Schemas.ShopifyOrderNumber = new SimpleSchema([
+  ReactionCore.Schemas.Order, {
+    shopifyOrderNumber: {
+      type: Number,
+      optional: true
+    }
+  }
+]);
+
 ReactionCore.Schemas.ShopifyOrders = new SimpleSchema({
   information: {
     type: Object,
@@ -59,3 +68,4 @@ ReactionCore.Schemas.ShopifyOrders = new SimpleSchema({
 });
 
 ReactionCore.Collections.ShopifyOrders.attachSchema(ReactionCore.Schemas.ShopifyOrders);
+ReactionCore.Collections.Orders.attachSchema(ReactionCore.Schemas.ShopifyOrderNumber);
