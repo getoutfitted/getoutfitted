@@ -34,13 +34,13 @@ function createReactionOrder(order) {
   let startDate;
   let endDate;
   let rentalLength;
-  let validImport = true;
+  let validImport = false;
   if (stringStartDate && stringEndDate) {
     startDate = moment(stringStartDate.value)._d;
     endDate = moment(stringEndDate.value)._d;
     rentalLength = moment(endDate).diff(moment(startDate), 'days');
   } else {
-    validImport = false;
+    validImport = true;
   }
   let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer;
   let shippingBuffer = buffer.shipping;
@@ -84,7 +84,7 @@ function createReactionOrder(order) {
     rentalDays: rentalLength,
     createdAt: orderCreatedAt,
     shopifyOrderNumber: order.order_number,
-    importSuccessful: validImport,
+    infoMissing: validImport,
     advancedFulfillment: {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),

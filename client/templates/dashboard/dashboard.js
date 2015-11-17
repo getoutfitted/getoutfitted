@@ -11,9 +11,9 @@ Template.dashboardShopifyOrders.helpers({
     return false;
   },
   importFailsCount: function () {
-    return ReactionCore.Collections.Orders.find({importSuccessful: false}).count();
+    return ReactionCore.Collections.Orders.find({infoMissing: true}).count();
   },
   importFails: function () {
-    return ReactionCore.Collections.Orders.find({importSuccessful: false}).count() > 0;
+    return ReactionCore.Collections.Orders.find({infoMissing: true}).count() > 0;
   }
 });
