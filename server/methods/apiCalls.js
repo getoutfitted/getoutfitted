@@ -9,6 +9,23 @@ function formatDateForApi(date) {
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
 
+function shipmentChecker(date) {
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).subtract(2, 'days')._d;
+  } else if (moment(date).isoWeekday() === 6) {
+    return moment(date).subtract(1, 'days')._d;
+  }
+  return date;
+}
+
+function returnChecker(date) {
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).add(1, 'days')._d;
+  }
+  return date;
+}
+
+
 function createReactionOrder(order) {
   check(order, Object);
   let orderCreatedAt = new Date(order.created_at);
@@ -18,6 +35,16 @@ function createReactionOrder(order) {
   let startDate = moment(stringStartDate.value)._d;
   let endDate = moment(stringEndDate.value)._d;
   let rentalLength = moment(endDate).diff(moment(startDate), 'days');
+  let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer;
+  let shippingBuffer = buffer.shipping;
+  let returnBuffer = buffer.returning;
+  let shipmentDate = new Date();
+  let returnDate = new Date(2100, 8, 20);
+  if (startDate && endDate) {
+    shipmentDate = moment(startDate).subtract(shippingBuffer, 'days')._d;
+    returnDate = moment(endDate).add(returnBuffer, 'days')._d;
+  }
+  let orderCreated = {status: orderCreated};
   let shippingAddress = [ {address: {
     country: order.shipping_address.country_code,
     fullName: order.shipping_address.name,
@@ -48,7 +75,12 @@ function createReactionOrder(order) {
     endTime: endDate,
     rentalDays: rentalLength,
     createdAt: orderCreatedAt,
-    shopifyOrderNumber: order.order_number
+    shopifyOrderNumber: order.order_number,
+    advancedFulfillment: {
+      shipmentDate: shipmentChecker(shipmentDate),
+      returnDate: returnChecker(returnDate),
+      workflow: orderCreated
+    }
   });
 }
 
