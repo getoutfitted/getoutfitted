@@ -9,5 +9,11 @@ Template.dashboardShopifyOrders.helpers({
       }
     }
     return false;
+  },
+  importFailsCount: function () {
+    return ReactionCore.Collections.Orders.find({importSuccessful: false}).count();
+  },
+  importFails: function () {
+    return ReactionCore.Collections.Orders.find({importSuccessful: false}).count() > 0;
   }
 });

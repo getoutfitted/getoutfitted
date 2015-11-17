@@ -35,6 +35,10 @@ ReactionCore.Schemas.ShopifyOrderNumber = new SimpleSchema([
     shopifyOrderNumber: {
       type: Number,
       optional: true
+    },
+    importSuccessful: {
+      type: Boolean,
+      optional: true
     }
   }
 ]);
