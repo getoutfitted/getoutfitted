@@ -2,8 +2,8 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm');
-    // return moment(date).format('YYYY-MM-DD') + ' 00:00';
+    // return moment(date).format('YYYY-MM-DD HH:mm');
+    return moment(date).format('YYYY-MM-DD') + ' 00:00';
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
@@ -11,6 +11,13 @@ function formatDateForApi(date) {
 
 function createReactionOrder(order) {
   check(order, Object);
+  let orderCreatedAt = new Date(order.created_at);
+  let notes = order.note_attributes;
+  let stringStartDate = _.findWhere(notes, {name: 'first_ski_day'}) || _.findWhere(notes, {name: 'first_camping_day'}) || _.findWhere(notes, {name: 'first_activity_day'});
+  let stringEndDate = _.findWhere(notes, {name: 'last_ski_day'}) || _.findWhere(notes, {name: 'last_camping_day'}) || _.findWhere(notes, {name: 'last_activity_day'});
+  let startDate = moment(stringStartDate.value)._d;
+  let endDate = moment(stringEndDate.value)._d;
+  let rentalLength = moment(endDate).diff(moment(startDate), 'days');
   let shippingAddress = [ {address: {
     country: order.shipping_address.country_code,
     fullName: order.shipping_address.name,
@@ -36,7 +43,12 @@ function createReactionOrder(order) {
     email: order.email,
     shopId: ReactionCore.getShopId(),
     shipping: shippingAddress,
-    billing: billingAddress
+    billing: billingAddress,
+    startTime: startDate,
+    endTime: endDate,
+    rentalDays: rentalLength,
+    createdAt: orderCreatedAt,
+    shopifyOrderNumber: order.order_number
   });
 }
 
