@@ -44,7 +44,7 @@ function createReactionOrder(order) {
     shipmentDate = moment(startDate).subtract(shippingBuffer, 'days')._d;
     returnDate = moment(endDate).add(returnBuffer, 'days')._d;
   }
-  let orderCreated = {status: orderCreated};
+  let orderCreated = {status: 'orderCreated'};
   let shippingAddress = [ {address: {
     country: order.shipping_address.country_code,
     fullName: order.shipping_address.name,
