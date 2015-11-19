@@ -27,6 +27,8 @@ function returnChecker(date) {
 
 function createReactionOrder(order) {
   check(order, Object);
+  let bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
+  let productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let orderCreatedAt = new Date(order.created_at);
   let notes = order.note_attributes;
   let stringStartDate = _.findWhere(notes, {name: 'first_ski_day'}) || _.findWhere(notes, {name: 'first_camping_day'}) || _.findWhere(notes, {name: 'first_activity_day'});
@@ -36,13 +38,49 @@ function createReactionOrder(order) {
   let rentalLength;
   let validImport = false;
   if (stringStartDate && stringEndDate) {
-    startDate = moment(stringStartDate.value)._d;
-    endDate = moment(stringEndDate.value)._d;
+    startDate = moment(new Date(stringStartDate.value))._d;
+    endDate = moment(new Date(stringEndDate.value))._d;
     rentalLength = moment(endDate).diff(moment(startDate), 'days');
   } else {
     validImport = true;
   }
-  let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer;
+  let items = [];
+  _.each(order.line_items, function (item) {
+    if (_.contains(bundleIds, item.product_id + '')) {
+      // console.log('we have a bundle!!!!!!!');
+    } else if (_.contains(productIds, item.product_id + '')) {
+      let colorObj =  _.findWhere(item.properties, {name: 'Color'});
+      let color;
+      if (colorObj) {
+        color = colorObj.value;
+      }
+      let size;
+      let sizeObj = _.find(item.properties, function (prop) {
+        return prop.name.indexOf('Size') > 1;
+      });
+      if (sizeObj) {
+        size = sizeObj.value;
+      }
+      let product = Products.findOne({shopifyId: item.product_id + ''});
+      let variant;
+      if (product) {
+        variant = _.findWhere(product.variants, {size: size, color: color});
+      }
+      let newItem = {
+        _id: Random.id(),
+        shopId: ReactionCore.getShopId(),
+        productId: item.product_id + '',
+        quantity: 1,
+        variants: variant,
+        workflow: {
+          status: 'orderCreated',
+          workflow: ['inventoryAdjusted']
+        }
+      };
+      items.push(newItem);
+    }
+  });
+  let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer || {shipping: 0, returning: 0};
   let shippingBuffer = buffer.shipping;
   let returnBuffer = buffer.returning;
   let shipmentDate = new Date();
@@ -89,7 +127,8 @@ function createReactionOrder(order) {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),
       workflow: orderCreated
-    }
+    },
+    items: items
   });
 }
 
