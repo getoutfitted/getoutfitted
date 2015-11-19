@@ -3,8 +3,8 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm');
-    return moment(date).format('YYYY-MM-DD') + ' 00:00';
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    // return moment(date).format('YYYY-MM-DD') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -25,21 +25,29 @@ function returnChecker(date) {
   return date;
 }
 
-
 function createReactionOrder(order) {
   check(order, Object);
   let orderCreatedAt = new Date(order.created_at);
   let notes = order.note_attributes;
   let stringStartDate = _.findWhere(notes, {name: 'first_ski_day'}) || _.findWhere(notes, {name: 'first_camping_day'}) || _.findWhere(notes, {name: 'first_activity_day'});
   let stringEndDate = _.findWhere(notes, {name: 'last_ski_day'}) || _.findWhere(notes, {name: 'last_camping_day'}) || _.findWhere(notes, {name: 'last_activity_day'});
-  let startDate = moment(stringStartDate.value)._d;
-  let endDate = moment(stringEndDate.value)._d;
-  let rentalLength = moment(endDate).diff(moment(startDate), 'days');
+  let startDate;
+  let endDate;
+  let rentalLength;
+  let validImport = false;
+  if (stringStartDate && stringEndDate) {
+    startDate = moment(stringStartDate.value)._d;
+    endDate = moment(stringEndDate.value)._d;
+    rentalLength = moment(endDate).diff(moment(startDate), 'days');
+  } else {
+    validImport = true;
+  }
   let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer;
   let shippingBuffer = buffer.shipping;
   let returnBuffer = buffer.returning;
   let shipmentDate = new Date();
   let returnDate = new Date(2100, 8, 20);
+
   if (startDate && endDate) {
     shipmentDate = moment(startDate).subtract(shippingBuffer, 'days')._d;
     returnDate = moment(endDate).add(returnBuffer, 'days')._d;
@@ -76,6 +84,7 @@ function createReactionOrder(order) {
     rentalDays: rentalLength,
     createdAt: orderCreatedAt,
     shopifyOrderNumber: order.order_number,
+    infoMissing: validImport,
     advancedFulfillment: {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),

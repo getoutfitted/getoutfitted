@@ -10,6 +10,11 @@
         {{> shopifyOrdersSettings}}
       </div>
     {{/if}}
+    <div class='row'>
+      {{#if importFails}}
+        <h3>Number of orders that to need customer servicer support to resolve:  {{importFailsCount}}</h3>
+      {{/if}}
+    </div>
   </div>
 </template>
 

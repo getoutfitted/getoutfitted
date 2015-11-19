@@ -5,6 +5,9 @@ Router.map(function () {
     template: 'dashboardShopifyOrders',
     waitOn: function () {
       return ReactionCore.Subscriptions.Packages;
+    },
+    subscriptions: function () {
+      return this.subscribe('Orders');
     }
   });
 });
