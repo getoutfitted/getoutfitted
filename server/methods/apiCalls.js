@@ -18,6 +18,32 @@ function shipmentChecker(date) {
   return date;
 }
 
+function generateShippingAddress(order) {
+  return [ {address: {
+    country: order.shipping_address.country_code,
+    fullName: order.shipping_address.name,
+    address1: order.shipping_address.address1,
+    address2: order.shipping_address.address2,
+    region: order.shipping_address.province_code,
+    postal: order.shipping_address.zip,
+    city: order.shipping_address.city,
+    phone: order.shipping_address.phone
+  }}];
+}
+
+function generateBillingAddress(order) {
+  return [{address: {
+    country: order.billing_address.country_code,
+    fullName: order.billing_address.name,
+    address1: order.billing_address.address1,
+    address2: order.billing_address.address2,
+    region: order.billing_address.province_code,
+    postal: order.billing_address.zip,
+    city: order.billing_address.city,
+    phone: order.billing_address.phone
+  }}];
+}
+
 function returnChecker(date) {
   if (moment(date).isoWeekday() === 7) {
     return moment(date).add(1, 'days')._d;
@@ -50,7 +76,6 @@ function createReactionOrder(order) {
     if (_.contains(bundleIds, item.product_id + '')) {
       // console.log('we have a bundle!!!!!!!');
     } else if (_.contains(productIds, item.product_id + '')) {
-
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
       if (colorObj) {
@@ -69,7 +94,7 @@ function createReactionOrder(order) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
       if (!variant) {
-        missingItem = true
+        missingItem = true;
       } else {
         let newItem = {
           _id: Random.id(),
@@ -82,7 +107,7 @@ function createReactionOrder(order) {
             workflow: ['inventoryAdjusted']
           }
         };
-      items.push(newItem);
+        items.push(newItem);
       }
     }
   });
@@ -98,26 +123,8 @@ function createReactionOrder(order) {
     returnDate = moment(endDate).add(returnBuffer, 'days')._d;
   }
   let orderCreated = {status: 'orderCreated'};
-  let shippingAddress = [ {address: {
-    country: order.shipping_address.country_code,
-    fullName: order.shipping_address.name,
-    address1: order.shipping_address.address1,
-    address2: order.shipping_address.address2,
-    region: order.shipping_address.province_code,
-    postal: order.shipping_address.zip,
-    city: order.shipping_address.city,
-    phone: order.shipping_address.phone
-  }}];
-  let billingAddress = [{address: {
-    country: order.billing_address.country_code,
-    fullName: order.billing_address.name,
-    address1: order.billing_address.address1,
-    address2: order.billing_address.address2,
-    region: order.billing_address.province_code,
-    postal: order.billing_address.zip,
-    city: order.billing_address.city,
-    phone: order.billing_address.phone
-  }}];
+  let shippingAddress = generateShippingAddress(order);
+  let billingAddress = generateBillingAddress(order);
   let itemsAF;
   if (items.length > 0) {
 
