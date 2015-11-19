@@ -37,6 +37,7 @@ function createReactionOrder(order) {
   let endDate;
   let rentalLength;
   let validImport = false;
+  let missingItem = false;
   if (stringStartDate && stringEndDate) {
     startDate = moment(new Date(stringStartDate.value))._d;
     endDate = moment(new Date(stringEndDate.value))._d;
@@ -49,6 +50,7 @@ function createReactionOrder(order) {
     if (_.contains(bundleIds, item.product_id + '')) {
       // console.log('we have a bundle!!!!!!!');
     } else if (_.contains(productIds, item.product_id + '')) {
+
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
       if (colorObj) {
@@ -66,20 +68,25 @@ function createReactionOrder(order) {
       if (product) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
-      let newItem = {
-        _id: Random.id(),
-        shopId: ReactionCore.getShopId(),
-        productId: item.product_id + '',
-        quantity: 1,
-        variants: variant,
-        workflow: {
-          status: 'orderCreated',
-          workflow: ['inventoryAdjusted']
-        }
-      };
+      if (!variant) {
+        missingItem = true
+      } else {
+        let newItem = {
+          _id: Random.id(),
+          shopId: ReactionCore.getShopId(),
+          productId: item.product_id + '',
+          quantity: 1,
+          variants: variant,
+          workflow: {
+            status: 'orderCreated',
+            workflow: ['inventoryAdjusted']
+          }
+        };
       items.push(newItem);
+      }
     }
   });
+
   let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer || {shipping: 0, returning: 0};
   let shippingBuffer = buffer.shipping;
   let returnBuffer = buffer.returning;
@@ -111,6 +118,26 @@ function createReactionOrder(order) {
     city: order.billing_address.city,
     phone: order.billing_address.phone
   }}];
+  let itemsAF = _.map(items, function (item) {
+    if (item._id) {
+      return {
+        _id: item._id,
+        productId: item.productId,
+        shopId: item.shopId,
+        quantity: item.quantity,
+        variantId: item.variants._id,
+        itemDescription: item.variants.title,
+        workflow: {
+          status: 'In Stock',
+          workflow: []
+        },
+        price: item.variants.price,
+        sku: item.variants.sku,
+        location: item.variants.location
+      };
+    }
+  });
+
   ReactionCore.Collections.Orders.insert({
     userId: Random.id(),
     email: order.email,
@@ -123,6 +150,7 @@ function createReactionOrder(order) {
     createdAt: orderCreatedAt,
     shopifyOrderNumber: order.order_number,
     infoMissing: validImport,
+    itemMissingDetails: missingItem,
     advancedFulfillment: {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),
