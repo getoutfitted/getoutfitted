@@ -74,7 +74,7 @@ function createReactionOrder(order) {
         let newItem = {
           _id: Random.id(),
           shopId: ReactionCore.getShopId(),
-          productId: item.product_id + '',
+          productId: product._id,
           quantity: 1,
           variants: variant,
           workflow: {
@@ -118,15 +118,18 @@ function createReactionOrder(order) {
     city: order.billing_address.city,
     phone: order.billing_address.phone
   }}];
-  let itemsAF = _.map(items, function (item) {
-    if (item._id) {
+  let itemsAF;
+  if (items.length > 0) {
+
+    itemsAF = _.map(items, function (item) {
+      let product = Products.findOne(item.productId);
       return {
         _id: item._id,
         productId: item.productId,
         shopId: item.shopId,
         quantity: item.quantity,
         variantId: item.variants._id,
-        itemDescription: item.variants.title,
+        itemDescription: product.vendor + ' ' + product.title,
         workflow: {
           status: 'In Stock',
           workflow: []
@@ -135,8 +138,8 @@ function createReactionOrder(order) {
         sku: item.variants.sku,
         location: item.variants.location
       };
-    }
-  });
+    });
+  }
 
   ReactionCore.Collections.Orders.insert({
     userId: Random.id(),
@@ -154,7 +157,8 @@ function createReactionOrder(order) {
     advancedFulfillment: {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),
-      workflow: orderCreated
+      workflow: orderCreated,
+      items: itemsAF
     },
     items: items
   });
