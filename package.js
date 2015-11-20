@@ -19,6 +19,7 @@ Package.onUse(function (api) {
   api.use('standard-minifiers');
   api.use('dburles:factory@0.3.10');
   api.use('reactioncommerce:reaction-factories');
+  api.use('underscorestring:underscore.string@3.2.2');
 
   api.addFiles([
     'server/registry.js',

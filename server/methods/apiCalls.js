@@ -1,10 +1,15 @@
+function keyify(string) {
+  let keyifiedString = string.replace(/([\W\/])/ig, '');
+  keyifiedString = keyifiedString[0].toLowerCase() + keyifiedString.substr(1);
+  return keyifiedString;
+};
 function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm');
-    // return moment(date).format('YYYY-MM-DD') + ' 00:00';
-    return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('YYYY-MM-DD') + ' 00:00';
+    // return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -51,6 +56,20 @@ function returnChecker(date) {
   return date;
 }
 
+function itemMaker(productId, variantObj) {
+  return {
+    _id: Random.id(),
+    shopId: ReactionCore.getShopId(),
+    productId: productId,
+    quantity: 1,
+    variants: variantObj,
+    workflow: {
+      status: 'orderCreated',
+      workflow: ['inventoryAdjusted']
+    }
+  };
+}
+
 function createReactionOrder(order) {
   check(order, Object);
   let bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
@@ -74,7 +93,30 @@ function createReactionOrder(order) {
   let items = [];
   _.each(order.line_items, function (item) {
     if (_.contains(bundleIds, item.product_id + '')) {
-      // console.log('we have a bundle!!!!!!!');
+      let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
+      let color = _.findWhere(item.properties, {name: 'Color'}).value;
+      color = keyify(color);
+      let jacketSize = _.findWhere(item.properties, {name: 'Jacket Size'}).value;
+      let pantsSize = _.findWhere(item.properties, {name: 'Pants Size'}).value;
+      let glovesSize = _.findWhere(item.properties, {name: 'Gloves Size'}).value;
+      let goggleType = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
+      let thisBundle = bundle.colorWays[color];
+      let jacketId = thisBundle.jacketId;
+      let jacketColor = thisBundle.jacketColor;
+      let pantsId = thisBundle.pantsId;
+      let pantsColor = thisBundle.pantsColor;
+      let glovesId = thisBundle.glovesId;
+      let glovesColor = thisBundle.glovesColor;
+      let gogglesId = thisBundle.gogglesId;
+      let gogglesColors = thisBundle.gogglesColor;
+      let jacket = ReactionCore.Collections.Products.findOne(jacketId);
+      let jacketVariant = _.findWhere(jacket.variants, {size: jacketSize, color: jacketColor});
+      items.push(itemMaker(jacketId, jacketVariant));
+      let pants = ReactionCore.Collections.Products.findOne(pantsId);
+      let pantsVariant = _.findWhere(pants.variants, {size: pantsSize, color: pantsColor});
+      items.push(itemMaker(pantsId, pantsVariant));
+      // console.log(order.order_number)
+      // console.log(items);
     } else if (_.contains(productIds, item.product_id + '')) {
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
@@ -126,8 +168,8 @@ function createReactionOrder(order) {
   let shippingAddress = generateShippingAddress(order);
   let billingAddress = generateBillingAddress(order);
   let itemsAF;
+  console.log(items)
   if (items.length > 0) {
-
     itemsAF = _.map(items, function (item) {
       let product = Products.findOne(item.productId);
       return {
