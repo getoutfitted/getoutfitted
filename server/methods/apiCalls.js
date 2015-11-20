@@ -8,8 +8,10 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm');
-    return moment(date).format('YYYY-MM-DD') + ' 00:00';
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    // return moment(date).format('2015-11-19') + ' 00:00';
+
+    // return moment(date).format('YYYY-MM-DD') + ' 00:00';
+     return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -70,6 +72,10 @@ function itemMaker(productId, variantObj) {
   };
 }
 
+let defaultNoteAttrs = {
+  // jacketSize:
+}
+
 function createReactionOrder(order) {
   check(order, Object);
   let bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
@@ -85,17 +91,24 @@ function createReactionOrder(order) {
   let missingItem = false;
   if (stringStartDate && stringEndDate) {
     startDate = moment(new Date(stringStartDate.value))._d;
-    endDate = moment(new Date(stringEndDate.value))._d;
+    endDate = moment(new Date(stringEndDate.value))._d; // XXX: Should probably just use the date
     rentalLength = moment(endDate).diff(moment(startDate), 'days');
   } else {
     validImport = true;
   }
-  let items = [];
+  // ^ WORKs
+
+  let items = []; // Setup empty items array for reaction order
   _.each(order.line_items, function (item) {
+    // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
       let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
-      let color = _.findWhere(item.properties, {name: 'Color'}).value;
-      color = keyify(color);
+      let color = _.findWhere(item.properties, {name: 'Color'});
+      if (color) {
+        color = keyify(color.value);
+      } else {
+        throw new Meteor.Error('Order doesnt have color', order);
+      }
       let jacketSize = _.findWhere(item.properties, {name: 'Jacket Size'}).value;
       let pantsSize = _.findWhere(item.properties, {name: 'Pants Size'}).value;
       let glovesSize = _.findWhere(item.properties, {name: 'Gloves Size'}).value;
@@ -110,13 +123,19 @@ function createReactionOrder(order) {
       let gogglesId = thisBundle.gogglesId;
       let gogglesColors = thisBundle.gogglesColor;
       let jacket = ReactionCore.Collections.Products.findOne(jacketId);
-      let jacketVariant = _.findWhere(jacket.variants, {size: jacketSize, color: jacketColor});
-      items.push(itemMaker(jacketId, jacketVariant));
+      if (jacket && jacketSize && jacketColor) {
+        let jacketVariant = _.findWhere(jacket.variants, {size: jacketSize, color: jacketColor});
+        items.push(itemMaker(jacketId, jacketVariant));
+      } else {
+        missingItem = true;
+      }
       let pants = ReactionCore.Collections.Products.findOne(pantsId);
-      let pantsVariant = _.findWhere(pants.variants, {size: pantsSize, color: pantsColor});
-      items.push(itemMaker(pantsId, pantsVariant));
-      // console.log(order.order_number)
-      // console.log(items);
+      if (pants && pantsColor && pantsSize) {
+        let pantsVariant = _.findWhere(pants.variants, {size: pantsSize, color: pantsColor});
+        items.push(itemMaker(pantsId, pantsVariant));
+      } else {
+        missingItem = true;
+      }
     } else if (_.contains(productIds, item.product_id + '')) {
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
@@ -167,26 +186,29 @@ function createReactionOrder(order) {
   let orderCreated = {status: 'orderCreated'};
   let shippingAddress = generateShippingAddress(order);
   let billingAddress = generateBillingAddress(order);
-  let itemsAF;
-  console.log(items)
+  let itemsAF = [];
   if (items.length > 0) {
     itemsAF = _.map(items, function (item) {
-      let product = Products.findOne(item.productId);
-      return {
-        _id: item._id,
-        productId: item.productId,
-        shopId: item.shopId,
-        quantity: item.quantity,
-        variantId: item.variants._id,
-        itemDescription: product.vendor + ' ' + product.title,
-        workflow: {
-          status: 'In Stock',
-          workflow: []
-        },
-        price: item.variants.price,
-        sku: item.variants.sku,
-        location: item.variants.location
-      };
+    let product = Products.findOne(item.productId);
+      if (item.variants) {
+        return {
+          _id: item._id,
+          productId: item.productId,
+          shopId: item.shopId,
+          quantity: item.quantity,
+          variantId: item.variants._id,
+          itemDescription: product.vendor + ' ' + product.title,
+          workflow: {
+            status: 'In Stock',
+            workflow: []
+          },
+          price: item.variants.price,
+          sku: item.variants.sku,
+          location: item.variants.location
+        };
+      } else {
+        missingItem = true;
+      }
     });
   }
 
@@ -207,7 +229,7 @@ function createReactionOrder(order) {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),
       workflow: orderCreated,
-      items: itemsAF
+      items: itemsAF // Throwing error related to Product required.
     },
     items: items
   });
