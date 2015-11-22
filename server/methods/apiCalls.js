@@ -2,7 +2,8 @@ function keyify(string) {
   let keyifiedString = string.replace(/([\W\/])/ig, '');
   keyifiedString = keyifiedString[0].toLowerCase() + keyifiedString.substr(1);
   return keyifiedString;
-};
+}
+
 function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
@@ -11,7 +12,7 @@ function formatDateForApi(date) {
     // return moment(date).format('2015-11-19') + ' 00:00';
 
     // return moment(date).format('YYYY-MM-DD') + ' 00:00';
-     return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -58,12 +59,12 @@ function returnChecker(date) {
   return date;
 }
 
-function itemMaker(productId, variantObj) {
+function createOrderItem(productId, variantObj, qty = 1) {
   return {
     _id: Random.id(),
     shopId: ReactionCore.getShopId(),
     productId: productId,
-    quantity: 1,
+    quantity: qty,
     variants: variantObj,
     workflow: {
       status: 'orderCreated',
@@ -72,33 +73,48 @@ function itemMaker(productId, variantObj) {
   };
 }
 
-let defaultNoteAttrs = {
-  // jacketSize:
-}
-
 function createReactionOrder(order) {
   check(order, Object);
-  let bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
-  let productIds = _.pluck(Products.find().fetch(), 'shopifyId');
-  let orderCreatedAt = new Date(order.created_at);
-  let notes = order.note_attributes;
-  let stringStartDate = _.findWhere(notes, {name: 'first_ski_day'}) || _.findWhere(notes, {name: 'first_camping_day'}) || _.findWhere(notes, {name: 'first_activity_day'});
-  let stringEndDate = _.findWhere(notes, {name: 'last_ski_day'}) || _.findWhere(notes, {name: 'last_camping_day'}) || _.findWhere(notes, {name: 'last_activity_day'});
+  const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
+  const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
+  const orderCreatedAt = new Date(order.created_at);
+  const notes = order.note_attributes;
+
   let startDate;
   let endDate;
   let rentalLength;
-  let validImport = false;
-  let missingItem = false;
-  if (stringStartDate && stringEndDate) {
-    startDate = moment(new Date(stringStartDate.value))._d;
-    endDate = moment(new Date(stringEndDate.value))._d; // XXX: Should probably just use the date
+  let validImport = false; // Flag order as invalid import
+  let missingItem = false; // Flag order as missing an item
+  let items = []; // Empty array of items that we will build for the order
+
+  // stringStartDateNote and stringEndDateNote return an object such as {name: 'first_ski_day', value: '2015-12-30' }
+  let stringStartDateNote = _.find(notes, function (note) {
+    return ['first_ski_day', 'first_camping_day', 'first_activity_day'].indexOf(note.name) > -1;
+  });
+
+  let stringEndDateNote = _.find(notes, function (note) {
+    return ['last_ski_day', 'last_camping_day', 'last_activity_day'].indexOf(note.name) > -1;
+  });
+
+  if (stringStartDateNote && stringEndDateNote) {
+    ReactionCore.Log.info('Importing Shopify Order #'
+      + order.order_number
+      + ' - Rental Dates '
+      + stringStartDateNote.value
+      + ' to '
+      + stringEndDateNote.value);
+
+    // If we have both a start and end date, create js Date objects.
+    startDate = new Date(stringStartDateNote.value);
+    endDate = new Date(stringEndDateNote.value);
+    // TODO: Make sure that this diff is identical to the number of rental days always.
     rentalLength = moment(endDate).diff(moment(startDate), 'days');
   } else {
+    ReactionCore.Log.info('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
+    // Flag order
     validImport = true;
   }
-  // ^ WORKs
 
-  let items = []; // Setup empty items array for reaction order
   _.each(order.line_items, function (item) {
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
@@ -107,13 +123,17 @@ function createReactionOrder(order) {
       if (color) {
         color = keyify(color.value);
       } else {
-        throw new Meteor.Error('Order doesnt have color', order);
+        ReactionCore.Log.error('Order ' + order.order_number + ' contains an item missing colors');
+        return; // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
+        // If the order doesn't have a color, it's broken.
+        // TODO: Flag this order for CSR team and continue.
       }
+
+      // TODO: Abstract size finding to a function that returns an object of sizes
       let jacketSize = _.findWhere(item.properties, {name: 'Jacket Size'}).value;
       let pantsSize = _.findWhere(item.properties, {name: 'Pants Size'}).value;
       let glovesSize = _.findWhere(item.properties, {name: 'Gloves Size'}).value;
       let goggleType = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
-      let thisBundle = bundle.colorWays[color];
       let jacketId = thisBundle.jacketId;
       let jacketColor = thisBundle.jacketColor;
       let pantsId = thisBundle.pantsId;
@@ -122,17 +142,25 @@ function createReactionOrder(order) {
       let glovesColor = thisBundle.glovesColor;
       let gogglesId = thisBundle.gogglesId;
       let gogglesColors = thisBundle.gogglesColor;
-      let jacket = ReactionCore.Collections.Products.findOne(jacketId);
-      if (jacket && jacketSize && jacketColor) {
-        let jacketVariant = _.findWhere(jacket.variants, {size: jacketSize, color: jacketColor});
-        items.push(itemMaker(jacketId, jacketVariant));
+
+      // call the bundle + colorway a style;
+      let style = bundle.colorWays[color];
+      // We should be able to nuke most of this in exchange for just using style.jacketId etc.
+
+      let jacket = ReactionCore.Collections.Products.findOne(style.jacketId);
+      if (jacket && jacketSize && style.jacketColor) {
+        let jacketVariant = _.findWhere(jacket.variants, {size: jacketSize, color: style.jacketColor});
+        // TODO: Adjust inventory and create exception if inventory not available here
+        items.push(createOrderItem(style.jacketId, jacketVariant));
       } else {
+        // Flag this item as missing from the order if it's missing style or color or cannot be found
         missingItem = true;
       }
-      let pants = ReactionCore.Collections.Products.findOne(pantsId);
-      if (pants && pantsColor && pantsSize) {
-        let pantsVariant = _.findWhere(pants.variants, {size: pantsSize, color: pantsColor});
-        items.push(itemMaker(pantsId, pantsVariant));
+
+      let pants = ReactionCore.Collections.Products.findOne(style.pantsId);
+      if (pants && style.pantsColor && pantsSize) {
+        let pantsVariant = _.findWhere(pants.variants, {size: pantsSize, color: style.pantsColor});
+        items.push(createOrderItem(style.pantsId, pantsVariant));
       } else {
         missingItem = true;
       }
