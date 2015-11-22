@@ -134,14 +134,17 @@ function createReactionOrder(order) {
       let pantsSize = _.findWhere(item.properties, {name: 'Pants Size'}).value;
       let glovesSize = _.findWhere(item.properties, {name: 'Gloves Size'}).value;
       let goggleType = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
-      let jacketId = thisBundle.jacketId;
-      let jacketColor = thisBundle.jacketColor;
-      let pantsId = thisBundle.pantsId;
-      let pantsColor = thisBundle.pantsColor;
-      let glovesId = thisBundle.glovesId;
-      let glovesColor = thisBundle.glovesColor;
-      let gogglesId = thisBundle.gogglesId;
-      let gogglesColors = thisBundle.gogglesColor;
+
+      // Deprecated in favor of style.jacketId, style.jacketColor etc
+      // XXX: remove after implementation is complete - for reference only
+      // let jacketId = thisBundle.jacketId;
+      // let jacketColor = thisBundle.jacketColor;
+      // let pantsId = thisBundle.pantsId;
+      // let pantsColor = thisBundle.pantsColor;
+      // let glovesId = thisBundle.glovesId;
+      // let glovesColor = thisBundle.glovesColor;
+      // let gogglesId = thisBundle.gogglesId;
+      // let gogglesColors = thisBundle.gogglesColor;
 
       // call the bundle + colorway a style;
       let style = bundle.colorWays[color];
