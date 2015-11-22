@@ -18,6 +18,32 @@ function shipmentChecker(date) {
   return date;
 }
 
+function generateShippingAddress(order) {
+  return [ {address: {
+    country: order.shipping_address.country_code,
+    fullName: order.shipping_address.name,
+    address1: order.shipping_address.address1,
+    address2: order.shipping_address.address2,
+    region: order.shipping_address.province_code,
+    postal: order.shipping_address.zip,
+    city: order.shipping_address.city,
+    phone: order.shipping_address.phone
+  }}];
+}
+
+function generateBillingAddress(order) {
+  return [{address: {
+    country: order.billing_address.country_code,
+    fullName: order.billing_address.name,
+    address1: order.billing_address.address1,
+    address2: order.billing_address.address2,
+    region: order.billing_address.province_code,
+    postal: order.billing_address.zip,
+    city: order.billing_address.city,
+    phone: order.billing_address.phone
+  }}];
+}
+
 function returnChecker(date) {
   if (moment(date).isoWeekday() === 7) {
     return moment(date).add(1, 'days')._d;
@@ -37,6 +63,7 @@ function createReactionOrder(order) {
   let endDate;
   let rentalLength;
   let validImport = false;
+  let missingItem = false;
   if (stringStartDate && stringEndDate) {
     startDate = moment(new Date(stringStartDate.value))._d;
     endDate = moment(new Date(stringEndDate.value))._d;
@@ -66,20 +93,25 @@ function createReactionOrder(order) {
       if (product) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
-      let newItem = {
-        _id: Random.id(),
-        shopId: ReactionCore.getShopId(),
-        productId: item.product_id + '',
-        quantity: 1,
-        variants: variant,
-        workflow: {
-          status: 'orderCreated',
-          workflow: ['inventoryAdjusted']
-        }
-      };
-      items.push(newItem);
+      if (!variant) {
+        missingItem = true;
+      } else {
+        let newItem = {
+          _id: Random.id(),
+          shopId: ReactionCore.getShopId(),
+          productId: product._id,
+          quantity: 1,
+          variants: variant,
+          workflow: {
+            status: 'orderCreated',
+            workflow: ['inventoryAdjusted']
+          }
+        };
+        items.push(newItem);
+      }
     }
   });
+
   let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer || {shipping: 0, returning: 0};
   let shippingBuffer = buffer.shipping;
   let returnBuffer = buffer.returning;
@@ -91,26 +123,31 @@ function createReactionOrder(order) {
     returnDate = moment(endDate).add(returnBuffer, 'days')._d;
   }
   let orderCreated = {status: 'orderCreated'};
-  let shippingAddress = [ {address: {
-    country: order.shipping_address.country_code,
-    fullName: order.shipping_address.name,
-    address1: order.shipping_address.address1,
-    address2: order.shipping_address.address2,
-    region: order.shipping_address.province_code,
-    postal: order.shipping_address.zip,
-    city: order.shipping_address.city,
-    phone: order.shipping_address.phone
-  }}];
-  let billingAddress = [{address: {
-    country: order.billing_address.country_code,
-    fullName: order.billing_address.name,
-    address1: order.billing_address.address1,
-    address2: order.billing_address.address2,
-    region: order.billing_address.province_code,
-    postal: order.billing_address.zip,
-    city: order.billing_address.city,
-    phone: order.billing_address.phone
-  }}];
+  let shippingAddress = generateShippingAddress(order);
+  let billingAddress = generateBillingAddress(order);
+  let itemsAF;
+  if (items.length > 0) {
+
+    itemsAF = _.map(items, function (item) {
+      let product = Products.findOne(item.productId);
+      return {
+        _id: item._id,
+        productId: item.productId,
+        shopId: item.shopId,
+        quantity: item.quantity,
+        variantId: item.variants._id,
+        itemDescription: product.vendor + ' ' + product.title,
+        workflow: {
+          status: 'In Stock',
+          workflow: []
+        },
+        price: item.variants.price,
+        sku: item.variants.sku,
+        location: item.variants.location
+      };
+    });
+  }
+
   ReactionCore.Collections.Orders.insert({
     userId: Random.id(),
     email: order.email,
@@ -123,10 +160,12 @@ function createReactionOrder(order) {
     createdAt: orderCreatedAt,
     shopifyOrderNumber: order.order_number,
     infoMissing: validImport,
+    itemMissingDetails: missingItem,
     advancedFulfillment: {
       shipmentDate: shipmentChecker(shipmentDate),
       returnDate: returnChecker(returnDate),
-      workflow: orderCreated
+      workflow: orderCreated,
+      items: itemsAF
     },
     items: items
   });
