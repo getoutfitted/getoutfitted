@@ -1,8 +1,16 @@
+function keyify(string) {
+  let keyifiedString = string.replace(/([\W\/])/ig, '');
+  keyifiedString = keyifiedString[0].toLowerCase() + keyifiedString.substr(1);
+  return keyifiedString;
+}
+
 function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm');
+    // return moment(date).format('2015-11-19') + ' 00:00';
+
     // return moment(date).format('YYYY-MM-DD') + ' 00:00';
     return moment(date).format('2003-11-12') + ' 00:00';
   }
@@ -51,30 +59,105 @@ function returnChecker(date) {
   return date;
 }
 
-function createReactionOrder(order) {
-  check(order, Object);
-  let bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
-  let productIds = _.pluck(Products.find().fetch(), 'shopifyId');
-  let orderCreatedAt = new Date(order.created_at);
-  let notes = order.note_attributes;
-  let stringStartDate = _.findWhere(notes, {name: 'first_ski_day'}) || _.findWhere(notes, {name: 'first_camping_day'}) || _.findWhere(notes, {name: 'first_activity_day'});
-  let stringEndDate = _.findWhere(notes, {name: 'last_ski_day'}) || _.findWhere(notes, {name: 'last_camping_day'}) || _.findWhere(notes, {name: 'last_activity_day'});
-  let startDate;
-  let endDate;
-  let rentalLength;
-  let validImport = false;
-  let missingItem = false;
-  if (stringStartDate && stringEndDate) {
-    startDate = moment(new Date(stringStartDate.value))._d;
-    endDate = moment(new Date(stringEndDate.value))._d;
-    rentalLength = moment(endDate).diff(moment(startDate), 'days');
-  } else {
-    validImport = true;
+function createOrderItem(productId, variantObj, qty = 1) {
+  return {
+    _id: Random.id(),
+    shopId: ReactionCore.getShopId(),
+    productId: productId,
+    quantity: qty,
+    variants: variantObj,
+    workflow: {
+      status: 'orderCreated',
+      workflow: ['inventoryAdjusted']
+    }
+  };
+}
+
+function setupRentalFromOrderNotes(notes) {
+  let rental = {};
+  // startDateObj and endDateObj return an object such as {name: 'first_ski_day', value: '2015-12-30' }
+  let startDateObj = _.find(notes, function (note) {
+    return ['first_ski_day', 'first_camping_day', 'first_activity_day'].indexOf(note.name) > -1;
+  });
+
+  let endDateObj = _.find(notes, function (note) {
+    return ['last_ski_day', 'last_camping_day', 'last_activity_day'].indexOf(note.name) > -1;
+  });
+
+  if (startDateObj && endDateObj) {
+    // If we have both a start and end date, create js Date objects.
+    rental.start = new Date(startDateObj.value);
+    rental.end = new Date(endDateObj.value);
+    // TODO: Make sure that this diff is identical to the number of rental days always.
+    rental.tripLength = moment(rental.start).diff(moment(rental.end), 'days');
+    return rental;
   }
+  return false;
+}
+
+function getShippingBuffers() {
+  let advancedFulfillment = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'});
+  if (advancedFulfillment && advancedFulfillment.settings && advancedFulfillment.settings.buffer) {
+    return advancedFulfillment.settings.buffer;
+  }
+  return {shipping: 0, returning: 0};
+}
+
+function getBundleVariant(productId, color, size) {
+  let product = ReactionCore.Collections.Products.findOne(productId);
+  if (product && size && color) {
+    let variant = _.findWhere(product.variants, {size: size, color: color});
+    return createOrderItem(productId, variant);
+  }
+  return false;
+}
+
+function setupOrderItems(lineItems, orderNumber) {
+  // TODO: Consider abstracting this into two separate functions.
+  const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
+  const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
-  _.each(order.line_items, function (item) {
+  _.each(lineItems, function (item) {
+    // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
-      // console.log('we have a bundle!!!!!!!');
+      let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
+      let color = _.findWhere(item.properties, {name: 'Color'});
+
+      if (color) {
+        color = keyify(color.value);
+      } else {
+        ReactionCore.Log.error('Order ' + orderNumber + ' contains an item missing colors');
+        return; // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
+        // If the order doesn't have a color, it's broken.
+        // TODO: Flag this item in this order for CSR team and continue.
+      }
+
+      let style = bundle.colorWays[color]; // call the bundle + colorway a style;
+      let size = {
+        jacket: _.findWhere(item.properties, {name: 'Jacket Size'}).value,
+        midlayer: _.findWhere(item.properties, {name: 'Jacket Size'}).value,
+        pants: _.findWhere(item.properties, {name: 'Pants Size'}).value,
+        gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value
+      };
+      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
+      let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
+      let goggleVariant = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size')
+      // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
+      if (goggleVariantItem) {
+        items.push(goggleVariantItem);
+      } else {
+        missingItem = true;
+      }
+
+      let productTypes = ['jacket', 'pants', 'midlayer', 'gloves'];
+      _.each(productTypes, function (productType) {
+        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType]);
+        if (variantItem) {
+          items.push(variantItem);
+        } else {
+          missingItem = true;
+        }
+      });
     } else if (_.contains(productIds, item.product_id + '')) {
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
@@ -111,64 +194,95 @@ function createReactionOrder(order) {
       }
     }
   });
+  return items;
+}
 
-  let buffer = ReactionCore.Collections.Packages.findOne({name: 'reaction-advanced-fulfillment'}).settings.buffer || {shipping: 0, returning: 0};
-  let shippingBuffer = buffer.shipping;
-  let returnBuffer = buffer.returning;
-  let shipmentDate = new Date();
-  let returnDate = new Date(2100, 8, 20);
-
-  if (startDate && endDate) {
-    shipmentDate = moment(startDate).subtract(shippingBuffer, 'days')._d;
-    returnDate = moment(endDate).add(returnBuffer, 'days')._d;
-  }
-  let orderCreated = {status: 'orderCreated'};
-  let shippingAddress = generateShippingAddress(order);
-  let billingAddress = generateBillingAddress(order);
-  let itemsAF;
+/**
+ * setupAdvancedFulfillmentItems
+ * @param   {Array} items - Array of existing items - reactionOrder.items by default
+ * @returns {Object} - returns object with advancedFulfillment items and the missingItemDetails flag
+ */
+function setupAdvancedFulfillmentItems(items) {
+  let missingItemDetails = false; // Flag we will pass back
   if (items.length > 0) {
-
-    itemsAF = _.map(items, function (item) {
+    let afItems = _.map(items, function (item) {
       let product = Products.findOne(item.productId);
-      return {
-        _id: item._id,
-        productId: item.productId,
-        shopId: item.shopId,
-        quantity: item.quantity,
-        variantId: item.variants._id,
-        itemDescription: product.vendor + ' ' + product.title,
-        workflow: {
-          status: 'In Stock',
-          workflow: []
-        },
-        price: item.variants.price,
-        sku: item.variants.sku,
-        location: item.variants.location
-      };
+      if (item.variants) {
+        // TODO: refactor - shouldn't need an ID, or duplicate existing fields
+        return {
+          _id: item._id,
+          productId: item.productId,
+          shopId: item.shopId,
+          quantity: item.quantity,
+          variantId: item.variants._id,
+          price: item.variants.price,
+          sku: item.variants.sku,
+          location: item.variants.location,
+          itemDescription: product.vendor + ' - ' + product.title,
+          workflow: {
+            status: 'In Stock',
+            workflow: []
+          }
+        };
+      }
+      missingItemDetails = true;
     });
-  }
 
-  ReactionCore.Collections.Orders.insert({
-    userId: Random.id(),
+    return {afItems: afItems, missingItemDetails: missingItemDetails};
+  }
+  return {afItems: [], missingItemDetails: missingItemDetails};
+}
+
+
+function createReactionOrder(order) {
+  check(order, Object);
+  const notes = order.note_attributes;
+  const rental = setupRentalFromOrderNotes(notes); // Returns start, end, and triplength of rental or false
+  const buffers = getShippingBuffers();
+
+  // Initialize reaction order
+  let reactionOrder = {
+    shopifyOrderNumber: order.order_number,
     email: order.email,
     shopId: ReactionCore.getShopId(),
-    shipping: shippingAddress,
-    billing: billingAddress,
-    startTime: startDate,
-    endTime: endDate,
-    rentalDays: rentalLength,
-    createdAt: orderCreatedAt,
-    shopifyOrderNumber: order.order_number,
-    infoMissing: validImport,
-    itemMissingDetails: missingItem,
+    userId: Random.id(),
+    shipping: generateShippingAddress(order),
+    billing: generateBillingAddress(order),
+    startTime: rental.start,
+    endTime: rental.end,
+    missingInfo: false,                   // Missing info flag (dates, etc)
+    missingItemDetails: false,            // Missing item information flag (color, size, etc)
+    items: setupOrderItems(order.line_items, order.order_number),
     advancedFulfillment: {
-      shipmentDate: shipmentChecker(shipmentDate),
-      returnDate: returnChecker(returnDate),
-      workflow: orderCreated,
-      items: itemsAF
+      shipmentDate: new Date(),           // Initialize shipmentDate to today
+      returnDate: new Date(2100, 8, 20),  // Initialize return date to 85 years from now
+      workflow: {
+        status: 'orderCreated'
+      }
     },
-    items: items
-  });
+    createdAt: new Date(order.created_at)
+  };
+
+  let afDetails = setupAdvancedFulfillmentItems(reactionOrder.items);
+  reactionOrder.advancedFulfillment.items = afDetails.afItems;
+  reactionOrder.missingItemDetails = afDetails.missingItemDetails;
+
+  if (!rental) {
+    ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
+    reactionOrder.missingInfo = true; // Flag order
+  } else {
+    reactionOrder.advancedFulfillment.shipmentDate = moment(rental.start).subtract(buffers.shipping, 'days').toDate();
+    reactionOrder.advancedFulfillment.returnDate = moment(rental.end).add(buffers.returning, 'days').toDate();
+  }
+
+  ReactionCore.Log.info('Importing Shopify Order #'
+    + order.order_number
+    + ' - Rental Dates '
+    + rental.start
+    + ' to '
+    + rental.end);
+
+  ReactionCore.Collections.Orders.insert(reactionOrder);
 }
 
 function saveOrdersToShopifyOrders(data, dateTo, pageNumber, pageTotal, groupId) {
