@@ -103,6 +103,15 @@ function getShippingBuffers() {
   return {shipping: 0, returning: 0};
 }
 
+function getBundleVariant(productId, color, size) {
+  let product = ReactionCore.Collections.Products.findOne(productId);
+  if (product && size && color) {
+    let variant = _.findWhere(product.variants, {size: size, color: color});
+    return createOrderItem(productId, variant);
+  }
+  return false;
+}
+
 function setupOrderItems(lineItems, orderNumber) {
   // TODO: Consider abstracting this into two separate functions.
   const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
@@ -113,53 +122,42 @@ function setupOrderItems(lineItems, orderNumber) {
     if (_.contains(bundleIds, item.product_id + '')) {
       let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
       let color = _.findWhere(item.properties, {name: 'Color'});
+
       if (color) {
         color = keyify(color.value);
       } else {
         ReactionCore.Log.error('Order ' + orderNumber + ' contains an item missing colors');
         return; // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
         // If the order doesn't have a color, it's broken.
-        // TODO: Flag this order for CSR team and continue.
+        // TODO: Flag this item in this order for CSR team and continue.
       }
 
-      // TODO: Abstract size finding to a function that returns an object of sizes
-      let jacketSize = _.findWhere(item.properties, {name: 'Jacket Size'}).value;
-      let pantsSize = _.findWhere(item.properties, {name: 'Pants Size'}).value;
-      let glovesSize = _.findWhere(item.properties, {name: 'Gloves Size'}).value;
-      let goggleType = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
-
-      // Deprecated in favor of style.jacketId, style.jacketColor etc
-      // XXX: remove after implementation is complete - for reference only
-      // let jacketId = thisBundle.jacketId;
-      // let jacketColor = thisBundle.jacketColor;
-      // let pantsId = thisBundle.pantsId;
-      // let pantsColor = thisBundle.pantsColor;
-      // let glovesId = thisBundle.glovesId;
-      // let glovesColor = thisBundle.glovesColor;
-      // let gogglesId = thisBundle.gogglesId;
-      // let gogglesColors = thisBundle.gogglesColor;
-
-      // call the bundle + colorway a style;
-      let style = bundle.colorWays[color];
-      // We should be able to nuke most of this in exchange for just using style.jacketId etc.
-
-      let jacket = ReactionCore.Collections.Products.findOne(style.jacketId);
-      if (jacket && jacketSize && style.jacketColor) {
-        let jacketVariant = _.findWhere(jacket.variants, {size: jacketSize, color: style.jacketColor});
-        // TODO: Adjust inventory and create exception if inventory not available here
-        items.push(createOrderItem(style.jacketId, jacketVariant));
-      } else {
-        // Flag this item as missing from the order if it's missing style or color or cannot be found
-        missingItem = true;
-      }
-
-      let pants = ReactionCore.Collections.Products.findOne(style.pantsId);
-      if (pants && style.pantsColor && pantsSize) {
-        let pantsVariant = _.findWhere(pants.variants, {size: pantsSize, color: style.pantsColor});
-        items.push(createOrderItem(style.pantsId, pantsVariant));
+      let style = bundle.colorWays[color]; // call the bundle + colorway a style;
+      let size = {
+        jacket: _.findWhere(item.properties, {name: 'Jacket Size'}).value,
+        midlayer: _.findWhere(item.properties, {name: 'Jacket Size'}).value,
+        pants: _.findWhere(item.properties, {name: 'Pants Size'}).value,
+        gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value
+      };
+      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
+      let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
+      let goggleVariant = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size')
+      // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
+      if (goggleVariantItem) {
+        items.push(goggleVariantItem);
       } else {
         missingItem = true;
       }
+
+      let productTypes = ['jacket', 'pants', 'midlayer', 'gloves'];
+      _.each(productTypes, function (productType) {
+        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType]);
+        if (variantItem) {
+          items.push(variantItem);
+        } else {
+          missingItem = true;
+        }
+      });
     } else if (_.contains(productIds, item.product_id + '')) {
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
