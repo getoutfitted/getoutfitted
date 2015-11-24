@@ -20,10 +20,8 @@ function formatDateForApi(date) {
 function shipmentChecker(date) {
 
   if (moment(date).isoWeekday() === 7) {
-    // console.log('date!', date, moment(date).subtract(2, 'days').toDate());
     return moment(date).subtract(2, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
-    // console.log('date!', date, moment(date).subtract(2, 'days').toDate());
     return moment(date).subtract(1, 'days').toDate();
   }
   return date;
