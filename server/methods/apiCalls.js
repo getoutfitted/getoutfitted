@@ -18,10 +18,13 @@ function formatDateForApi(date) {
 }
 
 function shipmentChecker(date) {
+
   if (moment(date).isoWeekday() === 7) {
-    return moment(date).subtract(2, 'days')._d;
+    // console.log('date!', date, moment(date).subtract(2, 'days').toDate());
+    return moment(date).subtract(2, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
-    return moment(date).subtract(1, 'days')._d;
+    // console.log('date!', date, moment(date).subtract(2, 'days').toDate());
+    return moment(date).subtract(1, 'days').toDate();
   }
   return date;
 }
@@ -54,7 +57,7 @@ function generateBillingAddress(order) {
 
 function returnChecker(date) {
   if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(1, 'days')._d;
+    return moment(date).add(1, 'days').toDate();
   }
   return date;
 }
@@ -248,8 +251,8 @@ function createReactionOrder(order) {
     userId: Random.id(),
     shipping: generateShippingAddress(order),
     billing: generateBillingAddress(order),
-    startTime: shipmentChecker(rental.start),
-    endTime: returnChecker(rental.end),
+    startTime: rental.start,
+    endTime: rental.end,
     infoMissing: false,                   // Missing info flag (dates, etc)
     itemMissingDetails: false,            // Missing item information flag (color, size, etc)
     items: setupOrderItems(order.line_items, order.order_number),
@@ -271,8 +274,8 @@ function createReactionOrder(order) {
     ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
     reactionOrder.infoMissing = true; // Flag order
   } else {
-    reactionOrder.advancedFulfillment.shipmentDate = moment(rental.start).subtract(buffers.shipping, 'days').toDate();
-    reactionOrder.advancedFulfillment.returnDate = moment(rental.end).add(buffers.returning, 'days').toDate();
+    reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate());
+    reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate());
   }
 
   ReactionCore.Log.info('Importing Shopify Order #'
