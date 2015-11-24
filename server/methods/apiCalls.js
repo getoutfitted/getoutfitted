@@ -18,10 +18,11 @@ function formatDateForApi(date) {
 }
 
 function shipmentChecker(date) {
+
   if (moment(date).isoWeekday() === 7) {
-    return moment(date).subtract(2, 'days')._d;
+    return moment(date).subtract(2, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
-    return moment(date).subtract(1, 'days')._d;
+    return moment(date).subtract(1, 'days').toDate();
   }
   return date;
 }
@@ -54,7 +55,7 @@ function generateBillingAddress(order) {
 
 function returnChecker(date) {
   if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(1, 'days')._d;
+    return moment(date).add(1, 'days').toDate();
   }
   return date;
 }
@@ -141,7 +142,7 @@ function setupOrderItems(lineItems, orderNumber) {
       };
       let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
-      let goggleVariant = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size')
+      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size')
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
       if (goggleVariantItem) {
         items.push(goggleVariantItem);
@@ -200,10 +201,10 @@ function setupOrderItems(lineItems, orderNumber) {
 /**
  * setupAdvancedFulfillmentItems
  * @param   {Array} items - Array of existing items - reactionOrder.items by default
- * @returns {Object} - returns object with advancedFulfillment items and the missingItemDetails flag
+ * @returns {Object} - returns object with advancedFulfillment items and the itemMissingDetails flag
  */
 function setupAdvancedFulfillmentItems(items) {
-  let missingItemDetails = false; // Flag we will pass back
+  let itemMissingDetails = false; // Flag we will pass back
   if (items.length > 0) {
     let afItems = _.map(items, function (item) {
       let product = Products.findOne(item.productId);
@@ -225,12 +226,12 @@ function setupAdvancedFulfillmentItems(items) {
           }
         };
       }
-      missingItemDetails = true;
+      itemMissingDetails = true;
     });
 
-    return {afItems: afItems, missingItemDetails: missingItemDetails};
+    return {afItems: afItems, itemMissingDetails: itemMissingDetails};
   }
-  return {afItems: [], missingItemDetails: missingItemDetails};
+  return {afItems: [], itemMissingDetails: itemMissingDetails};
 }
 
 
@@ -250,8 +251,8 @@ function createReactionOrder(order) {
     billing: generateBillingAddress(order),
     startTime: rental.start,
     endTime: rental.end,
-    missingInfo: false,                   // Missing info flag (dates, etc)
-    missingItemDetails: false,            // Missing item information flag (color, size, etc)
+    infoMissing: false,                   // Missing info flag (dates, etc)
+    itemMissingDetails: false,            // Missing item information flag (color, size, etc)
     items: setupOrderItems(order.line_items, order.order_number),
     advancedFulfillment: {
       shipmentDate: new Date(),           // Initialize shipmentDate to today
@@ -265,14 +266,14 @@ function createReactionOrder(order) {
 
   let afDetails = setupAdvancedFulfillmentItems(reactionOrder.items);
   reactionOrder.advancedFulfillment.items = afDetails.afItems;
-  reactionOrder.missingItemDetails = afDetails.missingItemDetails;
+  reactionOrder.itemMissingDetails = afDetails.itemMissingDetails;
 
   if (!rental) {
     ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
-    reactionOrder.missingInfo = true; // Flag order
+    reactionOrder.infoMissing = true; // Flag order
   } else {
-    reactionOrder.advancedFulfillment.shipmentDate = moment(rental.start).subtract(buffers.shipping, 'days').toDate();
-    reactionOrder.advancedFulfillment.returnDate = moment(rental.end).add(buffers.returning, 'days').toDate();
+    reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate());
+    reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate());
   }
 
   ReactionCore.Log.info('Importing Shopify Order #'
