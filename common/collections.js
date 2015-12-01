@@ -12,6 +12,11 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
       label: 'Shopify Password KEY',
       optional: true
     },
+    'settings.shopify.sharedSecret': {
+      type: String,
+      label: 'Shopify Webhook Shared Secret',
+      optional: true
+    },
     'settings.shopify.shopname': {
       type: String,
       label: 'Shopify Name ',

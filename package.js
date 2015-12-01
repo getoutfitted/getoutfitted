@@ -5,6 +5,10 @@ Package.describe({
   git: 'https://github.com/getoutfitted/reaction-shopify-orders'
 });
 
+Npm.depends({
+  busboy: '0.2.12'
+});
+
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@1.2');
   api.use('meteor-platform');
@@ -22,6 +26,9 @@ Package.onUse(function (api) {
   api.use('getoutfitted:reaction-rental-products@0.1.2');
   api.use('reactioncommerce:reaction-factories');
   api.use('underscorestring:underscore.string@3.2.2');
+
+  api.addFiles('lib/crypto.js', ['server']);
+  api.addFiles('lib/busboy.js', ['server']);
 
   api.addFiles([
     'server/registry.js',

@@ -8,17 +8,16 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    // return moment(date).format('YYYY-MM-DD HH:mm');
+    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
     // return moment(date).format('2015-11-19') + ' 00:00';
 
-    return moment(date).format('YYYY-MM-DD') + ' 00:00';
+    // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
 
 function shipmentChecker(date) {
-
   if (moment(date).isoWeekday() === 7) {
     return moment(date).subtract(2, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
