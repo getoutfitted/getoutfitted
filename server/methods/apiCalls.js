@@ -142,7 +142,7 @@ function setupOrderItems(lineItems, orderNumber) {
       };
       let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
-      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size')
+      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size');
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
       if (goggleVariantItem) {
         items.push(goggleVariantItem);
