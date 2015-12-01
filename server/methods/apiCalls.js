@@ -236,6 +236,13 @@ function setupAdvancedFulfillmentItems(items) {
 
 function createReactionOrder(order) {
   check(order, Object);
+
+  const orderExists = ReactionCore.Collections.Orders.findOne({shopifyOrderNumber: parseInt(order.order_number, 10)});
+  if (orderExists) {
+    ReactionCore.Log.warn('Import of order #' + order.order_number + ' aborted because it already exists');
+    return false;
+  }
+
   const notes = order.note_attributes;
   const rental = setupRentalFromOrderNotes(notes); // Returns start, end, and triplength of rental or false
   const buffers = getShippingBuffers();
@@ -281,8 +288,8 @@ function createReactionOrder(order) {
     + rental.start
     + ' to '
     + rental.end);
-
-  ReactionCore.Collections.Orders.insert(reactionOrder);
+  console.log(reactionOrder);
+  return ReactionCore.Collections.Orders.insert(reactionOrder);
 }
 
 function saveOrdersToShopifyOrders(data, dateTo, pageNumber, pageTotal, groupId) {
@@ -340,6 +347,14 @@ Meteor.methods({
     }, {
       $set: {'settings.public.lastUpdated': date}
     });
+  },
+  'shopifyOrders/newOrder': function (order) {
+    check(order, Match.Any);
+    if (this.connection === null) {
+      createReactionOrder(order);
+    } else {
+      throw new Meteor.Error(403, 'Forbidden, method is only available from the server');
+    }
   },
   'shopifyOrders/getOrders': function () {
     let date = new Date();

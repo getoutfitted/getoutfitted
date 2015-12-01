@@ -18,12 +18,17 @@ Router.route('/webhooks/orders/new', {
     if (attachedSignature === generatedSignature) {
       this.response.statusCode = 200;
       this.response.end('Success');
-      // Update Orders
+      Meteor.call('shopifyOrders/newOrder', this.request.body);
+      ReactionCore.Log.info('Shopify Orders Webhook successfully processed NEW Order: #', this.request.body.order_number);
+      // TODO: add notification for CSR and Ops
     } else {
       this.response.statusCode = 403;
       this.response.end('Forbidden');
+      ReactionCore.Log.info('Shopify Orders Webhook failed - invalid signature: ',
+        this.request.headers['x-forwarded-for'],
+        this.request.headers['x-forwarded-host'],
+        this.request.headers['x-shopify-hmac-sha256'],
+        this.request.headers['x-generated-signature']);
     }
-
-    ReactionCore.Log.info('Order Id: ', this.request.body.order_number);
   }
 });
