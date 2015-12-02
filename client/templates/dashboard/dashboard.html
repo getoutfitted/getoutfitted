@@ -4,12 +4,11 @@
 
     {{#if apiConfigured}}
       {{> shopifyApi}}
-    {{else}}
-      <div class='row'>
-      <h3>Configure your Shopify Account</h3>
-        {{> shopifyOrdersSettings}}
-      </div>
     {{/if}}
+    <div class='row'>
+    <h3>Configure your Shopify Account</h3>
+      {{> shopifyOrdersSettings}}
+    </div>
     <div class='row'>
       {{#if importFails}}
         <h3>Number of orders that to need customer servicer support to resolve:  {{importFailsCount}}</h3>
@@ -17,4 +16,3 @@
     </div>
   </div>
 </template>
-

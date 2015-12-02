@@ -5,6 +5,10 @@ Package.describe({
   git: 'https://github.com/getoutfitted/reaction-shopify-orders'
 });
 
+Npm.depends({
+  'shipping-fedex': '0.1.4'
+});
+
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@1.2');
   api.use('meteor-platform');
@@ -24,6 +28,7 @@ Package.onUse(function (api) {
   api.use('underscorestring:underscore.string@3.2.2');
 
   api.addFiles('lib/crypto.js', ['server']);
+  api.addFiles('lib/fedex.js', ['server']);
 
   api.addFiles([
     'server/registry.js',

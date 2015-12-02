@@ -22,6 +22,26 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
       label: 'Shopify Name ',
       optional: true
     },
+    'settings.fedex.key': {
+      type: String,
+      label: 'Fedex API key',
+      optional: true
+    },
+    'settings.fedex.password': {
+      type: String,
+      label: 'Fedex API password',
+      optional: true
+    },
+    'settings.fedex.accountNumber': {
+      type: String,
+      label: 'Fedex API Account Number',
+      optional: true
+    },
+    'settings.fedex.meterNumber': {
+      type: String,
+      label: 'Fedex API Meter Number',
+      optional: true
+    },
     'settings.public.lastUpdated': {
       type: Date,
       label: 'Last Time Orders Were Updated',
