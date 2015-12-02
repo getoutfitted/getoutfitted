@@ -28,14 +28,13 @@ Router.route('/webhooks/fulfillments/new', {
       try {
         shopifyOrderNumber = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/' + this.request.body.order_id + '.json', {
           auth: key + ':' + password
-        }).data.order_number;
+        }).data.order.order_number;
       } catch (e) {
         ReactionCore.Log.error('Error in webhooks.fulfillments.new determining shopifyOrderNumber ' + e);
         return false;
       }
-
       Meteor.call('shopifyOrders/newFulfillment', this.request.body, shopifyOrderNumber);
-      ReactionCore.Log.info('Shopify New Fulfillment Webhook successfully processed NEW Order: #', shopifyOrderNumber);
+      ReactionCore.Log.info('Shopify New Fulfillment Webhook successfully processed FULFILLMENT for order number', shopifyOrderNumber);
       // TODO: add notification for CSR and Ops
     } else {
       this.response.statusCode = 403;

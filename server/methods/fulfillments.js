@@ -3,7 +3,6 @@ Meteor.methods({
     check(fulfillment, Match.Any);
     check(shopifyOrderNumber, Number);
     if (this.connection === null) {
-      const order = ReactionCore.Collections.Orders.findOne({shopifyOrderNumber: shopifyOrderNumber});
       const trackingNumbers = fulfillment.tracking_numbers;
       const trackingUrls = fulfillment.tracking_urls;
 
