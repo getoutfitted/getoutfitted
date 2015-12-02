@@ -9,7 +9,7 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
     },
     'settings.shopify.password': {
       type: String,
-      label: 'Shopify Password KEY',
+      label: 'Shopify API Password',
       optional: true
     },
     'settings.shopify.sharedSecret': {

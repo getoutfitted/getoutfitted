@@ -288,7 +288,6 @@ function createReactionOrder(order) {
     + rental.start
     + ' to '
     + rental.end);
-  console.log(reactionOrder);
   return ReactionCore.Collections.Orders.insert(reactionOrder);
 }
 

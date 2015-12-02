@@ -28,6 +28,7 @@ Package.onUse(function (api) {
   api.addFiles([
     'server/registry.js',
     'server/methods/apiCalls.js',
+    'server/methods/fulfillments.js',
     'server/hooks.js'
   ], 'server');
 
