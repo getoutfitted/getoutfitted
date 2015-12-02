@@ -251,6 +251,7 @@ function createReactionOrder(order) {
     billing: generateBillingAddress(order),
     startTime: rental.start,
     endTime: rental.end,
+    orderNotes: order.note,
     infoMissing: false,                   // Missing info flag (dates, etc)
     itemMissingDetails: false,            // Missing item information flag (color, size, etc)
     items: setupOrderItems(order.line_items, order.order_number),
