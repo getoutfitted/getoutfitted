@@ -15,10 +15,12 @@
       {{>afQuickField name='settings.shopify.sharedSecret'}}
       <br />
       <p>Fedex Account Setup</p>
+      {{>afQuickField  name='settings.fedex.liveApi'}}
       {{>afQuickField  name='settings.fedex.password'}}
       {{>afQuickField  name='settings.fedex.key'}}
       {{>afQuickField  name='settings.fedex.accountNumber'}}
       {{>afQuickField  name='settings.fedex.meterNumber'}}
+      
 
       <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
     {{/autoForm}}

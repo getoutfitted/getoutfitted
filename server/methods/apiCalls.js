@@ -58,7 +58,7 @@ function getFedexTransitTime(address) {
   };
 
   let fedex = new Fedex({
-    'environment': 'sandbox',
+    'environment': shopifyOrders.settings.fedex.liveApi ? 'live' : 'sandbox',
     'debug': true,
     'key': shopifyOrders.settings.fedex.key,
     'password': shopifyOrders.settings.fedex.password,

@@ -42,6 +42,12 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
       label: 'Fedex API Meter Number',
       optional: true
     },
+    'settings.fedex.liveApi': {
+      type: Boolean,
+      label: 'Use Live API? (uncheck for testing)',
+      optional: true,
+      defaultValue: false
+    },
     'settings.public.lastUpdated': {
       type: Date,
       label: 'Last Time Orders Were Updated',
