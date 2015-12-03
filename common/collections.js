@@ -9,13 +9,44 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
     },
     'settings.shopify.password': {
       type: String,
-      label: 'Shopify Password KEY',
+      label: 'Shopify API Password',
+      optional: true
+    },
+    'settings.shopify.sharedSecret': {
+      type: String,
+      label: 'Shopify Webhook Shared Secret',
       optional: true
     },
     'settings.shopify.shopname': {
       type: String,
       label: 'Shopify Name ',
       optional: true
+    },
+    'settings.fedex.key': {
+      type: String,
+      label: 'Fedex API key',
+      optional: true
+    },
+    'settings.fedex.password': {
+      type: String,
+      label: 'Fedex API password',
+      optional: true
+    },
+    'settings.fedex.accountNumber': {
+      type: String,
+      label: 'Fedex API Account Number',
+      optional: true
+    },
+    'settings.fedex.meterNumber': {
+      type: String,
+      label: 'Fedex API Meter Number',
+      optional: true
+    },
+    'settings.fedex.liveApi': {
+      type: Boolean,
+      label: 'Use Live API? (uncheck for testing)',
+      optional: true,
+      defaultValue: false
     },
     'settings.public.lastUpdated': {
       type: Date,

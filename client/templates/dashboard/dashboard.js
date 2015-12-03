@@ -4,7 +4,10 @@ Template.dashboardShopifyOrders.helpers({
       name: 'reaction-shopify-orders'
     });
     if (shopifyOrders.settings) {
-      if (shopifyOrders.settings.shopify.key && shopifyOrders.settings.shopify.password && shopifyOrders.settings.shopify.shopname) {
+      if (shopifyOrders.settings.shopify.key &&
+          shopifyOrders.settings.shopify.password &&
+          shopifyOrders.settings.shopify.shopname &&
+          shopifyOrders.settings.shopify.sharedSecret) {
         return true;
       }
     }
