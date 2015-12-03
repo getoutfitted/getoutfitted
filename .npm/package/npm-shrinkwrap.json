@@ -34,7 +34,7 @@
                           "version": "0.0.1"
                         },
                         "process-nextick-args": {
-                          "version": "1.0.5"
+                          "version": "1.0.6"
                         },
                         "string_decoder": {
                           "version": "0.10.31"
