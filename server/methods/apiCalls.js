@@ -8,11 +8,11 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
     // return moment(date).format('2015-11-19') + ' 00:00';
 
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -253,12 +253,12 @@ function setupOrderItems(lineItems, orderNumber) {
 
       let style = bundle.colorWays[color]; // call the bundle + colorway a style;
       let size = {
-        jacket: _.findWhere(item.properties, {name: 'Jacket Size'}).value,
-        midlayer: _.findWhere(item.properties, {name: 'Jacket Size'}).value,
-        pants: _.findWhere(item.properties, {name: 'Pants Size'}).value,
-        gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value
+        jacket: _.findWhere(item.properties, {name: 'Jacket Size'}).value.trim(),
+        midlayer: _.findWhere(item.properties, {name: 'Jacket Size'}).value.trim(),
+        pants: _.findWhere(item.properties, {name: 'Pants Size'}).value.trim(),
+        gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value.trim()
       };
-      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value;
+      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value.trim();
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
       let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size');
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
