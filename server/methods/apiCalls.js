@@ -373,6 +373,7 @@ function createReactionOrder(order) {
   // Initialize reaction order
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
+    shopifyOrderId: order.id,
     email: order.email,
     shopId: ReactionCore.getShopId(),
     userId: Random.id(),
