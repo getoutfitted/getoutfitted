@@ -1,7 +1,10 @@
 const shopifyOrders = ReactionCore.Collections.Packages.findOne({
   name: 'reaction-shopify-orders'
 });
-const sharedSecret = shopifyOrders.settings.shopify.sharedSecret;
+let sharedSecret;
+if (shopifyOrders) {
+  sharedSecret = shopifyOrders.settings.shopify.sharedSecret;
+}
 
 Router.onBeforeAction(Iron.Router.bodyParser.json({verify: Meteor.bindEnvironment(function (req, res, buf) {
   req.headers['x-generated-signature'] = crypto.createHmac('sha256', sharedSecret).update(buf).digest('base64');

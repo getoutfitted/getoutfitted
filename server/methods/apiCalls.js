@@ -345,6 +345,17 @@ function setupAdvancedFulfillmentItems(items) {
         };
       }
       itemMissingDetails = true;
+      return {
+        _id: item._id,
+        productId: item.productId,
+        shopId: item.shopId,
+        quantity: item.quantity,
+        itemDescription: product.vendor + ' - ' + product.title,
+        workflow: {
+          status: 'In Stock',
+          workflow: []
+        }
+      };
     });
 
     return {afItems: afItems, itemMissingDetails: itemMissingDetails};
