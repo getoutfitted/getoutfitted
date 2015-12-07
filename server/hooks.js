@@ -1,8 +1,9 @@
+// TODO: move this out of the global space
 const shopifyOrders = ReactionCore.Collections.Packages.findOne({
   name: 'reaction-shopify-orders'
 });
 let sharedSecret;
-if (shopifyOrders) {
+if (shopifyOrders && shopifyOrders.settings) {
   sharedSecret = shopifyOrders.settings.shopify.sharedSecret;
 }
 
