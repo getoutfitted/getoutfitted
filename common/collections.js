@@ -79,6 +79,10 @@ ReactionCore.Schemas.ShopifyOrderNumber = new SimpleSchema([
     itemMissingDetails: {
       type: Boolean,
       optional: true
+    },
+    bundleMissingColor: {
+      type: Boolean,
+      optional: true
     }
   }
 ]);

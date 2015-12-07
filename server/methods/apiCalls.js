@@ -235,6 +235,7 @@ function setupOrderItems(lineItems, orderNumber) {
   const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
+  let bundleMissingColor = false;
   _.each(lineItems, function (item) {
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
@@ -245,7 +246,10 @@ function setupOrderItems(lineItems, orderNumber) {
         color = keyify(color.value);
       } else {
         ReactionCore.Log.error('Order ' + orderNumber + ' contains an item missing colors');
-        return; // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
+        bundleMissingColor = true;
+        let colorOptions = _.keys(bundle.colorWays);
+        color = keyify(colorOptions[0]);
+        // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
         // If the order doesn't have a color, it's broken.
         // TODO: Flag this item in this order for CSR team and continue.
       }
@@ -301,7 +305,7 @@ function setupOrderItems(lineItems, orderNumber) {
           _id: Random.id(),
           shopId: ReactionCore.getShopId(),
           productId: product._id,
-          quantity: 1,
+          quantity: item.quantity,
           variants: variant,
           workflow: {
             status: 'orderCreated',
@@ -312,7 +316,10 @@ function setupOrderItems(lineItems, orderNumber) {
       }
     }
   });
-  return items;
+  return {
+    items: items,
+    bundleMissingColor: bundleMissingColor
+  };
 }
 
 /**
@@ -336,7 +343,7 @@ function setupAdvancedFulfillmentItems(items) {
           price: item.variants.price,
           sku: item.variants.sku,
           location: item.variants.location,
-          itemDescription: product.vendor + ' - ' + product.title,
+          itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
           workflow: {
             status: 'In Stock',
             workflow: []
@@ -379,7 +386,7 @@ function createReactionOrder(order) {
   if (fedexTransitTime) {
     buffers.shipping = fedexTransitTime + 1;
   }
-
+  let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
@@ -394,7 +401,8 @@ function createReactionOrder(order) {
     orderNotes: order.note,
     infoMissing: false,                   // Missing info flag (dates, etc)
     itemMissingDetails: false,            // Missing item information flag (color, size, etc)
-    items: setupOrderItems(order.line_items, order.order_number),
+    bundleMissingColor: orderItems.bundleMissingColor,
+    items: orderItems.items,
     advancedFulfillment: {
       shipmentDate: new Date(),           // Initialize shipmentDate to today
       returnDate: new Date(2100, 8, 20),  // Initialize return date to 85 years from now
