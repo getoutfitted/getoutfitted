@@ -68,6 +68,10 @@ ReactionCore.Schemas.ShopifyOrderNumber = new SimpleSchema([
       optional: true,
       index: 1
     },
+    shopifyOrderId: {
+      type: Number,
+      optional: true
+    },
     infoMissing: {
       type: Boolean,
       optional: true
