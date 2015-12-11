@@ -9,7 +9,11 @@ Meteor.methods({
       ReactionCore.Collections.Orders.update({shopifyOrderNumber: shopifyOrderNumber}, {
         $addToSet: {
           'advancedFulfillment.outboundTrackingNumbers': { $each: trackingNumbers },
-          'advancedFulfillment.outboundTrackingUrls': { $each: trackingUrls }
+          'advancedFulfillment.outboundTrackingUrls': { $each: trackingUrls },
+          'advancedFulfillment.workflow.workflow': 'orderPacked'
+        },
+        $set: {
+          'advancedFulfillment.workflow.status': 'orderReadyToShip'
         }
       });
       // TODO: add information about what items are included in each package.
