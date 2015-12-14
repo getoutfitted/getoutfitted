@@ -240,6 +240,81 @@ function setupOrderItems(lineItems, orderNumber) {
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
       let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
+      if (item.properties.length === 0) {
+        ReactionCore.Log.error('CS created order ' + orderNumber);
+        let defaultColor = _.keys(bundle.colorWays)[0];
+        let defaultColorWay = bundle.colorWays[defaultColor];
+        items.push(
+          {
+            _id: Random.id(),
+            shopId: ReactionCore.getShopId(),
+            productId: defaultColorWay.jacketId,
+            quantity: item.quantity,
+            workflow: {
+              status: 'orderCreated',
+              workflow: ['inventoryAdjusted']
+            }
+          });
+        items.push(
+          {
+            _id: Random.id(),
+            shopId: ReactionCore.getShopId(),
+            productId: defaultColorWay.pantsId,
+            quantity: item.quantity,
+            workflow: {
+              status: 'orderCreated',
+              workflow: ['inventoryAdjusted']
+            }
+          });
+        items.push(
+          {
+            _id: Random.id(),
+            shopId: ReactionCore.getShopId(),
+            productId: defaultColorWay.pantsId,
+            quantity: item.quantity,
+            workflow: {
+              status: 'orderCreated',
+              workflow: ['inventoryAdjusted']
+            }
+          });
+        items.push(
+          {
+            _id: Random.id(),
+            shopId: ReactionCore.getShopId(),
+            productId: defaultColorWay.stdGogglesId,
+            quantity: item.quantity,
+            workflow: {
+              status: 'orderCreated',
+              workflow: ['inventoryAdjusted']
+            }
+          });
+        items.push(
+          {
+            _id: Random.id(),
+            shopId: ReactionCore.getShopId(),
+            productId: defaultColorWay.glovesId,
+            quantity: item.quantity,
+            workflow: {
+              status: 'orderCreated',
+              workflow: ['inventoryAdjusted']
+            }
+          });
+
+        if (defaultColorWay.midlayerId) {
+          items.push(
+            {
+              _id: Random.id(),
+              shopId: ReactionCore.getShopId(),
+              productId: defaultColorWay.midlayerId,
+              quantity: item.quantity,
+              workflow: {
+                status: 'orderCreated',
+                workflow: ['inventoryAdjusted']
+              }
+            });
+        }
+        return;
+      }
       let color = _.findWhere(item.properties, {name: 'Color'});
 
       if (color) {
@@ -290,7 +365,7 @@ function setupOrderItems(lineItems, orderNumber) {
       let sizeObj = _.find(item.properties, function (prop) {
         return prop.name.indexOf('Size') > 1;
       });
-      if (sizeObj) {
+      if (sizeObj && !sizeObj === 'unselected') {
         size = sizeObj.value;
       }
       let product = Products.findOne({shopifyId: item.product_id + ''});
@@ -298,10 +373,20 @@ function setupOrderItems(lineItems, orderNumber) {
       if (product) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
+      let newItem;
       if (!variant) {
-        missingItem = true;
+        newItem = {
+          _id: Random.id(),
+          shopId: ReactionCore.getShopId(),
+          productId: product._id,
+          quantity: item.quantity,
+          workflow: {
+            status: 'orderCreated',
+            workflow: ['inventoryAdjusted']
+          }
+        };
       } else {
-        let newItem = {
+        newItem = {
           _id: Random.id(),
           shopId: ReactionCore.getShopId(),
           productId: product._id,
@@ -356,7 +441,7 @@ function setupAdvancedFulfillmentItems(items) {
         productId: item.productId,
         shopId: item.shopId,
         quantity: item.quantity,
-        itemDescription: product.vendor + ' - ' + product.title,
+        itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
         workflow: {
           status: 'In Stock',
           workflow: []
