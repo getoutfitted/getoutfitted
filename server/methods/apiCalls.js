@@ -158,6 +158,9 @@ function generateShippingAddress(order) {
 }
 
 function generateBillingAddress(order) {
+  if (!order.billing_address) {
+    order.billing_address = order.shipping_address;
+  }
   return [{address: {
     country: order.billing_address.country_code,
     fullName: order.billing_address.name,
@@ -177,6 +180,7 @@ function returnChecker(date) {
   return date;
 }
 
+// TODO: Figure out why QTY is always equal to one.
 function createOrderItem(productId, variantObj, qty = 1) {
   return {
     _id: Random.id(),
@@ -221,11 +225,11 @@ function getShippingBuffers() {
   return {shipping: 0, returning: 0};
 }
 
-function getBundleVariant(productId, color, size) {
+function getBundleVariant(productId, color, size, qty) {
   let product = ReactionCore.Collections.Products.findOne(productId);
   if (product && size && color) {
     let variant = _.findWhere(product.variants, {size: size, color: color});
-    return createOrderItem(productId, variant);
+    return createOrderItem(productId, variant, qty); // This is where QTY gets screwed up.
   }
   return false;
 }
@@ -240,6 +244,43 @@ function setupOrderItems(lineItems, orderNumber) {
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
       let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
+      if (item.properties.length === 0) {
+        ReactionCore.Log.error('CS created order ' + orderNumber);
+        let defaultColor = _.keys(bundle.colorWays)[0];
+        let defaultColorWay = bundle.colorWays[defaultColor];
+        let productTypes = [
+          'jacketId',
+          'pantsId',
+          'glovesId',
+          'stdGogglesId'
+        ];
+        _.each(productTypes, function (productType){
+          items.push({
+            _id: Random.id(),
+            shopId: ReactionCore.getShopId(),
+            productId: defaultColorWay[productType],
+            quantity: item.quantity,
+            workflow: {
+              status: 'orderCreated',
+              workflow: ['inventoryAdjusted']
+            }
+          });
+        });
+        if (defaultColorWay.midlayerId) {
+          items.push(
+            {
+              _id: Random.id(),
+              shopId: ReactionCore.getShopId(),
+              productId: defaultColorWay.midlayerId,
+              quantity: item.quantity,
+              workflow: {
+                status: 'orderCreated',
+                workflow: ['inventoryAdjusted']
+              }
+            });
+        }
+        return;
+      }
       let color = _.findWhere(item.properties, {name: 'Color'});
 
       if (color) {
@@ -249,9 +290,6 @@ function setupOrderItems(lineItems, orderNumber) {
         bundleMissingColor = true;
         let colorOptions = _.keys(bundle.colorWays);
         color = keyify(colorOptions[0]);
-        // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
-        // If the order doesn't have a color, it's broken.
-        // TODO: Flag this item in this order for CSR team and continue.
       }
 
       let style = bundle.colorWays[color]; // call the bundle + colorway a style;
@@ -261,9 +299,14 @@ function setupOrderItems(lineItems, orderNumber) {
         pants: _.findWhere(item.properties, {name: 'Pants Size'}).value.trim(),
         gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value.trim()
       };
-      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value.trim();
+      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'});
+      if (goggleChoice) {
+        goggleChoice = goggleChoice.value.trim();
+      } else {
+        goggleChoice = 'Standard';
+      }
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
-      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size');
+      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size', item.quantity);
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
       if (goggleVariantItem) {
         items.push(goggleVariantItem);
@@ -273,7 +316,7 @@ function setupOrderItems(lineItems, orderNumber) {
 
       let productTypes = ['jacket', 'pants', 'midlayer', 'gloves'];
       _.each(productTypes, function (productType) {
-        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType]);
+        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType], item.quantity);
         if (variantItem) {
           items.push(variantItem);
         } else {
@@ -290,7 +333,7 @@ function setupOrderItems(lineItems, orderNumber) {
       let sizeObj = _.find(item.properties, function (prop) {
         return prop.name.indexOf('Size') > 1;
       });
-      if (sizeObj) {
+      if (sizeObj && !sizeObj === 'unselected') {
         size = sizeObj.value;
       }
       let product = Products.findOne({shopifyId: item.product_id + ''});
@@ -298,10 +341,20 @@ function setupOrderItems(lineItems, orderNumber) {
       if (product) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
+      let newItem;
       if (!variant) {
-        missingItem = true;
+        newItem = {
+          _id: Random.id(),
+          shopId: ReactionCore.getShopId(),
+          productId: product._id,
+          quantity: item.quantity,
+          workflow: {
+            status: 'orderCreated',
+            workflow: ['inventoryAdjusted']
+          }
+        };
       } else {
-        let newItem = {
+        newItem = {
           _id: Random.id(),
           shopId: ReactionCore.getShopId(),
           productId: product._id,
@@ -312,8 +365,8 @@ function setupOrderItems(lineItems, orderNumber) {
             workflow: ['inventoryAdjusted']
           }
         };
-        items.push(newItem);
       }
+    items.push(newItem);
     }
   });
   return {
@@ -356,7 +409,7 @@ function setupAdvancedFulfillmentItems(items) {
         productId: item.productId,
         shopId: item.shopId,
         quantity: item.quantity,
-        itemDescription: product.vendor + ' - ' + product.title,
+        itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
         workflow: {
           status: 'In Stock',
           workflow: []
