@@ -289,9 +289,6 @@ function setupOrderItems(lineItems, orderNumber) {
         bundleMissingColor = true;
         let colorOptions = _.keys(bundle.colorWays);
         color = keyify(colorOptions[0]);
-        // XXX: This skips all remaining items in the order, just a hack to get all orders to process, not a solution.
-        // If the order doesn't have a color, it's broken.
-        // TODO: Flag this item in this order for CSR team and continue.
       }
 
       let style = bundle.colorWays[color]; // call the bundle + colorway a style;
@@ -301,7 +298,12 @@ function setupOrderItems(lineItems, orderNumber) {
         pants: _.findWhere(item.properties, {name: 'Pants Size'}).value.trim(),
         gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value.trim()
       };
-      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value.trim();
+      let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'});
+      if (goggleChoice) {
+        goggleChoice = goggleChoice.value.trim();
+      } else {
+        goggleChoice = 'Standard';
+      }
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
       let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size');
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
