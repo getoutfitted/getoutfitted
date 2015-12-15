@@ -177,6 +177,7 @@ function returnChecker(date) {
   return date;
 }
 
+// TODO: Figure out why QTY is always equal to one.
 function createOrderItem(productId, variantObj, qty = 1) {
   return {
     _id: Random.id(),
@@ -221,11 +222,11 @@ function getShippingBuffers() {
   return {shipping: 0, returning: 0};
 }
 
-function getBundleVariant(productId, color, size) {
+function getBundleVariant(productId, color, size, qty) {
   let product = ReactionCore.Collections.Products.findOne(productId);
   if (product && size && color) {
     let variant = _.findWhere(product.variants, {size: size, color: color});
-    return createOrderItem(productId, variant);
+    return createOrderItem(productId, variant, qty); // This is where QTY gets screwed up.
   }
   return false;
 }
@@ -263,7 +264,7 @@ function setupOrderItems(lineItems, orderNumber) {
       };
       let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'}).value.trim();
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
-      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size');
+      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size', item.quantity);
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
       if (goggleVariantItem) {
         items.push(goggleVariantItem);
@@ -273,7 +274,7 @@ function setupOrderItems(lineItems, orderNumber) {
 
       let productTypes = ['jacket', 'pants', 'midlayer', 'gloves'];
       _.each(productTypes, function (productType) {
-        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType]);
+        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType], item.quantity);
         if (variantItem) {
           items.push(variantItem);
         } else {
@@ -312,6 +313,8 @@ function setupOrderItems(lineItems, orderNumber) {
             workflow: ['inventoryAdjusted']
           }
         };
+        // ReactionCore.Log.info('Item', item);
+        // ReactionCore.Log.info('New Item', newItem);
         items.push(newItem);
       }
     }
