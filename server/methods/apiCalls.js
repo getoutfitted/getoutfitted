@@ -365,10 +365,8 @@ function setupOrderItems(lineItems, orderNumber) {
             workflow: ['inventoryAdjusted']
           }
         };
-        // ReactionCore.Log.info('Item', item);
-        // ReactionCore.Log.info('New Item', newItem);
-        items.push(newItem);
       }
+    items.push(newItem);
     }
   });
   return {
