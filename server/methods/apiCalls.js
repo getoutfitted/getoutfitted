@@ -158,6 +158,9 @@ function generateShippingAddress(order) {
 }
 
 function generateBillingAddress(order) {
+  if (!order.billing_address) {
+    order.billing_address = order.shipping_address;
+  }
   return [{address: {
     country: order.billing_address.country_code,
     fullName: order.billing_address.name,
@@ -244,62 +247,24 @@ function setupOrderItems(lineItems, orderNumber) {
         ReactionCore.Log.error('CS created order ' + orderNumber);
         let defaultColor = _.keys(bundle.colorWays)[0];
         let defaultColorWay = bundle.colorWays[defaultColor];
-        items.push(
-          {
+        let productTypes = [
+          'jacketId',
+          'pantsId',
+          'glovesId',
+          'stdGogglesId'
+        ];
+        _.each(productTypes, function (productType){
+          items.push({
             _id: Random.id(),
             shopId: ReactionCore.getShopId(),
-            productId: defaultColorWay.jacketId,
+            productId: defaultColorWay[productType],
             quantity: item.quantity,
             workflow: {
               status: 'orderCreated',
               workflow: ['inventoryAdjusted']
             }
           });
-        items.push(
-          {
-            _id: Random.id(),
-            shopId: ReactionCore.getShopId(),
-            productId: defaultColorWay.pantsId,
-            quantity: item.quantity,
-            workflow: {
-              status: 'orderCreated',
-              workflow: ['inventoryAdjusted']
-            }
-          });
-        items.push(
-          {
-            _id: Random.id(),
-            shopId: ReactionCore.getShopId(),
-            productId: defaultColorWay.pantsId,
-            quantity: item.quantity,
-            workflow: {
-              status: 'orderCreated',
-              workflow: ['inventoryAdjusted']
-            }
-          });
-        items.push(
-          {
-            _id: Random.id(),
-            shopId: ReactionCore.getShopId(),
-            productId: defaultColorWay.stdGogglesId,
-            quantity: item.quantity,
-            workflow: {
-              status: 'orderCreated',
-              workflow: ['inventoryAdjusted']
-            }
-          });
-        items.push(
-          {
-            _id: Random.id(),
-            shopId: ReactionCore.getShopId(),
-            productId: defaultColorWay.glovesId,
-            quantity: item.quantity,
-            workflow: {
-              status: 'orderCreated',
-              workflow: ['inventoryAdjusted']
-            }
-          });
-
+        });
         if (defaultColorWay.midlayerId) {
           items.push(
             {
