@@ -8,11 +8,11 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
     // return moment(date).format('2015-11-19') + ' 00:00';
 
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -366,7 +366,7 @@ function setupOrderItems(lineItems, orderNumber) {
           }
         };
       }
-    items.push(newItem);
+      items.push(newItem);
     }
   });
   return {
@@ -422,6 +422,20 @@ function setupAdvancedFulfillmentItems(items) {
   return {afItems: [], itemMissingDetails: itemMissingDetails};
 }
 
+function determineLocalDelivery(order) {
+  let zip = order.shipping_address.zip;
+  let localZips = [
+    '80424',
+    '80435',
+    '80443',
+    '80497',
+    '80498',
+    '81657',
+    '81620',
+    '81657'
+  ];
+  return _.contains(localZips, zip);
+}
 
 function createReactionOrder(order) {
   check(order, Object);
@@ -452,6 +466,7 @@ function createReactionOrder(order) {
     startTime: rental.start,
     endTime: rental.end,
     orderNotes: order.note,
+    localDelivery: determineLocalDelivery(order),
     infoMissing: false,                   // Missing info flag (dates, etc)
     itemMissingDetails: false,            // Missing item information flag (color, size, etc)
     bundleMissingColor: orderItems.bundleMissingColor,
