@@ -214,8 +214,8 @@ function setupRentalFromOrderNotes(notes) {
     rental.end = new Date(endDateObj.value);
     if (moment(rental.start).add(timezoneOffset, 'hours').hour() === 0
         && moment(rental.end).add(timezoneOffset, 'hours').hour() === 0) {
-      rental.start = moment(rental.start).add(timezoneOffset, 'hours').toDate();
-      rental.end = moment(rental.end).add(timezoneOffset, 'hours').toDate();
+      rental.start = moment(rental.start).add(7, 'hours').toDate();
+      rental.end = moment(rental.end).add(7, 'hours').toDate();
       ReactionCore.Log.info('Timezone updated during new order hook');
     }
     // TODO: Make sure that this diff is identical to the number of rental days always.
