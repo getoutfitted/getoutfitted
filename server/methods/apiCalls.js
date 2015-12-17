@@ -9,7 +9,7 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    return moment(date).format('2015-11-19') + ' 00:00';
+    return moment(date).format('2015-12-10') + ' 00:00';
 
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
@@ -456,6 +456,19 @@ function determineTransitTime(order, fedexTransitTime, buffersShipping) {
   return buffersShipping;
 }
 
+function rushDelivery(reactionOrder) {
+  let localDelivery = reactionOrder.advancedFulfillment.localDelivery;
+  let todaysDate = new Date();
+  let arriveByDate = reactionOrder.advancedFulfillment.arriveBy;
+  let transitTime = reactionOrder.advancedFulfillment.transitTime;
+  let shipDate = moment(todaysDate).add(transitTime, 'days');
+  if (!localDelivery) {
+    let daysBetween = moment(shipDate).diff(arriveByDate);
+    return daysBetween > 0;
+  }
+  return false;
+}
+
 function createReactionOrder(order) {
   check(order, Object);
 
@@ -514,6 +527,7 @@ function createReactionOrder(order) {
     reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate(), determineLocalDelivery(order));
     reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate(), determineLocalDelivery(order));
   }
+  reactionOrder.advancedFulfillment.rushDelivery = rushDelivery(reactionOrder);
 
   ReactionCore.Log.info('Importing Shopify Order #'
     + order.order_number
