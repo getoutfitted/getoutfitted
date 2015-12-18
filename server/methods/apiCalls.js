@@ -39,6 +39,15 @@ function returnChecker(date, isLocalDelivery) {
   return date;
 }
 
+function rushShipmentChecker(date) {
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).add(a, 'days').toDate();
+  } else if (moment(date).isoWeekday() === 6) {
+    return moment(date).add(2, 'days').toDate();
+  }
+  return date;
+}
+
 function getFedexTransitTime(address) {
   const shopifyOrders = ReactionCore.Collections.Packages.findOne({
     name: 'reaction-shopify-orders'
@@ -469,6 +478,13 @@ function rushDelivery(reactionOrder) {
   return false;
 }
 
+function realisticShippingChecker(reactionOrder) {
+  let arriveBy = reactionOrder.advancedFulfillment.arriveBy;
+  let shipDate = reactionOrder.advancedFulfillment.shipmentDate;
+  let possible = moment(arriveBy).diff(shipDate, 'days');
+  return possible < 0;
+}
+
 function createReactionOrder(order) {
   check(order, Object);
 
@@ -507,7 +523,7 @@ function createReactionOrder(order) {
       returnDate: new Date(2100, 8, 20),  // Initialize return date to 85 years from now
       localDelivery: determineLocalDelivery(order),
       arriveBy: shipmentChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
-      shipReturnBy: returnChecker(moment(rental.start).add(1, 'days').toDate(), determineLocalDelivery(order)),
+      shipReturnBy: returnChecker(moment(rental.end).add(1, 'days').toDate(), determineLocalDelivery(order)),
       transitTime: determineTransitTime(order, fedexTransitTime, buffers.shipping),
       workflow: {
         status: 'orderCreated'
@@ -519,7 +535,9 @@ function createReactionOrder(order) {
   let afDetails = setupAdvancedFulfillmentItems(reactionOrder.items);
   reactionOrder.advancedFulfillment.items = afDetails.afItems;
   reactionOrder.itemMissingDetails = afDetails.itemMissingDetails;
-
+  if (reactionOrder.advancedFulfillment.localDelivery) {
+    buffers.shipping = 1;
+  }
   if (!rental) {
     ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
     reactionOrder.infoMissing = true; // Flag order
@@ -528,7 +546,10 @@ function createReactionOrder(order) {
     reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate(), determineLocalDelivery(order));
   }
   reactionOrder.advancedFulfillment.rushDelivery = rushDelivery(reactionOrder);
-
+  if (reactionOrder.advancedFulfillment.rushDelivery && !reactionOrder.advancedFulfillment.localDelivery) {
+    reactionOrder.advancedFulfillment.shipmentDate = rushShipmentChecker(new Date());
+  }
+  reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
   ReactionCore.Log.info('Importing Shopify Order #'
     + order.order_number
     + ' - Rental Dates '
