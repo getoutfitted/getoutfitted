@@ -1,32 +1,33 @@
-// TODO: move this out of the global space
-const shopifyOrders = ReactionCore.Collections.Packages.findOne({
-  name: 'reaction-shopify-orders'
-});
-let sharedSecret;
-if (shopifyOrders && shopifyOrders.settings) {
-  sharedSecret = shopifyOrders.settings.shopify.sharedSecret;
-}
+function verifyPreSharedKey(key, service) {
+  const shopifyOrders = ReactionCore.Collections.Packages.findOne({
+    name: 'reaction-shopify-orders'
+  });
 
-Router.onBeforeAction(Iron.Router.bodyParser.json({verify: Meteor.bindEnvironment(function (req, res, buf) {
-  req.headers['x-generated-signature'] = crypto.createHmac('sha256', sharedSecret).update(buf).digest('base64');
-})}), {only: ['webhooks.orders.new', 'webhooks.fulfillments.new']});
+  if (shopifyOrders && shopifyOrders.settings) {
+    return key === shopifyOrders.settings[service].preSharedKey;
+  }
+
+  ReactionCore.Log.error('Error verifying preSharedKey because reaction-shopify-orders package or settigns not found ');
+  return false;
+}
 
 Router.route('/webhooks/fulfillments/new', {
   where: 'server',
   name: 'webhooks.fulfillments.new',
   action: function () {
-    const attachedSignature = this.request.headers['x-shopify-hmac-sha256'];
-    const generatedSignature = this.request.headers['x-generated-signature'];
-    const shopifyOrdersPackage = ReactionCore.Collections.Packages.findOne({
-      name: 'reaction-shopify-orders'
-    });
-    const shopname = shopifyOrdersPackage.settings.shopify.shopname;
-    const key = shopifyOrdersPackage.settings.shopify.key;
-    const password = shopifyOrdersPackage.settings.shopify.password;
+    let keyMatches = verifyPreSharedKey(this.request.query.key, 'shopify');
 
-    if (attachedSignature === generatedSignature) {
+    if (keyMatches) {
       this.response.statusCode = 200;
       this.response.end('Success');
+
+      const shopifyOrdersPackage = ReactionCore.Collections.Packages.findOne({
+        name: 'reaction-shopify-orders'
+      });
+      const shopname = shopifyOrdersPackage.settings.shopify.shopname;
+      const key = shopifyOrdersPackage.settings.shopify.key;
+      const password = shopifyOrdersPackage.settings.shopify.password;
+
       let shopifyOrderNumber;
       // Get shopify order number from shopify API
       try {
@@ -35,6 +36,7 @@ Router.route('/webhooks/fulfillments/new', {
         }).data.order.order_number;
       } catch (e) {
         ReactionCore.Log.error('Error in webhooks.fulfillments.new determining shopifyOrderNumber ' + e);
+        // TODO: Add failed imports to queue to retry order import
         return false;
       }
       Meteor.call('shopifyOrders/newFulfillment', this.request.body, shopifyOrderNumber);
@@ -56,10 +58,9 @@ Router.route('/webhooks/orders/new', {
   where: 'server',
   name: 'webhooks.orders.new',
   action: function () {
-    const attachedSignature = this.request.headers['x-shopify-hmac-sha256'];
-    const generatedSignature = this.request.headers['x-generated-signature'];
+    let keyMatches = verifyPreSharedKey(this.request.query.key, 'shopify');
 
-    if (attachedSignature === generatedSignature) {
+    if (keyMatches) {
       this.response.statusCode = 200;
       this.response.end('Success');
       Meteor.call('shopifyOrders/newOrder', this.request.body);
@@ -68,11 +69,33 @@ Router.route('/webhooks/orders/new', {
     } else {
       this.response.statusCode = 403;
       this.response.end('Forbidden');
-      ReactionCore.Log.info('Shopify New Orders Webhook failed - invalid signature: ',
+      ReactionCore.Log.error('Shopify New Orders Webhook failed - invalid preSharedKey: ',
         this.request.headers['x-forwarded-for'],
         this.request.headers['x-forwarded-host'],
-        this.request.headers['x-shopify-hmac-sha256'],
-        this.request.headers['x-generated-signature']);
+        this.request.query.key);
+    }
+  }
+});
+
+Router.route('/webhooks/aftership/post', {
+  where: 'server',
+  name: 'webhooks.aftership.post',
+  action: function () {
+    let keyMatches = verifyPreSharedKey(this.request.query.key, 'aftership');
+
+    if (keyMatches) {
+      this.response.statusCode = 200;
+      this.response.end('Success');
+      // Meteor.call('aftership/processHook', this.request.body);
+      ReactionCore.Log.info('Aftership Post Webhook successfully processed ' + this.request.body.msg.tag + ' for Order: #', this.request.body.msg.order_id);
+      // TODO: add notification for CSR and Ops
+    } else {
+      this.response.statusCode = 403;
+      this.response.end('Forbidden');
+      ReactionCore.Log.error('Aftership Post Webhook Webhook failed - invalid preSharedKey: ',
+        this.request.headers['x-forwarded-for'],
+        this.request.headers['x-forwarded-host'],
+        this.request.query.key);
     }
   }
 });

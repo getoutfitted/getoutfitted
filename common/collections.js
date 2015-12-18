@@ -22,6 +22,11 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
       label: 'Shopify Name ',
       optional: true
     },
+    'settings.shopify.preSharedKey': {
+      type: String,
+      label: 'Pre Shared Key - self-generated for authenticating webhooks',
+      optional: true
+    },
     'settings.fedex.key': {
       type: String,
       label: 'Fedex API key',
@@ -47,6 +52,11 @@ ReactionCore.Schemas.ShopifyOrdersPackageConfig = new SimpleSchema([
       label: 'Use Live API? (uncheck for testing)',
       optional: true,
       defaultValue: false
+    },
+    'settings.aftership.preSharedKey': {
+      type: String,
+      label: 'Pre Shared Key for authenticating webhooks',
+      optional: true
     },
     'settings.public.lastUpdated': {
       type: Date,
