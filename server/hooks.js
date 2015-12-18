@@ -76,3 +76,26 @@ Router.route('/webhooks/orders/new', {
     }
   }
 });
+
+Router.route('/webhooks/aftership/post', {
+  where: 'server',
+  name: 'webhooks.aftership.post',
+  action: function () {
+    let keyMatches = verifyPreSharedKey(this.request.query.key, 'aftership');
+
+    if (keyMatches) {
+      this.response.statusCode = 200;
+      this.response.end('Success');
+      // Meteor.call('aftership/processHook', this.request.body);
+      ReactionCore.Log.info('Aftership Post Webhook successfully processed ' + this.request.body.msg.tag + ' for Order: #', this.request.body.msg.order_id);
+      // TODO: add notification for CSR and Ops
+    } else {
+      this.response.statusCode = 403;
+      this.response.end('Forbidden');
+      ReactionCore.Log.error('Aftership Post Webhook Webhook failed - invalid preSharedKey: ',
+        this.request.headers['x-forwarded-for'],
+        this.request.headers['x-forwarded-host'],
+        this.request.query.key);
+    }
+  }
+});
