@@ -197,6 +197,8 @@ function createOrderItem(productId, variantObj, qty = 1) {
 
 function setupRentalFromOrderNotes(notes) {
   let rental = {};
+  let d = new Date();
+  let timezoneOffset = d.getTimezoneOffset() / 60;
   // startDateObj and endDateObj return an object such as {name: 'first_ski_day', value: '2015-12-30' }
   let startDateObj = _.find(notes, function (note) {
     return ['first_ski_day', 'first_camping_day', 'first_activity_day'].indexOf(note.name) > -1;
@@ -210,6 +212,12 @@ function setupRentalFromOrderNotes(notes) {
     // If we have both a start and end date, create js Date objects.
     rental.start = new Date(startDateObj.value);
     rental.end = new Date(endDateObj.value);
+    if (moment(rental.start).add(timezoneOffset, 'hours').hour() === 0
+        && moment(rental.end).add(timezoneOffset, 'hours').hour() === 0) {
+      rental.start = moment(rental.start).add(7, 'hours').toDate();
+      rental.end = moment(rental.end).add(7, 'hours').toDate();
+      ReactionCore.Log.info('Timezone updated during new order hook');
+    }
     // TODO: Make sure that this diff is identical to the number of rental days always.
     rental.tripLength = moment(rental.start).diff(moment(rental.end), 'days');
     return rental;
