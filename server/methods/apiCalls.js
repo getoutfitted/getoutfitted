@@ -10,18 +10,39 @@ function formatDateForApi(date) {
   if (shopifyOrders.lastUpdated) {
     return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
     // return moment(date).format('2015-11-19') + ' 00:00';
-
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
 
-function shipmentChecker(date) {
+function shipmentChecker(date, isLocalDelivery) {
+  if (isLocalDelivery) {
+    return date;
+  }
   if (moment(date).isoWeekday() === 7) {
     return moment(date).subtract(2, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
     return moment(date).subtract(1, 'days').toDate();
+  }
+  return date;
+}
+
+function returnChecker(date, isLocalDelivery) {
+  if (isLocalDelivery) {
+    return date;
+  }
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).add(1, 'days').toDate();
+  }
+  return date;
+}
+
+function rushShipmentChecker(date) {
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).add(a, 'days').toDate();
+  } else if (moment(date).isoWeekday() === 6) {
+    return moment(date).add(2, 'days').toDate();
   }
   return date;
 }
@@ -145,6 +166,9 @@ function getFedexTransitTime(address) {
 }
 
 function generateShippingAddress(order) {
+  if (!order.shipping_address) {
+    order.shipping_address = order.billing_address;
+  }
   return [ {address: {
     country: order.shipping_address.country_code,
     fullName: order.shipping_address.name,
@@ -171,13 +195,6 @@ function generateBillingAddress(order) {
     city: order.billing_address.city,
     phone: order.billing_address.phone
   }}];
-}
-
-function returnChecker(date) {
-  if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(1, 'days').toDate();
-  }
-  return date;
 }
 
 // TODO: Figure out why QTY is always equal to one.
@@ -445,6 +462,36 @@ function determineLocalDelivery(order) {
   return _.contains(localZips, zip);
 }
 
+function determineTransitTime(order, fedexTransitTime, buffersShipping) {
+  if (determineLocalDelivery(order)) {
+    return 0;
+  }
+  if (typeof fedexTransitTime === Number) {
+    return fedexTransitTime;
+  }
+  return buffersShipping;
+}
+
+function rushDelivery(reactionOrder) {
+  let localDelivery = reactionOrder.advancedFulfillment.localDelivery;
+  let todaysDate = new Date();
+  let arriveByDate = reactionOrder.advancedFulfillment.arriveBy;
+  let transitTime = reactionOrder.advancedFulfillment.transitTime;
+  let shipDate = moment(todaysDate).add(transitTime, 'days');
+  if (!localDelivery) {
+    let daysBetween = moment(shipDate).diff(arriveByDate);
+    return daysBetween > 0;
+  }
+  return false;
+}
+
+function realisticShippingChecker(reactionOrder) {
+  let arriveBy = reactionOrder.advancedFulfillment.arriveBy;
+  let shipDate = reactionOrder.advancedFulfillment.shipmentDate;
+  let possible = moment(arriveBy).diff(shipDate, 'days');
+  return possible < 0;
+}
+
 function createReactionOrder(order) {
   check(order, Object);
 
@@ -474,7 +521,6 @@ function createReactionOrder(order) {
     startTime: rental.start,
     endTime: rental.end,
     orderNotes: order.note,
-    localDelivery: determineLocalDelivery(order),
     infoMissing: false,                   // Missing info flag (dates, etc)
     itemMissingDetails: false,            // Missing item information flag (color, size, etc)
     bundleMissingColor: orderItems.bundleMissingColor,
@@ -482,6 +528,10 @@ function createReactionOrder(order) {
     advancedFulfillment: {
       shipmentDate: new Date(),           // Initialize shipmentDate to today
       returnDate: new Date(2100, 8, 20),  // Initialize return date to 85 years from now
+      localDelivery: determineLocalDelivery(order),
+      arriveBy: shipmentChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
+      shipReturnBy: returnChecker(moment(rental.end).add(1, 'days').toDate(), determineLocalDelivery(order)),
+      transitTime: determineTransitTime(order, fedexTransitTime, buffers.shipping),
       workflow: {
         status: 'orderCreated'
       }
@@ -492,15 +542,21 @@ function createReactionOrder(order) {
   let afDetails = setupAdvancedFulfillmentItems(reactionOrder.items);
   reactionOrder.advancedFulfillment.items = afDetails.afItems;
   reactionOrder.itemMissingDetails = afDetails.itemMissingDetails;
-
+  if (reactionOrder.advancedFulfillment.localDelivery) {
+    buffers.shipping = 1;
+  }
   if (!rental) {
     ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
     reactionOrder.infoMissing = true; // Flag order
   } else {
-    reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate());
-    reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate());
+    reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate(), determineLocalDelivery(order));
+    reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate(), determineLocalDelivery(order));
   }
-
+  reactionOrder.advancedFulfillment.rushDelivery = rushDelivery(reactionOrder);
+  if (reactionOrder.advancedFulfillment.rushDelivery && !reactionOrder.advancedFulfillment.localDelivery) {
+    reactionOrder.advancedFulfillment.shipmentDate = rushShipmentChecker(new Date());
+  }
+  reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
   ReactionCore.Log.info('Importing Shopify Order #'
     + order.order_number
     + ' - Rental Dates '
