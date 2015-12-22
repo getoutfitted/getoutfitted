@@ -8,8 +8,8 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    // return moment(date).format('2015-11-19') + ' 00:00';
+    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    return moment(date).format('2015-11-26') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
@@ -265,6 +265,16 @@ function setupOrderItems(lineItems, orderNumber) {
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
   let bundleMissingColor = false;
+  let damageCoverage = {
+    packages: {
+      qty: 0,
+      subtotal: 0
+    },
+    products: {
+      qty: 0,
+      subtotal: 0
+    }
+  };
   _.each(lineItems, function (item) {
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
@@ -392,11 +402,24 @@ function setupOrderItems(lineItems, orderNumber) {
         };
       }
       items.push(newItem);
+    } else if (item.title === 'Damage Coverage' || item.title === 'Damage Coverage for Packages') {
+      let qty = item.quantity;
+      let price = parseInt(item.price);
+
+      if (item.title === 'Damage Coverage for Packages') {
+        damageCoverage.packages.qty += qty;
+        damageCoverage.packages.subtotal += price;
+      }
+      if (item.title === 'Damage Coverage') {
+        damageCoverage.products.qty += qty;
+        damageCoverage.products.subtotal += price;
+      }
     }
   });
   return {
     items: items,
-    bundleMissingColor: bundleMissingColor
+    bundleMissingColor: bundleMissingColor,
+    damageCoverage: damageCoverage
   };
 }
 
@@ -532,6 +555,7 @@ function createReactionOrder(order) {
       arriveBy: shipmentChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
       shipReturnBy: returnChecker(moment(rental.end).add(1, 'days').toDate(), determineLocalDelivery(order)),
       transitTime: determineTransitTime(order, fedexTransitTime, buffers.shipping),
+      damageCoverage: orderItems.damageCoverage,
       workflow: {
         status: 'orderCreated'
       }
