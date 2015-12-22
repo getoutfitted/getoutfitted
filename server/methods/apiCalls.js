@@ -276,6 +276,8 @@ function setupOrderItems(lineItems, orderNumber) {
     }
   };
   _.each(lineItems, function (item) {
+    // Setting the ski Vendors that mark if they ski packages
+    let skiVendors = ['Black Tie', 'Ski Butlers'];
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
       let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
@@ -404,7 +406,7 @@ function setupOrderItems(lineItems, orderNumber) {
       items.push(newItem);
     } else if (item.title === 'Damage Coverage' || item.title === 'Damage Coverage for Packages') {
       let qty = item.quantity;
-      let price = parseInt(item.price);
+      let price = parseInt(item.price, 10);
 
       if (item.title === 'Damage Coverage for Packages') {
         damageCoverage.packages.qty += qty;
