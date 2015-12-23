@@ -9,7 +9,7 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    return moment(date).format('2015-11-26') + ' 00:00';
+    return moment(date).format('2015-12-10') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
@@ -264,6 +264,7 @@ function setupOrderItems(lineItems, orderNumber) {
   const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
+  let skiPackages = [];
   let bundleMissingColor = false;
   let damageCoverage = {
     packages: {
@@ -416,12 +417,47 @@ function setupOrderItems(lineItems, orderNumber) {
         damageCoverage.products.qty += qty;
         damageCoverage.products.subtotal += price;
       }
+    } else if (_.contains(skiVendors, item.vendor)) {
+      let variant = item.variant_title;
+      let variantSplit = variant.split(' ');
+      let helmet = _.contains(variantSplit, 'With');
+      let skiPackage = {
+        vendor: item.vendor,
+        packageName: item.name,
+        variantTitle: item.variant_title,
+        helmet: helmet,
+        rentalLength: parseInt(variantSplit[0], 10),
+        qty: item.quantity,
+        price: parseFloat(item.price, 10),
+        packageType: item.title.split(' |')[0]
+      };
+      let properties = item.properties;
+      let customer = _.findWhere(properties, {name: 'For'});
+      if (customer) {
+        skiPackage.customerName = customer.value;
+      }
+      let gender = _.findWhere(properties, {name: 'Gender'});
+      if (gender) {
+        skiPackage.gender = gender.value;
+      }
+      let heightInFeet = _.findWhere(properties, {name: 'Height Feet'});
+      let heightInInches = _.findWhere(properties, {name: 'Height Inches'});
+      if (heightInFeet && heightInInches) {
+        skiPackage.height = heightInFeet.value + ' ft ' + heightInInches.value + ' in';
+      }
+      let weight = _.findWhere(properties, {name: 'Weight'});
+      let weightUnits = _.findWhere(properties, {name: 'Weight Units'});
+      if (weight && weightUnits) {
+        skiPackage.weight = weight.value + ' ' + weightUnits.value;
+      }
+      skiPackages.push(skiPackage);
     }
   });
   return {
     items: items,
     bundleMissingColor: bundleMissingColor,
-    damageCoverage: damageCoverage
+    damageCoverage: damageCoverage,
+    skiPackages: skiPackages
   };
 }
 
@@ -454,12 +490,16 @@ function setupAdvancedFulfillmentItems(items) {
         };
       }
       itemMissingDetails = true;
+      let description = 'Product Not Found';
+      if (product) {
+        description = product.gender + ' - ' + product.vendor + ' - ' + product.title;
+      }
       return {
         _id: item._id,
         productId: item.productId,
         shopId: item.shopId,
         quantity: item.quantity,
-        itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
+        itemDescription: description,
         workflow: {
           status: 'In Stock',
           workflow: []
@@ -558,6 +598,8 @@ function createReactionOrder(order) {
       shipReturnBy: returnChecker(moment(rental.end).add(1, 'days').toDate(), determineLocalDelivery(order)),
       transitTime: determineTransitTime(order, fedexTransitTime, buffers.shipping),
       damageCoverage: orderItems.damageCoverage,
+      skiPackages: orderItems.skiPackages,
+      skiPackagesPurchased: orderItems.skiPackages.length > 0,
       workflow: {
         status: 'orderCreated'
       }
