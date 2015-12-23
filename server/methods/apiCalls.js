@@ -422,6 +422,7 @@ function setupOrderItems(lineItems, orderNumber) {
       let variantSplit = variant.split(' ');
       let helmet = _.contains(variantSplit, 'With');
       let skiPackage = {
+        _id: Random.id(),
         vendor: item.vendor,
         packageName: item.name,
         variantTitle: item.variant_title,
