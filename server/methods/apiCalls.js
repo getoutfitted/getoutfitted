@@ -8,10 +8,10 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    return moment(date).format('2015-12-10') + ' 00:00';
+    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    // return moment(date).format('2015-12-10') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    //return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -264,6 +264,7 @@ function setupOrderItems(lineItems, orderNumber) {
   const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
+  let otherItems = [];
   let skiPackages = [];
   let kayaksRented = 0;
   let bundleMissingColor = false;
@@ -464,6 +465,18 @@ function setupOrderItems(lineItems, orderNumber) {
       let price = parseInt(item.price, 10);
       rushShipping.qty += qty;
       rushShipping.subtotal += price;
+    } else {
+      if (!item.vendor) {
+        item.vendor = 'GetOutfitted';
+      }
+      let other = {
+        product: item.title,
+        price: parseFloat(item.price, 10),
+        qty: parseInt(item.quantity, 10),
+        vendor: item.vendor,
+        variantTitle: item.variant_title
+      };
+      otherItems.push(other);
     }
   });
   return {
@@ -472,8 +485,8 @@ function setupOrderItems(lineItems, orderNumber) {
     damageCoverage: damageCoverage,
     skiPackages: skiPackages,
     kayaksRented: kayaksRented,
-    rushShipping: rushShipping
-
+    rushShipping: rushShipping,
+    other: otherItems
   };
 }
 
@@ -650,6 +663,9 @@ function createReactionOrder(order) {
 
   if (orderItems.rushShipping.qty > 0) {
     reactionOrder.advancedFulfillment.rushShippingPaid = orderItems.rushShipping;
+  }
+  if (orderItems.other.length > 0) {
+    reactionOrder.advancedFulfillment.other = orderItems.other;
   }
 
   reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
