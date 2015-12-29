@@ -570,7 +570,7 @@ function createReactionOrder(order) {
   const notes = order.note_attributes;
   const rental = setupRentalFromOrderNotes(notes); // Returns start, end, and triplength of rental or false
   const buffers = getShippingBuffers();
-  const fedexTransitTime = getFedexTransitTime(order.shipping_address);
+  const fedexTransitTime = getFedexTransitTime(order.shipping_address || order.billing_address);
   if (fedexTransitTime) {
     buffers.shipping = fedexTransitTime + 1;
   }
