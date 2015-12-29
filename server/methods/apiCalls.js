@@ -716,7 +716,8 @@ Meteor.methods({
           auth: key + ':' + password,
           params: {
             created_at_min: lastDate,
-            page: pageNumber
+            page: pageNumber,
+            fulfillment_status: 'unshipped'
           }
         }).data;
         saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
