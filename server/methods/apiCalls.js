@@ -9,9 +9,9 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    // return moment(date).format('2015-12-10') + ' 00:00';
+    return moment(date).format('2015-12-10') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    return moment(date).format('2003-11-12') + ' 00:00';
+    // return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -267,6 +267,10 @@ function setupOrderItems(lineItems, orderNumber) {
   let skiPackages = [];
   let kayaksRented = 0;
   let bundleMissingColor = false;
+  let rushShipping = {
+    qty: 0,
+    subtotal: 0
+  };
   let damageCoverage = {
     packages: {
       qty: 0,
@@ -455,6 +459,11 @@ function setupOrderItems(lineItems, orderNumber) {
       skiPackages.push(skiPackage);
     } else if (item.vendor === 'Oru Kayak') {
       kayaksRented += item.quantity;
+    } else if (item.title === 'Rush Shipping') {
+      let qty = item.quantity;
+      let price = parseInt(item.price, 10);
+      rushShipping.qty += qty;
+      rushShipping.subtotal += price;
     }
   });
   return {
@@ -462,7 +471,9 @@ function setupOrderItems(lineItems, orderNumber) {
     bundleMissingColor: bundleMissingColor,
     damageCoverage: damageCoverage,
     skiPackages: skiPackages,
-    kayaksRented: kayaksRented
+    kayaksRented: kayaksRented,
+    rushShipping: rushShipping
+
   };
 }
 
@@ -574,7 +585,7 @@ function createReactionOrder(order) {
   const notes = order.note_attributes;
   const rental = setupRentalFromOrderNotes(notes); // Returns start, end, and triplength of rental or false
   const buffers = getShippingBuffers();
-  const fedexTransitTime = getFedexTransitTime(order.shipping_address);
+  const fedexTransitTime = getFedexTransitTime(order.shipping_address || order.billing_address);
   if (fedexTransitTime) {
     buffers.shipping = fedexTransitTime + 1;
   }
@@ -583,7 +594,7 @@ function createReactionOrder(order) {
   let kayaks = {
     vendor: 'Oru Kayak',
     qty: orderItems.kayaksRented
-  }
+  };
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
     shopifyOrderId: order.id,
@@ -635,6 +646,10 @@ function createReactionOrder(order) {
   }
   if (kayaks.qty > 0) {
     reactionOrder.advancedFulfillment.kayakRental = kayaks;
+  }
+
+  if (orderItems.rushShipping.qty > 0) {
+    reactionOrder.advancedFulfillment.rushShippingPaid = orderItems.rushShipping;
   }
 
   reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
