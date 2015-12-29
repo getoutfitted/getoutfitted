@@ -9,9 +9,9 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    return moment(date).format('2015-12-10') + ' 00:00';
+    // return moment(date).format('2015-12-10') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -265,6 +265,7 @@ function setupOrderItems(lineItems, orderNumber) {
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
   let skiPackages = [];
+  let kayaksRented = 0;
   let bundleMissingColor = false;
   let damageCoverage = {
     packages: {
@@ -452,13 +453,16 @@ function setupOrderItems(lineItems, orderNumber) {
         skiPackage.weight = weight.value + ' ' + weightUnits.value;
       }
       skiPackages.push(skiPackage);
+    } else if (item.vendor === 'Oru Kayak') {
+      kayaksRented += item.quantity;
     }
   });
   return {
     items: items,
     bundleMissingColor: bundleMissingColor,
     damageCoverage: damageCoverage,
-    skiPackages: skiPackages
+    skiPackages: skiPackages,
+    kayaksRented: kayaksRented
   };
 }
 
@@ -576,6 +580,10 @@ function createReactionOrder(order) {
   }
   let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
+  let kayaks = {
+    vendor: 'Oru Kayak',
+    qty: orderItems.kayaksRented
+  }
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
     shopifyOrderId: order.id,
@@ -625,6 +633,10 @@ function createReactionOrder(order) {
   if (reactionOrder.advancedFulfillment.rushDelivery && !reactionOrder.advancedFulfillment.localDelivery) {
     reactionOrder.advancedFulfillment.shipmentDate = rushShipmentChecker(new Date());
   }
+  if (kayaks.qty > 0) {
+    reactionOrder.advancedFulfillment.kayakRental = kayaks;
+  }
+
   reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
   ReactionCore.Log.info('Importing Shopify Order #'
     + order.order_number
