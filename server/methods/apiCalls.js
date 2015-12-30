@@ -8,10 +8,10 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    return moment(date).format('2015-12-10') + ' 00:00';
+    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    // return moment(date).format('2015-12-10') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    //return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -264,8 +264,14 @@ function setupOrderItems(lineItems, orderNumber) {
   const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
+  let otherItems = [];
   let skiPackages = [];
+  let kayaksRented = 0;
   let bundleMissingColor = false;
+  let rushShipping = {
+    qty: 0,
+    subtotal: 0
+  };
   let damageCoverage = {
     packages: {
       qty: 0,
@@ -452,13 +458,35 @@ function setupOrderItems(lineItems, orderNumber) {
         skiPackage.weight = weight.value + ' ' + weightUnits.value;
       }
       skiPackages.push(skiPackage);
+    } else if (item.vendor === 'Oru Kayak') {
+      kayaksRented += item.quantity;
+    } else if (item.title === 'Rush Shipping') {
+      let qty = item.quantity;
+      let price = parseInt(item.price, 10);
+      rushShipping.qty += qty;
+      rushShipping.subtotal += price;
+    } else {
+      if (!item.vendor) {
+        item.vendor = 'GetOutfitted';
+      }
+      let other = {
+        product: item.title,
+        price: parseFloat(item.price, 10),
+        qty: parseInt(item.quantity, 10),
+        vendor: item.vendor,
+        variantTitle: item.variant_title
+      };
+      otherItems.push(other);
     }
   });
   return {
     items: items,
     bundleMissingColor: bundleMissingColor,
     damageCoverage: damageCoverage,
-    skiPackages: skiPackages
+    skiPackages: skiPackages,
+    kayaksRented: kayaksRented,
+    rushShipping: rushShipping,
+    other: otherItems
   };
 }
 
@@ -576,6 +604,10 @@ function createReactionOrder(order) {
   }
   let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
+  let kayaks = {
+    vendor: 'Oru Kayak',
+    qty: orderItems.kayaksRented
+  };
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
     shopifyOrderId: order.id,
@@ -625,6 +657,17 @@ function createReactionOrder(order) {
   if (reactionOrder.advancedFulfillment.rushDelivery && !reactionOrder.advancedFulfillment.localDelivery) {
     reactionOrder.advancedFulfillment.shipmentDate = rushShipmentChecker(new Date());
   }
+  if (kayaks.qty > 0) {
+    reactionOrder.advancedFulfillment.kayakRental = kayaks;
+  }
+
+  if (orderItems.rushShipping.qty > 0) {
+    reactionOrder.advancedFulfillment.rushShippingPaid = orderItems.rushShipping;
+  }
+  if (orderItems.other.length > 0) {
+    reactionOrder.advancedFulfillment.other = orderItems.other;
+  }
+
   reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
   ReactionCore.Log.info('Importing Shopify Order #'
     + order.order_number
