@@ -371,14 +371,14 @@ function setupOrderItems(lineItems, orderNumber) {
       let colorObj =  _.findWhere(item.properties, {name: 'Color'});
       let color;
       if (colorObj) {
-        color = colorObj.value;
+        color = colorObj.value.trim();
       }
       let size;
       let sizeObj = _.find(item.properties, function (prop) {
         return prop.name.indexOf('Size') > 1;
       });
       if (sizeObj && !sizeObj === 'unselected') {
-        size = sizeObj.value;
+        size = sizeObj.value.trim();
       }
       let product = Products.findOne({shopifyId: item.product_id + ''});
       let variant;
@@ -712,7 +712,7 @@ Meteor.methods({
         let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
           auth: key + ':' + password,
-          params: { created_at_min: date}
+          params: {created_at_min: date}
         });
       } else {
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
