@@ -612,7 +612,7 @@ function createReactionOrder(order) {
   const buffers = getShippingBuffers();
   const fedexTransitTime = getFedexTransitTime(order.shipping_address || order.billing_address);
   if (fedexTransitTime) {
-    buffers.shipping = fedexTransitTime + 1;
+    buffers.shipping = fedexTransitTime + 2; // Update buffer to use fedexTransitTime +2 (1 for delays and 1 for arrival day)
   }
   let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
