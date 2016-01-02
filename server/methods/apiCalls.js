@@ -412,6 +412,17 @@ function setupOrderItems(lineItems, orderNumber) {
         size = sizeObj.value.trim();
       }
 
+      // Find size and color of baselayer items
+      if (item.variant_title && _.contains(['XXS', 'XS', 'Extra Small', 'Small', 'Medium', 'Large', 'Extra Large', 'XXL'], item.variant_title.trim())) {
+        size = item.variant_title.trim();
+        color = item.title.match(/\W-\W([A-Za-z\W]*)/)[1];
+      }
+
+      // Correct for shopify products having 'XS' as a size
+      if (size === 'XS') {
+        size = 'Extra Small';
+      }
+
       // Fix Shopify not having 'True Black' as Burton Black color
       if (item.vendor === 'Burton' && color === 'Black') {
         color = 'True Black';
