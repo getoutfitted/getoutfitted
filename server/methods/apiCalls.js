@@ -440,15 +440,8 @@ function setupOrderItems(lineItems, orderNumber) {
         color = color.replace('Fray', '').trim();
       }
 
-      // Correct for shopify products having 'XS' as a size
-      if (size === 'XS') {
-        size = 'Extra Small';
-      }
-
-      // Correct for legacy shopify products having 'XL' as a size
-      if (size === 'XL') {
-        size = 'Extra Large';
-      }
+      // Normalize Size - Correct for shopify products having 'XS' or 'XL' as a size
+      size = normalizeSize(size);
 
       // Fix Shopify not having 'True Black' as Burton Black color
       if (item.vendor === 'Burton' && color === 'Black') {
