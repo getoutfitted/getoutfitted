@@ -418,6 +418,10 @@ function setupOrderItems(lineItems, orderNumber) {
         color = item.title.match(/\W-\W([A-Za-z\W]*)/)[1];
       }
 
+      if (color === 'Bottom' || color.indexOf('Top') !== -1) {
+        color = 'Black';
+      }
+
       // Correct for shopify products having 'XS' as a size
       if (size === 'XS') {
         size = 'Extra Small';
