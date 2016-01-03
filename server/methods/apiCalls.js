@@ -80,7 +80,7 @@ function returnChecker(date, isLocalDelivery) {
 
 function rushShipmentChecker(date) {
   if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(a, 'days').toDate();
+    return moment(date).add(1, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
     return moment(date).add(2, 'days').toDate();
   }
