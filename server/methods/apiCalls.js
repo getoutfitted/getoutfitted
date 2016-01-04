@@ -368,7 +368,7 @@ function setupOrderItems(lineItems, orderNumber) {
         }
       });
     } else if (_.contains(productIds, item.product_id + '')) {
-      let colorObj =  _.findWhere(item.properties, {name: 'Color'});
+      let colorObj = _.findWhere(item.properties, {name: 'Color'});
       let color;
       if (colorObj) {
         color = colorObj.value.trim();
@@ -377,11 +377,23 @@ function setupOrderItems(lineItems, orderNumber) {
       let sizeObj = _.find(item.properties, function (prop) {
         return prop.name.indexOf('Size') > 1;
       });
-      if (sizeObj && !sizeObj === 'unselected') {
+      if (sizeObj && sizeObj !== 'unselected') {
         size = sizeObj.value.trim();
       }
+
+      // Fix Shopify not having 'True Black' as Burton Black color
+      if (item.vendor === 'Burton' && color === 'Black') {
+        color = 'True Black';
+      }
+
+      // Fix Shopify goggles not having a size
+      if (item.title.indexOf('Goggles') !== -1 && !size) {
+        size = 'One Size';
+      }
+
       let product = Products.findOne({shopifyId: item.product_id + ''});
       let variant;
+
       if (product) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
