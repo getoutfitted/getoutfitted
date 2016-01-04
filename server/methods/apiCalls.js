@@ -4,6 +4,15 @@ function keyify(string) {
   return keyifiedString;
 }
 
+function normalizeSize(size) {
+  if (size.toUpperCase() === 'XS') {
+    return 'Extra Small';
+  } else if (size.toUpperCase() === 'XL') {
+    return 'Extra Large';
+  }
+  return size;
+}
+
 function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
@@ -369,11 +378,12 @@ function setupOrderItems(lineItems, orderNumber) {
 
       let style = bundle.colorWays[color]; // call the bundle + colorway a style;
       let size = {
-        jacket: _.findWhere(item.properties, {name: 'Jacket Size'}).value.trim(),
-        midlayer: _.findWhere(item.properties, {name: 'Jacket Size'}).value.trim(),
-        pants: _.findWhere(item.properties, {name: 'Pants Size'}).value.trim(),
-        gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value.trim()
+        jacket: normalizeSize(_.findWhere(item.properties, {name: 'Jacket Size'}).value.trim()),
+        midlayer: normalizeSize(_.findWhere(item.properties, {name: 'Jacket Size'}).value.trim()),
+        pants: normalizeSize(_.findWhere(item.properties, {name: 'Pants Size'}).value.trim()),
+        gloves: normalizeSize(_.findWhere(item.properties, {name: 'Gloves Size'}).value.trim())
       };
+
       let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'});
       if (goggleChoice) {
         goggleChoice = goggleChoice.value.trim();
@@ -400,11 +410,11 @@ function setupOrderItems(lineItems, orderNumber) {
       });
     } else if (_.contains(productIds, item.product_id + '')) {
       let colorObj = _.findWhere(item.properties, {name: 'Color'});
-      let color;
+      let color = '';
       if (colorObj) {
         color = colorObj.value.trim();
       }
-      let size;
+      let size = '';
       let sizeObj = _.find(item.properties, function (prop) {
         return prop.name.indexOf('Size') > 1;
       });
@@ -422,10 +432,16 @@ function setupOrderItems(lineItems, orderNumber) {
         color = 'Black';
       }
 
-      // Correct for shopify products having 'XS' as a size
-      if (size === 'XS') {
-        size = 'Extra Small';
+      // Correct for shopify products including product title in color
+      if (color.indexOf('Amped') !== -1 || color.indexOf('Fray') !== -1) {
+        color = color.replace('Amped', '').trim();
       }
+      if (color.indexOf('Fray') !== -1) {
+        color = color.replace('Fray', '').trim();
+      }
+
+      // Normalize Size - Correct for shopify products having 'XS' or 'XL' as a size
+      size = normalizeSize(size);
 
       // Fix Shopify not having 'True Black' as Burton Black color
       if (item.vendor === 'Burton' && color === 'Black') {
