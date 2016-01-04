@@ -476,7 +476,7 @@ function setupOrderItems(lineItems, orderNumber) {
         packageName: item.name,
         variantTitle: item.variant_title,
         helmet: helmet,
-        rentalLength: parseInt(variantSplit[0], 10),
+        rentalLength: parseInt(variantSplit[0], 10) || 0,
         qty: item.quantity,
         price: parseFloat(item.price, 10),
         packageType: item.title.split(' |')[0]
