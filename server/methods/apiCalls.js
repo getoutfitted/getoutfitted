@@ -4,13 +4,20 @@ function keyify(string) {
   return keyifiedString;
 }
 
+function stripTags(string) {
+  return string.replace(/<[^>]+>/g, '');
+}
+
+
 function normalizeSize(size) {
   if (size.toUpperCase() === 'XS') {
     return 'Extra Small';
   } else if (size.toUpperCase() === 'XL') {
     return 'Extra Large';
+  } else if (size === 'Large/Extra Large') {
+    return 'Large';
   }
-  return size;
+  return stripTags(size);
 }
 
 function formatDateForApi(date) {
@@ -20,7 +27,7 @@ function formatDateForApi(date) {
     return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
     // return moment(date).format('2015-12-10') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    //return moment(date).format('2003-11-12') + ' 00:00';
+    // return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -422,8 +429,12 @@ function setupOrderItems(lineItems, orderNumber) {
         size = sizeObj.value.trim();
       }
 
+      // Strip HTML tags
+      size = stripTags(size);
+      color = stripTags(color);
+
       // Find size and color of baselayer items
-      if (item.variant_title && _.contains(['XXS', 'XS', 'Extra Small', 'Small', 'Medium', 'Large', 'Extra Large', 'XXL'], item.variant_title.trim())) {
+      if (item.variant_title && _.contains(['XXS', 'XS', 'Extra Small', 'Small', 'Medium', 'Large', 'Extra Large', 'XL', 'XXL'], item.variant_title.trim())) {
         size = item.variant_title.trim();
         color = item.title.match(/\W-\W([A-Za-z\W]*)/)[1];
       }
