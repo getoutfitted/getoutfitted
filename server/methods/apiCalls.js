@@ -16,6 +16,37 @@ function formatDateForApi(date) {
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
 
+function shipmentDateChecker(date, isLocalDelivery, transitTime) {
+  if (isLocalDelivery) {
+    return date;
+  }
+  let numberOfWeekendDays = 0;
+  const shipDate = moment(date);
+  const arrivalDate = moment(shipDate).add(transitTime, 'days');
+  const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
+  let iter = shipmentRange.iterate('days');
+
+  while (iter.hasNext()) {
+    let isoWeekday = iter.next().isoWeekday();
+    if (isoWeekday === 7 || isoWeekday === 6) {
+      numberOfWeekendDays += 1;
+    }
+  }
+  return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
+}
+
+function arrivalDateChecker(date, isLocalDelivery) {
+  if (isLocalDelivery) {
+    return date;
+  }
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).subtract(2, 'days').toDate();
+  } else if (moment(date).isoWeekday() === 6) {
+    return moment(date).subtract(1, 'days').toDate();
+  }
+  return date;
+}
+
 function shipmentChecker(date, isLocalDelivery) {
   if (isLocalDelivery) {
     return date;
@@ -639,7 +670,7 @@ function createReactionOrder(order) {
       shipmentDate: new Date(),           // Initialize shipmentDate to today
       returnDate: new Date(2100, 8, 20),  // Initialize return date to 85 years from now
       localDelivery: determineLocalDelivery(order),
-      arriveBy: shipmentChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
+      arriveBy: arrivalDateChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
       shipReturnBy: returnChecker(moment(rental.end).add(1, 'days').toDate(), determineLocalDelivery(order)),
       transitTime: determineTransitTime(order, fedexTransitTime, buffers.shipping),
       damageCoverage: orderItems.damageCoverage,
@@ -662,7 +693,10 @@ function createReactionOrder(order) {
     ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
     reactionOrder.infoMissing = true; // Flag order
   } else {
-    reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate(), determineLocalDelivery(order));
+    reactionOrder.advancedFulfillment.shipmentDate = shipmentDateChecker(
+      moment(rental.start).subtract(buffers.shipping, 'days').toDate(),
+      determineLocalDelivery(order),
+      determineTransitTime(order, fedexTransitTime, buffers.shipping));
     reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate(), determineLocalDelivery(order));
   }
   reactionOrder.advancedFulfillment.rushDelivery = rushDelivery(reactionOrder);
