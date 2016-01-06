@@ -36,19 +36,37 @@ function shipmentDateChecker(date, isLocalDelivery, transitTime) {
   if (isLocalDelivery) {
     return date;
   }
+
+  console.log('Transit Time', transitTime);
   let numberOfWeekendDays = 0;
   const shipDate = moment(date);
-  const arrivalDate = moment(shipDate).add(transitTime, 'days');
+  const arrivalDate = moment(shipDate).add(transitTime - 1, 'days');
+
+  if (moment(arrivalDate).isoWeekday() === 7) {
+    shipDate.subtract(2, 'days');
+    arrivalDate.subtract(2, 'days');
+  } else if (moment(arrivalDate).isoWeekday() === 6) {
+    shipDate.subtract(1, 'days');
+    arrivalDate.subtract(1, 'days');
+  }
+
+  if (moment(shipDate).isoWeekday() === 7) {
+    shipDate.subtract(2, 'days');
+  } else if (moment(shipDate).isoWeekday() === 6) {
+    shipDate.subtract(1, 'days');
+  }
+
   const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
   let iter = shipmentRange.iterate('days');
-
+  //
   while (iter.hasNext()) {
     let isoWeekday = iter.next().isoWeekday();
     if (isoWeekday === 7 || isoWeekday === 6) {
       numberOfWeekendDays += 1;
     }
   }
-  return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
+  return shipDate.subtract(numberOfWeekendDays, 'days').toDate();
+  // return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
 }
 
 function arrivalDateChecker(date, isLocalDelivery) {
@@ -653,15 +671,20 @@ function determineTransitTime(order, fedexTransitTime, buffersShipping) {
 
 function rushDelivery(reactionOrder) {
   let localDelivery = reactionOrder.advancedFulfillment.localDelivery;
+  if (localDelivery) {
+    return false;
+  }
   let todaysDate = new Date();
   let arriveByDate = reactionOrder.advancedFulfillment.arriveBy;
-  let transitTime = reactionOrder.advancedFulfillment.transitTime;
-  let shipDate = moment(todaysDate).add(transitTime, 'days');
-  if (!localDelivery) {
-    let daysBetween = moment(shipDate).diff(arriveByDate);
-    return daysBetween > 0;
-  }
-  return false;
+  // console.log('Arrive By Date', arriveByDate);
+  let transitTime = reactionOrder.advancedFulfillment.transitTime - 1; // Fedex + 1
+  // console.log('Transit Time', transitTime);
+
+  let shipDate = moment(todaysDate).startOf('day').add(transitTime, 'days'); // shipDate as start of day
+  // console.log('Ship Date', shipDate.toDate());
+  let daysBetween = moment(shipDate).diff(arriveByDate);
+  // console.log('Days Between', daysBetween);
+  return daysBetween > 0;
 }
 
 function realisticShippingChecker(reactionOrder) {
