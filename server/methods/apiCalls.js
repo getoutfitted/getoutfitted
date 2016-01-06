@@ -800,11 +800,17 @@ Meteor.methods({
         let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
           auth: key + ':' + password,
-          params: {created_at_min: date}
+          params: {
+            created_at_min: date,
+            fulfillment_status: 'unshipped'
+          }
         });
       } else {
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: key + ':' + password
+          auth: key + ':' + password,
+          params: {
+            fulfillment_status: 'unshipped'
+          }
         });
       }
       ReactionCore.Collections.Packages.update({_id: shopifyOrders._id}, {
@@ -861,7 +867,8 @@ Meteor.methods({
         let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
           auth: key + ':' + password,
           params: {
-            page: pageNumber
+            page: pageNumber,
+            fulfillment_status: 'unshipped'
           }
         }).data;
         saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
