@@ -3,7 +3,6 @@ Meteor.methods({
     check(body, Match.Any);
     if (this.connection === null) {
       const msg = body.msg;
-      console.log('msg', msg)
       const shopifyId = parseInt(msg.order_id, 10);
       let pastCheckPoints = [];
       const sortedCheckPoints = _.sortBy(msg.checkpoints, msg.checkpoints.checkpoint_time);
