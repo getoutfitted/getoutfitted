@@ -26,7 +26,9 @@ Meteor.methods({
           'advancedFulfillment.shippingHistory.currentStatus': currentShippingStatus.tag,
           'advancedFulfillment.shippingHistory.currentMessage': currentShippingStatus.message,
           'advancedFulfillment.shippingHistory.trackingNumber': msg.tracking_number,
-          'advancedFulfillment.shippingHistory.history': pastCheckPoints
+          'advancedFulfillment.shippingHistory.history': pastCheckPoints,
+          'advancedFulfillment.shippingHistory.currentCity': currentShippingStatus.city,
+          'advancedFulfillment.shippingHistory.currentState': currentShippingStatus.state
         }
       });
     } else {
