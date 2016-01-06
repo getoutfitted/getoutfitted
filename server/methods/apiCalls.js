@@ -45,23 +45,19 @@ function shipmentDateChecker(date, isLocalDelivery, transitTime) {
 
   if (moment(arrivalDate).isoWeekday() === 7) {
     shipDate.subtract(2, 'days');
-    console.log('subtracted two days because arrival on Sunday');
     additionalDays += 2;
     arrivalDate.subtract(2, 'days');
   } else if (moment(arrivalDate).isoWeekday() === 6) {
     shipDate.subtract(1, 'days');
-    console.log('subtracted one day because arrival on Saturday');
     additionalDays += 1;
     arrivalDate.subtract(1, 'days');
   }
 
   if (moment(shipDate).isoWeekday() === 7) {
     shipDate.subtract(2, 'days');
-    console.log('subtracted two days because shipment on Sunday');
     additionalDays += 2;
   } else if (moment(shipDate).isoWeekday() === 6) {
     shipDate.subtract(1, 'days');
-    console.log('subtracted one day because shipment on Saturday');
     additionalDays += 1;
   }
 
@@ -72,7 +68,6 @@ function shipmentDateChecker(date, isLocalDelivery, transitTime) {
     let isoWeekday = iter.next().isoWeekday();
     if (isoWeekday === 7 || isoWeekday === 6) {
       numberOfWeekendDays += 1;
-      console.log('subtracted one day because weekend in shipping time');
     }
   }
 
@@ -242,7 +237,6 @@ function getFedexTransitTime(address) {
     return false;
   }
   let groundRate = rates.RateReplyDetails[0];
-  console.log(fedexTimeTable[groundRate.TransitTime]);
   return fedexTimeTable[groundRate.TransitTime];
 }
 
@@ -692,14 +686,10 @@ function rushDelivery(reactionOrder) {
   }
   let todaysDate = new Date();
   let arriveByDate = reactionOrder.advancedFulfillment.arriveBy;
-  // console.log('Arrive By Date', arriveByDate);
   let transitTime = reactionOrder.advancedFulfillment.transitTime - 1; // Fedex + 1
-  // console.log('Transit Time', transitTime);
 
   let shipDate = moment(todaysDate).startOf('day').add(transitTime, 'days'); // shipDate as start of day
-  // console.log('Ship Date', shipDate.toDate());
   let daysBetween = moment(shipDate).diff(arriveByDate);
-  // console.log('Days Between', daysBetween);
   return daysBetween > 0;
 }
 
