@@ -86,7 +86,7 @@ Router.route('/webhooks/aftership/post', {
     if (keyMatches) {
       this.response.statusCode = 200;
       this.response.end('Success');
-      // Meteor.call('aftership/processHook', this.request.body);
+      Meteor.call('aftership/processHook', this.request.body);
       ReactionCore.Log.info('Aftership Post Webhook successfully processed ' + this.request.body.msg.tag + ' for Order: #', this.request.body.msg.order_id);
       // TODO: add notification for CSR and Ops
     } else {

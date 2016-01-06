@@ -34,7 +34,8 @@ Package.onUse(function (api) {
     'server/registry.js',
     'server/methods/apiCalls.js',
     'server/methods/fulfillments.js',
-    'server/hooks.js'
+    'server/hooks.js',
+    'server/methods/aftership.js'
   ], 'server');
 
   api.addFiles([
