@@ -37,23 +37,32 @@ function shipmentDateChecker(date, isLocalDelivery, transitTime) {
     return date;
   }
 
-  console.log('Transit Time', transitTime);
   let numberOfWeekendDays = 0;
   const shipDate = moment(date);
   const arrivalDate = moment(shipDate).add(transitTime - 1, 'days');
+  let additionalDays = 0;
+  let daysToAdd = 0;
 
   if (moment(arrivalDate).isoWeekday() === 7) {
     shipDate.subtract(2, 'days');
+    console.log('subtracted two days because arrival on Sunday');
+    additionalDays += 2;
     arrivalDate.subtract(2, 'days');
   } else if (moment(arrivalDate).isoWeekday() === 6) {
     shipDate.subtract(1, 'days');
+    console.log('subtracted one day because arrival on Saturday');
+    additionalDays += 1;
     arrivalDate.subtract(1, 'days');
   }
 
   if (moment(shipDate).isoWeekday() === 7) {
     shipDate.subtract(2, 'days');
+    console.log('subtracted two days because shipment on Sunday');
+    additionalDays += 2;
   } else if (moment(shipDate).isoWeekday() === 6) {
     shipDate.subtract(1, 'days');
+    console.log('subtracted one day because shipment on Saturday');
+    additionalDays += 1;
   }
 
   const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
@@ -63,9 +72,16 @@ function shipmentDateChecker(date, isLocalDelivery, transitTime) {
     let isoWeekday = iter.next().isoWeekday();
     if (isoWeekday === 7 || isoWeekday === 6) {
       numberOfWeekendDays += 1;
+      console.log('subtracted one day because weekend in shipping time');
     }
   }
-  return shipDate.subtract(numberOfWeekendDays, 'days').toDate();
+
+  daysToAdd = numberOfWeekendDays - additionalDays;
+  if (daysToAdd <= 0) {
+    daysToAdd = 0;
+  }
+
+  return shipDate.subtract(daysToAdd, 'days').toDate();
   // return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
 }
 
@@ -708,7 +724,7 @@ function createReactionOrder(order) {
   const buffers = getShippingBuffers();
   const fedexTransitTime = getFedexTransitTime(order.shipping_address || order.billing_address);
   if (fedexTransitTime) {
-    buffers.shipping = fedexTransitTime + 2; // Update buffer to use fedexTransitTime +2 (1 for delays and 1 for arrival day)
+    buffers.shipping = fedexTransitTime + 1; // Update buffer to use fedexTransitTime +1 (1 extra day for arrival day)
   }
   let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
