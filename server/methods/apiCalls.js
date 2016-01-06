@@ -36,19 +36,48 @@ function shipmentDateChecker(date, isLocalDelivery, transitTime) {
   if (isLocalDelivery) {
     return date;
   }
+
   let numberOfWeekendDays = 0;
   const shipDate = moment(date);
-  const arrivalDate = moment(shipDate).add(transitTime, 'days');
+  const arrivalDate = moment(shipDate).add(transitTime - 1, 'days');
+  let additionalDays = 0;
+  let daysToAdd = 0;
+
+  if (moment(arrivalDate).isoWeekday() === 7) {
+    shipDate.subtract(2, 'days');
+    additionalDays += 2;
+    arrivalDate.subtract(2, 'days');
+  } else if (moment(arrivalDate).isoWeekday() === 6) {
+    shipDate.subtract(1, 'days');
+    additionalDays += 1;
+    arrivalDate.subtract(1, 'days');
+  }
+
+  if (moment(shipDate).isoWeekday() === 7) {
+    shipDate.subtract(2, 'days');
+    additionalDays += 2;
+  } else if (moment(shipDate).isoWeekday() === 6) {
+    shipDate.subtract(1, 'days');
+    additionalDays += 1;
+  }
+
   const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
   let iter = shipmentRange.iterate('days');
-
+  //
   while (iter.hasNext()) {
     let isoWeekday = iter.next().isoWeekday();
     if (isoWeekday === 7 || isoWeekday === 6) {
       numberOfWeekendDays += 1;
     }
   }
-  return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
+
+  daysToAdd = numberOfWeekendDays - additionalDays;
+  if (daysToAdd <= 0) {
+    daysToAdd = 0;
+  }
+
+  return shipDate.subtract(daysToAdd, 'days').toDate();
+  // return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
 }
 
 function arrivalDateChecker(date, isLocalDelivery) {
@@ -208,7 +237,6 @@ function getFedexTransitTime(address) {
     return false;
   }
   let groundRate = rates.RateReplyDetails[0];
-  console.log(fedexTimeTable[groundRate.TransitTime]);
   return fedexTimeTable[groundRate.TransitTime];
 }
 
@@ -653,15 +681,16 @@ function determineTransitTime(order, fedexTransitTime, buffersShipping) {
 
 function rushDelivery(reactionOrder) {
   let localDelivery = reactionOrder.advancedFulfillment.localDelivery;
+  if (localDelivery) {
+    return false;
+  }
   let todaysDate = new Date();
   let arriveByDate = reactionOrder.advancedFulfillment.arriveBy;
-  let transitTime = reactionOrder.advancedFulfillment.transitTime;
-  let shipDate = moment(todaysDate).add(transitTime, 'days');
-  if (!localDelivery) {
-    let daysBetween = moment(shipDate).diff(arriveByDate);
-    return daysBetween > 0;
-  }
-  return false;
+  let transitTime = reactionOrder.advancedFulfillment.transitTime - 1; // Fedex + 1
+
+  let shipDate = moment(todaysDate).startOf('day').add(transitTime, 'days'); // shipDate as start of day
+  let daysBetween = moment(shipDate).diff(arriveByDate);
+  return daysBetween > 0;
 }
 
 function realisticShippingChecker(reactionOrder) {
@@ -685,7 +714,7 @@ function createReactionOrder(order) {
   const buffers = getShippingBuffers();
   const fedexTransitTime = getFedexTransitTime(order.shipping_address || order.billing_address);
   if (fedexTransitTime) {
-    buffers.shipping = fedexTransitTime + 2; // Update buffer to use fedexTransitTime +2 (1 for delays and 1 for arrival day)
+    buffers.shipping = fedexTransitTime + 1; // Update buffer to use fedexTransitTime +1 (1 extra day for arrival day)
   }
   let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
@@ -800,11 +829,17 @@ Meteor.methods({
         let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
           auth: key + ':' + password,
-          params: {created_at_min: date}
+          params: {
+            created_at_min: date,
+            fulfillment_status: 'unshipped'
+          }
         });
       } else {
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: key + ':' + password
+          auth: key + ':' + password,
+          params: {
+            fulfillment_status: 'unshipped'
+          }
         });
       }
       ReactionCore.Collections.Packages.update({_id: shopifyOrders._id}, {
@@ -861,7 +896,8 @@ Meteor.methods({
         let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
           auth: key + ':' + password,
           params: {
-            page: pageNumber
+            page: pageNumber,
+            fulfillment_status: 'unshipped'
           }
         }).data;
         saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
