@@ -3,6 +3,7 @@ Meteor.methods({
     check(body, Match.Any);
     if (this.connection === null) {
       const msg = body.msg;
+      console.log('msg', msg)
       const shopifyId = parseInt(msg.order_id, 10);
       let pastCheckPoints = [];
       const sortedCheckPoints = _.sortBy(msg.checkpoints, msg.checkpoints.checkpoint_time);
@@ -22,10 +23,11 @@ Meteor.methods({
         shopifyOrderNumber: shopifyId
       }, {
         $set: {
-          'advancedFulfillment.aftership.currentStatus': currentShippingStatus.tag,
-          'advancedFulfillment.aftership.currentMessage': currentShippingStatus.message,
-          'advancedFulfillment.aftership.trackingNumber': msg.tracking_number,
-          'advancedFulfillment.aftership.shippingHistory': pastCheckPoints
+          'advancedFulfillment.workflow.status': 'orderShipped',
+          'advancedFulfillment.shippingHistory.currentStatus': currentShippingStatus.tag,
+          'advancedFulfillment.shippingHistory.currentMessage': currentShippingStatus.message,
+          'advancedFulfillment.shippingHistory.trackingNumber': msg.tracking_number,
+          'advancedFulfillment.shippingHistory.history': pastCheckPoints
         }
       });
     } else {
