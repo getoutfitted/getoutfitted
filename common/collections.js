@@ -103,24 +103,12 @@ ReactionCore.Schemas.ShopifyOrders = new SimpleSchema({
     optional: true,
     blackbox: true
   },
-  dateFrom: {
-    type: Date,
-    optional: true
-  },
-  dateTo: {
-    type: Date,
-    optional: true
-  },
-  pageNumber: {
+  shopifyOrderNumber: {
     type: Number,
     optional: true
   },
-  pageTotal: {
-    type: Number,
-    optional: true
-  },
-  groupId: {
-    type: String,
+  importedAt: {
+    type: Date,
     optional: true
   }
 });

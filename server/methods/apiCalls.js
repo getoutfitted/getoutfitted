@@ -25,7 +25,7 @@ function formatDateForApi(date) {
 
   if (shopifyOrders.lastUpdated) {
     return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    // return moment(date).format('2015-12-10') + ' 00:00';
+    // return moment(date).format('2015-12-25') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
@@ -795,24 +795,20 @@ function createReactionOrder(order) {
   return ReactionCore.Collections.Orders.insert(reactionOrder);
 }
 
-function saveOrdersToShopifyOrders(data, dateTo, pageNumber, pageTotal, groupId) {
+function saveOrdersToShopifyOrders(data) {
   check(data, Object);
-  check(dateTo, Date);
-  check(pageNumber, Number);
-  check(pageTotal, Number);
-  check(groupId, String);
-  let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings;
-  let dateFrom = new Date('2003-09-20'); // This was before Shopify
-  if (shopifyOrders.public) {
-    dateFrom = shopifyOrders.public.lastUpdated;
-  }
-  ReactionCore.Collections.ShopifyOrders.insert({
-    dateFrom: dateFrom,
-    dateTo: dateTo,
-    information: data,
-    pageNumber: pageNumber,
-    pageTotal: pageTotal,
-    groupId: groupId
+  _.each(data.orders, function (order) {
+    ReactionCore.Collections.ShopifyOrders.update({
+      shopifyOrderNumber: parseInt(order.order_number, 10)
+    }, {
+      $set: {
+        shopifyOrderNumber: parseInt(order.order_number, 10),
+        information: order,
+        importedAt: new Date()
+      }
+    }, {
+      upsert: true
+    });
   });
 }
 
@@ -874,7 +870,6 @@ Meteor.methods({
     let orderCount = shopifyOrders.settings.public.ordersSinceLastUpdate;
     let numberOfPages = Math.ceil(orderCount / 50);
     let pageNumbers = _.range(1, numberOfPages + 1);
-    let groupId = Random.id();
     let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
     if (lastDate) {
       _.each(pageNumbers, function (pageNumber) {
@@ -886,7 +881,7 @@ Meteor.methods({
             fulfillment_status: 'unshipped'
           }
         }).data;
-        saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
+        saveOrdersToShopifyOrders(result);
         _.each(result.orders, function (order) {
           createReactionOrder(order);
         });
@@ -900,7 +895,7 @@ Meteor.methods({
             fulfillment_status: 'unshipped'
           }
         }).data;
-        saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
+        saveOrdersToShopifyOrders(result);
         _.each(result.orders, function (order) {
           createReactionOrder(order);
         });
