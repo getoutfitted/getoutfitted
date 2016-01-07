@@ -82,6 +82,10 @@ ReactionCore.Schemas.ShopifyOrderNumber = new SimpleSchema([
       type: Number,
       optional: true
     },
+    shopifyOrderCreatedAt: {
+      type: Date,
+      optional: true
+    },
     infoMissing: {
       type: Boolean,
       optional: true

@@ -24,8 +24,8 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    // return moment(date).format('2015-12-25') + ' 00:00';
+    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    return moment(date).format('2016-1-5') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
     // return moment(date).format('2003-11-12') + ' 00:00';
   }
@@ -273,13 +273,14 @@ function generateBillingAddress(order) {
 }
 
 // TODO: Figure out why QTY is always equal to one.
-function createOrderItem(productId, variantObj, qty = 1) {
+function createOrderItem(productId, variantObj, qty = 1, customerName) {
   return {
     _id: Random.id(),
     shopId: ReactionCore.getShopId(),
     productId: productId,
     quantity: qty,
     variants: variantObj,
+    customerName: customerName,
     workflow: {
       status: 'orderCreated',
       workflow: ['inventoryAdjusted']
@@ -325,11 +326,11 @@ function getShippingBuffers() {
   return {shipping: 0, returning: 0};
 }
 
-function getBundleVariant(productId, color, size, qty) {
+function getBundleVariant(productId, color, size, qty, customerName) {
   let product = ReactionCore.Collections.Products.findOne(productId);
   if (product && size && color) {
     let variant = _.findWhere(product.variants, {size: size, color: color});
-    return createOrderItem(productId, variant, qty); // This is where QTY gets screwed up.
+    return createOrderItem(productId, variant, qty, customerName); // This is where QTY gets screwed up.
   }
   return false;
 }
@@ -367,18 +368,24 @@ function setupOrderItems(lineItems, orderNumber) {
         ReactionCore.Log.error('CS created order ' + orderNumber);
         let defaultColor = _.keys(bundle.colorWays)[0];
         let defaultColorWay = bundle.colorWays[defaultColor];
+        let customerObj = _.findWhere(item.properties, {name: 'For'});
+        let customerName;
+        if (customerObj) {
+          customerName = customerObj.value;
+        }
         let productTypes = [
           'jacketId',
           'pantsId',
           'glovesId',
           'stdGogglesId'
         ];
-        _.each(productTypes, function (productType){
+        _.each(productTypes, function (productType) {
           items.push({
             _id: Random.id(),
             shopId: ReactionCore.getShopId(),
             productId: defaultColorWay[productType],
             quantity: item.quantity,
+            customerName: customerName,
             workflow: {
               status: 'orderCreated',
               workflow: ['inventoryAdjusted']
@@ -392,6 +399,7 @@ function setupOrderItems(lineItems, orderNumber) {
               shopId: ReactionCore.getShopId(),
               productId: defaultColorWay.midlayerId,
               quantity: item.quantity,
+              customerName: customerName,
               workflow: {
                 status: 'orderCreated',
                 workflow: ['inventoryAdjusted']
@@ -401,7 +409,11 @@ function setupOrderItems(lineItems, orderNumber) {
         return;
       }
       let color = _.findWhere(item.properties, {name: 'Color'});
-
+      let customerObj = _.findWhere(item.properties, {name: 'For'});
+      let customerName;
+      if (customerObj) {
+        customerName = customerObj.value;
+      }
       if (color) {
         color = keyify(color.value);
       } else {
@@ -426,7 +438,7 @@ function setupOrderItems(lineItems, orderNumber) {
         goggleChoice = 'Standard';
       }
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
-      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size', item.quantity);
+      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size', item.quantity, customerName);
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
       if (goggleVariantItem) {
         items.push(goggleVariantItem);
@@ -436,7 +448,7 @@ function setupOrderItems(lineItems, orderNumber) {
 
       let productTypes = ['jacket', 'pants', 'midlayer', 'gloves'];
       _.each(productTypes, function (productType) {
-        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType], item.quantity);
+        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType], item.quantity, customerName);
         if (variantItem) {
           items.push(variantItem);
         } else {
@@ -448,6 +460,11 @@ function setupOrderItems(lineItems, orderNumber) {
       let color = '';
       if (colorObj) {
         color = colorObj.value.trim();
+      }
+      let customerObj = _.findWhere(item.properties, {name: 'For'});
+      let customerName;
+      if (customerObj) {
+        customerName = customerObj.value;
       }
       let size = '';
       let sizeObj = _.find(item.properties, function (prop) {
@@ -505,6 +522,7 @@ function setupOrderItems(lineItems, orderNumber) {
           shopId: ReactionCore.getShopId(),
           productId: product._id,
           quantity: item.quantity,
+          customerName: customerName,
           workflow: {
             status: 'orderCreated',
             workflow: ['inventoryAdjusted']
@@ -516,6 +534,7 @@ function setupOrderItems(lineItems, orderNumber) {
           shopId: ReactionCore.getShopId(),
           productId: product._id,
           quantity: item.quantity,
+          customerName: customerName,
           variants: variant,
           workflow: {
             status: 'orderCreated',
@@ -623,6 +642,7 @@ function setupAdvancedFulfillmentItems(items) {
           variantId: item.variants._id,
           price: item.variants.price,
           sku: item.variants.sku,
+          customerName: item.customerName,
           location: item.variants.location,
           itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
           workflow: {
@@ -642,6 +662,7 @@ function setupAdvancedFulfillmentItems(items) {
         shopId: item.shopId,
         quantity: item.quantity,
         itemDescription: description,
+        customerName: item.customerName,
         workflow: {
           status: 'In Stock',
           workflow: []
@@ -725,6 +746,7 @@ function createReactionOrder(order) {
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
     shopifyOrderId: order.id,
+    shopifyOrderCreatedAt: new Date(order.created_at),
     email: order.email,
     shopId: ReactionCore.getShopId(),
     userId: Random.id(),
@@ -749,9 +771,21 @@ function createReactionOrder(order) {
       skiPackagesPurchased: orderItems.skiPackages.length > 0,
       workflow: {
         status: 'orderCreated'
+      },
+      paymentInformation: {
+        totalPrice: parseFloat(order.total_price),
+        totalTax: parseFloat(order.total_tax),
+        subtotalPrice: parseFloat(order.subtotal_price),
+        totalDiscount: parseFloat(order.total_discounts),
+        totalItemsPrice: parseFloat(order.total_line_items_price),
+        discountCodes: order.discount_codes,
+        refunds: order.refunds
+      },
+      canceledInformation: {
+        canceledAt: new Date(order.cancelled_at),
+        reason: order.cancel_reason
       }
-    },
-    createdAt: new Date(order.created_at)
+    }
   };
 
   let afDetails = setupAdvancedFulfillmentItems(reactionOrder.items);
