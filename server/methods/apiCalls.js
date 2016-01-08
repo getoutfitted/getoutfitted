@@ -24,10 +24,10 @@ function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
     // return moment(date).format('2016-1-5') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
 }
@@ -859,19 +859,19 @@ Meteor.methods({
       let password = shopifyOrders.settings.shopify.password;
       let shopname = shopifyOrders.settings.shopify.shopname;
       let result = 0;
-      if (shopifyOrders.settings.public) {
-        let params = {};
-        let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
 
+      let params = {};
+      if (shopifyOrders.settings.public) {
+        let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
         if (lastDate) {
           params = _.extend(params, {created_at_min: lastDate});
         }
-
-        result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: key + ':' + password,
-          params: params
-        });
       }
+      result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
+        auth: key + ':' + password,
+        params: params
+      });
+
       ReactionCore.Collections.Packages.update({_id: shopifyOrders._id}, {
         $set: {
           'settings.public.ordersSinceLastUpdate': result.data.count
