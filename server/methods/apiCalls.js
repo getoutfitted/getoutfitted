@@ -411,6 +411,10 @@ function setupOrderItems(lineItems, orderNumber) {
         color = keyify(colorOptions[0]);
       }
 
+      if (color === 'aquaStoneBlack') {
+        color = 'aquastoneBlack';
+      }
+
       let style = bundle.colorWays[color]; // call the bundle + colorway a style;
       let size = {
         jacket: normalizeSize(_.findWhere(item.properties, {name: 'Jacket Size'}).value.trim()),
