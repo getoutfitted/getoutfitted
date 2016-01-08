@@ -733,7 +733,7 @@ function createReactionOrder(order) {
     ReactionCore.Log.warn('Import of order #' + order.order_number + ' aborted because it already exists');
     return false;
   }
-
+  const orderStatus = order.fulfillment_status === 'fulfilled' ? 'orderShipped' : 'orderCreated';
   const notes = order.note_attributes;
   const rental = setupRentalFromOrderNotes(notes); // Returns start, end, and triplength of rental or false
   const buffers = getShippingBuffers();
@@ -774,7 +774,7 @@ function createReactionOrder(order) {
       skiPackages: orderItems.skiPackages,
       skiPackagesPurchased: orderItems.skiPackages.length > 0,
       workflow: {
-        status: 'orderCreated'
+        status: orderStatus
       },
       paymentInformation: {
         totalPrice: parseFloat(order.total_price),
@@ -858,22 +858,18 @@ Meteor.methods({
       let key = shopifyOrders.settings.shopify.key;
       let password = shopifyOrders.settings.shopify.password;
       let shopname = shopifyOrders.settings.shopify.shopname;
-      let result;
+      let result = 0;
       if (shopifyOrders.settings.public) {
-        let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+        let params = {};
+        let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+
+        if (lastDate) {
+          params = _.extend(params, {created_at_min: lastDate});
+        }
+
         result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
           auth: key + ':' + password,
-          params: {
-            created_at_min: date,
-            fulfillment_status: 'unshipped'
-          }
-        });
-      } else {
-        result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: key + ':' + password,
-          params: {
-            fulfillment_status: 'unshipped'
-          }
+          params: params
         });
       }
       ReactionCore.Collections.Packages.update({_id: shopifyOrders._id}, {
@@ -909,36 +905,23 @@ Meteor.methods({
     let numberOfPages = Math.ceil(orderCount / 50);
     let pageNumbers = _.range(1, numberOfPages + 1);
     let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+
+    let params = {};
     if (lastDate) {
-      _.each(pageNumbers, function (pageNumber) {
-        let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-          auth: key + ':' + password,
-          params: {
-            created_at_min: lastDate,
-            page: pageNumber,
-            fulfillment_status: 'unshipped'
-          }
-        }).data;
-        saveOrdersToShopifyOrders(result);
-        _.each(result.orders, function (order) {
-          createReactionOrder(order);
-        });
-      });
-    } else {
-      _.each(pageNumbers, function (pageNumber) {
-        let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-          auth: key + ':' + password,
-          params: {
-            page: pageNumber,
-            fulfillment_status: 'unshipped'
-          }
-        }).data;
-        saveOrdersToShopifyOrders(result);
-        _.each(result.orders, function (order) {
-          createReactionOrder(order);
-        });
-      });
+      params = _.extend(params, {created_at_min: lastDate});
     }
+
+    _.each(pageNumbers, function (pageNumber) {
+      let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
+        auth: key + ':' + password,
+        params: _.extend(params, {page: pageNumber})
+      }).data;
+      saveOrdersToShopifyOrders(result);
+      _.each(result.orders, function (order) {
+        createReactionOrder(order);
+      });
+    });
+
     Meteor.call('shopifyOrders/updateTimeStamp', date);
     return true;
   }
