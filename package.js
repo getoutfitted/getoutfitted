@@ -1,7 +1,7 @@
 Package.describe({
   summary: 'Shopify orders are pulled into Reaction',
   name: 'getoutfitted:reaction-shopify-orders',
-  version: '0.3.0',
+  version: '0.3.1',
   git: 'https://github.com/getoutfitted/reaction-shopify-orders'
 });
 
@@ -36,7 +36,8 @@ Package.onUse(function (api) {
     'server/methods/fulfillments.js',
     'server/hooks.js',
     'server/methods/aftership.js',
-    'server/methods/shopifyUpdates.js'
+    'server/methods/shopifyUpdates.js',
+    'server/methods/cancelOrder.js'
   ], 'server');
 
   api.addFiles([
