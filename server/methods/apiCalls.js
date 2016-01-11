@@ -4,16 +4,92 @@ function keyify(string) {
   return keyifiedString;
 }
 
+function stripTags(string) {
+  return string.replace(/<[^>]+>/g, '');
+}
+
+
+function normalizeSize(size) {
+  if (size.toUpperCase() === 'XS') {
+    return 'Extra Small';
+  } else if (size.toUpperCase() === 'XL') {
+    return 'Extra Large';
+  } else if (size === 'Large/Extra Large') {
+    return 'Large';
+  }
+  return stripTags(size);
+}
+
 function formatDateForApi(date) {
   let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings.public;
 
   if (shopifyOrders.lastUpdated) {
-    return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
-    // return moment(date).format('2015-11-19') + ' 00:00';
+    // return moment(date).format('YYYY-MM-DD HH:mm'); // current orders
+    // return moment(date).format('2016-1-5') + ' 00:00';
     // return moment(date).format('YYYY-MM-DD') + ' 00:00'; // Todays Orders
-    // return moment(date).format('2003-11-12') + ' 00:00';
+    return moment(date).format('2003-11-12') + ' 00:00';
   }
   return moment(new Date('2003-09-20')).format('YYYY-MM-DD');
+}
+
+function shipmentDateChecker(date, isLocalDelivery, transitTime) {
+  if (isLocalDelivery) {
+    return date;
+  }
+
+  let numberOfWeekendDays = 0;
+  const shipDate = moment(date);
+  const arrivalDate = moment(shipDate).add(transitTime - 1, 'days');
+  let additionalDays = 0;
+  let daysToAdd = 0;
+
+  if (moment(arrivalDate).isoWeekday() === 7) {
+    shipDate.subtract(2, 'days');
+    additionalDays += 2;
+    arrivalDate.subtract(2, 'days');
+  } else if (moment(arrivalDate).isoWeekday() === 6) {
+    shipDate.subtract(1, 'days');
+    additionalDays += 1;
+    arrivalDate.subtract(1, 'days');
+  }
+
+  if (moment(shipDate).isoWeekday() === 7) {
+    shipDate.subtract(2, 'days');
+    additionalDays += 2;
+  } else if (moment(shipDate).isoWeekday() === 6) {
+    shipDate.subtract(1, 'days');
+    additionalDays += 1;
+  }
+
+  const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
+  let iter = shipmentRange.iterate('days');
+  //
+  while (iter.hasNext()) {
+    let isoWeekday = iter.next().isoWeekday();
+    if (isoWeekday === 7 || isoWeekday === 6) {
+      numberOfWeekendDays += 1;
+    }
+  }
+
+  daysToAdd = numberOfWeekendDays - additionalDays;
+  if (daysToAdd <= 0) {
+    daysToAdd = 0;
+  }
+
+  return shipDate.subtract(daysToAdd, 'days').toDate();
+  // return moment(date).subtract(numberOfWeekendDays, 'days').toDate();
+}
+
+function arrivalDateChecker(date, isLocalDelivery) {
+  if (isLocalDelivery) {
+    return date;
+  }
+  if (moment(date).isoWeekday() === 7) {
+    return moment(date).subtract(2, 'days').toDate();
+  } else if (moment(date).isoWeekday() === 6) {
+    return moment(date).subtract(1, 'days').toDate();
+  }
+  return date;
 }
 
 function shipmentChecker(date, isLocalDelivery) {
@@ -40,7 +116,7 @@ function returnChecker(date, isLocalDelivery) {
 
 function rushShipmentChecker(date) {
   if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(a, 'days').toDate();
+    return moment(date).add(1, 'days').toDate();
   } else if (moment(date).isoWeekday() === 6) {
     return moment(date).add(2, 'days').toDate();
   }
@@ -161,7 +237,6 @@ function getFedexTransitTime(address) {
     return false;
   }
   let groundRate = rates.RateReplyDetails[0];
-  console.log(fedexTimeTable[groundRate.TransitTime]);
   return fedexTimeTable[groundRate.TransitTime];
 }
 
@@ -198,13 +273,14 @@ function generateBillingAddress(order) {
 }
 
 // TODO: Figure out why QTY is always equal to one.
-function createOrderItem(productId, variantObj, qty = 1) {
+function createOrderItem(productId, variantObj, qty = 1, customerName) {
   return {
     _id: Random.id(),
     shopId: ReactionCore.getShopId(),
     productId: productId,
     quantity: qty,
     variants: variantObj,
+    customerName: customerName,
     workflow: {
       status: 'orderCreated',
       workflow: ['inventoryAdjusted']
@@ -250,11 +326,11 @@ function getShippingBuffers() {
   return {shipping: 0, returning: 0};
 }
 
-function getBundleVariant(productId, color, size, qty) {
+function getBundleVariant(productId, color, size, qty, customerName) {
   let product = ReactionCore.Collections.Products.findOne(productId);
   if (product && size && color) {
     let variant = _.findWhere(product.variants, {size: size, color: color});
-    return createOrderItem(productId, variant, qty); // This is where QTY gets screwed up.
+    return createOrderItem(productId, variant, qty, customerName); // This is where QTY gets screwed up.
   }
   return false;
 }
@@ -264,8 +340,27 @@ function setupOrderItems(lineItems, orderNumber) {
   const bundleIds = _.pluck(Bundles.find().fetch(), 'shopifyId');
   const productIds = _.pluck(Products.find().fetch(), 'shopifyId');
   let items = [];
+  let otherItems = [];
+  let skiPackages = [];
+  let kayaksRented = 0;
   let bundleMissingColor = false;
+  let rushShipping = {
+    qty: 0,
+    subtotal: 0
+  };
+  let damageCoverage = {
+    packages: {
+      qty: 0,
+      subtotal: 0
+    },
+    products: {
+      qty: 0,
+      subtotal: 0
+    }
+  };
   _.each(lineItems, function (item) {
+    // Setting the ski Vendors that mark if they ski packages
+    let skiVendors = ['Black Tie', 'Ski Butlers'];
     // Check to see  if product_id exists in our bundIds array
     if (_.contains(bundleIds, item.product_id + '')) {
       let bundle = Bundles.findOne({shopifyId: item.product_id + ''});
@@ -273,18 +368,24 @@ function setupOrderItems(lineItems, orderNumber) {
         ReactionCore.Log.error('CS created order ' + orderNumber);
         let defaultColor = _.keys(bundle.colorWays)[0];
         let defaultColorWay = bundle.colorWays[defaultColor];
+        let customerObj = _.findWhere(item.properties, {name: 'For'});
+        let customerName;
+        if (customerObj) {
+          customerName = customerObj.value;
+        }
         let productTypes = [
           'jacketId',
           'pantsId',
           'glovesId',
           'stdGogglesId'
         ];
-        _.each(productTypes, function (productType){
+        _.each(productTypes, function (productType) {
           items.push({
             _id: Random.id(),
             shopId: ReactionCore.getShopId(),
             productId: defaultColorWay[productType],
             quantity: item.quantity,
+            customerName: customerName,
             workflow: {
               status: 'orderCreated',
               workflow: ['inventoryAdjusted']
@@ -298,6 +399,7 @@ function setupOrderItems(lineItems, orderNumber) {
               shopId: ReactionCore.getShopId(),
               productId: defaultColorWay.midlayerId,
               quantity: item.quantity,
+              customerName: customerName,
               workflow: {
                 status: 'orderCreated',
                 workflow: ['inventoryAdjusted']
@@ -307,7 +409,11 @@ function setupOrderItems(lineItems, orderNumber) {
         return;
       }
       let color = _.findWhere(item.properties, {name: 'Color'});
-
+      let customerObj = _.findWhere(item.properties, {name: 'For'});
+      let customerName;
+      if (customerObj) {
+        customerName = customerObj.value;
+      }
       if (color) {
         color = keyify(color.value);
       } else {
@@ -317,13 +423,18 @@ function setupOrderItems(lineItems, orderNumber) {
         color = keyify(colorOptions[0]);
       }
 
+      if (color === 'aquaStoneBlack') {
+        color = 'aquastoneBlack';
+      }
+
       let style = bundle.colorWays[color]; // call the bundle + colorway a style;
       let size = {
-        jacket: _.findWhere(item.properties, {name: 'Jacket Size'}).value.trim(),
-        midlayer: _.findWhere(item.properties, {name: 'Jacket Size'}).value.trim(),
-        pants: _.findWhere(item.properties, {name: 'Pants Size'}).value.trim(),
-        gloves: _.findWhere(item.properties, {name: 'Gloves Size'}).value.trim()
+        jacket: normalizeSize(_.findWhere(item.properties, {name: 'Jacket Size'}).value.trim()),
+        midlayer: normalizeSize(_.findWhere(item.properties, {name: 'Jacket Size'}).value.trim()),
+        pants: normalizeSize(_.findWhere(item.properties, {name: 'Pants Size'}).value.trim()),
+        gloves: normalizeSize(_.findWhere(item.properties, {name: 'Gloves Size'}).value.trim())
       };
+
       let goggleChoice  = _.findWhere(item.properties, {name: 'Goggles Choice'});
       if (goggleChoice) {
         goggleChoice = goggleChoice.value.trim();
@@ -331,7 +442,7 @@ function setupOrderItems(lineItems, orderNumber) {
         goggleChoice = 'Standard';
       }
       let goggleType = goggleChoice === 'Over Glasses' ? 'otg' : 'std';
-      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size', item.quantity);
+      let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'One Size', item.quantity, customerName);
       // let goggleVariantItem = getBundleVariant(style[goggleType + 'GogglesId'], style[goggleType + 'GogglesColor'], 'STD');
       if (goggleVariantItem) {
         items.push(goggleVariantItem);
@@ -341,7 +452,7 @@ function setupOrderItems(lineItems, orderNumber) {
 
       let productTypes = ['jacket', 'pants', 'midlayer', 'gloves'];
       _.each(productTypes, function (productType) {
-        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType], item.quantity);
+        let variantItem = getBundleVariant(style[productType + 'Id'], style[productType + 'Color'], size[productType], item.quantity, customerName);
         if (variantItem) {
           items.push(variantItem);
         } else {
@@ -349,20 +460,62 @@ function setupOrderItems(lineItems, orderNumber) {
         }
       });
     } else if (_.contains(productIds, item.product_id + '')) {
-      let colorObj =  _.findWhere(item.properties, {name: 'Color'});
-      let color;
+      let colorObj = _.findWhere(item.properties, {name: 'Color'});
+      let color = '';
       if (colorObj) {
-        color = colorObj.value;
+        color = colorObj.value.trim();
       }
-      let size;
+      let customerObj = _.findWhere(item.properties, {name: 'For'});
+      let customerName;
+      if (customerObj) {
+        customerName = customerObj.value;
+      }
+      let size = '';
       let sizeObj = _.find(item.properties, function (prop) {
         return prop.name.indexOf('Size') > 1;
       });
-      if (sizeObj && !sizeObj === 'unselected') {
-        size = sizeObj.value;
+      if (sizeObj && sizeObj !== 'unselected') {
+        size = sizeObj.value.trim();
       }
+
+      // Strip HTML tags
+      size = stripTags(size);
+      color = stripTags(color);
+
+      // Find size and color of baselayer items
+      if (item.variant_title && _.contains(['XXS', 'XS', 'Extra Small', 'Small', 'Medium', 'Large', 'Extra Large', 'XL', 'XXL'], item.variant_title.trim())) {
+        size = item.variant_title.trim();
+        color = item.title.match(/\W-\W([A-Za-z\W]*)/)[1];
+      }
+
+      if (color === 'Bottom' || color.indexOf('Top') !== -1) {
+        color = 'Black';
+      }
+
+      // Correct for shopify products including product title in color
+      if (color.indexOf('Amped') !== -1 || color.indexOf('Fray') !== -1) {
+        color = color.replace('Amped', '').trim();
+      }
+      if (color.indexOf('Fray') !== -1) {
+        color = color.replace('Fray', '').trim();
+      }
+
+      // Normalize Size - Correct for shopify products having 'XS' or 'XL' as a size
+      size = normalizeSize(size);
+
+      // Fix Shopify not having 'True Black' as Burton Black color
+      if (item.vendor === 'Burton' && color === 'Black') {
+        color = 'True Black';
+      }
+
+      // Fix Shopify goggles not having a size
+      if (item.title.indexOf('Goggles') !== -1 && !size) {
+        size = 'One Size';
+      }
+
       let product = Products.findOne({shopifyId: item.product_id + ''});
       let variant;
+
       if (product) {
         variant = _.findWhere(product.variants, {size: size, color: color});
       }
@@ -373,6 +526,7 @@ function setupOrderItems(lineItems, orderNumber) {
           shopId: ReactionCore.getShopId(),
           productId: product._id,
           quantity: item.quantity,
+          customerName: customerName,
           workflow: {
             status: 'orderCreated',
             workflow: ['inventoryAdjusted']
@@ -384,6 +538,7 @@ function setupOrderItems(lineItems, orderNumber) {
           shopId: ReactionCore.getShopId(),
           productId: product._id,
           quantity: item.quantity,
+          customerName: customerName,
           variants: variant,
           workflow: {
             status: 'orderCreated',
@@ -392,11 +547,82 @@ function setupOrderItems(lineItems, orderNumber) {
         };
       }
       items.push(newItem);
+    } else if (item.title === 'Damage Coverage' || item.title === 'Damage Coverage for Packages') {
+      let qty = item.quantity;
+      let price = parseInt(item.price, 10);
+
+      if (item.title === 'Damage Coverage for Packages') {
+        damageCoverage.packages.qty += qty;
+        damageCoverage.packages.subtotal += price;
+      }
+      if (item.title === 'Damage Coverage') {
+        damageCoverage.products.qty += qty;
+        damageCoverage.products.subtotal += price;
+      }
+    } else if (_.contains(skiVendors, item.vendor)) {
+      let variant = item.variant_title;
+      let variantSplit = variant.split(' ');
+      let helmet = _.contains(variantSplit, 'With');
+      let skiPackage = {
+        _id: Random.id(),
+        vendor: item.vendor,
+        packageName: item.name,
+        variantTitle: item.variant_title,
+        helmet: helmet,
+        rentalLength: parseInt(variantSplit[0], 10) || 0,
+        qty: item.quantity,
+        price: parseFloat(item.price, 10),
+        packageType: item.title.split(' |')[0]
+      };
+      let properties = item.properties;
+      let customer = _.findWhere(properties, {name: 'For'});
+      if (customer) {
+        skiPackage.customerName = customer.value;
+      }
+      let gender = _.findWhere(properties, {name: 'Gender'});
+      if (gender) {
+        skiPackage.gender = gender.value;
+      }
+      let heightInFeet = _.findWhere(properties, {name: 'Height Feet'});
+      let heightInInches = _.findWhere(properties, {name: 'Height Inches'});
+      if (heightInFeet && heightInInches) {
+        skiPackage.height = heightInFeet.value + ' ft ' + heightInInches.value + ' in';
+      }
+      let weight = _.findWhere(properties, {name: 'Weight'});
+      let weightUnits = _.findWhere(properties, {name: 'Weight Units'});
+      if (weight && weightUnits) {
+        skiPackage.weight = weight.value + ' ' + weightUnits.value;
+      }
+      skiPackages.push(skiPackage);
+    } else if (item.vendor === 'Oru Kayak') {
+      kayaksRented += item.quantity;
+    } else if (item.title === 'Rush Shipping') {
+      let qty = item.quantity;
+      let price = parseInt(item.price, 10);
+      rushShipping.qty += qty;
+      rushShipping.subtotal += price;
+    } else {
+      if (!item.vendor) {
+        item.vendor = 'GetOutfitted';
+      }
+      let other = {
+        product: item.title,
+        price: parseFloat(item.price, 10),
+        qty: parseInt(item.quantity, 10),
+        vendor: item.vendor,
+        variantTitle: item.variant_title
+      };
+      otherItems.push(other);
     }
   });
   return {
     items: items,
-    bundleMissingColor: bundleMissingColor
+    bundleMissingColor: bundleMissingColor,
+    damageCoverage: damageCoverage,
+    skiPackages: skiPackages,
+    kayaksRented: kayaksRented,
+    rushShipping: rushShipping,
+    other: otherItems
   };
 }
 
@@ -420,6 +646,7 @@ function setupAdvancedFulfillmentItems(items) {
           variantId: item.variants._id,
           price: item.variants.price,
           sku: item.variants.sku,
+          customerName: item.customerName,
           location: item.variants.location,
           itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
           workflow: {
@@ -429,12 +656,17 @@ function setupAdvancedFulfillmentItems(items) {
         };
       }
       itemMissingDetails = true;
+      let description = 'Product Not Found';
+      if (product) {
+        description = product.gender + ' - ' + product.vendor + ' - ' + product.title;
+      }
       return {
         _id: item._id,
         productId: item.productId,
         shopId: item.shopId,
         quantity: item.quantity,
-        itemDescription: product.gender + ' - ' + product.vendor + ' - ' + product.title,
+        itemDescription: description,
+        customerName: item.customerName,
         workflow: {
           status: 'In Stock',
           workflow: []
@@ -474,15 +706,16 @@ function determineTransitTime(order, fedexTransitTime, buffersShipping) {
 
 function rushDelivery(reactionOrder) {
   let localDelivery = reactionOrder.advancedFulfillment.localDelivery;
+  if (localDelivery) {
+    return false;
+  }
   let todaysDate = new Date();
   let arriveByDate = reactionOrder.advancedFulfillment.arriveBy;
-  let transitTime = reactionOrder.advancedFulfillment.transitTime;
-  let shipDate = moment(todaysDate).add(transitTime, 'days');
-  if (!localDelivery) {
-    let daysBetween = moment(shipDate).diff(arriveByDate);
-    return daysBetween > 0;
-  }
-  return false;
+  let transitTime = reactionOrder.advancedFulfillment.transitTime - 1; // Fedex + 1
+
+  let shipDate = moment(todaysDate).startOf('day').add(transitTime, 'days'); // shipDate as start of day
+  let daysBetween = moment(shipDate).diff(arriveByDate);
+  return daysBetween > 0;
 }
 
 function realisticShippingChecker(reactionOrder) {
@@ -500,19 +733,24 @@ function createReactionOrder(order) {
     ReactionCore.Log.warn('Import of order #' + order.order_number + ' aborted because it already exists');
     return false;
   }
-
+  const orderStatus = order.fulfillment_status === 'fulfilled' ? 'orderShipped' : 'orderCreated';
   const notes = order.note_attributes;
   const rental = setupRentalFromOrderNotes(notes); // Returns start, end, and triplength of rental or false
   const buffers = getShippingBuffers();
-  const fedexTransitTime = getFedexTransitTime(order.shipping_address);
+  const fedexTransitTime = getFedexTransitTime(order.shipping_address || order.billing_address);
   if (fedexTransitTime) {
-    buffers.shipping = fedexTransitTime + 1;
+    buffers.shipping = fedexTransitTime + 1; // Update buffer to use fedexTransitTime +1 (1 extra day for arrival day)
   }
   let orderItems = setupOrderItems(order.line_items, order.order_number);
   // Initialize reaction order
+  let kayaks = {
+    vendor: 'Oru Kayak',
+    qty: orderItems.kayaksRented
+  };
   let reactionOrder = {
     shopifyOrderNumber: order.order_number,
     shopifyOrderId: order.id,
+    shopifyOrderCreatedAt: new Date(order.created_at),
     email: order.email,
     shopId: ReactionCore.getShopId(),
     userId: Random.id(),
@@ -529,14 +767,29 @@ function createReactionOrder(order) {
       shipmentDate: new Date(),           // Initialize shipmentDate to today
       returnDate: new Date(2100, 8, 20),  // Initialize return date to 85 years from now
       localDelivery: determineLocalDelivery(order),
-      arriveBy: shipmentChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
+      arriveBy: arrivalDateChecker(moment(rental.start).subtract(1, 'days').toDate(), determineLocalDelivery(order)),
       shipReturnBy: returnChecker(moment(rental.end).add(1, 'days').toDate(), determineLocalDelivery(order)),
       transitTime: determineTransitTime(order, fedexTransitTime, buffers.shipping),
+      damageCoverage: orderItems.damageCoverage,
+      skiPackages: orderItems.skiPackages,
+      skiPackagesPurchased: orderItems.skiPackages.length > 0,
       workflow: {
-        status: 'orderCreated'
+        status: orderStatus
+      },
+      paymentInformation: {
+        totalPrice: parseFloat(order.total_price),
+        totalTax: parseFloat(order.total_tax),
+        subtotalPrice: parseFloat(order.subtotal_price),
+        totalDiscount: parseFloat(order.total_discounts),
+        totalItemsPrice: parseFloat(order.total_line_items_price),
+        discountCodes: order.discount_codes,
+        refunds: order.refunds
+      },
+      canceledInformation: {
+        canceledAt: new Date(order.cancelled_at),
+        reason: order.cancel_reason
       }
-    },
-    createdAt: new Date(order.created_at)
+    }
   };
 
   let afDetails = setupAdvancedFulfillmentItems(reactionOrder.items);
@@ -549,13 +802,27 @@ function createReactionOrder(order) {
     ReactionCore.Log.error('Importing Shopify Order #' + order.order_number + ' - Missing Rental Dates ');
     reactionOrder.infoMissing = true; // Flag order
   } else {
-    reactionOrder.advancedFulfillment.shipmentDate = shipmentChecker(moment(rental.start).subtract(buffers.shipping, 'days').toDate(), determineLocalDelivery(order));
+    reactionOrder.advancedFulfillment.shipmentDate = shipmentDateChecker(
+      moment(rental.start).subtract(buffers.shipping, 'days').toDate(),
+      determineLocalDelivery(order),
+      determineTransitTime(order, fedexTransitTime, buffers.shipping));
     reactionOrder.advancedFulfillment.returnDate = returnChecker(moment(rental.end).add(buffers.returning, 'days').toDate(), determineLocalDelivery(order));
   }
   reactionOrder.advancedFulfillment.rushDelivery = rushDelivery(reactionOrder);
   if (reactionOrder.advancedFulfillment.rushDelivery && !reactionOrder.advancedFulfillment.localDelivery) {
     reactionOrder.advancedFulfillment.shipmentDate = rushShipmentChecker(new Date());
   }
+  if (kayaks.qty > 0) {
+    reactionOrder.advancedFulfillment.kayakRental = kayaks;
+  }
+
+  if (orderItems.rushShipping.qty > 0) {
+    reactionOrder.advancedFulfillment.rushShippingPaid = orderItems.rushShipping;
+  }
+  if (orderItems.other.length > 0) {
+    reactionOrder.advancedFulfillment.other = orderItems.other;
+  }
+
   reactionOrder.advancedFulfillment.impossibleShipDate = realisticShippingChecker(reactionOrder);
   ReactionCore.Log.info('Importing Shopify Order #'
     + order.order_number
@@ -566,24 +833,20 @@ function createReactionOrder(order) {
   return ReactionCore.Collections.Orders.insert(reactionOrder);
 }
 
-function saveOrdersToShopifyOrders(data, dateTo, pageNumber, pageTotal, groupId) {
+function saveOrdersToShopifyOrders(data) {
   check(data, Object);
-  check(dateTo, Date);
-  check(pageNumber, Number);
-  check(pageTotal, Number);
-  check(groupId, String);
-  let shopifyOrders = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-orders'}).settings;
-  let dateFrom = new Date('2003-09-20'); // This was before Shopify
-  if (shopifyOrders.public) {
-    dateFrom = shopifyOrders.public.lastUpdated;
-  }
-  ReactionCore.Collections.ShopifyOrders.insert({
-    dateFrom: dateFrom,
-    dateTo: dateTo,
-    information: data,
-    pageNumber: pageNumber,
-    pageTotal: pageTotal,
-    groupId: groupId
+  _.each(data.orders, function (order) {
+    ReactionCore.Collections.ShopifyOrders.update({
+      shopifyOrderNumber: parseInt(order.order_number, 10)
+    }, {
+      $set: {
+        shopifyOrderNumber: parseInt(order.order_number, 10),
+        information: order,
+        importedAt: new Date()
+      }
+    }, {
+      upsert: true
+    });
   });
 }
 
@@ -595,18 +858,20 @@ Meteor.methods({
       let key = shopifyOrders.settings.shopify.key;
       let password = shopifyOrders.settings.shopify.password;
       let shopname = shopifyOrders.settings.shopify.shopname;
-      let result;
+      let result = 0;
+
+      let params = {};
       if (shopifyOrders.settings.public) {
-        let date = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
-        result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: key + ':' + password,
-          params: { created_at_min: date}
-        });
-      } else {
-        result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
-          auth: key + ':' + password
-        });
+        let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+        if (lastDate) {
+          params = _.extend(params, {created_at_min: lastDate});
+        }
       }
+      result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/count.json', {
+        auth: key + ':' + password,
+        params: params
+      });
+
       ReactionCore.Collections.Packages.update({_id: shopifyOrders._id}, {
         $set: {
           'settings.public.ordersSinceLastUpdate': result.data.count
@@ -639,36 +904,24 @@ Meteor.methods({
     let orderCount = shopifyOrders.settings.public.ordersSinceLastUpdate;
     let numberOfPages = Math.ceil(orderCount / 50);
     let pageNumbers = _.range(1, numberOfPages + 1);
-    let groupId = Random.id();
     let lastDate = formatDateForApi(shopifyOrders.settings.public.lastUpdated);
+
+    let params = {};
     if (lastDate) {
-      _.each(pageNumbers, function (pageNumber) {
-        let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-          auth: key + ':' + password,
-          params: {
-            created_at_min: lastDate,
-            page: pageNumber
-          }
-        }).data;
-        saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
-        _.each(result.orders, function (order) {
-          createReactionOrder(order);
-        });
-      });
-    } else {
-      _.each(pageNumbers, function (pageNumber) {
-        let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
-          auth: key + ':' + password,
-          params: {
-            page: pageNumber
-          }
-        }).data;
-        saveOrdersToShopifyOrders(result, date, pageNumber, numberOfPages, groupId);
-        _.each(result.orders, function (order) {
-          createReactionOrder(order);
-        });
-      });
+      params = _.extend(params, {created_at_min: lastDate});
     }
+
+    _.each(pageNumbers, function (pageNumber) {
+      let result = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders.json', {
+        auth: key + ':' + password,
+        params: _.extend(params, {page: pageNumber})
+      }).data;
+      saveOrdersToShopifyOrders(result);
+      _.each(result.orders, function (order) {
+        createReactionOrder(order);
+      });
+    });
+
     Meteor.call('shopifyOrders/updateTimeStamp', date);
     return true;
   }

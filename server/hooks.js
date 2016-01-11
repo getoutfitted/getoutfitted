@@ -77,6 +77,51 @@ Router.route('/webhooks/orders/new', {
   }
 });
 
+Router.route('/webhooks/orders/cancel', {
+  where: 'server',
+  name: 'webhooks.orders.cancel',
+  action: function () {
+    let keyMatches = verifyPreSharedKey(this.request.query.key, 'shopify');
+
+    if (keyMatches) {
+      this.response.statusCode = 200;
+      this.response.end('Success');
+
+      const shopifyOrdersPackage = ReactionCore.Collections.Packages.findOne({
+        name: 'reaction-shopify-orders'
+      });
+      const shopname = shopifyOrdersPackage.settings.shopify.shopname;
+      const key = shopifyOrdersPackage.settings.shopify.key;
+      const password = shopifyOrdersPackage.settings.shopify.password;
+
+      let shopifyOrderNumber;
+      // Get shopify order number from shopify API
+      try {
+        shopifyOrderNumber = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/' + this.request.body.order_id + '.json', {
+          auth: key + ':' + password
+        }).data.order.order_number;
+      } catch (e) {
+        ReactionCore.Log.error('Error in webhooks.orders.cancel determining shopifyOrderNumber ' + e);
+        // TODO: Add failed imports to queue to retry order import
+        return false;
+      }
+      let order = ReactionCore.Collections.Orders.findOne({shopifyOrderNumber: shopifyOrderNumber});
+      Meteor.call('shopifyOrders/cancelOrder', order._id, '0x11111111');
+      ReactionCore.Log.info('Shopify Cancel Order Webhook successfully processed CANCELLATION for order number', shopifyOrderNumber);
+      // TODO: add notification for CSR and Ops
+    } else {
+      this.response.statusCode = 403;
+      this.response.end('Forbidden');
+      ReactionCore.Log.warn('Shopify New Fulfillment Webhook failed - invalid signature: ',
+        this.request.headers['x-forwarded-for'],
+        this.request.headers['x-forwarded-host'],
+        this.request.headers['x-shopify-hmac-sha256'],
+        this.request.headers['x-generated-signature']);
+    }
+  }
+});
+
+
 Router.route('/webhooks/aftership/post', {
   where: 'server',
   name: 'webhooks.aftership.post',
@@ -86,7 +131,7 @@ Router.route('/webhooks/aftership/post', {
     if (keyMatches) {
       this.response.statusCode = 200;
       this.response.end('Success');
-      // Meteor.call('aftership/processHook', this.request.body);
+      Meteor.call('aftership/processHook', this.request.body);
       ReactionCore.Log.info('Aftership Post Webhook successfully processed ' + this.request.body.msg.tag + ' for Order: #', this.request.body.msg.order_id);
       // TODO: add notification for CSR and Ops
     } else {

@@ -1,7 +1,7 @@
 Package.describe({
   summary: 'Shopify orders are pulled into Reaction',
   name: 'getoutfitted:reaction-shopify-orders',
-  version: '0.2.0',
+  version: '0.3.0',
   git: 'https://github.com/getoutfitted/reaction-shopify-orders'
 });
 
@@ -22,7 +22,7 @@ Package.onUse(function (api) {
   api.use('momentjs:twix@0.7.2');
   api.use('standard-minifiers');
   api.use('dburles:factory@0.3.10');
-  api.use('getoutfitted:reaction-advanced-fulfillment@0.3.0');
+  api.use('getoutfitted:reaction-advanced-fulfillment@0.4.0');
   api.use('getoutfitted:reaction-rental-products@0.1.2');
   api.use('reactioncommerce:reaction-factories');
   api.use('underscorestring:underscore.string@3.2.2');
@@ -34,7 +34,9 @@ Package.onUse(function (api) {
     'server/registry.js',
     'server/methods/apiCalls.js',
     'server/methods/fulfillments.js',
-    'server/hooks.js'
+    'server/hooks.js',
+    'server/methods/aftership.js',
+    'server/methods/shopifyUpdates.js'
   ], 'server');
 
   api.addFiles([
