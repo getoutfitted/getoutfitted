@@ -35,7 +35,8 @@ Package.onUse(function (api) {
     'server/methods/apiCalls.js',
     'server/methods/fulfillments.js',
     'server/hooks.js',
-    'server/methods/aftership.js'
+    'server/methods/aftership.js',
+    'server/methods/shopifyUpdates.js'
   ], 'server');
 
   api.addFiles([
