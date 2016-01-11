@@ -87,25 +87,7 @@ Router.route('/webhooks/orders/cancel', {
       this.response.statusCode = 200;
       this.response.end('Success');
 
-      const shopifyOrdersPackage = ReactionCore.Collections.Packages.findOne({
-        name: 'reaction-shopify-orders'
-      });
-      const shopname = shopifyOrdersPackage.settings.shopify.shopname;
-      const key = shopifyOrdersPackage.settings.shopify.key;
-      const password = shopifyOrdersPackage.settings.shopify.password;
-
-      let shopifyOrderNumber;
-      // Get shopify order number from shopify API
-      try {
-        shopifyOrderNumber = HTTP.get('https://' + shopname + '.myshopify.com/admin/orders/' + this.request.body.order_id + '.json', {
-          auth: key + ':' + password
-        }).data.order.order_number;
-      } catch (e) {
-        ReactionCore.Log.error('Error in webhooks.orders.cancel determining shopifyOrderNumber ' + e);
-        // TODO: Add failed imports to queue to retry order import
-        return false;
-      }
-      let order = ReactionCore.Collections.Orders.findOne({shopifyOrderNumber: shopifyOrderNumber});
+      let order = ReactionCore.Collections.Orders.findOne({shopifyOrderId: this.request.body.id});
       Meteor.call('shopifyOrders/cancelOrder', order._id, '0x11111111');
       ReactionCore.Log.info('Shopify Cancel Order Webhook successfully processed CANCELLATION for order number', shopifyOrderNumber);
       // TODO: add notification for CSR and Ops
