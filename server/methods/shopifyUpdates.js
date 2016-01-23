@@ -12,6 +12,11 @@ Meteor.methods({
     let shopname = shopifyOrders.settings.shopify.shopname;
     let shopifyOrderIdStringify = shopifyOrderId + '';
     let shopifyImport = ShopifyOrders.findOne({shopifyOrderNumber: order.shopifyOrderNumber});
+
+    if (!shopifyImport) {
+      return false; // Exit method if original ShopifyImport order cannot be found
+    }
+
     let fulfillmentStatus = shopifyImport.information.fulfillment_status;
     if (key && password && shopname) {
       if (fulfillmentStatus === null) {

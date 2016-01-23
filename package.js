@@ -1,7 +1,7 @@
 Package.describe({
   summary: 'Shopify orders are pulled into Reaction',
   name: 'getoutfitted:reaction-shopify-orders',
-  version: '0.4.0',
+  version: '0.4.1',
   git: 'https://github.com/getoutfitted/reaction-shopify-orders'
 });
 
