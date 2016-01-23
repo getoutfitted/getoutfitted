@@ -850,6 +850,21 @@ function saveOrdersToShopifyOrders(data) {
   });
 }
 
+function saveShopifyOrder(order) {
+  check(order, Object);
+  ReactionCore.Collections.ShopifyOrders.update({
+    shopifyOrderNumber: parseInt(order.order_number, 10)
+  }, {
+    $set: {
+      shopifyOrderNumber: parseInt(order.order_number, 10),
+      information: order,
+      importedAt: new Date()
+    }
+  }, {
+    upsert: true
+  });
+}
+
 
 Meteor.methods({
   'shopifyOrder/count': function () {
@@ -890,6 +905,7 @@ Meteor.methods({
   'shopifyOrders/newOrder': function (order) {
     check(order, Match.Any);
     if (this.connection === null) {
+      saveShopifyOrder(order);
       createReactionOrder(order);
     } else {
       throw new Meteor.Error(403, 'Forbidden, method is only available from the server');
