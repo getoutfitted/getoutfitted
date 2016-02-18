@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/reactioncommerce/reaction/issues"
   },
-  "homepage": "https://github.com/reactioncommerce/reaction"
+  "homepage": "https://github.com/reactioncommerce/reaction",
+  "devDependencies": {
+    "babel-eslint": "^5.0.0",
+    "eslint": "^2.1.0",
+    "eslint-plugin-react": "^3.16.1"
+  }
 }
