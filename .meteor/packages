@@ -58,13 +58,21 @@ reactioncommerce:reaction-ui-tagnav
 # Reaction Payment Packages
 
 reactioncommerce:reaction-paymentmethod
-reactioncommerce:reaction-paypal
+#reactioncommerce:reaction-paypal
 reactioncommerce:reaction-stripe
-reactioncommerce:reaction-auth-net
-reactioncommerce:reaction-braintree
+#reactioncommerce:reaction-auth-net
+#reactioncommerce:reaction-braintree
 
+# GetOutfitted Packages
+getoutfitted:reaction-rental-products
+#getoutfitted:reaction-advanced-fulfillment
+#getoutfitted:reaction-shopify-orders
+#getoutfitted:reaction-shopify-products
+#getoutfitted:reaction-local-delivery
 
 # Reaction Commerce Data
+
+#kadira:blaze-layout
 
 reactioncommerce:reaction-sample-data   # default Reaction data
 
