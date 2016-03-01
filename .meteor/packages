@@ -37,6 +37,7 @@ accounts-oauth
 
 reactioncommerce:core
 reactioncommerce:core-theme
+reactioncommerce:reaction-catalog
 reactioncommerce:reaction-layout
 reactioncommerce:launchdock-connect
 reactioncommerce:reaction-accounts
@@ -63,12 +64,16 @@ reactioncommerce:reaction-stripe
 #reactioncommerce:reaction-auth-net
 #reactioncommerce:reaction-braintree
 
+
 # GetOutfitted Packages
 getoutfitted:reaction-rental-products
 #getoutfitted:reaction-advanced-fulfillment
 #getoutfitted:reaction-shopify-orders
 #getoutfitted:reaction-shopify-products
 #getoutfitted:reaction-local-delivery
+
+# Add on community packages
+# ramusus:reaction-filtration
 
 # Reaction Commerce Data
 
@@ -82,4 +87,3 @@ reactioncommerce:default-theme          # default Reaction theme
 
 # Forced updates on packages
 mdg:validation-error@0.4.0
-cosmos:browserify@0.9.3

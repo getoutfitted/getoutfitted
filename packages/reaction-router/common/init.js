@@ -63,6 +63,7 @@ ReactionRouter.initPackageRoutes = (userId) => {
   shop.route("/", {
     name: "index",
     action: function () {
+      ReactionFiltration.reset();
       renderLayout();
     }
   });
@@ -88,6 +89,9 @@ ReactionRouter.initPackageRoutes = (userId) => {
           let routeName;
 
           routeName = getRegistryRouteName(pkg.name, registryItem);
+          // If route doesn't start with "/" we add it to avoid the flow-router error
+          route = route.substring(0, 1) !== "/" ? "/" + route : route;
+
           // check route permissions
           if (ReactionCore.hasPermission(routeName, userId) || ReactionCore.hasPermission(route, userId)) {
             options.template = template;

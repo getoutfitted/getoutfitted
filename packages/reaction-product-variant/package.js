@@ -32,13 +32,14 @@ Package.onUse(function (api) {
   // community packages
   api.use("reactioncommerce:reaction-router@1.0.0");
   api.use("reactioncommerce:core@0.12.0");
+  api.use("ramusus:reaction-filtration@0.0.4");
 
   // register package
   api.addFiles("server/register.js", "server");
 
   // helpers
   api.addFiles("client/helpers/products.js", "client");
-  api.addFiles("client/helpers/globals.js", "client");
+  api.addFiles("client/helpers/global.js", "client");
 
   // Product Templates
   api.addFiles("client/templates/products/products.html", "client");
