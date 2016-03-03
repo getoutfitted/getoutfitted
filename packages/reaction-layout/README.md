@@ -1,6 +1,2 @@
-# reaction-layout
-Reaction Commerce layout templates
-
-```
-meteor add reactioncommerce:reaction-layout
-```
+# getoutfitted-layout
+GetOutfitted Reaction Commerce layout templates
