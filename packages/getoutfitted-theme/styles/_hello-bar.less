@@ -1,0 +1,54 @@
+.hello-bar {
+  background: #D2691E;
+}
+
+.hello-header, .sale-header {
+  display: inline-block;
+  color: #FFF;
+  font-size: 1.3rem;
+  padding: 15px 0;
+}
+
+.sale-header {
+  display: none;
+}
+
+.hello-button {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #D2691E;
+  font-size: 1.2rem;
+  margin-left: 10px;
+  background: #FFF;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-weight: 700;
+  &:hover {
+    color: #944C17;
+  }
+}
+
+body.template-cart .hello-bar {
+  display: none;
+}
+
+body.subtemplate-warehouse-sale .hello-bar, body.subtemplate-purchasable .hello-bar {
+  background: $primary-color;
+}
+
+// Only show hello bar if we are not in the Warehouse Sale section
+body.subtemplate-warehouse-sale .hello-header, body.subtemplate-warehouse-sale .hello-button {
+  display: none;
+}
+
+body.subtemplate-purchasable .hello-header, body.subtemplate-purchasable .hello-button {
+  display: none;
+}
+
+body.subtemplate-warehouse-sale .sale-header {
+  display: inline-block;
+}
+
+body.subtemplate-purchasable .sale-header {
+  display: inline-block;
+}

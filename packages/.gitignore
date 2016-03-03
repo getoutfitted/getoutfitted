@@ -3,6 +3,7 @@
 
 !getoutfitted-theme
 !getoutfitted-theme/*
+!getoutfitted-theme/**
 
 !my-custom-theme-template
 !my-custom-theme-template/*
