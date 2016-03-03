@@ -1,6 +1,6 @@
 Package.describe({
-  summary: "Reaction Commerce layout templates",
-  name: "reactioncommerce:reaction-layout",
+  summary: "GetOutfitted Reaction Commerce layout templates",
+  name: "getoutfitted:getoutfitted-layout",
   version: "1.0.0",
   documentation: "README.md"
 });
