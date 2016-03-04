@@ -63,7 +63,7 @@ ReactionRouter.initPackageRoutes = (userId) => {
   shop.route("/", {
     name: "index",
     action: function () {
-      renderLayout();
+      renderLayout({workflow: "coreHomepageWorkflow"});
     }
   });
 

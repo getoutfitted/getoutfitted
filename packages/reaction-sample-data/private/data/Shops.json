@@ -3072,6 +3072,21 @@
   ],
   "layout": [{
     "layout": "coreLayout",
+    "workflow": "coreIndexWorkflow",
+    "theme": "default",
+    "enabled": true,
+    "structure": {
+       "template": "getOutfittedIndex",
+       "layoutHeader": "layoutHeader",
+       "layoutFooter": "layoutFooter",
+       "notFound": "notFound",
+       "dashboardControls": "filtrationDashboardControls",
+       "adminControlsFooter": "adminControlsFooter"
+     },
+    "priority": 1,
+    "position": 1
+  }, {
+    "layout": "coreLayout",
     "workflow": "coreWorkflow",
     "theme": "default",
     "enabled": true,
