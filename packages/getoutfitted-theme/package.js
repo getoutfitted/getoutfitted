@@ -29,7 +29,10 @@ Package.onUse(function (api) {
     // ------ Header Styles ------ //
     "styles/header/header.less",
     "styles/header/navs.less",
-    "styles/header/tagNav.less"
+    "styles/header/tagNav.less",
+
+    // ----- Footer Styles ----- //
+    "styles/footer/footer.less"
   ], "client", {isImport: true});
 
 
@@ -45,6 +48,6 @@ Package.onUse(function (api) {
     "public/images/favicon.png",
     "public/images/logo-wordmark.png",
     "public/images/badge.png",
-    "public/images/partners/opp-transparent-white-180.png"
+    "public/images/partners/opp-87.png"
   ], "client");
 });

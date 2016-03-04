@@ -14,11 +14,18 @@ input.stylized[type="radio"]:checked + label.button { background: @primary-color
 input.stylized[type="radio"]:disabled + label.button { background: @silver; color: @iron; margin:0; border-color: @silver; }
 input.stylized[type=radio]:checked:disabled+label.button { background: @primary-color; border: @primary-color; }
 
+// -------- Breadcrumb Styles -------- //
 .breadcrumb-free-shipping {
   float: right;
 }
 .breadcrumb-free-shipping:before {
   content: '';
+}
+
+
+// ---------- Line Height --------- //
+.lh-38 {
+  line-height: 38px;
 }
 
 .small-for-large-up {
@@ -52,10 +59,7 @@ input.stylized[type=radio]:checked:disabled+label.button { background: @primary-
   background: rgba(255, 255, 255, 0.85);
 }
 
-.wordmark {
-  max-height: 20px;
-  max-width: 170px;
-}
+
 
 .row .margin-top, .margin-top {
   &-xsmall {
