@@ -61,6 +61,7 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/layout/header/brand/brand.html", "client");
 
   api.addFiles("client/templates/layout/footer/footer.html", "client");
+  api.addFiles("client/templates/layout/footer/footer.js", "client");
 
   api.addFiles("client/templates/layout/alerts/inlineAlerts.js", "client");
   api.addFiles("client/templates/layout/alerts/reactionAlerts.js", "client");

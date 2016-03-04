@@ -67,7 +67,7 @@ reactioncommerce:reaction-stripe
 
 # GetOutfitted Packages
 getoutfitted:getoutfitted-layout
-getoutfitted:reaction-rental-products
+# getoutfitted:reaction-rental-products
 #getoutfitted:reaction-advanced-fulfillment
 #getoutfitted:reaction-shopify-orders
 #getoutfitted:reaction-shopify-products

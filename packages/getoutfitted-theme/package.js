@@ -25,7 +25,11 @@ Package.onUse(function (api) {
   api.addFiles("styles/variables.less", "client", {isImport: true});
   api.addFiles([
     "styles/_appstyles.less",
-    "styles/base.less"
+    "styles/base.less",
+    // ------ Header Styles ------ //
+    "styles/header/header.less",
+    "styles/header/navs.less",
+    "styles/header/tagNav.less"
   ], "client", {isImport: true});
 
 
@@ -33,12 +37,14 @@ Package.onUse(function (api) {
   // Styles that stand on their own and are processed by Meteor using the proper
   // CSS preprocessor (LESS CSS in this case)
   api.addFiles("main.less", "client");
-  
+
   // Public assets go at the bottom, should load last.
   // Images
   api.addAssets([
-    'public/images/favicon.ico',
-    'public/images/favicon.png',
-    'public/images/logo-wordmark.png'
-  ], 'client');
+    "public/images/favicon.ico",
+    "public/images/favicon.png",
+    "public/images/logo-wordmark.png",
+    "public/images/badge.png",
+    "public/images/partners/opp-transparent-white-180.png"
+  ], "client");
 });
