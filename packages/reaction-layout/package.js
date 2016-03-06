@@ -39,6 +39,9 @@ Package.onUse(function (api) {
   // register reaction package
   api.addFiles("server/register.js", "server");
 
+  // Browser Policy
+  api.addFiles("server/policy.js", "server");
+
   // Theme Templates
   api.addFiles("client/templates/theme/theme.js", "client");
   api.addFiles("client/templates/theme/theme.html", "client");
@@ -46,6 +49,9 @@ Package.onUse(function (api) {
   // layout templates
   api.addFiles("client/templates/layout/layout.html", "client");
   api.addFiles("client/templates/layout/layout.js", "client");
+
+  api.addFiles("client/templates/layout/index/index.html", "client");
+  api.addFiles("client/templates/layout/index/index.js");
 
   api.addFiles("client/templates/layout/createContentMenu/createContentMenu.html", "client");
   api.addFiles("client/templates/layout/createContentMenu/createContentMenu.js", "client");
@@ -73,6 +79,10 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/layout/notFound/notFound.html", "client");
 
   api.addFiles("client/templates/layout/notice/unauthorized.html", "client");
+
+  // Components / Partials
+  api.addFiles("client/templates/components/trailer.html", "client");
+  api.addFiles("client/templates/components/serviceDescription.html", "client");
 
   // Theme Assets
   api.addAssets("private/themes/notFound.css", "server");

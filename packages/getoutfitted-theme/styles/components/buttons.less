@@ -1,0 +1,67 @@
+
+.btn.has-tip {
+  border-bottom: none;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.btn.small, button.small {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.btn.wire, .btn.wire {
+  background: transparent;
+  border: 1px solid @white;
+  transition: background-color 300ms ease-out, color 300ms ease-out;
+  font-size: 16px;
+  &:hover { background: fade( @snow, 30%) }
+  
+  &.blue {
+    border-color: @primary-color;
+    color: @primary-color;
+    &:hover { background: @primary-color; color: @white; }
+  }
+  
+  &.grey {
+    border-color: @aluminum;
+    color: @oil;
+    &:hover {background: @charcoal; color: @white; }
+  }
+  
+}
+
+.btn.wire.white {
+  color: @white;
+  border-color: #FFF;
+  background: transparent;
+}
+
+.btn.wire.white:hover, .btn.wire.white:active {
+  background: rgba(255,255,255, 0.3);
+}
+
+.btn.wire.huge {
+  border-width: 2px;
+}
+
+.btn.wire.white.huge {
+  padding: 1rem 2rem 1.0625rem;
+  font-size: 1.75em;
+
+}
+
+.btn.huge.tuatara.wire {
+  padding: 1rem 2rem 1.0625rem;
+  font-size: 1.75em;
+  background: transparent;
+  border-color: @tuatara;
+  color: @tuatara;
+  transition: background-color 300ms ease-out, color 300ms ease-out;
+  border-width: 2px;
+}
+
+.btn.huge.tuatara.wire:hover, .btn.huge.tuatara.wire:active {
+  background: rgba(255,255,255, 0.5);
+  color: @tuatara;
+}

@@ -26,13 +26,22 @@ Package.onUse(function (api) {
   api.addFiles([
     "styles/_appstyles.less",
     "styles/base.less",
+
+    // ----- Component Styles ----- //
+    "styles/components/buttons.less",
+    "styles/components/captions.less",
+    "styles/components/forms.less",
+    "styles/components/hero.less",
+    "styles/components/section.less",
+
     // ------ Header Styles ------ //
     "styles/header/header.less",
     "styles/header/navs.less",
     "styles/header/tagNav.less",
 
     // ----- Footer Styles ----- //
-    "styles/footer/footer.less"
+    "styles/footer/footer.less",
+    "styles/tiles/tiles.less"
   ], "client", {isImport: true});
 
 
@@ -48,6 +57,22 @@ Package.onUse(function (api) {
     "public/images/favicon.png",
     "public/images/logo-wordmark.png",
     "public/images/badge.png",
-    "public/images/partners/opp-87.png"
+    // -------- Sketch Images -------- //
+    "public/images/sketch/sketch1.jpg",
+    "public/images/sketch/sketch2.jpg",
+    "public/images/sketch/sketch3.jpg",
+    // -------- Hero and Tile Hero Images -------- //
+    "public/images/hero/models1.jpg",
+    "public/images/hero/kayak-index.jpg",
+    "public/images/hero/onesie-index.jpg",
+    "public/images/hero/ski4.jpg",
+    // -------- Logos / Press/ Brand Partners -------- //
+    "public/images/logo/huffingtonpost.png",
+    "public/images/logo/instyle.png",
+    "public/images/logo/skimagazine.png",
+    "public/images/logo/townandcountry.png",
+    "public/images/logo/usatoday.png",
+    "public/images/logo/yahootravel.png",
+    "public/images/logo/opp-87.png"
   ], "client");
 });

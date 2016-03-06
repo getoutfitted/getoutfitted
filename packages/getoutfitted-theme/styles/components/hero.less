@@ -1,0 +1,96 @@
+.hero {
+  display: inline-block;
+  position: relative;
+  &:after {
+    padding-top: 35%; // 20:7 ratio
+    display: block;
+    content: '.';
+    visibility: hidden;
+  }
+}
+
+.home-hero {
+  border-bottom: 10px solid #343434;
+}
+
+.hero-container {
+  position: absolute;
+  color: @white;
+  top: 0; bottom: 0; right: 0; left: 0; // fill parent
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/models1.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+}
+
+.hero-container h1 {
+  color: @white;
+  font-size: 28px;
+  font-family: @font-family-impact;
+  font-weight: @font-weight-bold;
+  text-transform: uppercase;
+  line-height: 1;
+  text-shadow: 1px 1px 10px rgba(100,100,100, 0.2);
+}
+
+.hero-container h2 {
+  font-family: @font-family-serif;
+  color: @white;
+  text-transform: none;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+
+.camping-hero .hero-container {
+  position: absolute;
+  top: 0; bottom: 0; right: 0; left: 0; // fill parent
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/campeasy4.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+  
+  h2 small {
+    color: #FFF;
+    font-family: @font-family-sans-serif;
+    text-transform: none;
+    font-weight: 400;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: @screen-xs-max) and (max-width: @screen-sm-max) {
+  .hero:after { padding-top: 65%; } // 5:3 ratio
+}
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+  .hero:after { padding-top: 45%; } // 5:2 ratio
+}
+
+@media (min-width: @screen-md-min) {
+  .hero:after { padding-top: 40%; } // 5:2 ratio
+  .hero-container h1 {
+    font-size: 32px;
+    margin-top: 50px;
+  }
+  .hero-container h1.hero-line-2 {
+    font-size: 26px;
+    margin-top: 0;
+  }
+  .hero-container h2 { font-size: 16px; }
+  .raft-tile, .sup-tile, .mtb-tile {
+    h3 { font-size: 24px; }
+  }
+}
+
+@media (min-width: @screen-lg-min) {
+  .hero:after { padding-top: 30%; } // 20:7 ratio
+  .hero-container h1 {
+    font-size: 40px;
+  }
+  .hero-container h1.hero-line-2 {
+    font-size: 32px;
+    margin-top: 0;
+  }
+  .hero-container h2 { font-size: 18px; }
+}
