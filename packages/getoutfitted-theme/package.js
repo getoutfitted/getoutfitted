@@ -33,6 +33,7 @@ Package.onUse(function (api) {
     "styles/components/forms.less",
     "styles/components/hero.less",
     "styles/components/section.less",
+    "styles/components/tiles.less",
 
     // ------ Header Styles ------ //
     "styles/header/header.less",
@@ -41,7 +42,10 @@ Package.onUse(function (api) {
 
     // ----- Footer Styles ----- //
     "styles/footer/footer.less",
-    "styles/tiles/tiles.less"
+
+    // ----- Product Styles ----- //
+    "styles/products/productDetail/images/productImageGallery.less"
+
   ], "client", {isImport: true});
 
 

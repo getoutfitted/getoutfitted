@@ -66,6 +66,24 @@ function updateImagePriorities() {
   return results;
 }
 
+Template.productLeadImage.helpers({
+  leadImage: function () {
+    const variant = ReactionProduct.selectedVariant();
+    let leadImage;
+
+    if (variant) {
+      leadImage = Media.findOne({
+        "metadata.variantId": variant._id
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return leadImage;
+  }
+});
+
 /**
  *  Product Image Gallery
  */
@@ -129,17 +147,14 @@ Template.productImageGallery.onRendered(function () {
  */
 
 Template.productImageGallery.events({
-  "mouseenter .gallery > li": function (event) {
+  "click .gallery > li": function (event) {
     event.stopImmediatePropagation();
     if (!ReactionCore.hasPermission("createProduct")) {
-      let first = $(".gallery li:nth-child(1)");
+      let first = $("#leadImage > li");
       let target = $(event.currentTarget);
       if ($(target).data("index") !== first.data("index")) {
-        return $(".gallery li:nth-child(1)").fadeOut(400, function () {
-          $(this).replaceWith(target);
-          first.css({
-            display: "inline-block"
-          }).appendTo($(".gallery"));
+        return $("#leadImage > li").fadeOut(400, function () {
+          $(this).replaceWith(target.clone());
           return $(".gallery li:last-child").fadeIn(100);
         });
       }

@@ -1,5 +1,10 @@
 <template name="productDetail">
   {{#with product}}
+  <div class="product-container" id="product-content" itemscope itemtype="http://schema.org/Product">
+    {{> productLeadImage}}
+  </div>
+
+
   <div class="container-main">
     <div class="container-fluid pdp-container">
       {{!-- Product Visibility Admin Block --}}

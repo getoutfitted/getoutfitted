@@ -1,3 +1,17 @@
+<template name="productLeadImage">
+  {{#if leadImage}}
+    <div id="leadImage" class="leadImage product-media">
+      <li class="gallery-sortable" data-index="{{leadImage._id}}">
+        <img id="leadImage" src="{{leadImage.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive leadImage" alt="{{leadImage.title}}">
+      </li>
+    </div>
+  {{else}}
+    <div class="product-media">
+      <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
+    </div>
+  {{/if}}
+</template>
+
 <template name="productImageGallery">
 <div id="galleryDropPane" class="galleryDropPane">
   <ul class="gallery">
@@ -16,7 +30,7 @@
 
 <template name="imageDetail">
   <li class="gallery-sortable" data-index="{{_id}}">
-    <img src="{{url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='large'}}" class="img-responsive" alt="{{title}}">
+    <img src="{{url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{title}}">
     {{#unless this.isUploaded}}
       {{> FS.UploadProgressBar bootstrap=true}}
     {{/unless}}
