@@ -150,12 +150,11 @@ Template.productImageGallery.events({
   "click .gallery > li": function (event) {
     event.stopImmediatePropagation();
     if (!ReactionCore.hasPermission("createProduct")) {
-      let first = $("#leadImage > li");
-      let target = $(event.currentTarget);
+      let first = $("#leadImage > img");
+      let target = $(event.currentTarget).find("img");
       if ($(target).data("index") !== first.data("index")) {
-        return $("#leadImage > li").fadeOut(400, function () {
+        $("#leadImage > img").fadeOut(400, function () {
           $(this).replaceWith(target.clone());
-          return $(".gallery li:last-child").fadeIn(100);
         });
       }
     }
