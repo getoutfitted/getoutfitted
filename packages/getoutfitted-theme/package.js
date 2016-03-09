@@ -45,7 +45,8 @@ Package.onUse(function (api) {
 
     // ----- Product Styles ----- //
     "styles/products/productDetail/productDetail.less",
-    "styles/products/productDetail/images/productImageGallery.less"
+    "styles/products/productDetail/images/productImageGallery.less",
+    "styles/products/productDetail/variants/variantWidget/variantWidget.less"
 
   ], "client", {isImport: true});
 

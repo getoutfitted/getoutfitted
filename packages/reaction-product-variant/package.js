@@ -85,6 +85,7 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/products/productDetail/variants/variantList/variantList.js", "client");
 
   api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.html", "client");
+  api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.js", "client");
 
   api.addFiles("client/templates/products/productDetail/variants/variantForm/variantForm.html", "client");
   api.addFiles("client/templates/products/productDetail/variants/variantForm/variantForm.js", "client");

@@ -1,0 +1,59 @@
+// pricing widget
+.pricing-widget select {
+    font-size: 13px;
+    margin: 0 0 12px;
+    height: 32px;
+}
+
+.pricing-widget .button.wire.grey {
+    font-size: 11px;
+    padding: 8px 14px;
+}
+
+.pricing-widget input {
+    font-size: 13px;
+    height: 32px;
+    margin: 0 0 12px;
+}
+
+.pricing-widget label {
+    font-size: 10px;
+}
+
+.pricing-widget .cancel {
+  display: block;
+  color: @alert-color;
+  margin-left: 5px;
+  font-size: 20px;
+  padding-top: 0px;
+  float: right;
+  line-height: 32px;
+}
+
+// pricing table
+.price-table {
+    font-size: 12px;
+    width: 300px;
+    margin: 10px 0;
+}
+
+.daily-rate, .rental-days, .total-price, .rush-fee {
+    line-height: 2;
+}
+
+.total-price {
+    font-size: 18px;
+    border-top: 1px solid;
+    display: inline-block;
+    padding-left: 40px;
+}
+
+
+@media (min-width: @screen-md-min) {
+  .pricing-widget {
+    margin-top: -74px;
+  }
+  .pricing-widget.sticky {
+    margin-top: 0;
+  }
+}

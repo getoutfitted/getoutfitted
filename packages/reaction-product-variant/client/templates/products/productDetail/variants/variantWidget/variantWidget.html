@@ -1,4 +1,28 @@
 <template name="variantWidget">
+  <div id="variantWidget" class="pricing-widget col-sm-12 col-md-5 col-lg-4">
+    <span class="price">
+      <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+    </span>
+    {{!-- Variants & Options --}}
+    <div class="row options-add-to-cart">
+    <h3 data-i18n="productDetail.options">Options</h3>
+      {{>variantList}}
+    </div>
+
+    {{!-- Cart Add Block --}}
+    <div class="row">
+      <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
+      <div class="btn btn-success add-to-cart-block" id="add-to-cart">
+        <div class="add-to-cart-quantity pull-left">
+          <input type="number" class="form-control input-md" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+        </div>
+        <div class="add-to-cart-text" data-i18n="productDetail.addToCart">Add to cart</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="oldwidget">
   <div id="pricing_widget" class="pricing-widget col-sm-12 col-md-5 col-lg-4" style="margin-top: -250px; position: fixed; z-index: 1000; top: 246px; left: 925px; width: 324px; margin-right: -10px; padding: 0px; background: rgb(255, 255, 255);">
     <div class="row" id="rental_length_selector">
       <div class="col-sm-12" style="padding: 0;">
@@ -230,5 +254,4 @@
       <!-- end date pane -->
     </div>
   </div>
-  
 </template>

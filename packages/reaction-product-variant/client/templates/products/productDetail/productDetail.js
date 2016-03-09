@@ -36,22 +36,6 @@ Template.productDetail.helpers({
     }
     return Template.productDetailTags;
   },
-  actualPrice: function () {
-    const current = ReactionProduct.selectedVariant();
-    if (typeof current === "object") {
-      const childVariants = ReactionProduct.getVariants(current._id);
-      if (childVariants.length === 0) {
-        return current.price;
-      }
-      return ReactionProduct.getProductPriceRange();
-    }
-  },
-  // fieldComponent: function () {
-  //   if (ReactionCore.hasPermission("createProduct")) {
-  //     return Template.productDetailEdit;
-  //   }
-  //   return Template.productDetailField;
-  // },
   metaComponent: function () {
     if (ReactionCore.hasPermission("createProduct")) {
       return Template.productMetaFieldForm;
