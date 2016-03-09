@@ -1,20 +1,32 @@
-.slick-nav {
-  // max-width: 740px;
-  margin: -30px auto 0;
-  padding: 10px 0;
-  // background: rgba($oil, 0.8);
-  opacity: 0.5;
-  transition: opacity 500ms;
-  cursor: pointer;
+.brand-logo {
+  max-width: 100%;
 }
 
-.product-image:hover .slick-nav {
-  opacity: 1;
+h1.product-title {
+  font-size: 24px;
+  text-transform: none;
+  font-weight: @font-weight-normal;
+}
+h2.product-subtitle {
+  font-size: 14px;
+  color: @brand-dark-color;
+  text-transform: none;
+}
+h4.description-title {
+  font-size: 14px;
+  font-weight: @font-weight-heading;
+  color: @brand-dark-color;
 }
 
-.slick-prev, .slick-next {
-  z-index: 10;
+.description-body {
+  font-size: 13px;
 }
+
+.included.icon.row {
+  line-height: 3.5;
+}
+
+.description hr { border-top-color: @brand-muted-color; }
 
 .tag-icon {
   display: inline-block;
@@ -23,7 +35,7 @@
 }
 
 .beginner-ski, .intermediate-ski {
-  color: $beginner;
+  color: @beginner;
   font-size: 36px;
   margin-left: 5px;
   margin-right: 5px;
@@ -32,12 +44,12 @@
 }
 
 .intermediate-ski {
-  color: $intermediate;
+  color: @intermediate;
   
 }
 
 .advanced-ski, .expert-ski {
-  color: $expert;
+  color: @expert;
   font-size: 20px;
   margin-left: 5px;
   margin-right: 5px;
@@ -68,13 +80,6 @@
   margin-top: 20px;
   width: 100px;
 }
-
-// .icon-diamond {
-//   font-family: Arial, sans-serif;
-//   font-size: 30px;
-//   line-height: 20px;
-//   &:before { content: "\2666"; }
-// }
 
 .summer-package-option {
   margin-top: 15px;
@@ -116,7 +121,7 @@
 
 label.rush-label { font-size: 11px; }
 .shipping-text { font-weight: bold; }
-.return-text, .arrive-text { color: $primary-color; }
+.return-text, .arrive-text { color: @primary-color; }
 .arrive-text { margin-right: 15px; }
 .spacer {padding: 0 10px;}
 
@@ -145,7 +150,7 @@ label.rush-label { font-size: 11px; }
 
 .pricing-widget .cancel {
   display: block;
-  color: $alert-color;
+  color: @alert-color;
   margin-left: 5px;
   font-size: 20px;
   padding-top: 0px;

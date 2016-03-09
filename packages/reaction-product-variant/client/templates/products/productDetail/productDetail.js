@@ -46,12 +46,12 @@ Template.productDetail.helpers({
       return ReactionProduct.getProductPriceRange();
     }
   },
-  fieldComponent: function () {
-    if (ReactionCore.hasPermission("createProduct")) {
-      return Template.productDetailEdit;
-    }
-    return Template.productDetailField;
-  },
+  // fieldComponent: function () {
+  //   if (ReactionCore.hasPermission("createProduct")) {
+  //     return Template.productDetailEdit;
+  //   }
+  //   return Template.productDetailField;
+  // },
   metaComponent: function () {
     if (ReactionCore.hasPermission("createProduct")) {
       return Template.productMetaFieldForm;
