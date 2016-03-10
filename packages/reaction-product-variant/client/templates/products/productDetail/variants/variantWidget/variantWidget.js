@@ -17,8 +17,8 @@ function stickyPricing() {
     } else if (scrollTop < anchorTop && $variantWidget.css("position") === "fixed") {
       $variantWidget.removeClass("sticky");
       $variantWidget.css({
-        left: "0",
-        width: "auto"
+        left: "",
+        width: ""
       });
     }
   }
@@ -28,7 +28,9 @@ function stickyPricing() {
 }
 
 Template.variantWidget.onRendered(function () {
-  stickyPricing();
+  if(window.innerWidth > 767) {
+    stickyPricing();
+  }
 });
 
 Template.variantWidget.helpers({
