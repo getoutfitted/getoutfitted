@@ -90,3 +90,19 @@ Template.variant.onRendered(function () {
     }
   });
 });
+
+Template.variantOption.helpers({
+  isAvailable: function () {
+    const inventoryManaged = this.inventoryManagement;
+    const soldOut = ReactionProduct.getVariantQuantity(this) < 1;
+    const availableForPurchase = !soldOut || !this.inventoryPolicy;
+    const isAvailable = !inventoryManaged || availableForPurchase;
+    return isAvailable ? "" : "disabled";
+  },
+  isSoldOut: function () {
+    return ReactionProduct.getVariantQuantity(this) < 1;
+  },
+  displayPrice: function () {
+    return ReactionProduct.getVariantPriceRange(this._id);
+  }
+});

@@ -115,6 +115,7 @@ mongo-id@1.0.1
 mongo-livedata@1.0.9
 mquandalle:bower@1.5.2_1
 mrt:later@1.6.1
+natestrauser:select2@4.0.1
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
 npm-node-aes-gcm@0.1.3_6

@@ -1,12 +1,24 @@
 <template name="variantList">
   <div class="product-variants">
-    <ul class="variant-list list-unstyled" id="variant-list">
-    {{#each variants}}
-      {{> variant}}
+    {{#if hasPermission "createProduct"}}
+      <ul class="variant-list list-unstyled" id="variant-list">
+      {{#each variants}}
+        {{> variant}}
+      {{else}}
+        <a href="#" id="create-variant">+ <span data-i18n="variantList.createVariant">Create Variant</span></a>
+      {{/each}}
+      </ul>
     {{else}}
-      <a href="#" id="create-variant">+ <span data-i18n="variantList.createVariant">Create Variant</span></a>
-    {{/each}}
-    </ul>
+      {{#if variants}}
+        <!-- {{> variantSelect variants=variants}} -->
+        <select class="variant-select">
+          <option value="">Size</option>
+          {{#each variants}}
+            {{> variantOption}}
+          {{/each}}
+        </select>
+      {{/if}}
+    {{/if}}
   </div>
   {{#if childVariants}}
   <small data-i18n="variantList.moreOptions">There are more options available for this selection.</small>
@@ -16,4 +28,13 @@
       {{/each}}
     </div>
   {{/if}}
+</template>
+
+<template name="variantSelect">
+  <select class="variant-select">
+    <option value="">Size</option>
+    {{#each variants}}
+      {{> variantOption}}
+    {{/each}}
+  </select>
 </template>

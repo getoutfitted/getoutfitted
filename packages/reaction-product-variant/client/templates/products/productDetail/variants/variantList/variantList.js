@@ -1,4 +1,12 @@
 /**
+ * variantList onRendered function
+ * Initializes select2 select boxes.
+ */
+Template.variantList.onRendered(function () {
+  $("select").select2();
+});
+
+/**
  * variantList helpers
  */
 Template.variantList.helpers({
@@ -82,5 +90,12 @@ Template.variantList.events({
     $(event.target).addClass("active");
     Alerts.removeSeen();
     return ReactionProduct.setCurrentVariant(this._id);
+  },
+  "change select": function (event) {
+    const variantId = event.currentTarget.value;
+    event.preventDefault();
+    event.stopPropagation();
+    Alerts.removeSeen();
+    return ReactionProduct.setCurrentVariant(variantId);
   }
 });
