@@ -1,7 +1,9 @@
 <template name="productDetail">
   {{#with product}}
   <div class="product-container" id="product-content" itemscope itemtype="http://schema.org/Product">
-    {{> productLeadImage}}
+    <div id="leadImageContainer">
+      {{> productLeadImage}}
+    </div>
     
     <div id="description" class="container">
       <!-- START NON IMAGE CONTENT -->
