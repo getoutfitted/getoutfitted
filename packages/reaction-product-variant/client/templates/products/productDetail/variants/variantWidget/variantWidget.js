@@ -9,7 +9,7 @@ function stickyWidget() {
     let anchorTop = $pricingAnchor.offset().top - bubbleTop;
     let scrollTop = $(window).scrollTop();
     if (scrollTop > anchorTop && $variantWidget.css("position") !== "fixed" ||
-      (scrollTop > anchorTop && scrollTop > bubbleTop && $variantWidget.css("position") !== "fixed")) {
+    scrollTop > anchorTop && scrollTop > bubbleTop && $variantWidget.css("position") !== "fixed") {
       $variantWidget.addClass("sticky");
       $variantWidget.css({
         left: left,
@@ -20,8 +20,7 @@ function stickyWidget() {
         $("#leadImageContainer").slideDown(100);
       });
     } else if ($variantWidget.css("position") === "fixed") {
-      if (scrollTop < 2*bubbleTop ) {
-        console.log(scrollTop, scrollTop < 2*bubbleTop);
+      if (scrollTop < 2 * bubbleTop) {
         $variantWidget.removeClass("sticky");
         $variantWidget.css({
           left: "",

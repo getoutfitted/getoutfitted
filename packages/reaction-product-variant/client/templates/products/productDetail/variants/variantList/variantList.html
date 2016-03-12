@@ -10,31 +10,44 @@
       </ul>
     {{else}}
       {{#if variants}}
-        <!-- {{> variantSelect variants=variants}} -->
-        <select class="variant-select">
-          <option value="">Size</option>
-          {{#each variants}}
-            {{> variantOption}}
-          {{/each}}
-        </select>
+        <label>
+          <span class="variant-select-label">{{variantOptionLabel}}</span>
+          <select class="variant-select">
+            {{#each variants}}
+              {{> variantOption}}
+            {{/each}}
+          </select>
+        </label>
       {{/if}}
     {{/if}}
   </div>
   {{#if childVariants}}
-  <small data-i18n="variantList.moreOptions">There are more options available for this selection.</small>
-    <div class="row variant-product-options">
+    <label>
+      <span class="variant-select-option-label">{{childVariantOptionLabel}}</span>
+      <select class="variant-product-options">
+        {{#each childVariants}}
+          <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
+            {{#if inventoryManagement}}
+              {{#if isSoldOut}}
+                {{#if inventoryPolicy}}
+                  (Sold Out!)
+                {{else}}
+                  (Backordered)
+                {{/if}}
+              {{/if}}
+            {{/if}}
+            {{title}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <!-- <div class="row variant-product-options">
       {{#each childVariants}}
       <button type="button" class="btn btn-default variant-select-option">{{title}}</button>
       {{/each}}
-    </div>
+    </div> -->
   {{/if}}
 </template>
 
-<template name="variantSelect">
-  <select class="variant-select">
-    <option value="">Size</option>
-    {{#each variants}}
-      {{> variantOption}}
-    {{/each}}
-  </select>
+<template name="childVariantsSelect">
 </template>

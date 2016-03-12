@@ -1,12 +1,4 @@
 /**
- * variantList onRendered function
- * Initializes select2 select boxes.
- */
-Template.variantList.onRendered(function () {
-  $("select").select2();
-});
-
-/**
  * variantList helpers
  */
 Template.variantList.helpers({
@@ -40,6 +32,15 @@ Template.variantList.helpers({
       return variants;
     }
   },
+  variantOptionLabel: function () {
+    const variants = ReactionProduct.getTopVariants();
+    if (variants.length > 0) {
+      if (variants[0].optionTitle) {
+        return variants[0].optionTitle;
+      }
+    }
+    return "Option";
+  },
   childVariants: function () {
     const childVariants = [];
     const variants = ReactionProduct.getVariants();
@@ -71,9 +72,59 @@ Template.variantList.helpers({
           }
         });
       }
-
+      // $('.variant-product-options').select2('destroy');
+      // $('.variant-product-options').select2({data: _.map(childVariants, function (v) { return {id: v._id, text: v.title}})});
       return childVariants;
     }
+  },
+  childVariantOptionLabel: function () {
+    const variants = ReactionProduct.getVariants();
+    let optVariant;
+    if (variants.length > 0) {
+      const current = ReactionProduct.selectedVariant();
+      if (!current) {
+        return "Option";
+      }
+      if (current.ancestors.length === 1) {
+        optVariant = _.find(variants, function (variant) {
+          if (typeof variant.ancestors[1] === "string" &&
+            variant.optionTitle &&
+            variant.type !== "inventory"
+          ) {
+            return variant;
+          }
+          return undefined;
+        });
+      } else {
+        optVariant = _.find(variants, function (variant) {
+          if (typeof variant.ancestors[1] === "string" &&
+            variant.ancestors.length === current.ancestors.length &&
+            variant.ancestors[1] === current.ancestors[1] &&
+            variant.optionTitle
+          ) {
+            return variant.optionTitle;
+          }
+          return undefined;
+        });
+      }
+    }
+    if (optVariant) {
+      return optVariant.optionTitle;
+    }
+    return "Option";
+  },
+  isAvailable: function () {
+    const inventoryManaged = this.inventoryManagement;
+    const soldOut = ReactionProduct.getVariantQuantity(this) < 1;
+    const availableForPurchase = !soldOut || !this.inventoryPolicy;
+    const isAvailable = !inventoryManaged || availableForPurchase;
+    return isAvailable ? "" : "disabled";
+  },
+  isSoldOut: function () {
+    return ReactionProduct.getVariantQuantity(this) < 1;
+  },
+  displayPrice: function () {
+    return ReactionProduct.getVariantPriceRange(this._id);
   }
 });
 
@@ -93,9 +144,6 @@ Template.variantList.events({
   },
   "change select": function (event) {
     const variantId = event.currentTarget.value;
-    event.preventDefault();
-    event.stopPropagation();
-    Alerts.removeSeen();
-    return ReactionProduct.setCurrentVariant(variantId);
+    ReactionProduct.setCurrentVariant(variantId);
   }
 });
