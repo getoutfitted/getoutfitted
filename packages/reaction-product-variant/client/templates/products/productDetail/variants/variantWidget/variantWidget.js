@@ -15,10 +15,9 @@ function stickyWidget() {
         left: left,
         width: width
       });
-      $("#leadImageContainer").hide(0, function () {
-        $("#variantWidget").prepend($("#leadImageContainer"));
+      $("#variantWidget").prepend($("#leadImageContainer").clone().hide(0, function () {
         $("#leadImageContainer").slideDown(100);
-      });
+      }));
     } else if ($variantWidget.css("position") === "fixed") {
       if (scrollTop < 2 * bubbleTop) {
         $variantWidget.removeClass("sticky");
@@ -26,10 +25,7 @@ function stickyWidget() {
           left: "",
           width: ""
         });
-        $("#leadImageContainer").hide(0, function () {
-          $("#product-content").prepend($("#leadImageContainer"));
-          $("#leadImageContainer").slideDown(50);
-        });
+        $("#variantWidget #leadImageContainer").remove();
       }
     }
   }
