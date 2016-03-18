@@ -210,80 +210,25 @@
       {{> largeDeviceDetails}}
     {{/with}}
     <!-- end product-container -->
-  </div>
-  
-  
-    
-
-
-  <div class="container-main">
-    <div class="container-fluid pdp-container">
-      {{!-- Product Visibility Admin Block --}}
-      
-      {{!-- END Product Visibility Admin Block --}}
-       <!-- Product Detail Page -->
-      <div class="row" itemscope itemtype="http://schema.org/Product">
-        <!-- Titles -->
-        <!-- <div class="row">
-            <div class="title">
-              <h1 id="title" itemprop="name">{{>fieldComponent field="title" value=title}}</h1>
-            </div>
-            <div class="pageTitle">
-              <h2 id="pageTitle">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
-            </div>
-        </div> -->
-        <!-- Product Details -->
-        <div class="row">
-          <!-- BEGIN Left Side -->
-          <div class="col-sm-5 pdp-left-column">
-            <!-- {{> productImageGallery}} -->
-            <!-- Product Tags -->
-            <!-- {{>tagsComponent tags=tags}} -->
-            <h3 data-i18n="productDetail.details">Details</h3>
-            {{> metaComponent }}
-          </div>
-          <!-- END Left Side -->
-          <!-- BEGIN Right Side -->
-          <div class="col-sm-7 pdp-right-column">
-            <div class="row social-pricing">
-              <div class="col-xs-8">
-                {{!-- Price Fixation --}}
-                <span class="price">
-                  <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
-                </span>
-                {{>fieldComponent field="vendor" value=vendor}}
-              </div>
-              <div class="col-xs-3 col-xs-offset-1">
-                {{!-- Social Commentary --}}
-                {{#if hasPermission "createProduct"}}
-                <div class="social-media">
-                  <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
-                  <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
-                  <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
-                  <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
-                  <div class="social-media-inputs">
-                    {{>fieldComponent field="facebookMsg" value=facebookMsg}}
-                    {{>fieldComponent field="twitterMsg" value=twitterMsg}}
-                    {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
-                    {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
-                  </div>
-                </div>
-                {{else}}
-                  {{> productSocial }}
-                {{/if}}
-              </div>
-            </div>
-            <!-- main product information -->
-            <div class="row col-md-11">
-              {{!-- Description --}}
-              <div class="row">
-                {{>fieldComponent field="description" value=description type="textarea"}}
-              </div>
-            </div>
-            <!-- END Right Side -->
-          </div>
+    <hr>
+    <div class="col-xs-10 col-xs-offset-1">
+      {{!-- Social Commentary --}}
+      {{#if hasPermission "createProduct"}}
+      <div class="social-media">
+        <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
+        <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
+        <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
+        <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
+        <div class="social-media-inputs">
+          {{>fieldComponent field="facebookMsg" value=facebookMsg}}
+          {{>fieldComponent field="twitterMsg" value=twitterMsg}}
+          {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
+          {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
         </div>
       </div>
+      {{else}}
+        {{> productSocial }}
+      {{/if}}
     </div>
   </div>
   {{/with}}
@@ -326,6 +271,53 @@
         <iframe src="https://www.youtube.com/embed/ABKp61U6uSI?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen="" id="fitvid0"></iframe>
       </div> -->
     </div>
+  </div>
+</template>
+
+
+
+<template name="goProductImageGallery">
+</template>
+
+<template name="goProductFeatures">
+  {{> includedComponent}}
+</template>
+
+<template name="productColorSwatches">
+  <div class="row">
+    <div class="show-for-medium-up col-md-3">
+      <h4 class="description-title">Colors Available</h4>
+    </div>
+    <div class="show-for-medium-up col-md-9 description-body">
+      <div class="icon row">
+        <div class="col-sm-2 col-lg-1">
+          <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/navy-blue-underwater-blue.jpg?3239250009026326159" alt="Navy Blue/Underwater Blue" class="product-swatch">
+        </div>
+        <div class="col-sm-10 col-lg-5 end">
+          Navy Blue/Underwater Blue
+        </div>
+        <div class="col-sm-2 col-lg-1">
+          <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/black-black.jpg?3239250009026326159" alt=" Black/Black" class="product-swatch">
+        </div>
+        <div class="col-sm-10 col-lg-5 end">
+           Black/Black
+        </div>
+        </div><div class="icon row">
+        <div class="col-sm-2 col-lg-1">
+          <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/aqua-stone-black.jpg?3239250009026326159" alt=" Aquastone/Black" class="product-swatch">
+        </div>
+        <div class="col-sm-10 col-lg-5 end">
+           Aquastone/Black
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="goProductDescription">
+  <h4 class="description-title">About This Rental:</h4>
+  <div class="description-body">
+    {{>fieldComponent field="description" value=description type="textarea"}}
   </div>
 </template>
 
@@ -398,47 +390,5 @@
   </div>
 </template>
 
-<template name="goProductImageGallery">
-</template>
-
-<template name="goProductFeatures">
-  {{> includedComponent}}
-</template>
-
-<template name="productColorSwatches">
-  <div class="row">
-    <div class="show-for-medium-up col-md-3">
-      <h4 class="description-title">Colors Available</h4>
-    </div>
-    <div class="show-for-medium-up col-md-9 description-body">
-      <div class="icon row">
-        <div class="col-sm-2 col-lg-1">
-          <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/navy-blue-underwater-blue.jpg?3239250009026326159" alt="Navy Blue/Underwater Blue" class="product-swatch">
-        </div>
-        <div class="col-sm-10 col-lg-5 end">
-          Navy Blue/Underwater Blue
-        </div>
-        <div class="col-sm-2 col-lg-1">
-          <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/black-black.jpg?3239250009026326159" alt=" Black/Black" class="product-swatch">
-        </div>
-        <div class="col-sm-10 col-lg-5 end">
-           Black/Black
-        </div>
-        </div><div class="icon row">
-        <div class="col-sm-2 col-lg-1">
-          <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/aqua-stone-black.jpg?3239250009026326159" alt=" Aquastone/Black" class="product-swatch">
-        </div>
-        <div class="col-sm-10 col-lg-5 end">
-           Aquastone/Black
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template name="goProductDescription">
-  <h4 class="description-title">About This Rental:</h4>
-  <div class="description-body">
-    {{>fieldComponent field="description" value=description type="textarea"}}
-  </div>
-</template>
+<!-- Original metaComponent -->
+<!-- {{> metaComponent }} -->
