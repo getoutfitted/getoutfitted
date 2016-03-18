@@ -1,4 +1,6 @@
 Template.productDetail.onCreated(function () {
+  Session.setDefault("productManagementPanelVisibility", true);
+  
   this.productId = () => ReactionRouter.getParam("handle");
   this.variantId = () => ReactionRouter.getParam("variantId");
   this.autorun(() => {
@@ -41,6 +43,32 @@ Template.productDetail.helpers({
       return Template.productMetaFieldForm;
     }
     return Template.productMetaField;
+  },
+  featureComponent: function () {
+    this.featureKey = "feature";
+    if (ReactionCore.hasPermission("createProduct")) {
+      return Template.productFeatureFieldForm;
+    }
+    return Template.productFeatureField;
+  },
+  featureImageComponent: function () {
+    this.featureKey = "featureImage";
+    if (ReactionCore.hasPermission("createProduct")) {
+      return Template.productFeatureFieldForm;
+    }
+    return Template.productFeatureImageField;
+  },
+  productManagementPanelVisibility: function () {
+    if (Session.get("productManagementPanelVisibility")) {
+      return "";
+    }
+    return "hidden";
+  },
+  productManagementPanelButtonVisibility: function () {
+    if (!Session.get("productManagementPanelVisibility")) {
+      return "";
+    }
+    return "hidden";
   }
 });
 
@@ -49,6 +77,12 @@ Template.productDetail.helpers({
  */
 
 Template.productDetail.events({
+  "click #toggleAdminPanelVisibilityOff": function () {
+    Session.set("productManagementPanelVisibility", false);
+  },
+  "click #toggleAdminPanelVisibilityOn": function () {
+    Session.set("productManagementPanelVisibility", true);
+  },
   "click #price": function () {
     let formName;
     if (ReactionCore.hasPermission("createProduct")) {
@@ -237,5 +271,15 @@ Template.productDetail.events({
   "focusout .facebookMsg-edit-input,.twitterMsg-edit-input,.pinterestMsg-edit-input,.googleplusMsg-edit": function () {
     Session.set("editing-" + this.field, false);
     return $(".social-media-inputs > *").hide();
+  }
+});
+
+Template.goProductFeatures.helpers({
+  includedComponent: function () {
+    this.featureKey = 'included';
+    if (ReactionCore.hasPermission("createProduct")) {
+      return Template.productIncludedFieldForm;
+    }
+    return Template.productIncludedField;
   }
 });

@@ -1,6 +1,37 @@
 <template name="productDetail">
   {{#with product}}
   <div class="product-container" id="product-content" itemscope itemtype="http://schema.org/Product">
+    {{#if hasPermission "createProduct"}}
+      <a id="toggleAdminPanelVisibilityOn" class="toggle-admin-panel-visibility-on btn btn-info {{productManagementPanelButtonVisibility}}"><i class="fa fa-plus"></i> Show Product Management Panel</a>
+      <div class="row floating-admin-panel {{productManagementPanelVisibility}}">
+        <span id="toggleAdminPanelVisibilityOff" class="toggle-admin-panel toggle-admin-panel-visibility-off btn btn-info"><i class="fa fa-minus"></i> Hide Product Management Panel</span>
+        <p class="panel-note">This panel is not visible to customers</p>
+        <div class="row">
+          <h3><span data-i18n="productDetail.productManagement">Product management:</span></h3>
+          {{#if isVisible}}
+            <a href="#" class="toggle-product-isVisible-link btn btn-default"><i class="fa fa-eye-slash"></i> <span data-i18n="productDetail.makeInvisible">Make invisible</span></a>
+          {{else}}
+            <a href="#" class="toggle-product-isVisible-link btn btn-default"><i class="fa fa-eye"></i> <span data-i18n="productDetail.makeItVisible">You can make it visible</span></a>
+          {{/if}}
+          {{#if hasAdminAccess}}
+            <a href="#" class="delete-product-link btn btn-default"><i class="fa fa-times"></i> <span data-i18n="app.delete">Delete</span></a>
+          {{/if}}
+        </div>
+        {{#unless isVisible}}
+        <div class="row">
+          <div class="alert alert-warning">
+            <span data-i18n="productDetail.isNotVisible">This product is not visible to customers.</span>
+            <a href="#" class="toggle-product-isVisible-link"><i class="fa fa-eye"></i> <span data-i18n="productDetail.makeItVisible">You can make it visible</span></a>
+            <span data-i18n="productDetail.whenYouAreDone">when you're done editing.</span>
+          </div>
+          <span id="product-management-alerts">{{> inlineAlerts placement="productManagement"}}</span>
+        </div>
+        {{/unless}}
+        {{>tagsComponent tags=tags}}
+        <h3 data-i18n="productDetail.details">Details</h3>
+        {{> metaComponent }}
+      </div>
+    {{/if}}
     <div id="leadImageContainer">
       {{> productLeadImage}}
     </div>
@@ -18,7 +49,8 @@
                 <h2 class="product-subtitle">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
               <div class="row text-center margin-top-small">
                 <!-- IF PRODUCT IS PACKAGE  -->
-                <div class="col-sm-3">
+                {{> featureImageComponent}}
+                <!-- <div class="col-sm-3">
                   <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/package-icon.png?3239250009026326159" alt="Free Shipping" class="product-description-header-icon">
                 </div>
                 <div class="col-sm-3">
@@ -29,7 +61,7 @@
                 </div>
                 <div class="col-sm-3">
                   <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/midlayer-icon.png?3239250009026326159" alt="Midlayer Included" class="product-description-header-icon">
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -39,19 +71,7 @@
             </div>
             <div class="col-sm-9">
               <div class="row">
-                
-                  <div class="col-sm-3">
-                    Free Shipping
-                  </div>
-                  <div class="col-sm-3">
-                    Mirrored Lens
-                  </div>
-                  <div class="col-sm-3">
-                    Premium Goretex Gloves
-                  </div>
-                  <div class="col-sm-3">
-                    Midlayer Included
-                  </div>
+                {{> featureComponent}}
               </div>
             </div>
           </div> <!-- end product icon descriptions -->
@@ -62,6 +82,8 @@
         <div class="row margin-top-medium solid-break description hidden-sm hidden-md hidden-lg">
           <div class="third-party-rentals">
             <div class="col-sm-12">
+                <hr>
+                {{> productImageGallery}}
                 <hr>
                   <div class="row">
                     <div class="col-xs-3">
@@ -181,6 +203,7 @@
         {{> variantWidget}}
       </div>
     </div>
+    <!-- {{> featureComponent}} -->
     {{#with this}}
       {{> largeDeviceDetails}}
     {{/with}}
@@ -194,46 +217,26 @@
   <div class="container-main">
     <div class="container-fluid pdp-container">
       {{!-- Product Visibility Admin Block --}}
-      {{#if hasPermission "createProduct"}}
-        <div class="row">
-          <span data-i18n="productDetail.productManagement">Product management:</span>
-          {{#if isVisible}}
-            <a href="#" class="toggle-product-isVisible-link" data-i18n="productDetail.makeInvisible">Make invisible</a>
-          {{/if}}
-          {{#if hasAdminAccess}}
-            <a href="#" class="delete-product-link" data-i18n="app.delete">Delete</a>
-          {{/if}}
-        </div>
-        {{#unless isVisible}}
-        <div class="row">
-          <div class="alert alert-warning">
-            <span data-i18n="productDetail.isNotVisible">This product is not visible to customers.</span>
-            <a href="#" class="toggle-product-isVisible-link" data-i18n="productDetail.makeItVisible">You can make it visible</a>
-            <span data-i18n="productDetail.whenYouAreDone">when you're done editing.</span>
-          </div>
-          <span id="product-management-alerts">{{> inlineAlerts placement="productManagement"}}</span>
-        </div>
-        {{/unless}}
-      {{/if}}
+      
       {{!-- END Product Visibility Admin Block --}}
        <!-- Product Detail Page -->
       <div class="row" itemscope itemtype="http://schema.org/Product">
         <!-- Titles -->
-        <div class="row">
+        <!-- <div class="row">
             <div class="title">
               <h1 id="title" itemprop="name">{{>fieldComponent field="title" value=title}}</h1>
             </div>
             <div class="pageTitle">
               <h2 id="pageTitle">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
             </div>
-        </div>
+        </div> -->
         <!-- Product Details -->
         <div class="row">
           <!-- BEGIN Left Side -->
           <div class="col-sm-5 pdp-left-column">
-            {{> productImageGallery}}
+            <!-- {{> productImageGallery}} -->
             <!-- Product Tags -->
-            {{>tagsComponent tags=tags}}
+            <!-- {{>tagsComponent tags=tags}} -->
             <h3 data-i18n="productDetail.details">Details</h3>
             {{> metaComponent }}
           </div>
@@ -295,14 +298,14 @@
             {{> goProductDescription}}
           {{/with}}
           <hr>
-          {{> goProductFeatures}}
+          {{#with this}}
+            {{> goProductFeatures}}
+          {{/with}}
           <hr>
-          
+          {{> productImageGallery}}
+          <hr>
           {{> getoutfittedProductTrailer}}
           <hr>
-          
-          
-          
           {{> goProductImageGallery}}
           {{> sizingGuideTable}}
           
@@ -394,77 +397,10 @@
 </template>
 
 <template name="goProductImageGallery">
-  <!-- <div class="row">
-    <div class="show-for-medium-up col-md-12">
-      <div class="product-detail-item row">
-        <div class="col-sm-12">
-          <div class="gallery-img" data-index="0">
-              <img src="//cdn.shopify.com/s/files/1/0258/2103/products/Women_Patagonia_NavyBlue_UnderwaterBlue_Landscape_small.jpg?v=1456865619" alt="Women's Patagonia Outfit" />
-          </div>
-          <div class="gallery-img" data-index="1">
-            <img src="//cdn.shopify.com/s/files/1/0258/2103/products/Women_Patagonia_Black_Landscape_small.jpg?v=1456865619" alt="Women's Patagonia Outfit" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <hr /> -->
 </template>
 
 <template name="goProductFeatures">
-  <div class="row">
-    <div class="show-for-medium-up col-md-3">
-      <h4 class="description-title">What's Included</h4>
-    </div>
-    <div class="show-for-medium-up col-md-9 description-body">
-      
-      <div class="included icon row">
-        <div class="col-md-2 col-lg-1">
-          <i class="fa fa-check-circle fa-lg"></i>
-        </div>
-        <div class="col-md-10 col-lg-11">
-           Patagonia Insulated Snowbelle Jacket
-        </div>
-      </div>
-      
-      <div class="included icon row">
-        <div class="col-md-2 col-lg-1">
-          <i class="fa fa-check-circle fa-lg"></i>
-        </div>
-        <div class="col-md-10 col-lg-11">
-           Patagonia Insulated Snowbelle Pant
-        </div>
-      </div>
-      
-      <div class="included icon row">
-        <div class="col-md-2 col-lg-1">
-          <i class="fa fa-check-circle fa-lg"></i>
-        </div>
-        <div class="col-md-10 col-lg-11">
-           Patagonia Nano Air Midlayer Jacket
-        </div>
-      </div>
-      
-      <div class="included icon row">
-        <div class="col-md-2 col-lg-1">
-          <i class="fa fa-check-circle fa-lg"></i>
-        </div>
-        <div class="col-md-10 col-lg-11">
-           Zeal Fargo Goggles with mirrored lenses and 100% UV Protection
-        </div>
-      </div>
-      
-      <div class="included icon row">
-        <div class="col-md-2 col-lg-1">
-          <i class="fa fa-check-circle fa-lg"></i>
-        </div>
-        <div class="col-md-10 col-lg-11">
-           Goretex Gloves
-        </div>
-      </div>
-      
-    </div>
-  </div>
+  {{> includedComponent}}
 </template>
 
 <template name="productColorSwatches">

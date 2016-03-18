@@ -33,3 +33,103 @@
     <input type="text" name="value" class="form-control metafield-value-input" value="{{value}}" placeholder="{{i18n 'productDetail.detailsInfo' 'Detail information'}}"/>
   </form>
 </template>
+
+
+<template name="productFeatureField">
+  {{#if features}}
+    {{#each features}}
+        {{#if value}}
+          <div class="col-sm-3">
+            {{value}}
+          </div>
+        {{/if}}
+    {{/each}}
+  {{/if}}
+</template>
+
+<template name="productFeatureImageField">
+  {{#if features}}
+    {{#each features}}
+        {{#if value}}
+          <div class="col-sm-3">
+            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/{{value}}.png">
+          </div>
+        {{/if}}
+    {{/each}}
+  {{/if}}
+</template>
+
+<template name="productFeatureFieldForm">
+  {{#each features}}
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="col-sm-11">
+          {{>featureComponent value=./value featureKey=../featureKey}}
+        </div>
+        <div class="col-sm-1">
+          <span class="metafield-remove"><i class="fa fa-times-circle"></i></span>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+  {{#if canHaveMoreFeatures}}
+    <div class="col-sm-3">
+      {{>featureComponent featureKey=featureKey}}
+    </div>
+  {{/if}}
+</template>
+
+<template name="productIncludedField">
+  {{#if features}}
+    <div class="row">
+      <div class="show-for-medium-up col-md-3">
+        <h4 class="description-title">What's Included</h4>
+      </div>
+      <div class="show-for-medium-up col-md-9 description-body">
+        {{#each features}}
+          <div class="included icon row">
+            <div class="col-md-2 col-lg-1">
+              <i class="fa fa-check-circle fa-lg"></i>
+            </div>
+            {{#if value}}
+              <div class="col-md-10 col-lg-11">
+                {{value}}
+              </div>
+            {{/if}}
+            <!-- {{#if key}}<div class="col-sm-4">{{key}}</div>{{/if}} -->
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="productIncludedFieldForm">
+  <div class="row">
+    <div class="show-for-medium-up col-md-3">
+      <h4 class="description-title">What's Included</h4>
+    </div>
+    <div class="show-for-medium-up col-md-9 description-body">
+      {{#each features}}
+        <div class="included icon row">
+          <div class="col-md-11">
+            {{>featureComponent value=./value featureKey=../featureKey}}
+          </div>
+          <div class="col-md-1">
+            <span class="metafield-remove"><i class="fa fa-times-circle"></i></span>
+          </div>
+        </div>
+      {{/each}}
+      <div class="included icon row">
+        {{>featureComponent featureKey=featureKey}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="featureComponent">
+  <form role="form" name="metafield-component" class="form feature-component">
+    <input type="text" name="key" class="hidden form-control metafield-key-input" value="{{featureKey}}" />
+    <input type="text" name="value" class="form-control metafield-value-input" value="{{value}}" placeholder="{{i18n 'productDetail.detailsInfo' 'Detail information'}}"/>
+  </form>
+</template>

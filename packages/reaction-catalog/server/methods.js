@@ -1035,7 +1035,10 @@ Meteor.methods({
     if (meta) {
       return ReactionCore.Collections.Products.update({
         _id: productId,
-        metafields: meta
+        metafields: {
+          key: meta.key,
+          value: meta.value
+        }
       }, {
         $set: {
           "metafields.$": updatedMeta

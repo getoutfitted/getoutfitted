@@ -22,32 +22,32 @@
     {{/if}}
   </div>
   {{#if childVariants}}
-    <label>
-      <span class="variant-select-option-label">{{childVariantOptionLabel}}</span>
-      <select class="variant-product-options">
+    {{#if hasPermission "createProduct"}}
+      <div class="row variant-product-options">
         {{#each childVariants}}
-          <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
-            {{#if inventoryManagement}}
-              {{#if isSoldOut}}
-                {{#if inventoryPolicy}}
-                  (Sold Out!)
-                {{else}}
-                  (Backordered)
+        <button type="button" class="btn btn-default variant-select-option">{{title}}</button>
+        {{/each}}
+      </div>
+    {{else}}
+      <label>
+        <span class="variant-select-option-label">{{childVariantOptionLabel}}</span>
+        <select class="variant-product-options">
+          {{#each childVariants}}
+            <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
+              {{#if inventoryManagement}}
+                {{#if isSoldOut}}
+                  {{#if inventoryPolicy}}
+                    (Sold Out!)
+                  {{else}}
+                    (Backordered)
+                  {{/if}}
                 {{/if}}
               {{/if}}
-            {{/if}}
-            {{title}}
-          </option>
-        {{/each}}
-      </select>
-    </label>
-    <!-- <div class="row variant-product-options">
-      {{#each childVariants}}
-      <button type="button" class="btn btn-default variant-select-option">{{title}}</button>
-      {{/each}}
-    </div> -->
+              {{title}}
+            </option>
+          {{/each}}
+        </select>
+      </label>
+    {{/if}}
   {{/if}}
-</template>
-
-<template name="childVariantsSelect">
 </template>
