@@ -4,8 +4,8 @@
 
 Template.gridContent.helpers({
   displayPrice: function () {
-    if (this._id) {
-      return ReactionProduct.getProductPriceRange(this._id);
+    if (this.price && this.price.range) {
+      return this.price.range;
     }
   }
 });

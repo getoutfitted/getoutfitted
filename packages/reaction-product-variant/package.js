@@ -30,7 +30,7 @@ Package.onUse(function (api) {
   api.use("reactive-dict");
 
   // community packages
-  api.use("reactioncommerce:reaction-router@1.0.0");
+  api.use("reactioncommerce:reaction-router@1.1.0");
   api.use("reactioncommerce:core@0.12.0");
 
   // register package
@@ -38,7 +38,8 @@ Package.onUse(function (api) {
 
   // helpers
   api.addFiles("client/helpers/products.js", "client");
-  api.addFiles("client/helpers/globals.js", "client");
+  api.addFiles("client/helpers/global.js", "client");
+  api.addFiles("client/helpers/template.js", "client");
 
   // Product Templates
   api.addFiles("client/templates/products/products.html", "client");
@@ -82,6 +83,9 @@ Package.onUse(function (api) {
 
   api.addFiles("client/templates/products/productDetail/variants/variantList/variantList.html", "client");
   api.addFiles("client/templates/products/productDetail/variants/variantList/variantList.js", "client");
+
+  api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.html", "client");
+  api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.js", "client");
 
   api.addFiles("client/templates/products/productDetail/variants/variantForm/variantForm.html", "client");
   api.addFiles("client/templates/products/productDetail/variants/variantForm/variantForm.js", "client");

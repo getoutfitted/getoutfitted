@@ -1,6 +1,6 @@
 Package.describe({
-  summary: "Reaction Commerce layout templates",
-  name: "reactioncommerce:reaction-layout",
+  summary: "GetOutfitted Reaction Commerce layout templates",
+  name: "getoutfitted:getoutfitted-layout",
   version: "1.0.0",
   documentation: "README.md"
 });
@@ -39,13 +39,18 @@ Package.onUse(function (api) {
   // register reaction package
   api.addFiles("server/register.js", "server");
 
+  // Browser Policy
+  api.addFiles("server/policy.js", "server");
+
   // Theme Templates
   api.addFiles("client/templates/theme/theme.js", "client");
   api.addFiles("client/templates/theme/theme.html", "client");
 
   // layout templates
   api.addFiles("client/templates/layout/layout.html", "client");
-  api.addFiles("client/templates/layout/layout.js", "client");
+
+  api.addFiles("client/templates/layout/index/index.html", "client");
+  api.addFiles("client/templates/layout/index/index.js");
 
   api.addFiles("client/templates/layout/createContentMenu/createContentMenu.html", "client");
   api.addFiles("client/templates/layout/createContentMenu/createContentMenu.js", "client");
@@ -58,26 +63,28 @@ Package.onUse(function (api) {
 
   api.addFiles("client/templates/layout/header/menu/button.html", "client");
 
-  api.addFiles("client/templates/layout/header/i18n/i18n.html", "client");
-  api.addFiles("client/templates/layout/header/i18n/i18n.js", "client");
-
   api.addFiles("client/templates/layout/header/brand/brand.html", "client");
 
   api.addFiles("client/templates/layout/footer/footer.html", "client");
+  api.addFiles("client/templates/layout/footer/footer.js", "client");
 
   api.addFiles("client/templates/layout/alerts/inlineAlerts.js", "client");
   api.addFiles("client/templates/layout/alerts/reactionAlerts.js", "client");
   api.addFiles("client/templates/layout/alerts/alerts.html", "client");
   api.addFiles("client/templates/layout/alerts/alerts.js", "client");
 
-
   api.addFiles("client/templates/layout/loading/loading.html", "client");
   api.addFiles("client/templates/layout/notFound/notFound.html", "client");
 
   api.addFiles("client/templates/layout/notice/unauthorized.html", "client");
 
+  // Components / Partials
+  api.addFiles("client/templates/components/trailer.html", "client");
+  api.addFiles("client/templates/components/serviceDescription.html", "client");
+
   // Theme Assets
   api.addAssets("private/themes/notFound.css", "server");
 
+  // exports
   api.export("Alerts", ["client"]);
 });

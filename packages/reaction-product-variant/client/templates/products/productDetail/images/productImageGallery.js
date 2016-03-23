@@ -7,15 +7,30 @@ let Media = ReactionCore.Collections.Media;
 /**
  * uploadHandler method
  */
-
 function uploadHandler(event) {
-  const productId = ReactionProduct.selectedProductId();
-  const variantId = ReactionProduct.selectedVariantId();
-  const shopId = ReactionProduct.selectedProduct().shopId || ReactionCore.getShopId();
-  const userId = Meteor.userId();
+  // TODO: It would be cool to move this logic to common ValidatedMethod, but
+  // I can't find a way to do this, because of browser's `FileList` collection
+  // and it `Blob`s which is our event.target.files.
+  // There is a way to do this: http://stackoverflow.com/a/24003932. but it's too
+  // tricky
+  let productId = ReactionProduct.selectedProductId();
+  const variant = ReactionProduct.selectedVariant();
+  if (typeof variant !== "object") {
+    return Alerts.add("Please, create new Variant first.", "danger", {
+      autoHide: true
+    });
+  }
+  const variantId = variant._id;
+  let shopId = ReactionProduct.selectedProduct().shopId || ReactionCore.getShopId();
+  let userId = Meteor.userId();
   let count = Media.find({
     "metadata.variantId": variantId
   }).count();
+  // TODO: we need to mark the first variant images somehow for productGrid.
+  // But how do we know that this is the first, not second or other variant?
+  // Question is open. For now if product has more than 1 top variant, everyone
+  // will have a chance to be displayed
+  const toGrid = variant.ancestors.length === 1;
 
   return FS.Utility.eachFile(event, function (file) {
     let fileObj;
@@ -25,7 +40,8 @@ function uploadHandler(event) {
       productId: productId,
       variantId: variantId,
       shopId: shopId,
-      priority: count
+      priority: count,
+      toGrid: +toGrid // we need number
     };
     Media.insert(fileObj);
     return count++;
@@ -35,7 +51,6 @@ function uploadHandler(event) {
 /**
  * updateImagePriorities method
  */
-
 function updateImagePriorities() {
   const sortedMedias = _.map($(".gallery").sortable("toArray", {
     attribute: "data-index"
@@ -44,17 +59,26 @@ function updateImagePriorities() {
       mediaId: index
     };
   });
-
-  const results = [];
-  for (let image of sortedMedias) {
-    results.push(Media.update(image.mediaId, {
-      $set: {
-        "metadata.priority": _.indexOf(sortedMedias, image)
-      }
-    }));
-  }
-  return results;
+  return ReactionProductAPI.methods.updateMediaPriorities.call({ sortedMedias });
 }
+
+Template.productLeadImage.helpers({
+  leadImage: function () {
+    const variant = ReactionProduct.selectedVariant();
+    let leadImage;
+
+    if (variant) {
+      leadImage = Media.findOne({
+        "metadata.variantId": variant._id
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return leadImage;
+  }
+});
 
 /**
  *  Product Image Gallery
@@ -63,8 +87,7 @@ function updateImagePriorities() {
 Template.productImageGallery.helpers({
   media: function () {
     let mediaArray = [];
-    const variant = ReactionProduct.selectedVariant();
-    const product = ReactionProduct.selectedProduct();
+    let variant = ReactionProduct.selectedVariant();
 
     if (variant) {
       mediaArray = Media.find({
@@ -74,31 +97,6 @@ Template.productImageGallery.helpers({
           "metadata.priority": 1
         }
       });
-      if (!ReactionCore.hasAdminAccess() && mediaArray.count() < 1 && product) {
-        mediaArray = Media.find({
-          "metadata.variantId": product.variants[0]._id
-        }, {
-          sort: {
-            "metadata.priority": 1
-          }
-        });
-      }
-    } else {
-      if (product) {
-        let ids = [];
-        for (let thisVariant of product.variants) {
-          ids.push(thisVariant._id);
-        }
-        mediaArray = Media.find({
-          "metadata.variantId": {
-            $in: ids
-          }
-        }, {
-          sort: {
-            "metadata.priority": 1
-          }
-        });
-      }
     }
     return mediaArray;
   },
@@ -123,7 +121,7 @@ Template.productImageGallery.onRendered(function () {
         forcePlaceholderSize: true,
         update: function () {
           let variant;
-          if (variant && variant._id) {
+          if (typeof variant !== "object") {
             variant = ReactionProduct.selectedVariant();
           }
           variant.medias = [];
@@ -145,65 +143,29 @@ Template.productImageGallery.onRendered(function () {
  */
 
 Template.productImageGallery.events({
-  "mouseenter .gallery > li": function (event) {
-    let ids = [];
+  "click .gallery > li": function (event) {
     event.stopImmediatePropagation();
     if (!ReactionCore.hasPermission("createProduct")) {
-      let first = $(".gallery li:nth-child(1)");
-      let target = $(event.currentTarget);
-      let variant = ReactionProduct.selectedVariant();
-
-      if (!variant) {
-        let product = ReactionProduct.selectedProduct();
-        if (product) {
-          for (let productVariant of product.variants) {
-            let mediaResults = Media.find({
-              "metadata.variantId": productVariant._id
-            }, {
-              sort: {
-                "metadata.priority": 1
-              }
-            }).fetch();
-            // loop within product variants
-            for (let media of mediaResults) {
-              ids.push(media._id);
-              if ($(event.currentTarget).data("index") === media._id) {
-                ReactionProduct.setCurrentVariant(productVariant._id);
-              }
-            }
-            if (ReactionProduct.selectedVariant()) {
-              break;
-            }
-          }
-        }
-
-        /*
-        hide all images not associated with the highlighted variant
-        to prevent the alternate variant images from being displayed.
-         */
-        if (ids.length > 0) {
-          $(".gallery li").each(function (k, v) {
-            let vId = $(v).data("index");
-            if (_.indexOf(ids, vId) < 0) {
-              return $(v).hide();
-            }
-          });
-        }
-      }
+      let first = $("#leadImage > img");
+      let target = $(event.currentTarget).find("img");
       if ($(target).data("index") !== first.data("index")) {
-        return $(".gallery li:nth-child(1)").fadeOut(400, function () {
-          $(this).replaceWith(target);
-          first.css({
-            display: "inline-block"
-          }).appendTo($(".gallery"));
-          return $(".gallery li:last-child").fadeIn(100);
+        $("#leadImage > img").fadeOut(400, function () {
+          $(this).replaceWith(target.clone());
         });
       }
     }
   },
   "click .remove-image": function () {
-    this.remove();
-    updateImagePriorities();
+    const mediaId = this._id;
+    ReactionProductAPI.methods.removeMedia.call({ mediaId }, error => {
+      // Media doesn't return success result
+      if (error) {
+        Alerts.inline(error.reason, "warning", {
+          autoHide: 10000
+        });
+      }
+      return updateImagePriorities();
+    });
   },
   "dropped #galleryDropPane": uploadHandler
 });

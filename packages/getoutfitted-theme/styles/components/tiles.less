@@ -1,0 +1,109 @@
+.tile-grid {
+  position: relative;
+}
+
+.tile {
+  min-height: 300px;
+  position: relative;
+}
+
+.raft-tile, .sup-tile, .mtb-tile, .kayak-tile, .camping-tile, .ski-clothing-tile, .onesie-tile,
+.skis-package-tile, .sport-package-tile, .patagonia-package-tile, .burton-package-tile  {
+  position: absolute;
+  text-align: center;
+  top: 0; bottom: 0; right: 0; left: 0; // fill parent
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/raft-index.jpg);
+  background-size: cover;
+  
+  h3 {
+    margin-top: 75px;
+    font-size: 36px;
+    color: #FFF;
+    text-shadow: 1px 1px 50px rgba(30,30,30, 0.6);
+    font-weight: @font-weight-bold;
+  }
+  h4 {
+    color: #FFF;
+    text-shadow: 1px 1px 50px rgba(30,30,30, 0.6);
+    font-size: 18px;
+    font-weight: 400;
+  }
+  h5 {
+    color: #FFF;
+    text-shadow: 1px 1px 50px rgba(30,30,30, 0.6);
+    font-size: 16px;
+  }
+  a {
+    text-shadow: 1px 1px 50px rgba(30,30,30, 0.6);
+  }
+}
+
+.sup-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/sup-index.jpg);
+  background-size: cover;
+}
+
+.mtb-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/mtb-index.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+
+}
+
+.ski-clothing-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/town-12-9.jpg);
+  background-size: cover;
+}
+
+.kayak-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/kayak-index.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+}
+
+.camping-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/camping-index.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+}
+
+.onesie-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/onesie-index.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+}
+
+.skis-package-tile {
+  background-image: url(/packages/getoutfitted_getoutfitted-theme/public/images/hero/ski4.jpg);
+  background-size: cover;
+  -moz-background-size: cover;  /* Firefox 3.6 */
+  background-position: center;  /* Internet Explorer 7/8 */
+}
+
+.tile-price {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px;
+  color: #FFF;
+  background: rgba(0,0,0,0.5);
+  border-radius: @global-radius;
+}
+
+@media (min-width: @screen-lg-min) {
+  .sport-package-tile {
+    border-width: 0 1px 1px 0;
+  }
+
+  .patagonia-package-tile {
+    border-width: 0 0 1px 0;
+  }
+
+  .burton-package-tile {
+    border-width: 0 1px 0 0;
+  }
+}

@@ -17,7 +17,7 @@ _.extend(ReactionCore, {
     if (ReactionCore.getShopId()) {
       if (this.isSet && Meteor.isServer) {
         return this.value;
-      } else if (Meteor.isServer || Meteor.isClient && this.isInsert) {
+      } else if (Meteor.isServer && !this.isUpdate || Meteor.isClient && this.isInsert) {
         return ReactionCore.getShopId();
       }
       return this.unset();
@@ -44,7 +44,6 @@ if (!ReactionCore.Schemas) ReactionCore.Schemas = {};
 if (!ReactionCore.PropTypes) ReactionCore.PropTypes = {};
 if (!ReactionCore.Collections) ReactionCore.Collections = {};
 if (!ReactionCore.Helpers) ReactionCore.Helpers = {};
-if (!ReactionCore.MetaData) ReactionCore.MetaData = {};
 if (!ReactionCore.Locale) ReactionCore.Locale = {};
 if (!ReactionCore.Log) ReactionCore.Log = {}; // Move logger create here
 

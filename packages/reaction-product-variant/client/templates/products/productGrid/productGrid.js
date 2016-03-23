@@ -24,7 +24,7 @@ function loadMoreProducts() {
     if (target.offset().top < threshold) {
       if (!target.data("visible")) {
         target.data("productScrollLimit", true);
-        Session.set("productScrollLimit", Session.get("productScrollLimit") + ITEMS_INCREMENT || 10);
+        Session.set("productScrollLimit", Session.get("productScrollLimit") + ITEMS_INCREMENT || 24);
       }
     } else {
       if (target.data("visible")) {
@@ -36,15 +36,21 @@ function loadMoreProducts() {
 
 Template.productGrid.onCreated(function () {
   Session.set("productGrid/selectedProducts", []);
-
   // Update product subscription
   this.autorun(() => {
-    Meteor.subscribe("Products", Session.get("productScrollLimit"));
+    const slug = ReactionRouter.getParam("slug");
+    const { Tags } = ReactionCore.Collections;
+    const tag = Tags.findOne({ slug: slug }) || Tags.findOne(slug);
+    let tags = {}; // this could be shop default implementation needed
+    if (tag) {
+      tags = {tags: [tag._id]};
+    }
+    const queryParams = Object.assign({}, tags, ReactionRouter.current().queryParams);
+    Meteor.subscribe("Products", Session.get("productScrollLimit"), queryParams);
   });
 
   this.autorun(() => {
-    let isActionViewOpen = ReactionCore.isActionViewOpen();
-
+    const isActionViewOpen = ReactionCore.isActionViewOpen();
     if (isActionViewOpen === false) {
       Session.set("productGrid/selectedProducts", []);
     }
@@ -79,7 +85,7 @@ Template.productGrid.events({
     });
 
     ReactionCore.showActionView({
-      label: "Edit Product",
+      label: i18next.t("productDetailEdit.productSettings"),
       template: "productSettings",
       type: "product",
       data: {
@@ -96,52 +102,47 @@ Template.productGrid.helpers({
   products: function () {
     /*
      * take natural sort, sorting by updatedAt
-     * then resort using positions.position for this tag
+     * then resort using positions[currentTag].position for this tag
      * retaining natural sort of untouched items
      */
 
+    // we are caching `currentTag` or if we are not inside tag route, we will
+    // use shop name as `base` name for `positions` object
+    const currentTag = ReactionProduct.getTag();
+
     // function to compare and sort position
     function compare(a, b) {
-      if (a.position.position === b.position.position) {
-        let x = a.position.updatedAt;
-        let y = b.position.updatedAt;
+      // we need to check that fields exists
+      // todo we could remove part of this checks of `positions` and `base`
+      // settings will be required fields
+      if (a.positions && a.positions[currentTag] &&
+        b.positions && b.positions[currentTag]) {
+        if (a.positions[currentTag].position === b.positions[currentTag].position) {
+          const x = a.positions[currentTag].createdAt;
+          const y = b.positions[currentTag].createdAt;
 
-        if (x > y) {
-          return -1;
-        } else if (x < y) {
-          return 1;
+          if (x > y) {
+            return -1;
+          } else if (x < y) {
+            return 1;
+          }
+
+          return 0;
         }
+        return a.positions[currentTag].position - b.positions[currentTag].position;
+      } // if some of them not exist, we need to comprare products `updatedAt`
+      const x = a.createdAt;
+      const y = b.createdAt;
 
-        return 0;
+      if (x > y) {
+        return -1;
+      } else if (x < y) {
+        return 1;
       }
-      return a.position.position - b.position.position;
+      return 0;
     }
 
     let gridProducts = ReactionCore.Collections.Products.find({}).fetch();
-
-    for (let index in gridProducts) {
-      if ({}.hasOwnProperty.call(gridProducts, index)) {
-        let gridProduct = gridProducts[index];
-        if (gridProduct.positions) {
-          let _results = [];
-          for (let position of gridProduct.positions) {
-            if (position.tag === ReactionCore.getCurrentTag()) {
-              _results.push(position);
-            }
-            gridProducts[index].position = _results[0];
-          }
-        }
-        if (!gridProduct.position) {
-          gridProducts[index].position = {
-            position: 0,
-            weight: 0,
-            pinned: false,
-            updatedAt: gridProduct.updatedAt
-          };
-        }
-      }
-    }
-
     const products = gridProducts.sort(compare);
     Template.instance().products = products;
     return products;

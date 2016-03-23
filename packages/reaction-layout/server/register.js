@@ -16,7 +16,21 @@ ReactionCore.registerPackage({
     label: "Layout",
     description: "Layout utilities",
     icon: "fa fa-object-group",
-    priority: 4,
+    priority: 1,
     container: "appearance"
+  }],
+  layout: [{
+    layout: "coreLayout",
+    workflow: "coreIndexWorkflow",
+    theme: "default",
+    enabled: true,
+    structure: {
+       template: "getOutfittedIndex",
+       layoutHeader: "layoutHeader",
+       layoutFooter: "layoutFooter",
+       notFound: "notFound",
+       dashboardControls: "filtrationDashboardControls",
+       adminControlsFooter: "adminControlsFooter"
+     }
   }]
 });

@@ -36,8 +36,9 @@ accounts-oauth
 # Reaction Commerce Packages
 
 reactioncommerce:core
+reactioncommerce:reaction-catalog
 reactioncommerce:core-theme
-reactioncommerce:reaction-layout
+# reactioncommerce:reaction-layout
 reactioncommerce:launchdock-connect
 reactioncommerce:reaction-accounts
 reactioncommerce:reaction-router
@@ -70,6 +71,14 @@ getoutfitted:reaction-rental-products
 #getoutfitted:reaction-shopify-products
 #getoutfitted:reaction-local-delivery
 
+# GetOutfitted Packages
+getoutfitted:getoutfitted-layout
+# getoutfitted:reaction-rental-products
+#getoutfitted:reaction-advanced-fulfillment
+#getoutfitted:reaction-shopify-orders
+#getoutfitted:reaction-shopify-products
+#getoutfitted:reaction-local-delivery
+
 # Reaction Commerce Data
 
 #kadira:blaze-layout
@@ -77,9 +86,6 @@ getoutfitted:reaction-rental-products
 reactioncommerce:reaction-sample-data   # default Reaction data
 
 # Themes
-reactioncommerce:default-theme          # default Reaction theme
+getoutfitted:getoutfitted-theme
+#reactioncommerce:default-theme          # default Reaction theme
 #my:custom-theme
-
-# Forced updates on packages
-mdg:validation-error@0.4.0
-cosmos:browserify@0.9.3

@@ -1,0 +1,178 @@
+.variant-widget {
+  position: relative;
+  left: auto;
+  background: @white;
+  z-index: 1000;
+  padding: 10px 10px;
+  border-radius: @global-radius;
+}
+
+.variant-widget .leadImage {
+  padding-bottom: 10px;
+}
+
+// pricing widget
+.variant-widget select {
+  font-size: 13px;
+  margin: 0 0 12px;
+  height: 32px;
+  padding: 6px;
+  border: 1px solid #eeeeee;
+  border-radius: 4px;
+  margin: 2px 0px 8px 0px;
+  font-weight: @font-weight-normal;
+}
+
+.variant-widget .button.wire.grey {
+  font-size: 11px;
+  padding: 8px 14px;
+}
+
+.variant-widget input {
+  font-size: 13px;
+  height: 32px;
+  margin: 0 0 12px;
+}
+
+.variant-widget label {
+  font-size: 10px;
+}
+
+.variant-widget .cancel {
+  display: block;
+  color: @alert-color;
+  margin-left: 5px;
+  font-size: 20px;
+  padding-top: 0;
+  float: right;
+  line-height: 32px;
+}
+
+// pricing table
+.price-table {
+  font-size: 12px;
+  width: 300px;
+  margin: 10px 0;
+}
+
+.daily-rate,
+.rental-days,
+.total-price,
+.rush-fee {
+  line-height: 2;
+}
+
+.total-price {
+  font-size: 18px;
+  border-top: 1px solid;
+  display: inline-block;
+  padding-left: 40px;
+}
+
+.rental-price {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: @font-weight-heading;
+}
+
+.rental-price span, .rental-price small {
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.beginner-trail {
+  color: @beginner;
+}
+.intermediate-trail {
+  color: @intermediate;
+}
+.advanced-trail, .expert-trail {
+  color: @expert;
+  font-size: 1rem;
+  line-height: 1rem;
+}
+
+// Third Party Rentals
+.third-party-rentals {
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-transform: none;
+  }
+  h2 {
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: none;
+    color: #666;
+  }
+  h3 {
+    font-size: 14px;
+    font-weight: 400;
+  }
+  h4 {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .description, &.description, p {
+    font-size: 12px;
+  }
+  
+  div.row.product-detail-section,
+  div.row.product-detail-item  {
+    margin-top: 10px !important;
+  }
+}
+
+.icon.row {
+  margin-bottom: 6px !important;
+}
+
+.input-descriptor, a.input-descriptor {
+  font-size: 12px;
+  line-height: 36px;
+}
+
+a.input-descriptor {
+  text-decoration: underline;
+}
+
+.date-selection-widget {
+  background: @white;
+  border-radius: 0 0 @global-radius @global-radius;
+}
+
+.price-tab {
+  background: @white;
+  border-radius: 4px 4px 0 0;
+  
+  h3.rental-price {
+    margin-top: 8px;
+    margin-left: 10px;
+    font-size: 1.25rem;
+  }
+  
+  span.right {
+    margin-top: 8px;
+    margin-right: 10px;
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+  .variant-widget {
+    margin-top: -75px;
+  }
+
+  .variant-widget.sticky {
+    margin-top: 0;
+    position: fixed;
+    top: 0;
+    width: 330px;
+    background: #FFF;
+    margin-right: -10px;
+    // padding: 0 5px;
+    z-index: 1000;
+  }
+  .rental-price {
+    font-size: 18px;
+  }
+}

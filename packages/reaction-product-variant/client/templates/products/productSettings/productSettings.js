@@ -6,15 +6,14 @@ Template.productSettings.helpers({
   },
   itemWeightActive: function (weight) {
     weightDependency.depend();
-
+    const tag = ReactionProduct.getTag();
     for (let product of this.products) {
-      let position = product.position || {};
-      let currentWeight = position.weight || 0;
+      let positions = product.positions && product.positions[tag] || {};
+      let currentWeight = positions.weight || 0;
       if (currentWeight === weight) {
         return "active";
       }
     }
-
     return "";
   }
 });
@@ -22,51 +21,28 @@ Template.productSettings.helpers({
 Template.productSettingsGridItem.helpers({
   displayPrice: function () {
     if (this._id) {
-      return ReactionProduct.getProductPriceRange(this._id);
+      return ReactionProduct.getProductPriceRange(this._id).range;
     }
   },
 
   media: function () {
-    let defaultImage;
-    const variants = [];
-    for (let variant of this.variants) {
-      if (!variant.parentId) {
-        variants.push(variant);
-      }
-    }
+    const media = ReactionCore.Collections.Media.findOne({
+      "metadata.productId": this._id,
+      "metadata.priority": 0,
+      "metadata.toGrid": 1
+    }, { sort: { uploadedAt: 1 } });
 
-    if (variants.length > 0) {
-      let variantId = variants[0]._id;
-      defaultImage = ReactionCore.Collections.Media.findOne({
-        "metadata.variantId": variantId,
-        "metadata.priority": 0
-      });
-    }
-    if (defaultImage) {
-      return defaultImage;
-    }
-    return false;
+    return media instanceof FS.File ? media : false;
   },
   additionalMedia: function () {
-    let mediaArray;
-    const variants = [];
-    for (let variant of this.variants) {
-      if (!variant.parentId) {
-        variants.push(variant);
-      }
-    }
+    const mediaArray = ReactionCore.Collections.Media.find({
+      "metadata.productId": this._id,
+      "metadata.priority": {
+        $gt: 0
+      },
+      "metadata.toGrid": 1
+    }, { limit: 3 });
 
-    if (variants.length > 0) {
-      let variantId = variants[0]._id;
-      mediaArray = ReactionCore.Collections.Media.find({
-        "metadata.variantId": variantId,
-        "metadata.priority": {
-          $gt: 0
-        }
-      }, {
-        limit: 3
-      });
-    }
     if (mediaArray.count() > 1) {
       return mediaArray;
     }
@@ -74,8 +50,9 @@ Template.productSettingsGridItem.helpers({
   },
   weightClass: function () {
     weightDependency.depend();
-    let position = this.position || {};
-    let weight = position.weight || 0;
+    const tag = ReactionProduct.getTag();
+    const positions = this.positions && this.positions[tag] || {};
+    const weight = positions.weight || 0;
     switch (weight) {
     case 1:
       return "product-medium";
@@ -88,23 +65,17 @@ Template.productSettingsGridItem.helpers({
 
   isMediumWeight: function () {
     weightDependency.depend();
-
-    let position = this.position || {};
-    let weight = position.weight || 0;
-    if (weight === 1) {
-      return true;
-    }
-    return false;
+    const tag = ReactionProduct.getTag();
+    const positions = this.positions && this.positions[tag] || {};
+    const weight = positions.weight || 0;
+    return weight === 1;
   },
   isLargeWeight: function () {
     weightDependency.depend();
-
-    let position = this.position || {};
-    let weight = position.weight || 0;
-    if (weight === 3) {
-      return true;
-    }
-    return false;
+    const tag = ReactionProduct.getTag();
+    const positions = this.positions && this.positions[tag] || {};
+    const weight = positions.weight || 0;
+    return weight === 3;
   },
   shouldShowAdditionalImages: function () {
     weightDependency.depend();
@@ -134,21 +105,24 @@ Template.productSettings.events({
   },
   "click [data-event-action=changeProductWeight]": function (event) {
     event.preventDefault();
-
-    for (product of this.products) {
+    const tag = ReactionProduct.getTag();
+    for (let product of this.products) {
       let weight = $(event.currentTarget).data("event-data") || 0;
-      let position = {
-        tag: ReactionCore.getCurrentTag(),
+      let positions = {
         weight: weight,
         updatedAt: new Date()
       };
-
-      product.position = position;
-
-      Meteor.call("products/updateProductPosition", product._id, position,
-        function () {
-          weightDependency.changed();
-        });
+      Meteor.call("products/updateProductPosition", product._id, positions, tag,
+        (error, result) => {
+          if (error) {
+            ReactionCore.Log.warn(error);
+            throw new Meteor.Error(403, error);
+          }
+          if (result) {
+            weightDependency.changed();
+          }
+        }
+      );
     }
   }
 });

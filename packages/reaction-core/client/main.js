@@ -195,13 +195,13 @@ _.extend(ReactionCore, {
   },
 
   getCurrentTag: function () {
-    if (ReactionRouter.getRouteName() === "/product/tag") {
-      return ReactionRouter.current().params._id;
+    if (ReactionRouter.getRouteName() === "tag") {
+      return ReactionRouter.current().params.slug;
     }
   },
   getRegistryForCurrentRoute: (provides = "dashboard") => {
     ReactionRouter.watchPathChange();
-    const currentRouteName = ReactionRouter.current().route.name;
+    const currentRouteName = ReactionRouter.getRouteName();
     const currentRoute = ReactionRouter.current();
     const template = currentRoute.route.options.template;
     // find registry entries for routeName

@@ -1,12 +1,3 @@
-<template name="accountsDashboardControls">
-  <button type="button" class="btn btn-default" data-event-action="addShopMember" title="{{i18n 'accounts.addMember'}}">
-    <div class="contents">
-      <div class="icon"><i class="fa fa-plus"></i></div>
-      <div class="icon-text" data-i18n="accounts.addShopMember">Add Member</div>
-    </div>
-  </button>
-</template>
-
 <template name="accountsDashboard">
   {{#if hasPermission 'accounts'}}
     <div class="container-fluid-sm">
@@ -87,7 +78,7 @@
             </div>
           {{/each}}
           <div class="form-group">
-            <button class="btn btn-primary" type="submit" data-i18n="accountsDashboardControls.updateSettings">Update Settings</button>
+            <button class="btn btn-primary" type="submit" data-i18n="app.updateSettings">Update Settings</button>
           </div>
         </form>
       </div>
