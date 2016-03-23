@@ -1,11 +1,13 @@
 Template.productDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
-  
+  this.subscribe("Tags");
+
   this.productId = () => ReactionRouter.getParam("handle");
   this.variantId = () => ReactionRouter.getParam("variantId");
   this.autorun(() => {
-    this.subscribe("Product", this.productId());
-    this.subscribe("Tags");
+    if (this.productId()) {
+      this.subscribe("Product", this.productId());
+    }
   });
 });
 
@@ -43,6 +45,22 @@ Template.productDetail.helpers({
       return Template.productMetaFieldForm;
     }
     return Template.productMetaField;
+  },
+  actualPrice: function () {
+    const current = ReactionProduct.selectedVariant();
+    if (typeof current === "object") {
+      const childVariants = ReactionProduct.getVariants(current._id);
+      if (childVariants.length === 0) {
+        return current.price;
+      }
+      return ReactionProduct.getProductPriceRange().range;
+    }
+  },
+  fieldComponent: function () {
+    if (ReactionCore.hasPermission("createProduct")) {
+      return Template.productDetailEdit;
+    }
+    return Template.productDetailField;
   },
   featureComponent: function () {
     this.featureKey = "feature";
@@ -211,17 +229,19 @@ Template.productDetail.events({
     let errorMsg = "";
     const self = this;
     if (!self.title) {
-      errorMsg += "Product title is required. ";
+      errorMsg += `${i18next.t("error.isRequired", { field: i18next.t("productDetailEdit.title") })} `;
       template.$(".title-edit-input").focus();
     }
     const variants = ReactionProduct.getVariants(self._id);
     for (let variant of variants) {
       let index = _.indexOf(variants, variant);
       if (!variant.title) {
-        errorMsg += "Variant " + (index + 1) + " label is required. ";
+        errorMsg +=
+          `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.title"), number: index + 1 })} `;
       }
       if (!variant.price) {
-        errorMsg += "Variant " + (index + 1) + " price is required. ";
+        errorMsg +=
+          `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.price"), number: index + 1 })} `;
       }
     }
     if (errorMsg.length > 0) {

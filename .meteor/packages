@@ -73,9 +73,6 @@ getoutfitted:getoutfitted-layout
 #getoutfitted:reaction-shopify-products
 #getoutfitted:reaction-local-delivery
 
-# Add on community packages
-# ramusus:reaction-filtration
-
 # Reaction Commerce Data
 
 #kadira:blaze-layout
@@ -86,6 +83,3 @@ reactioncommerce:reaction-sample-data   # default Reaction data
 getoutfitted:getoutfitted-theme
 #reactioncommerce:default-theme          # default Reaction theme
 #my:custom-theme
-
-# Forced updates on packages
-mdg:validation-error@0.4.0
