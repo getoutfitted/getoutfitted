@@ -63,15 +63,13 @@ Template.featureComponent.events({
       value: $(event.currentTarget).parent().children(
         ".metafield-value-input").val()
     };
-    if(this.featureKey) {
+    if(this.featureKey && this.value) {
       this.key = this.featureKey;
       delete this.featureKey;
     }
 
     if (this.key) {
       const productId = ReactionProduct.selectedProductId();
-      console.log("this", this)
-      console.log("productId", productId);
       Meteor.call("products/updateMetaFields", productId, updateMeta, this);
       $(event.currentTarget).animate({
         backgroundColor: "#e2f2e2"
@@ -86,10 +84,10 @@ Template.featureComponent.events({
         "").focus();
     }
     if (updateMeta.key && updateMeta.value) {
-      console.log("updateMeta", updateMeta);
       const productId = ReactionProduct.selectedProductId();
       Meteor.call("products/updateMetaFields", productId, updateMeta);
       Tracker.flush();
+      $(event.currentTarget).parent().children().last().val("").focus();
     }
   }
 });
@@ -111,12 +109,7 @@ Template.productIncludedFieldForm.events({
   "click .metafield-remove": function () {
     let productId;
     productId = ReactionProduct.selectedProductId();
-    // todo: whats happen here? why we update collection directly?
-    ReactionCore.Collections.Products.update(productId, {
-      $pull: {
-        metafields: this
-      }
-    });
+    Meteor.call("products/removeMetaFields", productId, this);
   }
 });
 
@@ -139,7 +132,6 @@ Template.productIncludedField.helpers({
  */
 Template.productFeatureFieldForm.helpers({
   features: function () {
-    console.log("feature key", this.featureKey);
     const featureKey = this.featureKey;
     return _.filter(this.metafields, function (metafield) {
       return metafield.key === featureKey;
@@ -158,12 +150,7 @@ Template.productFeatureFieldForm.events({
   "click .metafield-remove": function () {
     let productId;
     productId = ReactionProduct.selectedProductId();
-    // todo: whats happen here? why we update collection directly?
-    ReactionCore.Collections.Products.update(productId, {
-      $pull: {
-        metafields: this
-      }
-    });
+    Meteor.call("products/removeMetaFields", productId, this);
   }
 });
 

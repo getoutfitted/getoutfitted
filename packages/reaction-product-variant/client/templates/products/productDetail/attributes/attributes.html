@@ -67,7 +67,7 @@
           {{>featureComponent value=./value featureKey=../featureKey}}
         </div>
         <div class="col-sm-1">
-          <span class="metafield-remove"><i class="fa fa-times-circle"></i></span>
+          <span class="metafield-remove feature-remove"><i class="fa fa-times-circle"></i></span>
         </div>
       </div>
     </div>
@@ -111,17 +111,19 @@
     </div>
     <div class="show-for-medium-up col-md-9 description-body">
       {{#each features}}
-        <div class="included icon row">
+        <div class="icon row">
           <div class="col-md-11">
             {{>featureComponent value=./value featureKey=../featureKey}}
           </div>
           <div class="col-md-1">
-            <span class="metafield-remove"><i class="fa fa-times-circle"></i></span>
+            <span class="metafield-remove feature-remove"><i class="fa fa-times-circle"></i></span>
           </div>
         </div>
       {{/each}}
-      <div class="included icon row">
-        {{>featureComponent featureKey=featureKey}}
+      <div class="included row">
+        <div class="col-md-11">
+          {{>featureComponent featureKey=featureKey}}
+        </div>
       </div>
     </div>
   </div>

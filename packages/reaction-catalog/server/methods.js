@@ -1093,6 +1093,10 @@ Meteor.methods({
     check(productId, String);
     check(updatedMeta, Object);
     check(meta, Match.OptionalOrNull(Object));
+    ReactionCore.Log.info('inside meta fields update function');
+    ReactionCore.Log.info('productId', productId);
+    ReactionCore.Log.info('updatedMeta', updatedMeta);
+    ReactionCore.Log.info('existing meta', meta);
     // must have createProduct permission
     if (!ReactionCore.hasPermission("createProduct")) {
       throw new Meteor.Error(403, "Access Denied");
