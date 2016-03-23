@@ -35,17 +35,17 @@ Package.onUse(function (api) {
   api.use("ejson");
   api.use("spacebars");
   api.use("check");
-  api.use("react");
-  api.use("react-template-helper");
   api.use("less");
   api.use("reactive-dict");
 
   // Community Packages
+  api.use("react@0.1.10");
+  api.use("react-template-helper@0.2.6");
   api.use("cosmos:browserify@0.9.3");
 
   // meteor add-on packages
   api.use("reactioncommerce:core@0.12.0");
-  api.use("reactioncommerce:reaction-schemas@2.0.2");
+  api.use("reactioncommerce:reaction-schemas@2.0.3");
 
   api.addFiles("common/global.js", ["client", "server"]);
   api.addFiles("lib/client.browserify.js", "client");
@@ -109,7 +109,8 @@ Package.onUse(function (api) {
   api.addFiles("client/components/upload/upload.html", "client");
   api.addFiles("client/components/upload/upload.js", "client");
 
-  api.addFiles("client/styles/variables.less", "client");
+  api.addFiles("client/styles/variables.less", "client", {isImport: true});
+  api.addFiles("client/styles/mixins.less", "client", {isImport: true});
 
   // Templates
   api.addFiles("client/templates/dashboard/dashboard.html", "client");

@@ -67,8 +67,6 @@ ReactionCore.Schemas.ProductPosition = new SimpleSchema({
 ReactionCore.Schemas.ProductVariant = new SimpleSchema({
   _id: {
     type: String,
-    optional: true,
-    index: 1,
     label: "Variant ID"
   },
   ancestors: {
@@ -76,7 +74,7 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
     defaultValue: []
   },
   // since implementing of flattened model this property is used for keeping
-  // array index. This is needed for moving variants through list (drug'n'drop)
+  // array index. This is needed for moving variants through list (drag'n'drop)
   index: {
     label: "Variant position number in list",
     type: Number,
@@ -249,13 +247,29 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
   }
 });
 
+ReactionCore.Schemas.PriceRange = new SimpleSchema({
+  range: {
+    type: String
+  },
+  min: {
+    type: Number,
+    decimal: true,
+    optional: true
+  },
+  max: {
+    type: Number,
+    decimal: true,
+    optional: true
+  }
+});
+
 /**
  * Product Schema
  */
 ReactionCore.Schemas.Product = new SimpleSchema({
   _id: {
     type: String,
-    optional: true
+    label: "Product Id"
   },
   ancestors: {
     type: [String],
@@ -293,15 +307,14 @@ ReactionCore.Schemas.Product = new SimpleSchema({
     optional: true
   },
   positions: {
-    type: [ReactionCore.Schemas.ProductPosition],
+    type: Object, // ReactionCore.Schemas.ProductPosition
+    blackbox: true,
     optional: true
   },
+  // Denormalized field: object with range string, min and max
   price: {
-    label: "Denormalized field: Variants price range for a product",
-    // type: ReactionCore.Schemas.PriceRange
-    type: String,
-    defaultValue: "0",
-    max: 100
+    label: "Price",
+    type: ReactionCore.Schemas.PriceRange
   },
   // Denormalized field: Indicates when at least one of variants
   // `inventoryQuantity` are lower then their `lowInventoryWarningThreshold`.

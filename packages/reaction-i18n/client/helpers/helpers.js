@@ -16,8 +16,10 @@ Template.registerHelper("i18n", function (i18nKey, i18nMessage) {
   check(i18nKey, String);
   check(i18nMessage, String);
 
-  // i18nextDep.depend();
-  let message = new Handlebars.SafeString(i18nMessage);
+  i18nextDep.depend();
+
+  const message = new Handlebars.SafeString(i18nMessage);
+
   // returning translated key
   return i18next.t(i18nKey, {defaultValue: message});
 });
@@ -169,6 +171,7 @@ Object.assign(ReactionCore, {
     registry.i18nKeyDescription = `${i18nKey}Description`;
     registry.i18nKeyPlaceholder = `${i18nKey}Placeholder`;
     registry.i18nKeyTooltip = `${i18nKey}Tooltip`;
+    registry.i18nKeyTitle = `${i18nKey}Title`;
 
     return registry;
   }

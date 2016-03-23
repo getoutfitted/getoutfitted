@@ -29,7 +29,8 @@ Template.coreAdminLayout.helpers({
           href: ReactionRouter.pathFor(shortcut.name),
           className: ReactionRouter.isActiveClassName(shortcut.name),
           icon: shortcut.icon,
-          tooltip: i18next.t(shortcut.i18nKeyLabel, shortcut.i18n),
+          tooltip: shortcut.label || "POOOOP??",
+          i18nKeyTooltip: shortcut.i18nKeyLabel,
           tooltipPosition: "left middle"
         });
       }
@@ -41,7 +42,8 @@ Template.coreAdminLayout.helpers({
 
     items.push({
       icon: "plus",
-      tooltip: i18next.t("app.createContent", "Create Content"),
+      tooltip: "Create Content",
+      i18nKeyTooltip: "app.createContent",
       tooltipPosition: "left middle",
       onClick(event) {
         if (!instance.dropInstance) {
@@ -62,7 +64,8 @@ Template.coreAdminLayout.helpers({
 
     items.push({
       icon: "edit",
-      tooltip: i18next.t("app.toggleEditMode", "Toggle Edit Mode"),
+      tooltip: "Toggle Edit Mode",
+      i18nKeyTooltip: "app.toggleEditMode",
       tooltipPosition: "left middle",
       onClick() {
         if (Session.equals("reaction/editModeEnabled", true)) {
@@ -82,19 +85,6 @@ Template.coreAdminLayout.helpers({
     }
     return false;
   },
-
-  // shortcutButtonProps(data) {
-  //   return {
-  //     type: "link",
-  //     href: data.route,
-  //     // label: data.label,
-  //     // i18nLabel: data.i18nKeyLabel,
-  //     //active
-  //     icon: data.icon,
-  //     tooltip: i18next.t(data.i18nKeyLabel, data.i18n),
-  //     tooltipPosition: "left middle"
-  //   }
-  // },
 
   packageButtons() {
     const routeName = ReactionRouter.getRouteName();
@@ -164,36 +154,36 @@ Template.coreAdminLayout.helpers({
   }
 });
 
-Template.coreAdminLayout.events({
-  /**
-   * Submit sign up form
-   * @param  {Event} event - jQuery Event
-   * @param  {Template} template - Blaze Template
-   * @return {void}
-   */
-  "click .admin-controls-quicklinks a, click .admin-controls-quicklinks button"(event) {
-    if (this.name === "createProduct") {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (!this.dropInstance) {
-        this.dropInstance = new Drop({
-          target: event.target,
-          content: "",
-          constrainToWindow: true,
-          classes: "drop-theme-arrows",
-          position: "right center"
-        });
-
-        Blaze.renderWithData(Template.createContentMenu, {}, this.dropInstance.content);
-      }
-
-      this.dropInstance.open();
-    } else if (this.route) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      ReactionRouter.go(this.name);
-    }
-  }
-});
+// Template.coreAdminLayout.events({
+//   /**
+//    * Submit sign up form
+//    * @param  {Event} event - jQuery Event
+//    * @param  {Template} template - Blaze Template
+//    * @return {void}
+//    */
+//   "click .admin-controls-quicklinks a, click .admin-controls-quicklinks button"(event) {
+//     if (this.name === "createProduct") {
+//       event.preventDefault();
+//       event.stopPropagation();
+//
+//       if (!this.dropInstance) {
+//         this.dropInstance = new Drop({
+//           target: event.target,
+//           content: "",
+//           constrainToWindow: true,
+//           classes: "drop-theme-arrows",
+//           position: "right center"
+//         });
+//
+//         Blaze.renderWithData(Template.createContentMenu, {}, this.dropInstance.content);
+//       }
+//
+//       this.dropInstance.open();
+//     } else if (this.route) {
+//       event.preventDefault();
+//       event.stopPropagation();
+//
+//       ReactionRouter.go(this.name);
+//     }
+//   }
+// });

@@ -1,6 +1,7 @@
 [{
   "language": "Russian",
   "i18n": "ru",
+  "ns": "core",
   "translation": {
     "core": {
       "languages": {
@@ -15,32 +16,51 @@
         },
         "dashboard": {
           "accountsLabel": "Учётные записи",
+          "accountsTitle": "Учётные записи",
           "accountsDescription": "Управление сервисами авторизации",
           "analyticsLabel": "Аналитика",
+          "analyticsTitle": "Аналитика",
           "analyticsDescription": "Внедрение аналитики и отслеживания событий",
           "authorizeNetLabel": "Authorize.net",
           "authorizeNetDescription": "Платежи через Authorize.net",
           "shippingLabel": "Доставка",
+          "shippingTitle": "Доставка",
           "shippingDescription": "Настройки тарифов по доставке",
           "braintreeLabel": "Braintree",
           "braintreeDescription": "Платежи через Braintree",
           "catalogLabel": "Каталог",
+          "catalogTitle": "Каталог",
           "catalogDescription": "Позволяет создавать простые продукты",
           "coreLabel": "Ядро",
+          "coreTitle": "Панель управления",
           "coreDescription": "Базовые настройки Reaction",
           "genericPaymentLabel": "Образец платёжной системы",
           "genericPaymentDescription": "Тестирование платежей. Образец для портирования любых Платёжных систем",
           "i18NLabel": "i18n",
+          "i18NTitle": "i18n",
           "i18NDescription": "Интернационализация",
           "inventoryLabel": "Товары",
+          "inventoryTitle": "Товары",
           "inventoryDescription": "Утилиты для работы с товарами",
+          "layoutLabel": "план",
+          "layoutTitle": "план",
+          "layoutDescription": "план",
           "connectLabel": "Connect",
           "connectDescription": "Подключение Reaction как развёрнутого сервиса",
           "ordersLabel": "Заказы",
+          "ordersTitle": "Заказы",
           "ordersDescription": "Управление заказами",
           "paypalLabel": "PayPal",
+          "paypalTitle": "PayPal",
           "paypalDescription": "Платежи через PayPal",
+          "routingLabel": "маршрутизация",
+          "routingTitle": "маршрутизация",
+          "routingDescription": "Маршрутизация утилиты",
+          "themesLabel": "основа",
+          "themesTitle": "основа",
+          "themesDescription": "основа UI и компонент",
           "socialLabel": "Социальные сети",
+          "socialTitle": "Социальные сети",
           "socialDescription": "Интеграция с соц. сетями",
           "stripeLabel": "Stripe",
           "stripeDescription": "Платежи через Stripe"
@@ -150,8 +170,8 @@
         "barcode": "Штрих-код",
         "confirmDeleteBarcode": "Вы уверены, что хотите удалить штрих-код",
         "details": "Подробности",
-        "detailsName": "Название характеристики",
-        "detailsInfo": "Значение характеристики",
+        "detailsName": "Свойство",
+        "detailsInfo": "Подробности",
         "generate": "Сформировать",
         "generateBarcodes": "Сформировать штрих-коды",
         "hideBarcodes": "Скрыть штрих-коды",
@@ -159,7 +179,9 @@
         "addToCart": "Добавить в корзину",
         "chooseOptions": "Пожалуйста выберите вариант прежде чем добавить товар в корзину",
         "outOfStock": "Извините, этого товара нет в наличии",
-        "productDeleteError": "Произошла ошибка во время удаления товара ",
+        "productDeleteError": "Произошла ошибка во время удаления {{product}}.",
+        "deleteErrorTheProduct": "товара",
+        "deleteErrorTheSelectedProducts": "выбранных товаров",
         "publishFirst": "Опубликуйте товар прежде чем добавить в корзину.",
         "quantityAbbreviation": "Кол-во",
         "selectOption": "Выберите вариант прежде чем добавить в корзину",
@@ -168,10 +190,14 @@
         "soldOut": "Распродано!",
         "backOrder": "Доступно под заказ",
         "limitedSupply": "Предложение ограничено",
-        "publishProductVisible": "теперь виден",
-        "publishProductHidden": "теперь невидим",
-        "clonedAlert": "Скопирован",
-        "deletedAlert": "Удален",
+        "publishProductVisible": "{{product}} теперь виден",
+        "publishProductHidden": "{{product}} теперь невидим",
+        "clonedAlert": "{{product}} скопирован",
+        "clonedAlert_plural": "{{product}} скопированы",
+        "deletedAlert": "{{product}} удален",
+        "deletedAlert_plural": "{{product}} удалены",
+        "theProduct": "Товар",
+        "theSelectedProducts": "Выбранные товаровы",
         "startTracking": "Начать слежение",
         "addBarcode": "Добавить штрих-код",
         "quantity": "Количество",
@@ -187,6 +213,9 @@
         "createTag": "Create Tag"
       },
       "productDetailEdit": {
+        "productSettings": "Настройки товара",
+        "product": "Товар",
+        "size": "Размер",
         "title": "Название товара",
         "pageTitle": "Название страницы товара",
         "vendor": "Производитель",
@@ -202,8 +231,12 @@
         "pinProduct": "Закрепить товар",
         "toggleSize": "Переключить размер",
         "deleteProduct": "Удалить товар",
+        "deleteThisProduct": "Удалить этот товар?",
+        "deleteSelectedProducts": "Удалить выбранные товары?",
         "publish": "Опубликовать",
-        "moreOptions": "Больше опций"
+        "moreOptions": "Больше опций",
+        "noSelectedProducts": "Нет выбранных продуктов. Нажмите на ",
+        "orShiftCtrlCmd": " либо используйте shift|ctrl|cmd + клик мыши на продуктах, чтобы выбрать несколько. Shift позволяет выбрать несколько продуктов подряд."
       },
       "productVariant": {
         "inventoryQuantity": "Количество",
@@ -395,6 +428,9 @@
         "isBillingDefault": "Сделать вашим платёжным адресом по умолчанию?",
         "isCommercial": "Это юридический адрес"
       },
+      "i18nSettings": {
+        "enabledLanguages": "Языки"
+      },
       "checkoutProgressBar": {
         "login": "Вход в учётную запись",
         "shippingBilling": "Адреса",
@@ -519,6 +555,8 @@
           "usernameRequired": "Имя пользователя обязательно.",
           "emailAlreadyExists": "Email уже существует",
           "emailDoesntMatchTheCriteria": "Email не соответствует критериям.",
+          "errorSendingEmail": "Ошибка при отправке письма. Возможно проблемы с настройками.",
+          "unableToSendInvitationEmail": "Не удалось отправить приглашение.",
           "failedToLogout": "Не удалось выйти",
           "invalidLoginToken": "Неверный токен для входа",
           "loginForbidden": "Вход запрещен",
@@ -552,7 +590,8 @@
       "error": {
         "nameRequired": "Название обязательно.",
         "isRequired": "Поле \"{{field}}\" обязательно.",
-        "mustBeNumber": "Поле \"{{field}}\" должно быть числом."
+        "mustBeNumber": "Поле \"{{field}}\" должно быть числом.",
+        "variantFieldIsRequired": "Поле \"{{field}}\" варианта {{number}} обязательно."
       }
     }
   }
