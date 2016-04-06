@@ -120,7 +120,9 @@ describe("Account Meteor method ", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookAdd",
-            () => { console.log("test"); }
+            () => {
+              // TODO: Write tests here
+            }
           );
         }).not.toThrow();
 
@@ -314,7 +316,9 @@ describe("Account Meteor method ", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookUpdate",
-            () => { console.log("test"); }
+            () => {
+              // TODO: Write tests here
+            }
           );
         }).not.toThrow();
 
@@ -532,7 +536,9 @@ describe("Account Meteor method ", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookRemove",
-            () => { console.log("test"); }
+            () => {
+              // TODO: Write tests here
+            }
           );
         }).not.toThrow();
 

@@ -24,7 +24,6 @@ Template.metaComponent.events({
     };
     if (this.key) {
       const productId = ReactionProduct.selectedProductId();
-      console.log(this);
       Meteor.call("products/updateMetaFields", productId, updateMeta,
         this);
       $(event.currentTarget).animate({
