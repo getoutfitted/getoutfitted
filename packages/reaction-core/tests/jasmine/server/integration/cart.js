@@ -459,7 +459,7 @@ describe("cart methods", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookRemove", () => {
-              console.log("test");
+              // TODO: Write tests here.
             }
           );
         }).not.toThrow();
