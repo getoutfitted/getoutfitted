@@ -323,12 +323,21 @@ Meteor.methods({
       throw new Meteor.Error(404, "ProductVariant not found",
         "ProductVariant with such id was not found!");
     }
-    // performs calculations admissibility of adding product to cart
-    const quantity = quantityProcessing(product, variant, itemQty);
+    let quantity;
+    if (variant.functionalType === 'rentalVariant') {
+      // calculates number of rental products that can be added to the cart
+      quantity = quantityProcessing(product, variant, itemQty);
+      variant.price = cart.rentalDays * variant.pricePerDay;
+    } else {
+      // performs calculations admissibility of adding non-rental product to cart
+      quantity = quantityProcessing(product, variant, itemQty);
+    }
+    
     // performs search of variant inside cart
     const cartVariantExists = cart.items && cart.items
       .some(item => item.variants._id === variantId);
 
+    // if this variant already exists in the cart, update the qty instead of creating new item in cart
     if (cartVariantExists) {
       return ReactionCore.Collections.Cart.update({
         "_id": cart._id,
