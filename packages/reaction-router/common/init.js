@@ -88,7 +88,8 @@ const getRegistryRouteName = (packageName, registryItem) => {
  */
 ReactionRouter.initPackageRoutes = () => {
   const pkgs = ReactionCore.Collections.Packages.find().fetch();
-  const prefix = ReactionCore.getShopName().toLowerCase(); // todo add shopId
+  // Uncomment this line and change 163 to enable multi-shop browsing
+  // const prefix = ReactionCore.getShopName().toLowerCase(); // todo add shopId
 
   // initialize index
   // define default routing groups
@@ -160,7 +161,7 @@ ReactionRouter.initPackageRoutes = () => {
       let uniqRoutes = new Set(newRoutes);
       for (const route of uniqRoutes) {
         shop.newGroup = ReactionRouter.group({
-          prefix: "/" + prefix
+          prefix: "" // Was "/" + prefix - updated to remove shopname prefix from routes
         });
         // todo: look for a cheap way to validate and prevent duplicate additions
         shop.newGroup.route(route.route, route.options);
