@@ -1,3 +1,8 @@
+const $ = require("jquery");
+// load modules
+require("jquery-ui");
+
+
 Template.productDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
   this.subscribe("Tags");
@@ -50,10 +55,12 @@ Template.productDetail.helpers({
     const current = ReactionProduct.selectedVariant();
     if (typeof current === "object") {
       const childVariants = ReactionProduct.getVariants(current._id);
+      // when top variant has no child variants we display only its price
       if (childVariants.length === 0) {
         return current.price;
       }
-      return ReactionProduct.getProductPriceRange().range;
+      // otherwise we want to show child variants price range
+      return ReactionProduct.getVariantPriceRange();
     }
   },
   fieldComponent: function () {

@@ -1,8 +1,5 @@
+# *
 # !.gitignore
-#
-# !getoutfitted-theme
-# !getoutfitted-theme/*
-# !getoutfitted-theme/**
 #
 # !my-custom-theme-template
 # !my-custom-theme-template/*
@@ -17,7 +14,7 @@
 # !reaction-default-theme
 # !reaction-inventory
 # !reaction-layout
-# !reaction-logging
+# !reaction-logger
 # !reaction-product-simple
 # !reaction-sample-data
 # !reaction-schemas
@@ -29,7 +26,6 @@
 # !reaction-product-variant
 # !reaction-checkout
 # !reaction-i18n
-# !reaction-layout
 # !reaction-dashboard
 # !reaction-orders
 #
@@ -45,6 +41,7 @@
 # !reaction-default-theme/*
 # !reaction-inventory/*
 # !reaction-layout/*
+# !reaction-logger/*
 # !reaction-product-simple/*
 # !reaction-sample-data/*
 # !reaction-schemas/*
@@ -58,13 +55,20 @@
 # !reaction-product-variant/*
 # !reaction-checkout/*
 # !reaction-i18n/*
-# !reaction-layout/*
 # !reaction-dashboard/*
 # !reaction-orders/*
+
 .DS_Store
 reaction-stripe
 reaction-rental-products
 reaction-paymentmethod
 reaction-paypal
 reaction-braintree
+reaction-factories
+reaction-logger
 launchdock-connect
+
+# GetOutfitted Packages
+reaction-product-importer
+reaction-rental-products-legacy
+reaction-sizing-guide
