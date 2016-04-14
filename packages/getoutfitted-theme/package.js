@@ -30,6 +30,7 @@ Package.onUse(function (api) {
     // ----- Component Styles ----- //
     "styles/components/buttons.less",
     "styles/components/captions.less",
+    "styles/components/colors.less",
     "styles/components/forms.less",
     "styles/components/hero.less",
     "styles/components/section.less",
@@ -49,7 +50,10 @@ Package.onUse(function (api) {
     "styles/products/productDetail/variants/variantWidget/variantWidget.less",
 
     // ----- Tags Styles ----- //
-    "styles/tags/tags.less"
+    "styles/tags/tags.less",
+
+    // ----- Admin Styles ---- // TODO: Move to specific packages
+    "styles/admin/rentalProducts/rentalProducts.less"
   ], "client", {isImport: true});
 
 
