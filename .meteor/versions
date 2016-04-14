@@ -74,9 +74,11 @@ fortawesome:fontawesome@4.5.0
 geojson-utils@1.0.4
 getoutfitted:getoutfitted-layout@1.0.0
 getoutfitted:getoutfitted-theme@0.1.0
+getoutfitted:reaction-product-importer@0.1.0
 getoutfitted:reaction-rental-products@0.4.0
 github@1.1.4
 google@1.1.7
+harrison:papa-parse@1.1.1
 hot-code-push@1.0.0
 html-tools@1.0.5
 htmljs@1.0.5
@@ -105,6 +107,7 @@ mdg:validated-method@1.0.2
 mdg:validation-error@0.2.0
 meteor@1.1.10
 meteor-base@1.0.1
+meteor-platform@1.2.3
 meteorhacks:fast-render@2.13.0
 meteorhacks:inject-data@2.0.0
 meteorhacks:meteorx@1.4.1
