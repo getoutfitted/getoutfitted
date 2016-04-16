@@ -1,0 +1,12 @@
+<template name="reservationDatepicker">
+  <div class="col-sm-12">
+    <span class="startHuman">{{startDateHuman}}</span>
+    <span class="endHuman">{{endDateHuman}}</span>
+    <div id="datepicker" class="input-group date">
+      <input type="text" class="form-control start" id="rental-start" name="start" placeholder="Select Arrival Date" value={{startDate}} />
+      <span class="input-group-addon show-start">
+        <i class="fa fa-calendar" aria-hidden="true"></i>
+      </span>
+    </div>
+  </div>
+</template>

@@ -81,8 +81,6 @@ Template.variantList.helpers({
           }
         });
       }
-      // $('.variant-product-options').select2('destroy');
-      // $('.variant-product-options').select2({data: _.map(childVariants, function (v) { return {id: v._id, text: v.title}})});
       return childVariants;
     }
   },
@@ -153,6 +151,10 @@ Template.variantList.events({
   },
   "change select": function (event) {
     const variantId = event.currentTarget.value;
-    ReactionProduct.setCurrentVariant(variantId);
+    const childVariants = ReactionProduct.getVariants(variantId);
+    if (childVariants.length > 0) {
+      return ReactionProduct.setCurrentVariant(childVariants[0]._id);
+    }
+    return variantId;
   }
 });

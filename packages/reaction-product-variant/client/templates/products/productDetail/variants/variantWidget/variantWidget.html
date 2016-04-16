@@ -5,6 +5,9 @@
         <span class="rental-price">
           <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
         </span>
+        <div class="row reservation-calendar-container">
+          {{> reservationDatepicker}}
+        </div>
         {{!-- Variants & Options --}}
         <div class="row options-add-to-cart">
           {{>variantList}}

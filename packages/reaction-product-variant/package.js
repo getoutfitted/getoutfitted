@@ -14,7 +14,11 @@ Npm.depends({
   "draggabilly": "1.2.0",
   "imagesloaded": "4.1.0",
   "jquery": "2.2.3",
-  "jquery-ui": "1.10.5"
+  "jquery-ui": "1.10.5",
+  "bootstrap-datepicker": "1.6.0",
+  "moment": "2.12.0",
+  "moment-timezone": "0.5.3",
+  "twix": "0.9.0"
 });
 
 
@@ -98,6 +102,9 @@ Package.onUse(function (api) {
 
   api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.html", "client");
   api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.js", "client");
+
+  api.addFiles("client/templates/products/productDetail/variants/datepicker/datepicker.html", "client");
+  api.addFiles("client/templates/products/productDetail/variants/datepicker/datepicker.js", "client");
 
   api.addFiles("client/templates/products/productDetail/variants/variantForm/variantForm.html", "client");
   api.addFiles("client/templates/products/productDetail/variants/variantForm/variantForm.js", "client");

@@ -10,6 +10,11 @@
       "resolved": "https://registry.npmjs.org/autosize/-/autosize-3.0.15.tgz",
       "from": "https://registry.npmjs.org/autosize/-/autosize-3.0.15.tgz"
     },
+    "bootstrap-datepicker": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/bootstrap-datepicker/-/bootstrap-datepicker-1.6.0.tgz",
+      "from": "bootstrap-datepicker@1.6.0"
+    },
     "draggabilly": {
       "version": "1.2.0",
       "resolved": "https://registry.npmjs.org/draggabilly/-/draggabilly-1.2.0.tgz",
@@ -93,10 +98,25 @@
       "resolved": "https://registry.npmjs.org/jquery.payment/-/jquery.payment-1.2.4.tgz",
       "from": "https://registry.npmjs.org/jquery.payment/-/jquery.payment-1.2.4.tgz"
     },
+    "moment": {
+      "version": "2.12.0",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.12.0.tgz",
+      "from": "https://registry.npmjs.org/moment/-/moment-2.12.0.tgz"
+    },
+    "moment-timezone": {
+      "version": "0.5.3",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.3.tgz",
+      "from": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.3.tgz"
+    },
     "money": {
       "version": "0.2.0",
       "resolved": "https://registry.npmjs.org/money/-/money-0.2.0.tgz",
       "from": "https://registry.npmjs.org/money/-/money-0.2.0.tgz"
+    },
+    "twix": {
+      "version": "0.9.0",
+      "resolved": "https://registry.npmjs.org/twix/-/twix-0.9.0.tgz",
+      "from": "https://registry.npmjs.org/twix/-/twix-0.9.0.tgz"
     }
   }
 }
