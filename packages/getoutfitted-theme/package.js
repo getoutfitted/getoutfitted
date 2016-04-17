@@ -49,6 +49,9 @@ Package.onUse(function (api) {
     "styles/products/productDetail/images/productImageGallery.less",
     "styles/products/productDetail/variants/variantWidget/variantWidget.less",
 
+    // ----- Calendar Styles ------ //
+    "styles/calendar/calendar.less",
+
     // ----- Tags Styles ----- //
     "styles/tags/tags.less",
 

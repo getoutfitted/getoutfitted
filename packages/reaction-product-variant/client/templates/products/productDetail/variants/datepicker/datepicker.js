@@ -49,9 +49,24 @@ Template.reservationDatepicker.rendered = function () {
     startDate: "+4d",
     autoclose: true,
     daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
-    daysOfWeekHighlight: [4],
     endDate: "+540d"
   });
+
+
+  $(document).on({
+    mouseenter: function () {
+      let $nextWeek = $(this).parent().next().find(".day");
+      let $remainingDaysThisWeek = $(this).nextAll();
+      $remainingDaysThisWeek.addClass("highlight");
+      $nextWeek.slice(0, 3).addClass("highlight");
+    },
+    mouseleave: function () {
+      let $nextWeek = $(this).parent().next().find(".day");
+      let $remainingDaysThisWeek = $(this).nextAll();
+      $remainingDaysThisWeek.removeClass("highlight");
+      $nextWeek.slice(0, 3).removeClass("highlight");
+    }
+  }, ".day:not(.disabled)");
 };
 
 Template.reservationDatepicker.helpers({
@@ -133,5 +148,8 @@ Template.reservationDatepicker.events({
 
   'click .show-start': function () {
     $('#datepicker .start').datepicker('show');
+  },
+  'mouseenter .day': function (event) {
+    console.log(event.currentTarget);
   }
 });
