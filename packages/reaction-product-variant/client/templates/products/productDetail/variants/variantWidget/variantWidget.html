@@ -14,14 +14,20 @@
         </div>
 
         {{!-- Cart Add Block --}}
-        <div class="row">
+        <div class="row form-inline">
           <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
-          <div class="btn btn-success add-to-cart-block" id="add-to-cart">
-            <div class="add-to-cart-quantity pull-left">
-              <input type="number" class="form-control input-md" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
-            </div>
-            <div class="add-to-cart-text" data-i18n="productDetail.addToCart">Add to cart</div>
+          <div class="form-group">
+            <label for="addToCartQty">Qty</label>
+            <input type="number" class="form-control input-md" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
           </div>
+        </div>
+        <div class="row">
+          <!-- <div class="btn btn-success add-to-cart-block" id="add-to-cart"> -->
+            <!-- <div class="add-to-cart-quantity pull-left">
+              <input type="number" class="form-control input-md" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+            </div> -->
+            <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="add-to-cart" data-i18n="productDetail.addToCart">Book</button>
+          <!-- </div> -->
         </div>
       </div>
     </div>
