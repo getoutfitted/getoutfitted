@@ -51,20 +51,25 @@ Template.reservationDatepicker.rendered = function () {
     daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
     endDate: "+540d"
   });
+  Session.setDefault("reservationLength", 12); // inclusive of return day, exclusive of arrivalDay
+  Session.setDefault("nextMonthHighlight", 0);
 
 
   $(document).on({
     mouseenter: function () {
-      let $nextWeek = $(this).parent().next().find(".day");
+      let $nextWeeks = $(this).parent().nextAll().find(".day");
       let $remainingDaysThisWeek = $(this).nextAll();
+      let numDaysToHighlight = Session.get("reservationLength") - 1;
+
+      if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
+        return $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
+      }
       $remainingDaysThisWeek.addClass("highlight");
-      $nextWeek.slice(0, 3).addClass("highlight");
+      numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
+      return $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
     },
     mouseleave: function () {
-      let $nextWeek = $(this).parent().next().find(".day");
-      let $remainingDaysThisWeek = $(this).nextAll();
-      $remainingDaysThisWeek.removeClass("highlight");
-      $nextWeek.slice(0, 3).removeClass("highlight");
+      $(".day").removeClass("highlight");
     }
   }, ".day:not(.disabled)");
 };
@@ -73,7 +78,7 @@ Template.reservationDatepicker.helpers({
   startDate: function () {
     let cart = ReactionCore.Collections.Cart.findOne();
     if (cart && cart.startTime) {
-      return moment(cart.startTime).format('MM/DD/YYYY');
+      return moment(cart.startTime).format("MM/DD/YYYY");
     }
     return '';
   },
