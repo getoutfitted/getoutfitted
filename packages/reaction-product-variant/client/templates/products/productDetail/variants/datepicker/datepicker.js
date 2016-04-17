@@ -44,22 +44,66 @@ function calcShippingDay(startDay, timeInTransit) {
   return shippingDay;
 }
 
-Template.reservationDatepicker.rendered = function () {
+function destroyDatepicker() {
+  $("#datepicker input").datepicker("destroy");
+}
+
+function initDatepicker() {
+
+}
+
+
+Template.reservationDatepicker.onRendered(function () {
+  Session.setDefault("reservationLength", 5); // inclusive of return day, exclusive of arrivalDay
+  Session.setDefault("nextMonthHighlight", 0);
   $("#datepicker input").datepicker({
     startDate: "+4d",
     autoclose: true,
     daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
-    endDate: "+540d"
-  });
-  Session.setDefault("reservationLength", 12); // inclusive of return day, exclusive of arrivalDay
-  Session.setDefault("nextMonthHighlight", 0);
+    endDate: "+540d",
+    beforeShowDay: function (date) {
+      // let cart = ReactionCore.Collections.Cart.findOne();
+      let selectedDate = $("#datepicker input").val();
+      if (!selectedDate) {
+        return undefined;
+      }
+      console.log("selectedDate", selectedDate);
+      let reservationLength = Session.get("reservationLength");
+      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day").tz("America/Denver");
+      reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days").tz("America/Denver");
+      // if (cart && cart.startTime) {
+      //   selectedDate = Session.get("reservationStart") ? moment(Session.get("reservationStart")) : undefined;
+      //   if (!selectedDate) {
+      //     selectedDate = moment(cart.startTime).startOf("day").tz("America/Denver");
+      //   }
+      //   reservationEndDate = moment(cart.startTime).startOf("day").add(reservationLength, "days").tz("America/Denver");
+      // }
 
+      let compareDate = moment(date).startOf("day").tz("America/Denver");
+      if (+compareDate === +selectedDate) {
+        // console.log("session date", Session.get("reservationStart"));
+        // console.log("date", compareDate.format("dd DD hh z"));
+        // console.log("selectedDate", selectedDate.format("dd DD hh z"));
+        // console.log("endDate", reservationEndDate.format("dd DD hh z"));
+        inRange = true; // to highlight a range of dates
+        return {classes: "selected selected-start", tooltip: "Gear Delivered"};
+      }
+      if (+compareDate === +reservationEndDate) {
+        if (inRange) inRange = false;  // to stop the highlight of dates ranges
+        return {classes: "selected selected-end", tooltip: "Gear Dropped at UPS"};
+      }
+      if (inRange) {
+        return {classes: "selected selected-range"}; // create a custom class in css with back color you want
+      }
+      return undefined;
+    }
+  });
 
   $(document).on({
     mouseenter: function () {
       let $nextWeeks = $(this).parent().nextAll().find(".day");
       let $remainingDaysThisWeek = $(this).nextAll();
-      let numDaysToHighlight = Session.get("reservationLength") - 1;
+      let numDaysToHighlight = Session.get("reservationLength");
 
       if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
         return $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
@@ -72,7 +116,23 @@ Template.reservationDatepicker.rendered = function () {
       $(".day").removeClass("highlight");
     }
   }, ".day:not(.disabled)");
-};
+
+  $("#datepicker input").on({
+    changeDate: function (event) {
+      const cart = ReactionCore.Collections.Cart.findOne();
+      const reservationLength = Session.get("reservationLength");
+
+      const startDate = moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").tz("America/Denver");
+      const endDate = moment(startDate).add(reservationLength, "days");
+
+      if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
+        Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
+        Session.set("reservationStart", startDate.toDate());
+        $('#datepicker input').datepicker('update');
+      }
+    }
+  });
+});
 
 Template.reservationDatepicker.helpers({
   startDate: function () {
@@ -80,36 +140,36 @@ Template.reservationDatepicker.helpers({
     if (cart && cart.startTime) {
       return moment(cart.startTime).format("MM/DD/YYYY");
     }
-    return '';
+    return "";
   },
 
   startDateHuman: function () {
     let cart = ReactionCore.Collections.Cart.findOne();
     if (cart && cart.startTime) {
-      return moment(cart.startTime).format('MMM DD, YYYY');
+      return moment(cart.startTime).format("MMM DD, YYYY");
     }
-    return '';
+    return "";
   },
 
   endDate: function () {
     let cart = ReactionCore.Collections.Cart.findOne();
     if (cart && cart.endTime) {
-      return moment(cart.endTime).format('MM/DD/YYYY');
+      return moment(cart.endTime).format("MM/DD/YYYY");
     }
-    return '';
+    return "";
   },
 
   endDateHuman: function () {
     let cart = ReactionCore.Collections.Cart.findOne();
     if (cart && cart.endTime) {
-      return moment(cart.endTime).format('MMM DD, YYYY');
+      return moment(cart.endTime).format("MMM DD, YYYY");
     }
-    return '';
+    return "";
   },
 
   rentalLength: function () {
-    if (Session.get('cartRentalLength')) {
-      return Session.get('cartRentalLength');
+    if (Session.get("cartRentalLength")) {
+      return Session.get("cartRentalLength");
     }
     let cart = ReactionCore.Collections.Cart.findOne();
     return cart.rentalDays;
@@ -117,44 +177,36 @@ Template.reservationDatepicker.helpers({
 });
 
 Template.reservationDatepicker.events({
-  'changeDate .start': function (event) {
+  "changeDate #datepicker": function (event) {
+    console.log("change start date");
     const cart = ReactionCore.Collections.Cart.findOne();
-    const startDate = moment(event.currentTarget.value, 'MM/DD/YYYY');
-    let endDate;
-    if (cart.endTime) {
-      endDate = moment(cart.endTime);
-    } else {
-      endDate = moment(startDate);
-    }
+    const reservationLength = Session.get("reservationLength");
+
+    const startDate = moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").tz("America/Denver");
+    const endDate = moment(startDate).add(reservationLength, "days");
 
     if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
-      const cartRentalLength = moment(startDate).twix(endDate).count('days');
-      Session.set('cartRentalLength', cartRentalLength);
-      Meteor.call('rentalProducts/setRentalPeriod', cart._id, startDate.toDate(), endDate.toDate());
-      $('#datepicker .end').datepicker('show');
+      Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
     }
   },
 
-  'changeDate .end': function (event) {
-    let cart = ReactionCore.Collections.Cart.findOne();
-    let endDate = moment(event.currentTarget.value, 'MM/DD/YYYY');
-    let startDate;
-    if (cart.startTime) {
-      startDate = moment(cart.startTime);
-    } else {
-      startDate = moment(endDate);
-    }
-    if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
-      let cartRentalLength = moment(startDate).twix(endDate).count('days');
-      Session.set('cartRentalLength', cartRentalLength);
-      Meteor.call('rentalProducts/setRentalPeriod', cart._id, startDate.toDate(), endDate.toDate());
-    }
-  },
+  // "changeDate .end": function (event) {
+  //   let cart = ReactionCore.Collections.Cart.findOne();
+  //   let endDate = moment(event.currentTarget.value, "MM/DD/YYYY");
+  //   let startDate;
+  //   if (cart.startTime) {
+  //     startDate = moment(cart.startTime);
+  //   } else {
+  //     startDate = moment(endDate);
+  //   }
+  //   if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
+  //     let cartRentalLength = moment(startDate).twix(endDate).count("days");
+  //     Session.set("cartRentalLength", cartRentalLength);
+  //     Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
+  //   }
+  // },
 
-  'click .show-start': function () {
-    $('#datepicker .start').datepicker('show');
-  },
-  'mouseenter .day': function (event) {
-    console.log(event.currentTarget);
+  "click .show-start": function () {
+    $("#datepicker .start").datepicker("show");
   }
 });

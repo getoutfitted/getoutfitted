@@ -15,13 +15,18 @@
   color: white;
   }
 
-  .day:hover {
-  background: #3fa5bc;
+  .day:hover, .selected.day:hover {
+  background: @brand-secondary-color;
   color: white;
   }
-  
-  .highlight.day, .highlight.day.disabled {
+
+  .selected.day, .selected.day.disabled {
     background: @brand-primary-color;
+    color: white;
+  }
+
+  .highlight.day, .highlight.day.disabled {
+    background: @brand-secondary-color;
     color: white;
   }
 }
