@@ -133,9 +133,11 @@ Template.reservationDatepicker.helpers({
   },
 
   startDateHuman: function () {
-    let cart = ReactionCore.Collections.Cart.findOne();
+    const cart = ReactionCore.Collections.Cart.findOne();
+    const resLength = Session.get("reservationLength");
     if (cart && cart.startTime) {
-      return moment(cart.startTime).format("ddd MMM DD, YYYY");
+      return moment(cart.startTime).format("ddd MMM DD")
+        + " to " + moment(cart.startTime).add(resLength, "days").format("ddd MMM DD YYYY");
     }
     return "";
   },
