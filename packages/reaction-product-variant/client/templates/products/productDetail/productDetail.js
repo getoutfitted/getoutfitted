@@ -1,7 +1,6 @@
 const $ = require("jquery");
 // load modules
-require("jquery-ui/sortable");
-require("jquery-ui/autocomplete");
+require("jquery-ui");
 
 
 Template.productDetail.onCreated(function () {
