@@ -24,6 +24,7 @@ Template.variant.helpers({
     }
   },
   displayQuantity: function () {
+    // console.log(this);
     return ReactionProduct.getVariantQuantity(this);
   },
   displayPrice: function () {

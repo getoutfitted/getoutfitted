@@ -74,11 +74,13 @@ Template.reservationDatepicker.onRendered(function () {
       if (+compareDate === +selectedDate) {
         inRange = true; // to highlight a range of dates
         return {classes: "selected selected-start", tooltip: "Gear Delivered"};
-      }
-      if (+compareDate === +reservationEndDate) {
+      } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
         return {classes: "selected selected-end", tooltip: "Gear Dropped at UPS"};
+      } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
+        inRange = false;
       }
+
       if (inRange) {
         return {classes: "selected selected-range"}; // create a custom class in css with back color you want
       }

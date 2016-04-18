@@ -76,6 +76,7 @@ Object.assign(ReactionCore, {
    * @param {String} [variantId] - current variant _Id
    * @return {String} formatted price or price range
    */
+  // TODO: This has changed, check it out
   getVariantPriceRange(variantId) {
     const children = ReactionCore.getVariants(variantId);
 
