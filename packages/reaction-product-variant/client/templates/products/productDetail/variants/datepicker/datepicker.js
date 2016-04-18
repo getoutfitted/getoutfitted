@@ -54,7 +54,7 @@ function calcShippingDay(startDay, timeInTransit) {
 
 
 Template.reservationDatepicker.onRendered(function () {
-  Session.setDefault("reservationLength", 5); // inclusive of return day, exclusive of arrivalDay
+  Session.setDefault("reservationLength", 7); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
   $("#rental-start").datepicker({
     startDate: "+4d",
@@ -77,6 +77,8 @@ Template.reservationDatepicker.onRendered(function () {
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
         return {classes: "selected selected-end", tooltip: "Gear Dropped at UPS"};
+      } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
+        inRange = true;
       } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
         inRange = false;
       }
@@ -136,8 +138,8 @@ Template.reservationDatepicker.helpers({
     const cart = ReactionCore.Collections.Cart.findOne();
     const resLength = Session.get("reservationLength");
     if (cart && cart.startTime) {
-      return moment(cart.startTime).format("ddd MMM DD")
-        + " to " + moment(cart.startTime).add(resLength, "days").format("ddd MMM DD YYYY");
+      return moment(cart.startTime).format("ddd M/DD")
+        + " - " + moment(cart.startTime).add(resLength, "days").format("ddd M/DD");
     }
     return "";
   },

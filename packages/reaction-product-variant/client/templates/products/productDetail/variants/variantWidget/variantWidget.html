@@ -14,11 +14,13 @@
         </div>
 
         {{!-- Cart Add Block --}}
-        <div class="row form-inline">
+        <div class="row form-horizontal">
           <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
-          <div class="form-group">
-            <label for="addToCartQty">Qty</label>
-            <input type="number" class="form-control input-md" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+          <div class="form-group hide">
+            <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
+            <div class="col-xs-2">
+              <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+            </div>
           </div>
         </div>
         <div class="row">

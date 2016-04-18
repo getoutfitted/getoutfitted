@@ -1,6 +1,6 @@
 <template name="variantList">
-  <div class="product-variants">
-    {{#if hasPermission "createProduct"}}
+  {{#if hasPermission "createProduct"}}
+    <div class="product-variants">
       <ul class="variant-list list-unstyled" id="variant-list">
       {{#each variants}}
         {{> variant}}
@@ -8,46 +8,54 @@
         <a href="#" id="create-variant">+ <span data-i18n="variantList.createVariant">Create Variant</span></a>
       {{/each}}
       </ul>
-    {{else}}
+    </div>
+  {{else}}
+    <div class="product-variants form-horizontal">
       {{#if variants}}
-        <label>
-          <span class="variant-select-label">{{variantOptionLabel}}</span>
-          <select class="variant-select">
+      <div class="form-group row">
+        <label for="variantSelect" class="control-label col-xs-2">{{variantOptionLabel}}</label>
+        <div class=" col-xs-8">
+          <select class="variant-select form-control" name="variantSelect" id="variant-select">
             {{#each variants}}
               {{> variantOption}}
             {{/each}}
           </select>
-        </label>
+        </div>
+      </div>
       {{/if}}
-    {{/if}}
-  </div>
+    </div>
+  {{/if}}
   {{#if childVariants}}
     {{#if hasPermission "createProduct"}}
       <div class="row variant-product-options">
         {{#each childVariants}}
-        <button type="button" class="btn btn-default variant-select-option">{{title}}</button>
+        <button type="button" class="btn btn-default variant-select-option">{{childVariantOptionLabel}}</button>
         {{/each}}
       </div>
     {{else}}
-      <label>
-        <span class="variant-select-option-label">{{childVariantOptionLabel}}</span>
-        <select class="variant-product-options">
-          {{#each childVariants}}
-            <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
-              {{#if inventoryManagement}}
-                {{#if isSoldOut}}
-                  {{#if inventoryPolicy}}
-                    (Sold Out!)
-                  {{else}}
-                    (Backordered)
+    <div class="form-horizontal">
+      <div class="form-group row">
+        <label for="variantOptionsSelect" class="control-label col-xs-2">{{childVariantOptionLabel}}</label>
+        <div class="col-xs-8">
+          <select class="variant-product-options form-control col-xs-8" name="variantOptionsSelect" id="variant-options-select">
+            {{#each childVariants}}
+              <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
+                {{#if inventoryManagement}}
+                  {{#if isSoldOut}}
+                    {{#if inventoryPolicy}}
+                      (Sold Out!)
+                    {{else}}
+                      (Backordered)
+                    {{/if}}
                   {{/if}}
                 {{/if}}
-              {{/if}}
-              {{title}}
-            </option>
-          {{/each}}
-        </select>
-      </label>
+                {{title}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
     {{/if}}
   {{/if}}
 </template>
