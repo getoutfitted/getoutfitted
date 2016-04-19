@@ -10,18 +10,18 @@
       </ul>
     </div>
   {{else}}
-    <div class="product-variants form-horizontal">
+    <div class="product-variants form-horizontal {{showChoices variants}}">
       {{#if variants}}
-      <div class="form-group row">
-        <label for="variantSelect" class="control-label col-xs-2">{{variantOptionLabel}}</label>
-        <div class=" col-xs-8">
-          <select class="variant-select form-control" name="variantSelect" id="variant-select">
-            {{#each variants}}
-              {{> variantOption}}
-            {{/each}}
-          </select>
+        <div class="form-group row">
+          <label for="variantSelect" class="control-label col-xs-2">{{variantOptionLabel}}</label>
+          <div class=" col-xs-8">
+            <select class="variant-select form-control" name="variantSelect" id="variant-select">
+              {{#each variants}}
+                {{> variantOption}}
+              {{/each}}
+            </select>
+          </div>
         </div>
-      </div>
       {{/if}}
     </div>
   {{/if}}
@@ -33,7 +33,7 @@
         {{/each}}
       </div>
     {{else}}
-    <div class="form-horizontal">
+    <div class="form-horizontal {{showChoices childVariants}}">
       <div class="form-group row">
         <label for="variantOptionsSelect" class="control-label col-xs-2">{{childVariantOptionLabel}}</label>
         <div class="col-xs-8">

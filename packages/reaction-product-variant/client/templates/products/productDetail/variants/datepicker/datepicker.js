@@ -45,7 +45,7 @@ function calcShippingDay(startDay, timeInTransit) {
 }
 
 Template.reservationDatepicker.onRendered(function () {
-  Session.setDefault("reservationLength", 7); // inclusive of return day, exclusive of arrivalDay
+  Session.setDefault("reservationLength", 5); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
   $("#rental-start").datepicker({
     startDate: "+4d",

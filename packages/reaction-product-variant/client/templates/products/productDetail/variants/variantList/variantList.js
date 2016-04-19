@@ -41,6 +41,9 @@ Template.variantList.helpers({
     }
     return [];
   },
+  showChoices: function (list) {
+    return list && list.length > 1 ? "" : "hide";
+  },
   variantOptionLabel: function () {
     const variants = ReactionProduct.getTopVariants();
     if (variants.length > 0) {
