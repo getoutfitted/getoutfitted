@@ -215,7 +215,11 @@ Template.productDetail.events({
         }, 0);
         // slide out label
         let addToCartText = i18next.t("productDetail.addedToCart");
-        let addToCartTitle = currentVariant.title || "";
+        let addToCartTitle = currentProduct.title || "";
+        if (currentVariant && currentVariant.size && currentVariant.color) {
+          addToCartTitle = addToCartTitle + ` ${currentVariant.size} ${currentVariant.color}`;
+        }
+
         $(".cart-alert-text").text(`${quantity} ${addToCartTitle} ${addToCartText}`);
         return $(".cart-alert").toggle("slide", {
           direction: i18next.t("languageDirection") === "rtl" ? "left" : "right",
