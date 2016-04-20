@@ -104,7 +104,7 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/products/productDetail/variants/variantWidget/variantWidget.js", "client");
 
   api.addFiles("client/templates/products/productDetail/variants/variantWidget/rentalLengthOptions/rentalLengthOptions.html", "client");
-  // api.addFiles("client/templates/products/productDetail/variants/variantWidget/rentalLengthOptions/rentalLengthOptions.js", "client");
+  api.addFiles("client/templates/products/productDetail/variants/variantWidget/rentalLengthOptions/rentalLengthOptions.js", "client");
 
   api.addFiles("client/templates/products/productDetail/variants/datepicker/datepicker.html", "client");
   api.addFiles("client/templates/products/productDetail/variants/datepicker/datepicker.js", "client");
