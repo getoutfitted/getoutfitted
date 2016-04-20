@@ -15,9 +15,11 @@ function stickyWidget() {
         left: left,
         width: width
       });
-      $("#variantWidget").prepend($("#leadImageContainer").clone().hide(0, function () {
-        $("#leadImageContainer").slideDown(100);
-      }));
+      if ($("#variantWidget").find("#leadImageContainer").length === 0) {
+        $("#variantWidget").prepend($("#leadImageContainer").clone().hide(0, function () {
+          $("#leadImageContainer").slideDown(100);
+        }));
+      }
     } else if ($variantWidget.css("position") === "fixed") {
       if (scrollTop < 2 * bubbleTop) {
         $variantWidget.removeClass("sticky");
@@ -41,6 +43,9 @@ Template.variantWidget.onRendered(function () {
 });
 
 Template.variantWidget.helpers({
+  showRentalLengthOptions: function () {
+    return this.functionalType === "rental";
+  },
   actualPrice: function () {
     const current = ReactionProduct.selectedVariant();
     if (typeof current === "object") {

@@ -5,14 +5,32 @@
         <span class="rental-price">
           <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
         </span>
-        <div class="row reservation-calendar-container">
-          {{> reservationDatepicker}}
-        </div>
+        {{#unless hasPermission "createProduct"}}
+          <div class="row reservation-calendar-container">
+            {{> reservationDatepicker}}
+          </div>
+        {{/unless}}
         {{!-- Variants & Options --}}
         <div class="row options-add-to-cart">
-          {{>variantList}}
+          {{#if hasPermission "createProduct"}}
+            <div class="col-xs-12">
+              {{>variantList}}
+            </div>
+          {{else}}
+            {{#if showRentalLengthOptions}}
+              <div class="col-xs-4">
+                {{>rentalLengthOptions}}
+              </div>
+              <div class="col-xs-8">
+                {{>variantList}}
+              </div>
+            {{else}}
+              <div class="col-xs-12">
+                {{>variantList}}
+              </div>
+            {{/if}}
+          {{/if}}
         </div>
-
         {{!-- Cart Add Block --}}
         <div class="row form-horizontal">
           <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>

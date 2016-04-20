@@ -42,6 +42,8 @@ Template.variantList.helpers({
     return [];
   },
   showChoices: function (list) {
+    // Should probably show fixed color for items that actually have a color
+    // or for items that have multiple colors for some sizes
     return list && list.length > 1 ? "" : "hide";
   },
   variantOptionLabel: function () {

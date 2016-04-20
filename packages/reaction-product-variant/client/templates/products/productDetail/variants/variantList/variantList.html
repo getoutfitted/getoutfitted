@@ -14,7 +14,7 @@
       {{#if variants}}
         <div class="form-group row">
           <label for="variantSelect" class="control-label col-xs-2">{{variantOptionLabel}}</label>
-          <div class=" col-xs-8">
+          <div class=" col-xs-9">
             <select class="variant-select form-control" name="variantSelect" id="variant-select">
               {{#each variants}}
                 {{> variantOption}}
@@ -36,8 +36,8 @@
     <div class="form-horizontal {{showChoices childVariants}}">
       <div class="form-group row">
         <label for="variantOptionsSelect" class="control-label col-xs-2">{{childVariantOptionLabel}}</label>
-        <div class="col-xs-8">
-          <select class="variant-product-options form-control col-xs-8" name="variantOptionsSelect" id="variant-options-select">
+        <div class="col-xs-9">
+          <select class="variant-product-options form-control" name="variantOptionsSelect" id="variant-options-select">
             {{#each childVariants}}
               <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
                 {{#if inventoryManagement}}
