@@ -597,7 +597,7 @@ Meteor.methods({
 
     if (orderId) {
       // TODO: check for successful orders/inventoryAdjust
-//      Meteor.call("orders/inventoryAdjust", orderId);
+      Meteor.call("rentalProducts/inventoryAdjust", orderId);
       ReactionCore.Collections.Cart.remove({
         _id: order.cartId
       });
