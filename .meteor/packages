@@ -68,6 +68,7 @@ getoutfitted:getoutfitted-layout
 getoutfitted:reaction-rental-products
 getoutfitted:reaction-product-importer
 getoutfitted:reaction-advanced-fulfillment
+getoutfitted:transit-times
 #getoutfitted:reaction-shopify-orders
 #getoutfitted:reaction-shopify-products
 #getoutfitted:reaction-local-delivery

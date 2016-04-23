@@ -56,6 +56,7 @@ Package.onUse(function (api) {
     "styles/tags/tags.less",
 
     // ----- Admin Styles ---- // TODO: Move to specific packages
+    "styles/admin/settings.less",
     "styles/admin/rentalProducts/rentalProducts.less"
   ], "client", {isImport: true});
 

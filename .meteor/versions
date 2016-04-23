@@ -78,6 +78,7 @@ getoutfitted:getoutfitted-theme@0.1.0
 getoutfitted:reaction-advanced-fulfillment@0.7.1
 getoutfitted:reaction-product-importer@0.1.0
 getoutfitted:reaction-rental-products@0.4.0
+getoutfitted:transit-times@0.1.0
 google@1.1.10
 harrison:papa-parse@1.1.1
 hot-code-push@1.0.3
