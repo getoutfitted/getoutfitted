@@ -44,6 +44,18 @@ function calcShippingDay(startDay, timeInTransit) {
   return shippingDay;
 }
 
+Template.reservationDatepicker.onCreated(function () {
+  Session.setDefault("selectedVariantId", ReactionProduct.selectedVariantId());
+  this.autorun(() => {
+    if (Session.get("selectedVariantId")) {
+      this.subscribe("productReservationStatus", Session.get("selectedVariantId"));
+      $("#rental-start").datepicker("update");
+      console.log("datepicker update");
+    }
+  });
+});
+
+
 Template.reservationDatepicker.onRendered(function () {
   Session.setDefault("reservationLength", 5); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
@@ -53,21 +65,40 @@ Template.reservationDatepicker.onRendered(function () {
     daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
     endDate: "+540d",
     beforeShowDay: function (date) {
+      let reservationLength = Session.get("reservationLength");
+      let available;
+      let classes = "";
+      let tooltip = "";
+      // if disabled day, skip this
+      if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
+        available = false;
+        tooltip = "Please pick an available Thursday to take delivery."
+      } else {
+        const s = moment(date).startOf("day").tz("America/Denver");
+        const e = moment(date).startOf("day").add(reservationLength, "days").tz("America/Denver");
+        const shippingDay = TransitTimes.calculateShippingDay(s.toDate(), 4); // Default of 4 shipping days until zip-calculation is done
+        const returnDay = TransitTimes.calculateReturnDay(e.toDate(), 4); // Default of 4 ^^
+        const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
+          Session.get("selectedVariantId"),
+          {startTime: shippingDay, endTime: returnDay}
+        );
+        available = inventoryVariantsAvailable.length > 0;
+        tooltip = "Fully Booked";
+      }
       let selectedDate = $("#rental-start").val();
       if (!selectedDate) {
-        return undefined;
+        return {enabled: available, classes: classes, tooltip: tooltip};
       }
-      let reservationLength = Session.get("reservationLength");
       selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day").tz("America/Denver");
       reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days").tz("America/Denver");
 
       let compareDate = moment(date).startOf("day").tz("America/Denver");
       if (+compareDate === +selectedDate) {
         inRange = true; // to highlight a range of dates
-        return {classes: "selected selected-start", tooltip: "Gear Delivered"};
+        return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, gear delivered today!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
-        return {classes: "selected selected-end", tooltip: "Gear Dropped at UPS"};
+        return {enabled: available, classes: "selected selected-end", tooltip: "Drop gear off at UPS by 3pm to be returned"};
       } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
         inRange = true;
       } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
@@ -75,9 +106,9 @@ Template.reservationDatepicker.onRendered(function () {
       }
 
       if (inRange) {
-        return {classes: "selected selected-range"}; // create a custom class in css with back color you want
+        return {enabled: available, classes: "selected selected-range", tooltip: "Rental day, have fun!"}; // create a custom class in css with back color you want
       }
-      return undefined;
+      return {enabled: available, classes: classes, tooltip: tooltip};
     }
   });
 

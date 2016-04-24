@@ -152,20 +152,18 @@ Template.variantList.events({
     template.$(".variant-select-option").removeClass("active");
     $(event.target).addClass("active");
     Alerts.removeSeen();
+    Session.set("selectedVariantId", this._id);
     return ReactionProduct.setCurrentVariant(this._id);
   },
   "change select": function (event) {
     const variantId = event.currentTarget.value;
     const childVariants = ReactionProduct.getVariants(variantId);
     if (childVariants.length > 0) {
+      Session.set("selectedVariantId", childVariants[0]._id);
       return ReactionProduct.setCurrentVariant(childVariants[0]._id);
     }
     return variantId;
   }
-});
-
-Template.variantList.onCreated(function () {
-  
 });
 
 Template.variantList.onRendered(function () {
@@ -174,4 +172,5 @@ Template.variantList.onRendered(function () {
     return variant.ancestors.length === 2;
   });
   ReactionProduct.setCurrentVariant(firstChild._id);
+  Session.set("selectedVariantId", firstChild._id);
 });
