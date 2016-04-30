@@ -174,7 +174,7 @@ ReactionCore.Schemas.Shop = new SimpleSchema({
   },
   "domains": {
     type: [String],
-    defaultValue: ["localhost"],
+    defaultValue: ["localhost", "dev.gtfttd.com"],
     index: 1
   },
   "emails": {

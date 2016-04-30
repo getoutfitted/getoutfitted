@@ -24,7 +24,6 @@
   "bugs": {
     "url": "https://github.com/reactioncommerce/reaction/issues"
   },
-  "homepage": "https://github.com/reactioncommerce/reaction",
   "devDependencies": {
     "babel-eslint": "^6.0.2",
     "eslint": "^2.1.0",
@@ -33,8 +32,8 @@
   "dependencies": {
     "bunyan": "^1.8.0",
     "bunyan-format": "0.2.1",
-    "meteor-node-stubs": "^0.2.1",
-    "react": "15.0.1",
-    "react-dom": "15.0.1"
+    "meteor-node-stubs": "^0.2.3",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1"
   }
 }
