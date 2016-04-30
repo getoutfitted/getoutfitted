@@ -597,7 +597,12 @@ Meteor.methods({
 
     if (orderId) {
       // TODO: check for successful orders/inventoryAdjust
-      Meteor.call("rentalProducts/inventoryAdjust", orderId);
+      let noRentalProducts = _.every(order.items, function (item) {
+        return item.variants.functionalType === 'variant';
+      });
+      if (!noRentalProducts) {
+        Meteor.call("rentalProducts/inventoryAdjust", orderId);
+      }
       ReactionCore.Collections.Cart.remove({
         _id: order.cartId
       });
