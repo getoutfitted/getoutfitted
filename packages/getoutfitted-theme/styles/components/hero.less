@@ -10,21 +10,21 @@
 }
 
 .home-hero {
-  border-bottom: 10px solid #343434;
+  border-bottom: 2px solid @brand-dark-color;
 }
 
 .hero-container {
   position: absolute;
   color: @white;
   top: 0; bottom: 0; right: 0; left: 0; // fill parent
-  background-image: url(https://d2wpxyz1up89r3.cloudfront.net/heros/mountainfriends_lead.jpg);
+  background-image: url(https://d2wpxyz1up89r3.cloudfront.net/heros/mountainfriends.jpg);
   background-size: cover;
   -moz-background-size: cover;  /* Firefox 3.6 */
-  background-position: center;  /* Internet Explorer 7/8 */
+  background-position: center bottom;  /* Internet Explorer 7/8 */
 }
 
 .hero-container h1 {
-  color: @white;
+  color: @brand-dark-color;
   font-size: 28px;
   font-family: @font-family-impact;
   font-weight: @font-weight-bold;
@@ -35,7 +35,7 @@
 
 .hero-container h2 {
   font-family: @font-family-serif;
-  color: @white;
+  color: @brand-dark-color;
   text-transform: none;
   font-weight: normal;
   font-size: 16px;
@@ -73,7 +73,7 @@
     font-size: 32px;
     margin-top: 50px;
   }
-  .hero-container h1.hero-line-2 {
+  .hero-container h1 .hero-line-2 {
     font-size: 26px;
     margin-top: 0;
   }
@@ -88,7 +88,7 @@
   .hero-container h1 {
     font-size: 40px;
   }
-  .hero-container h1.hero-line-2 {
+  .hero-container h1 .hero-line-2 {
     font-size: 32px;
     margin-top: 0;
   }
