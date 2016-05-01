@@ -25,3 +25,4 @@ BrowserPolicy.content.allowImageOrigin("secure.gravatar.com");
 BrowserPolicy.content.allowImageOrigin("i0.wp.com");
 BrowserPolicy.content.allowImageOrigin("d2wpxyz1up89r3.cloudfront.net");
 BrowserPolicy.content.allowImageOrigin("cdn.getoutfitted.com");
+BrowserPolicy.content.allowImageOrigin("s3.amazonaws.com");
