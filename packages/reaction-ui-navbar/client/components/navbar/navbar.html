@@ -1,7 +1,6 @@
 
 <template name="CoreNavigationBar">
-  <div class="rui navbar">
-    <div class="showmenu">{{> button icon="bars" onClick=onMenuButtonClick}}</div>
+  <div class="rui navbar hidden-xs  ">
     {{> coreNavigationBrand}}
     <div class="menu">
       <ul class="nav navbar-nav">
@@ -16,6 +15,50 @@
     <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
     <div class="cart">{{> cartIcon}}</div>
     <div class="cart-alert">{{> cartPanel}}</div>
+  </div>
+  <div class="rui navbar hidden-lg hidden-md hidden-sm">
+    <div class=navbar-left>
+      {{> coreNavigationBrand}}
+    </div>
+    <div class='righty-nav'>
+    <div class='row'>
+      <div class='cart-small col-xs-8'>
+      <span class='cart-small-span'>
+        <div class="cart">{{> cartIcon}}</div>
+        <div class="cart-alert">{{> cartPanel}}</div>
+      </span>
+      </div>
+      <div class='col-xs-4'>
+        <div class="hamburger navbar-toggle collapsed" data-toggle="collapse" data-target="#hamburger-navbar" aria-expanded="false">
+            <i class="hambuger-color fa fa-bars fa-2x" aria-hidden="true"></i>
+        </div>
+
+      </div>
+    </div>
+
+    </div>
+  </div>
+      <!-- Collapses -->
+  <div class='row hidden-lg hidden-md hidden-sm text-center lead'>
+    <div class="collapse navbar-collapse" id="hamburger-navbar">
+    <hr>
+      <div class="menu">
+      <ul class="nav navbar-nav">
+        {{> phoneNumberLink}}
+        {{! winterProductNavDropdown}}
+        {{> summerProductNavDropdown}}
+        {{! aboutNavDropdown}}
+        {{> tagNav tagNavProps}}
+        <div class="languages hide">{{> i18nChooser}}</div>
+        <hr>
+        <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
+<!--         <div class="row">
+          <div class="cart">{{> cartIcon}}</div>
+          <div class="cart-alert">{{> cartPanel}}</div>
+        </div> -->
+      </ul>
+    </div>
+    </div>
   </div>
 </template>
 
