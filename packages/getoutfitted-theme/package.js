@@ -45,6 +45,7 @@ Package.onUse(function (api) {
     "styles/footer/footer.less",
 
     // ----- Product Styles ----- //
+    "styles/products/productGrid/productGrid.less",
     "styles/products/productDetail/productDetail.less",
     "styles/products/productDetail/images/productImageGallery.less",
     "styles/products/productDetail/variants/variantWidget/variantWidget.less",
