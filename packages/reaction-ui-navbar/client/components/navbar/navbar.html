@@ -5,41 +5,10 @@
     {{> coreNavigationBrand}}
     <div class="menu">
       <ul class="nav navbar-nav">
-        <li>
-          <a href="tel:8886180305" class="dropdown-toggle">888-618-0305</a>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Winter <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="/collections/complete-outfits">Complete Ski Outfits</a></li>
-            <li><a href="/collections/onesies">Vintage Onesies</a></li>
-            <li><a href="/collections/skis-snowboards">Skis &amp; Snowboards</a></li>
-            <li><a href="/products/msr-snowshoe-package">Snowshoes</a></li>
-            <li><a href="/collections/jackets">Ski Jackets</a></li>
-            <li><a href="/collections/pants">Ski Pants</a></li>
-            <li><a href="/collections/goggles">Ski Goggles</a></li>
-            <li><a href="/collections/gloves">Ski Gloves</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Summer <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="/products/oru-kayak-rental">Kayaks</a></li>
-            <li><a href="/collections/camping">Camping Packages</a></li>
-            <li><a href="/collections/tents">Tents</a></li>
-            <li><a href="/collections/backpacks">Backpacks</a></li>
-            <li><a href="/collections/sleeping-bags">Sleeping Bags &amp; Pads</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="http://blog.getoutfitted.com">Blog</a></li>
-            <li><a href="/#how-it-works">How It Works</a></li>
-            <li><a href="https://getoutfitted.zendesk.com/hc" target="_blank">Help Center</a></li>
-            <li><a href="#" onclick="$zopim.livechat.window.setSize('medium'); $zopim.livechat.window.show();">Live Chat</a></li>
-          </ul>
-        </li>
+        {{> phoneNumberLink}}
+        {{! winterProductNavDropdown}}
+        {{> summerProductNavDropdown}}
+        {{! aboutNavDropdown}}
         {{> tagNav tagNavProps}}
       </ul>
     </div>
@@ -48,4 +17,52 @@
     <div class="cart">{{> cartIcon}}</div>
     <div class="cart-alert">{{> cartPanel}}</div>
   </div>
+</template>
+
+<template name="phoneNumberLink">
+  <li>
+    <a href="tel:8886180305" class="dropdown-toggle">888-618-0305</a>
+  </li>
+</template>
+
+<template name="winterProductNavDropdown">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Winter <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a href="/collections/complete-outfits">Complete Ski Outfits</a></li>
+      <li><a href="/collections/onesies">Vintage Onesies</a></li>
+      <li><a href="/collections/skis-snowboards">Skis &amp; Snowboards</a></li>
+      <li><a href="/product/msr-snowshoe-package">Snowshoes</a></li>
+      <li><a href="/collections/jackets">Ski Jackets</a></li>
+      <li><a href="/collections/pants">Ski Pants</a></li>
+      <li><a href="/collections/goggles">Ski Goggles</a></li>
+      <li><a href="/collections/gloves">Ski Gloves</a></li>
+    </ul>
+  </li>
+</template>
+
+<template name="summerProductNavDropdown">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Summer <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a href="/collections/oru-kayaks">Oru Kayaks</a></li>
+      <li><a href="/product/imagine-icon-lte-sup-paddleboard">Imagine Paddleboards</a></li>
+      <li><a href="/collections/tentsile-treetents">Tentsile Tree Tents</a></li>
+      <li><a href="/collections/camping-backpacking">Camping &amp; Backpacking</a></li>
+      <li><a href="/product/onewheel">Onewheel</a></li>
+      <li><a href="/product/kammok-hammock-package">Kammok Hammock Camping</a></li>
+    </ul>
+  </li>
+</template>
+
+<template name="aboutNavDropdown">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a href="http://blog.getoutfitted.com">Blog</a></li>
+      <li><a href="/#how-it-works">How It Works</a></li>
+      <li><a href="https://getoutfitted.zendesk.com/hc" target="_blank">Help Center</a></li>
+      <li><a href="#" onclick="$zopim.livechat.window.setSize('medium'); $zopim.livechat.window.show();">Live Chat</a></li>
+    </ul>
+  </li>
 </template>

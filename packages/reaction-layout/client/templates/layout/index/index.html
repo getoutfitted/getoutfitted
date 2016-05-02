@@ -11,8 +11,8 @@
   {{> goCallUsBreak}}
   {{> goFeaturedCategories}}
   {{> goMediaBreak}}
-  {{> getoutfittedTrailer}}
-  {{> goServiceDescription}}
+  {{! getoutfittedTrailer}}
+  {{! goServiceDescription}}
 </template>
 
 <template name="goIndexHero">
@@ -21,11 +21,10 @@
       <div class="hero-container text-center-sm">
         <div class="row cta">
           <div class="col-sm-12 text-center">
-            <h1>Rent Ski Clothing</h1>
-            <h1 class="hero-line-2">and Equipment</h1>
-            <h2 class="visible-md-block visible-lg-block">We deliver top quality ski clothing and gear directly to your resort.<br />Free Shipping and Free Returns - Anywhere in the US.<br /></h2>
-            <!-- <span class="show-for-large-up">Wear it for your ski trip and leave it at the front desk of your hotel when you’re done.</span> -->
-            <a id="rent-now-home-hero" href="/collections/complete-outfits" class="btn radius huge white wire margin-top-small">Rent Now</a>
+            <h1>Welcome to the World's<br />
+            <span class="hero-line-2">Outdoor Gear Closet</span></h1>
+            <h2 class="visible-md-block visible-lg-block">Rent or demo the coolest gear on the market and have it delivered<br />directly to your doorstep or destination for easy one-time use.<br /></h2>
+            <a id="rent-now-home-hero" href="/collections/complete-outfits" class="btn radius btn-lg btn-brand-primary margin-top-small">Browse Gear</a>
           </div>
         </div>
       </div>
@@ -45,26 +44,42 @@
       <div class="row fullwidth">
 
         <div class="col-sm-12 col-md-4 columns tile">
-          <div class="onesie-tile">
-            <h3 class="title-title">Vintage<br/>Onesies</h3>
-            <h4 class="available-locations"><small>&nbsp;</small></h4>
-            <a href="/collections/onesies" class="small btn wire white radius">Rent Now</a>
+          <div class="oru-kayak-tile">
+            <a href="/collections/oru-kayak" class="btn btn-lg btn-v-middle wire white radius">Oru Kayaks</a>
           </div>
         </div>
         
         <div class="col-sm-12 col-md-4 columns tile">
-          <div class="skis-package-tile">
-            <h3 class="tile-title">Skis and<br />Snowboards</h3>
-            <h4 class="available-locations"><small>&nbsp;</small></h4>
-            <a href="/collections/skis-snowboards" class="small btn wire white radius">Rent Now</a>
+          <div class="onewheel-tile">
+            <a href="/product/onewheel" class="btn btn-lg btn-v-middle wire white radius">Onewheel</a>
           </div>
         </div>
 
         <div class="col-sm-12 col-md-4 columns end tile">
-          <div class="kayak-tile">
-            <h3 class="title-title">Oru<br />Kayak</h3>
-            <h4 class="available-locations"><small>&nbsp;</small></h4>
-            <a href="/products/oru-kayak-rental" class="small btn wire white radius">Rent Now</a>
+          <div class="tentsile-tile">
+            <a href="/collections/tentsile" class="btn btn-lg btn-v-middle wire white radius">Tree Tents</a>
+          </div>
+        </div>
+
+      </div>
+      <!-- Featured Products Row 2 -->
+      <div class="row fullwidth">
+
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="imagine-tile">
+            <a href="/product/imagine-icon-lte-sup-paddleboard" class="btn btn-lg btn-v-middle wire white radius">Inflatable SUPs</a>
+          </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="camping-backpacking-tile">
+            <a href="/collections/camping-backpacking" class="btn btn-lg btn-v-middle wire white radius">Camping &amp; Backpacking</a>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-4 columns end tile">
+          <div class="kammok-tile">
+            <a href="/product/kammok-hammock-package" class="btn btn-lg btn-v-middle wire white radius">Hammocks</a>
           </div>
         </div>
 
@@ -73,23 +88,87 @@
   </section>
 </template>
 
-<template name="goMediaBreak">
-  <section id="media-coverage" class="groups margin-top-small">
-  <div class="text-center visible-md-block visible-lg-block">
-    <div class="row fullwidth">
-      <div class="col-sm-12 columns">
-        <hr>
-        <a href="/pages/press" alt="GetOutfitted Media Coverage">
-          <img class="home-press" src="/packages/getoutfitted_getoutfitted-theme/public/images/logo/yahootravel.png" alt="Yahoo Travel">
-          <img class="home-press" src="/packages/getoutfitted_getoutfitted-theme/public/images/logo/usatoday.png" alt="USA Today">
-          <img class="home-press" src="/packages/getoutfitted_getoutfitted-theme/public/images/logo/huffingtonpost.png" alt="Huffington Post">
-          <img class="home-press" src="/packages/getoutfitted_getoutfitted-theme/public/images/logo/instyle.png" alt="In Style">
-          <img class="home-press" src="/packages/getoutfitted_getoutfitted-theme/public/images/logo/townandcountry.png" alt="Town and Country">
-          <img class="home-press" src="/packages/getoutfitted_getoutfitted-theme/public/images/logo/skimagazine.png" alt="Ski Magazine">
-        </a>
-        <hr>
+<template name="goFeaturedCategoriesLegacy">
+  <section id="summer-sports">
+    <div class="tile-grid">
+      <div class="row fullwidth">
+
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="oru-kayak-tile">
+            <h3 class="title-title">Oru<br/>Kayaks</h3>
+            <h4 class="available-locations"><small>&nbsp;</small></h4>
+            <a href="/collections/onesies" class="small btn wire white radius">Demo Now</a>
+          </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="onewheel-tile">
+            <h3 class="tile-title">FutureMotion<br />Onewheels</h3>
+            <h4 class="available-locations"><small>&nbsp;</small></h4>
+            <a href="/collections/skis-snowboards" class="small btn wire white radius">Demo Now</a>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-4 columns end tile">
+          <div class="tentsile-tile">
+            <h3 class="title-title">Tentsile<br />Tree Tents</h3>
+            <h4 class="available-locations"><small>&nbsp;</small></h4>
+            <a href="/products/oru-kayak-rental" class="small btn wire white radius">Demo Now</a>
+          </div>
+        </div>
+
+      </div>
+      <!-- Featured Products Row 2 -->
+      <div class="row fullwidth">
+
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="imagine-tile">
+            <h3 class="title-title">Imagine<br/>SUPs</h3>
+            <h4 class="available-locations"><small>&nbsp;</small></h4>
+            <a href="/collections/onesies" class="small btn wire white radius">Demo Now</a>
+          </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="camping-backpacking-tile">
+            <h3 class="tile-title">Kelty<br />Camping</h3>
+            <h4 class="available-locations"><small>&nbsp;</small></h4>
+            <a href="/collections/skis-snowboards" class="small btn wire white radius">Rent Now</a>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-4 columns end tile">
+          <div class="kammok-tile">
+            <h3 class="title-title">Kammok<br />Hammocks</h3>
+            <h4 class="available-locations"><small>&nbsp;</small></h4>
+            <a href="/products/oru-kayak-rental" class="small btn wire white radius">Demo Now</a>
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</template>
+
+
+
+<template name="goMediaBreak">
+  <section id="media-coverage" class="groups solid-break">
+    <div class="text-center visible-md-block visible-lg-block">
+      <div class="row fullwidth">
+        <div class="col-sm-12 columns">
+          <!-- <a href="/pages/press" alt="GetOutfitted Media Coverage"> -->
+          <span>
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/yahootravel.png" alt="Yahoo Travel">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/usatoday.png" alt="USA Today">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/huffingtonpost.png" alt="Huffington Post">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/instyle.png" alt="In Style">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/townandcountry.png" alt="Town and Country">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/skimagazine.png" alt="Ski Magazine">
+          </span>
+          <!-- </a> -->
+        </div>
+      </div>
+    </div>
+  </section>
 </template>

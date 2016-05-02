@@ -4,3 +4,8 @@ Template.registerHelper("fieldComponent", function () {
   }
   return Template.productDetailField;
 });
+
+Template.registerHelper("handleize", (str) => {
+  let handle = str.toLowerCase();
+  return handle.replace(/(\W+)/g, "-");
+});

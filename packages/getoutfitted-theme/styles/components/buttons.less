@@ -1,3 +1,7 @@
+.btn.huge {
+  padding: 1rem 2rem 1.0625rem;
+  font-size: 1.75em;
+}
 
 .btn.has-tip {
   border-bottom: none;
@@ -27,6 +31,9 @@
     border-color: @aluminum;
     color: @oil;
     &:hover {background: @charcoal; color: @white; }
+  }
+  &.btn-lg {
+    font-size: 20px;
   }
   
 }
@@ -64,4 +71,18 @@
 .btn.huge.tuatara.wire:hover, .btn.huge.tuatara.wire:active {
   background: rgba(255,255,255, 0.5);
   color: @tuatara;
+}
+
+.btn.btn-brand-primary {
+  color: @white;
+  background: @primary-color;
+}
+
+.btn.btn-brand-primary:hover {
+  color: @white;
+  background: @primary-color-highlight;
+}
+
+.btn-v-middle {
+  margin-top: 25%;
 }

@@ -39,31 +39,18 @@
     </div>
     
     <div id="description" class="container">
-      <!-- START NON IMAGE CONTENT -->
+      <!-- START NON IMAGE CONTENT ALL DEVICE SIZES -->
       <div class="row">
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8 description">
           <div class="row">
             <div class="col-sm-3 text-center">
-              <img src="https://cdn.shopify.com/s/files/1/0258/2103/t/20/assets/patagonia-square.jpg?3239250009026326159" alt="Patagonia" class="brand-logo">
+              <img src="https://d2wpxyz1up89r3.cloudfront.net/logos/{{handleize vendor}}-square.jpg" alt="{{vendor}}" class="brand-logo">
             </div>
             <div class="col-sm-9">
               <h1 class="product-title">{{>fieldComponent field="title" value=title}}</h1>
                 <h2 class="product-subtitle">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
               <div class="row text-center margin-top-small">
-                <!-- IF PRODUCT IS PACKAGE  -->
-                {{> featureImageComponent}}
-                <!-- <div class="col-sm-3">
-                  <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/package-icon.png?3239250009026326159" alt="Free Shipping" class="product-description-header-icon">
-                </div>
-                <div class="col-sm-3">
-                  <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/goggles-icon.png?3239250009026326159" alt="Mirrored Lens" class="product-description-header-icon">
-                </div>
-                <div class="col-sm-3">
-                  <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/gloves-icon.png?3239250009026326159" alt="Premium Goretex Gloves" class="product-description-header-icon">
-                </div>
-                <div class="col-sm-3">
-                  <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/midlayer-icon.png?3239250009026326159" alt="Midlayer Included" class="product-description-header-icon">
-                </div> -->
+                {{> featureImageComponent}} <!-- TODO: use FA icons here -->
               </div>
             </div>
           </div>
@@ -77,128 +64,24 @@
               </div>
             </div>
           </div> <!-- end product icon descriptions -->
-          
         </div>
+        <!-- START DEVICE SPECIFIC LAYOUT -->
         
-        <!-- XS Devices -->
+        <!-- XS Devices --> <!-- TODO: trade this for javascript screensize check -->
         <div class="row margin-top-medium solid-break description hidden-sm hidden-md hidden-lg">
           <div class="third-party-rentals">
             <div class="col-sm-12">
                 <hr>
                 {{> productImageGallery}}
                 <hr>
-                  <div class="row">
-                    <div class="col-xs-3">
-                      <h4 class="description-title">Colors Available</h4>
-                    </div>
-                    <div class="col-xs-9">
-                      <div class="icon row">
-                        
-                          <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
-                            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/navy-blue-underwater-blue.jpg?3239250009026326159" width="32" height="32" alt="Navy Blue/Underwater Blue" class="product-swatch">
-                          </div>
-                          <div class="col-xs-10 col-lg-5 " style="line-height: 26px;">
-                            Navy Blue/Underwater Blue
-                          </div>
-                        
-                          <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
-                            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/black-black.jpg?3239250009026326159" width="32" height="32" alt=" Black/Black" class="product-swatch">
-                          </div>
-                          <div class="col-xs-10 col-lg-5 " style="line-height: 26px;">
-                             Black/Black
-                          </div>
-                        
-                          <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
-                            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/aquastone-black.jpg?3239250009026326159" width="32" height="32" alt=" Aquastone/Black" class="product-swatch">
-                          </div>
-                          <div class="col-xs-10 col-lg-5  end" style="line-height: 26px;">
-                             Aquastone/Black
-                          </div>
-                        
-                      </div>
-                    </div>
-                  </div>
-                  <hr>
                 
                 <h4 class="description-title">About This Rental:</h4>
                 <div class="description-body">
                   {{>fieldComponent field="description" value=description type="textarea"}}
                 </div>
 
-                <hr>
-                <div class="row">
-                  <div class="col-xs-3">
-                    <h4 class="description-title">What's Included </h4>
-                  </div>
-                  <div class="col-xs-9 description-body">
-                    
-                    <div class="icon row">
-                      <div class="col-xs-2 col-lg-1">
-                        <i class="fa fa-check-circle fa-lg"></i>
-                      </div>
-                      <div class="col-xs-10 col-lg-11">
-                         Patagonia Insulated Snowbelle Jacket
-                      </div>
-                    </div>
-                    
-                    <div class="icon row">
-                      <div class="col-xs-2 col-lg-1">
-                        <i class="fa fa-check-circle fa-lg"></i>
-                      </div>
-                      <div class="col-xs-10 col-lg-11">
-                         Patagonia Insulated Snowbelle Pant
-                      </div>
-                    </div>
-                    
-                    <div class="icon row">
-                      <div class="col-xs-2 col-lg-1">
-                        <i class="fa fa-check-circle fa-lg"></i>
-                      </div>
-                      <div class="col-xs-10 col-lg-11">
-                         Patagonia Nano Air Midlayer Jacket
-                      </div>
-                    </div>
-                    
-                    <div class="icon row">
-                      <div class="col-xs-2 col-lg-1">
-                        <i class="fa fa-check-circle fa-lg"></i>
-                      </div>
-                      <div class="col-xs-10 col-lg-11">
-                         Zeal Fargo Goggles with mirrored lenses and 100% UV Protection
-                      </div>
-                    </div>
-                    
-                    <div class="icon row">
-                      <div class="col-xs-2 col-lg-1">
-                        <i class="fa fa-check-circle fa-lg"></i>
-                      </div>
-                      <div class="col-xs-10 col-lg-11">
-                         Goretex Gloves
-                      </div>
-                    </div>
-                    
-                  </div>
-                </div>
-                <hr>
-                <div class="row">
-                  <div id="getoutfitted-trailer-mobile" class="col-xs-12">
-                    <div class="fluid-width-video-wrapper" style="padding-top: 41.681%;"><iframe src="https://www.youtube.com/embed/ABKp61U6uSI?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen="" id="fitvid0"></iframe></div>
-                  </div>
-                </div>
-                <hr>
-              
-              
-                <div id="mobile_sizing_guide" class="row">
-                  <div class="col-xs-3 end">
-                      <h4 class="description-title">Sizing Guide</h4>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-12">
-                    <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/patagonia-womens-package.png?3239250009026326159">
-                  </div>
-                </div>
-              
+                {{> goProductFeatures}}
+                <!-- video component -->
             </div>
           </div>
         </div> <!-- end small devices details -->
@@ -239,8 +122,6 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-12 col-md-7">
-          {{> productColorSwatches}}
-          <hr>
           {{#with this}}
             {{> goProductDescription}}
           {{/with}}
@@ -251,11 +132,9 @@
           <hr>
           {{> productImageGallery}}
           <hr>
-          {{> getoutfittedProductTrailer}}
+          {{> getoutfittedProductTrailer}} <!-- productVideoCompnent -->
           <hr>
           {{> goProductImageGallery}}
-          {{> sizingGuideTable}}
-          
         </div>
         
       </div>
@@ -392,3 +271,38 @@
 
 <!-- Original metaComponent -->
 <!-- {{> metaComponent }} -->
+
+<template name="productDetailColorSwatches">
+  <div class="row">
+    <div class="col-xs-3">
+      <h4 class="description-title">Colors Available</h4>
+    </div>
+    <div class="col-xs-9">
+      <div class="icon row">
+        
+          <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
+            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/navy-blue-underwater-blue.jpg?3239250009026326159" width="32" height="32" alt="Navy Blue/Underwater Blue" class="product-swatch">
+          </div>
+          <div class="col-xs-10 col-lg-5 " style="line-height: 26px;">
+            Navy Blue/Underwater Blue
+          </div>
+        
+          <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
+            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/black-black.jpg?3239250009026326159" width="32" height="32" alt=" Black/Black" class="product-swatch">
+          </div>
+          <div class="col-xs-10 col-lg-5 " style="line-height: 26px;">
+             Black/Black
+          </div>
+        
+          <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
+            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/aquastone-black.jpg?3239250009026326159" width="32" height="32" alt=" Aquastone/Black" class="product-swatch">
+          </div>
+          <div class="col-xs-10 col-lg-5  end" style="line-height: 26px;">
+             Aquastone/Black
+          </div>
+        
+      </div>
+    </div>
+  </div>
+  <hr>
+</template>
