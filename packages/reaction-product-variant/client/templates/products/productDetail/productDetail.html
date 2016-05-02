@@ -93,26 +93,7 @@
       {{> largeDeviceDetails}}
     {{/with}}
     <!-- end product-container -->
-    <hr>
-    <div class="col-xs-10 col-xs-offset-1">
-      {{!-- Social Commentary --}}
-      {{#if hasPermission "createProduct"}}
-      <div class="social-media">
-        <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
-        <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
-        <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
-        <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
-        <div class="social-media-inputs">
-          {{>fieldComponent field="facebookMsg" value=facebookMsg}}
-          {{>fieldComponent field="twitterMsg" value=twitterMsg}}
-          {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
-          {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
-        </div>
-      </div>
-      {{else}}
-        {{> productSocial }}
-      {{/if}}
-    </div>
+    {{! productSocialContainer}}
   </div>
   {{/with}}
 </template>
@@ -131,10 +112,7 @@
           {{/with}}
           <hr>
           {{> productImageGallery}}
-          <hr>
-          {{> getoutfittedProductTrailer}} <!-- productVideoCompnent -->
-          <hr>
-          {{> goProductImageGallery}}
+          {{! getoutfittedProductTrailer}}
         </div>
         
       </div>
@@ -151,11 +129,7 @@
       </div> -->
     </div>
   </div>
-</template>
-
-
-
-<template name="goProductImageGallery">
+  <hr>
 </template>
 
 <template name="goProductFeatures">
@@ -305,4 +279,26 @@
     </div>
   </div>
   <hr>
+</template>
+
+<template name="productSocialContainer">
+  <div class="col-xs-10 col-xs-offset-1">
+    {{!-- Social Commentary --}}
+    {{#if hasPermission "createProduct"}}
+    <div class="social-media">
+      <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
+      <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
+      <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
+      <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
+      <div class="social-media-inputs">
+        {{>fieldComponent field="facebookMsg" value=facebookMsg}}
+        {{>fieldComponent field="twitterMsg" value=twitterMsg}}
+        {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
+        {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
+      </div>
+    </div>
+    {{else}}
+      {{> productSocial }}
+    {{/if}}
+  </div>
 </template>

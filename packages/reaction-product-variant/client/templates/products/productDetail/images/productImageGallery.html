@@ -11,19 +11,18 @@
 </template>
 
 <template name="productImageGallery">
-<div id="galleryDropPane" class="galleryDropPane">
-  <ul class="gallery">
-    {{#each media}}
-      {{> imageDetail}}
-    {{else}}
-     <li>
-        <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
-     </li>
-    {{/each}}
-  </ul>
-  {{>imageUploader}}
-</div>
-
+  <div id="galleryDropPane" class="galleryDropPane">
+    <ul class="gallery">
+      {{#each media}}
+        {{> imageDetail}}
+      {{else}}
+       <li>
+          <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
+       </li>
+      {{/each}}
+    </ul>
+    {{>imageUploader}}
+  </div>
 </template>
 
 <template name="imageDetail">
