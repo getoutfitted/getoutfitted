@@ -14,6 +14,9 @@ Template.CoreNavigationBar.events({
   },
   "click .header-tag, click .navbar-brand": function () {
     return $(".dashboard-navbar-packages ul li").removeClass("active");
+  },
+  "click .hamburger": function () {
+    // return $(".dashboard-navbar-packages ul li").addClass("active");
   }
 });
 
