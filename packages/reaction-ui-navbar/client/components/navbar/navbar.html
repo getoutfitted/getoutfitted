@@ -12,7 +12,7 @@
       </ul>
     </div>
     <div class="languages hide">{{> i18nChooser}}</div>
-    <!-- <div class="accounts"> -->{{> accounts tpl="loginDropdown"}}<!-- </div> -->
+    <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
     <div class="cart">{{> cartIcon}}</div>
     <div class="cart-alert">{{> cartPanel}}</div>
   </div>
@@ -20,27 +20,42 @@
     <div class=navbar-left>
       {{> coreNavigationBrand}}
     </div>
-    <div class="hamburger navbar-toggle collapsed" data-toggle="collapse" data-target="#hamburger-navbar" aria-expanded="false">
-        <i class="hambuger-color fa fa-bars fa-2x" aria-hidden="true"></i>
+    <div class='righty-nav'>
+    <div class='row'>
+      <div class='cart-small col-xs-8'>
+      <span class='cart-small-span'>
+        <div class="cart">{{> cartIcon}}</div>
+        <div class="cart-alert">{{> cartPanel}}</div>
+      </span>
+      </div>
+      <div class='col-xs-4'>
+        <div class="hamburger navbar-toggle collapsed" data-toggle="collapse" data-target="#hamburger-navbar" aria-expanded="false">
+            <i class="hambuger-color fa fa-bars fa-2x" aria-hidden="true"></i>
+        </div>
+
+      </div>
+    </div>
+
     </div>
   </div>
       <!-- Collapses -->
-  <div class='row hidden-lg hidden-md hidden-sm text-center'>
+  <div class='row hidden-lg hidden-md hidden-sm text-center lead'>
     <div class="collapse navbar-collapse" id="hamburger-navbar">
     <hr>
       <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
         {{! winterProductNavDropdown}}
         {{> summerProductNavDropdown}}
         {{! aboutNavDropdown}}
         {{> tagNav tagNavProps}}
         <div class="languages hide">{{> i18nChooser}}</div>
-        <div class="row">
+        <hr>
+        <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
+<!--         <div class="row">
           <div class="cart">{{> cartIcon}}</div>
           <div class="cart-alert">{{> cartPanel}}</div>
-        </div>
+        </div> -->
       </ul>
     </div>
     </div>
