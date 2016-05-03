@@ -25,12 +25,12 @@ ReactionCore.registerPackage({
     theme: "default",
     enabled: true,
     structure: {
-       template: "getOutfittedIndex",
-       layoutHeader: "layoutHeader",
-       layoutFooter: "layoutFooter",
-       notFound: "notFound",
-       dashboardControls: "filtrationDashboardControls",
-       adminControlsFooter: "adminControlsFooter"
+      template: "getOutfittedIndex",
+      layoutHeader: "layoutHeader",
+      layoutFooter: "layoutFooter",
+      notFound: "notFound",
+      dashboardControls: "filtrationDashboardControls",
+      adminControlsFooter: "adminControlsFooter"
      }
   }]
 });

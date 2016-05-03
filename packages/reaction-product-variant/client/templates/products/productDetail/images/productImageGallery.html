@@ -22,6 +22,9 @@
       {{/each}}
     </ul>
     {{>imageUploader}}
+    {{#if cartImage}}
+      {{> cartImageDetail cartImage=cartImage}}
+    {{/if}}
   </div>
 </template>
 
@@ -39,11 +42,31 @@
   </li>
 </template>
 
+<template name="cartImageDetail">
+  {{#if hasPermission "createProduct"}}
+    <div class="productCartImage">
+      <img src="{{cartImage.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{cartImage.title}}" data-index="{{cartImage._id}}">
+      {{#unless cartImage.isUploaded}}
+        {{> FS.UploadProgressBar bootstrap=true}}
+      {{/unless}}
+      <div class="gallery-tools">
+        <a class="image-remove-link" data-index="{{cartImage._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
+      </div>
+    </div>
+  {{/if}}
+</template>
+
 <template name="imageUploader">
 {{#if hasPermission "createProduct"}}
   <div id="dropzone" class="dropzone">
    <input name="files" id="files" class="hidden" type="file" multiple/>
     <div class="btn btn-default btn-block" id="btn-upload" data-i18n="productDetail.dropFile">Drop file to upload</div>
   </div>
+  {{#if noCartImage}}
+    <div id="cartDropzone" class="dropzone">
+     <input name="files" id="cartFiles" class="hidden" type="file" multiple/>
+      <div class="btn btn-default btn-block" id="btn-cart-upload" data-i18n="productDetail.dropFile">Drop file to upload cart Image</div>
+    </div>
+  {{/if}}
 {{/if}}
 </template>

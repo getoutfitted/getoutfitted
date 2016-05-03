@@ -33,7 +33,8 @@ Template.cartDrawerItems.helpers({
   media: function () {
     let product = ReactionCore.Collections.Products.findOne(this.productId);
     let defaultImage = ReactionCore.Collections.Media.findOne({
-      "metadata.variantId": this.variants._id
+      "metadata.variantId": this.variants._id,
+      "metadata.purpose": "cart"
     });
 
     if (defaultImage) {

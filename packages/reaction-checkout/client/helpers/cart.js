@@ -81,3 +81,13 @@ Template.registerHelper("cartPayerName", function () {
     }
   }
 });
+
+/**
+ * filteredVariantOption
+ * @param   {String} variantOption - option name or title from a variant
+ * @returns {String} filtered variantOption without single color, size, or option variant titles
+ */
+
+Template.registerHelper("filteredVariantOption", function (variantOption) {
+  return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+});

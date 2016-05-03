@@ -231,6 +231,12 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
     type: String,
     optional: true
   },
+  // Duplicate product title to keep things moving in the cart
+  productTitle: {
+    label: "Product Title",
+    type: String,
+    optional: true
+  },
   metafields: {
     type: [ReactionCore.Schemas.Metafield],
     optional: true

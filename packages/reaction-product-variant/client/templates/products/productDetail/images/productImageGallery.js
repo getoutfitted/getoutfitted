@@ -10,7 +10,7 @@ let Media = ReactionCore.Collections.Media;
 /**
  * uploadHandler method
  */
-function uploadHandler(event) {
+function uploadHandler(event, metaOptions = {}) {
   // TODO: It would be cool to move this logic to common ValidatedMethod, but
   // I can't find a way to do this, because of browser's `FileList` collection
   // and it `Blob`s which is our event.target.files.
@@ -37,8 +37,7 @@ function uploadHandler(event) {
 
   return FS.Utility.eachFile(event, function (file) {
     let fileObj;
-    fileObj = new FS.File(file);
-    fileObj.metadata = {
+    let metadata = {
       ownerId: userId,
       productId: productId,
       variantId: variantId,
@@ -46,9 +45,15 @@ function uploadHandler(event) {
       priority: count,
       toGrid: +toGrid // we need number
     };
+    fileObj = new FS.File(file);
+    fileObj.metadata = Object.assign(metadata, metaOptions);
     Media.insert(fileObj);
     return count++;
   });
+}
+
+function cartUploadHandler (event) {
+  return uploadHandler(event, {purpose: "cart"});
 }
 
 /**
@@ -94,7 +99,8 @@ Template.productImageGallery.helpers({
 
     if (variant) {
       mediaArray = Media.find({
-        "metadata.variantId": variant._id
+        "metadata.variantId": variant._id,
+        "metadata.purpose": { $ne: "cart" }
       }, {
         sort: {
           "metadata.priority": 1
@@ -105,6 +111,22 @@ Template.productImageGallery.helpers({
   },
   variant: function () {
     return ReactionProduct.selectedVariant();
+  },
+  cartImage: function () {
+    let cartMedia;
+    let variant = ReactionProduct.selectedVariant();
+
+    if (variant) {
+      cartMedia = Media.findOne({
+        "metadata.variantId": variant._id,
+        "metadata.purpose": "cart"
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return cartMedia;
   }
 });
 
@@ -164,7 +186,12 @@ Template.productImageGallery.events({
     return undefined;
   },
   "click .remove-image": function () {
-    const mediaId = this._id;
+    let instance = this;
+    if (this.cartImage) {
+      instance = this.cartImage;
+    }
+
+    const mediaId = instance._id;
     ReactionProductAPI.methods.removeMedia.call({ mediaId }, error => {
       // Media doesn't return success result
       if (error) {
@@ -187,7 +214,31 @@ Template.imageUploader.events({
     return $("#files").click();
   },
   "change #files": uploadHandler,
-  "dropped #dropzone": uploadHandler
+  "dropped #dropzone": uploadHandler,
+
+  "click #btn-cart-upload": function () {
+    return $("#cartFiles").click();
+  },
+  "change #cartFiles": cartUploadHandler,
+  "dropped #cartDropzone": cartUploadHandler
+});
+
+Template.imageUploader.helpers({
+  noCartImage: () => {
+    let variant = ReactionProduct.selectedVariant();
+
+    if (variant) {
+      cartMedia = Media.findOne({
+        "metadata.variantId": variant._id,
+        "metadata.purpose": "cart"
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return !cartMedia;
+  }
 });
 
 /**
