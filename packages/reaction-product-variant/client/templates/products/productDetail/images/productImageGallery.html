@@ -38,8 +38,46 @@
       <div class="gallery-tools">
         <a class="image-remove-link" data-index="{{_id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
       </div>
+      <span>Gallery Image</span>
     {{/if}}
   </li>
+</template>
+
+<template name="carousel">
+    <div class="modal fade and carousel" id="lightbox">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-body">
+                <ol class="carousel-indicators">
+                  <li data-target="#lightbox" data-slide-to="0" class="active"><i class="fa fa-circle"></i></li>
+                  <li data-target="#lightbox" data-slide-to="1"></li>
+                  <li data-target="#lightbox" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner">
+                  {{#each media}}
+                   {{! add session tracking what image triggered this modal was clicked}}
+                    <div class="item {{isActive _id @index}}">
+                      <img src="{{url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{title}}" data-index="{{_id}}">
+                    </div>
+                  {{else}}
+                    <div class="item active">
+                      <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
+                    </div>
+                  {{/each}}
+                </div><!-- /.carousel-inner -->
+                <a class="left carousel-control" href="#lightbox" role="button" data-slide="prev">
+                  <i class="fa fa-chevron-left"></i>
+                </a>
+                <a class="right carousel-control" href="#lightbox" role="button" data-slide="next">
+                  <i class="fa fa-chevron-right"></i>
+                </a>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+    </div>
 </template>
 
 <template name="cartImageDetail">
@@ -52,6 +90,7 @@
       <div class="gallery-tools">
         <a class="image-remove-link" data-index="{{cartImage._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
       </div>
+      <span>Cart Image</span>
     </div>
   {{/if}}
 </template>
@@ -60,11 +99,11 @@
 {{#if hasPermission "createProduct"}}
   <div id="dropzone" class="dropzone">
    <input name="files" id="files" class="hidden" type="file" multiple/>
-    <div class="btn btn-default btn-block" id="btn-upload" data-i18n="productDetail.dropFile">Drop file to upload</div>
+    <div class="btn btn-default btn-block" id="btn-upload" data-i18n="productDetail.dropFile">Drop file to upload to gallery</div>
   </div>
   {{#if noCartImage}}
-    <div id="cartDropzone" class="dropzone">
-     <input name="files" id="cartFiles" class="hidden" type="file" multiple/>
+    <div id="cartDropzone" class="dropzone dropzone-icon">
+     <input name="files" id="cartFiles" class="hidden" type="file"/>
       <div class="btn btn-default btn-block" id="btn-cart-upload" data-i18n="productDetail.dropFile">Drop file to upload cart Image</div>
     </div>
   {{/if}}

@@ -1,6 +1,6 @@
 const $ = require("jquery");
 // load modules
-require("jquery-ui/sortable");
+require("jquery-ui");
 /**
  * productImageGallery helpers
  */
@@ -252,5 +252,43 @@ Template.productImageGallery.events({
   "load .img-responsive": function (event, template) {
     return Session.set("variantImgSrc", template.$(".img-responsive").attr(
       "src"));
+  }
+});
+
+Template.carousel.helpers({
+  media: function () {
+    let mediaArray = [];
+    let variant = ReactionProduct.selectedVariant();
+
+    if (variant) {
+      mediaArray = Media.find({
+        "metadata.variantId": variant._id
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return mediaArray;
+  },
+
+  isActive: function (mediaId, index) {
+    selectedMediaId = Session.get("selectedMediaId");
+    if (selectedMediaId) {
+      if (mediaId === selectedMediaId) {
+        return "active";
+      }
+    } else if (index === 0) {
+      return "active";
+    }
+
+    return "";
+  }
+});
+
+Template.imageDetail.events({
+  "click .img-responsive": function (event) {
+    Session.set("selectedMediaId", event.currentTarget.dataset.index);
+    Modal.show('carousel');
   }
 });

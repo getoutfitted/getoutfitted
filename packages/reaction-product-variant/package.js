@@ -48,6 +48,7 @@ Package.onUse(function (api) {
   // community packages
   api.use("reactioncommerce:reaction-router@1.1.0");
   api.use("reactioncommerce:core@0.13.0");
+  api.use("peppelg:bootstrap-3-modal");
   api.use("getoutfitted:transit-times");
   api.use("getoutfitted:reaction-rental-products");
 

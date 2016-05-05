@@ -66,19 +66,21 @@
 #cartDropzone {
   padding-top:80px;
   Margin-top:10px;
-  border: 2px dashed @silver;
+  border: 1px dashed @gainsboro;
+  border-bottom:none;
 }
 
-#cartDropzone:after {
-  content: "\f218";
+.dropzone-icon:after {
+  content: "\f03e";
   font-family: FontAwesome;
   font-style: normal;
   font-weight: normal;
   text-decoration: inherit;
   position: absolute;
-  font-size: 48px;
-  color: @vapor;
+  font-size: 72px;
+  color: @gainsboro;
   top: 50%;
   left: 50%;
+  margin: -5px 0 0 -36px;
   z-index: 1;
 }
