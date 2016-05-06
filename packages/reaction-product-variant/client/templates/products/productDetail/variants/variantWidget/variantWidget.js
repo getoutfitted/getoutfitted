@@ -15,11 +15,6 @@ function stickyWidget() {
         left: left,
         width: width
       });
-      if ($("#variantWidget").find("#leadImageContainer").length === 0) {
-        $("#variantWidget").prepend($("#leadImageContainer").clone().hide(0, function () {
-          $("#leadImageContainer").slideDown(100);
-        }));
-      }
     } else if ($variantWidget.css("position") === "fixed") {
       if (scrollTop < 2 * bubbleTop) {
         $variantWidget.removeClass("sticky");
@@ -27,7 +22,6 @@ function stickyWidget() {
           left: "",
           width: ""
         });
-        $("#variantWidget #leadImageContainer").remove();
       }
     }
   }

@@ -1,6 +1,6 @@
 const $ = require("jquery");
 // load modules
-require("jquery-ui");
+require("jquery-ui/sortable");
 /**
  * productImageGallery helpers
  */
@@ -52,8 +52,24 @@ function uploadHandler(event, metaOptions = {}) {
   });
 }
 
+function featuredUploadHandler (event) {
+  console.log("featured handler called");
+  return uploadHandler(event, {purpose: "featured"});
+}
+
+function widgetUploadHandler (event) {
+  console.log("widget handler called");
+  return uploadHandler(event, {purpose: "widget"});
+}
+
 function cartUploadHandler (event) {
+  console.log("cart handler called");
   return uploadHandler(event, {purpose: "cart"});
+}
+
+function galleryUploadHandler (event) {
+  console.log("gallery handler called");
+  return uploadHandler(event, {purpose: "gallery"});
 }
 
 /**
@@ -70,6 +86,23 @@ function updateImagePriorities() {
   return ReactionProductAPI.methods.updateMediaPriorities.call({ sortedMedias });
 }
 
+Template.registerHelper("imageWithPurpose", (purpose) => {
+  let cartMedia;
+  let variant = ReactionProduct.selectedVariant();
+
+  if (variant) {
+    cartMedia = Media.findOne({
+      "metadata.variantId": variant._id,
+      "metadata.purpose": purpose
+    }, {
+      sort: {
+        "metadata.priority": 1
+      }
+    });
+  }
+  return cartMedia;
+});
+
 Template.productLeadImage.helpers({
   leadImage: function () {
     const variant = ReactionProduct.selectedVariant();
@@ -77,7 +110,8 @@ Template.productLeadImage.helpers({
 
     if (variant) {
       leadImage = Media.findOne({
-        "metadata.variantId": variant._id
+        "metadata.variantId": variant._id,
+        "metadata.purpose": "featured"
       }, {
         sort: {
           "metadata.priority": 1
@@ -85,6 +119,39 @@ Template.productLeadImage.helpers({
       });
     }
     return leadImage;
+  }
+});
+
+Template.productLeadImage.events({
+  "click .leadImage": (event) => {
+    Session.set("selectedMediaId", event.currentTarget.dataset.index);
+    Modal.show('carousel');
+  }
+});
+
+Template.productWidgetImage.events({
+  "click .widgetImage": (event) => {
+    Session.set("selectedMediaId", event.currentTarget.dataset.index);
+    Modal.show('carousel');
+  }
+});
+
+Template.productWidgetImage.helpers({
+  widgetImage: function () {
+    const variant = ReactionProduct.selectedVariant();
+    let widgetImage;
+
+    if (variant) {
+      widgetImage = Media.findOne({
+        "metadata.variantId": variant._id,
+        "metadata.purpose": "widget"
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return widgetImage;
   }
 });
 
@@ -100,7 +167,7 @@ Template.productImageGallery.helpers({
     if (variant) {
       mediaArray = Media.find({
         "metadata.variantId": variant._id,
-        "metadata.purpose": { $ne: "cart" }
+        "metadata.purpose": {$in: ["gallery", "featured", "widget"]}
       }, {
         sort: {
           "metadata.priority": 1
@@ -111,24 +178,10 @@ Template.productImageGallery.helpers({
   },
   variant: function () {
     return ReactionProduct.selectedVariant();
-  },
-  cartImage: function () {
-    let cartMedia;
-    let variant = ReactionProduct.selectedVariant();
-
-    if (variant) {
-      cartMedia = Media.findOne({
-        "metadata.variantId": variant._id,
-        "metadata.purpose": "cart"
-      }, {
-        sort: {
-          "metadata.priority": 1
-        }
-      });
-    }
-    return cartMedia;
   }
 });
+
+
 
 /**
  * productImageGallery onRendered
@@ -187,8 +240,8 @@ Template.productImageGallery.events({
   },
   "click .remove-image": function () {
     let instance = this;
-    if (this.cartImage) {
-      instance = this.cartImage;
+    if (this.image) {
+      instance = this.image;
     }
 
     const mediaId = instance._id;
@@ -201,21 +254,39 @@ Template.productImageGallery.events({
       }
       return updateImagePriorities();
     });
-  },
-  "dropped #galleryDropPane": uploadHandler
+  }
+  // "dropped #galleryDropPane": uploadHandler
 });
 
 /**
  * imageUploader events
  */
 
-Template.imageUploader.events({
+Template.galleryImageUploader.events({
   "click #btn-upload": function () {
     return $("#files").click();
   },
-  "change #files": uploadHandler,
-  "dropped #dropzone": uploadHandler,
-
+  "change #files": galleryUploadHandler,
+  "dropped #dropzone": galleryUploadHandler
+});
+Template.featuredImageUploader.events({
+  // Featured Image Event Handling
+  "click #btn-featured-upload": function () {
+    return $("#featuredFiles").click();
+  },
+  "change #featuredFiles": featuredUploadHandler,
+  "dropped #featuredDropzone": featuredUploadHandler
+});
+Template.widgetImageUploader.events({
+  // Widget Image Event Handling
+  "click #btn-widget-upload": function () {
+    return $("#widgetFiles").click();
+  },
+  "change #widgetFiles": widgetUploadHandler,
+  "dropped #widgetDropzone": widgetUploadHandler
+});
+Template.cartImageUploader.events({
+  // Cart Image Event Handling
   "click #btn-cart-upload": function () {
     return $("#cartFiles").click();
   },
@@ -223,22 +294,20 @@ Template.imageUploader.events({
   "dropped #cartDropzone": cartUploadHandler
 });
 
-Template.imageUploader.helpers({
-  noCartImage: () => {
-    let variant = ReactionProduct.selectedVariant();
+Template.registerHelper("noImageWithPurpose", (purpose) => {
+  let variant = ReactionProduct.selectedVariant();
 
-    if (variant) {
-      cartMedia = Media.findOne({
-        "metadata.variantId": variant._id,
-        "metadata.purpose": "cart"
-      }, {
-        sort: {
-          "metadata.priority": 1
-        }
-      });
-    }
-    return !cartMedia;
+  if (variant) {
+    cartMedia = Media.findOne({
+      "metadata.variantId": variant._id,
+      "metadata.purpose": purpose
+    }, {
+      sort: {
+        "metadata.priority": 1
+      }
+    });
   }
+  return !cartMedia ? "" : "hidden";
 });
 
 /**
@@ -262,7 +331,8 @@ Template.carousel.helpers({
 
     if (variant) {
       mediaArray = Media.find({
-        "metadata.variantId": variant._id
+        "metadata.variantId": variant._id,
+        "metadata.purpose": {$in: ["featured", "widget", "gallery"]}
       }, {
         sort: {
           "metadata.priority": 1

@@ -1,6 +1,11 @@
 .leadImage > img {
   width: 100%;
   min-height: 100px;
+  cursor: pointer;
+}
+
+.widgetImage > img {
+  cursor: pointer;
 }
 
 .galleryDropPane {
@@ -63,7 +68,10 @@
     }
   }
 }
-#cartDropzone {
+.relative-pos {
+  position: relative;
+}
+.dropzone-icon {
   padding-top:80px;
   Margin-top:10px;
   border: 1px dashed @gainsboro;
@@ -80,7 +88,21 @@
   font-size: 72px;
   color: @gainsboro;
   top: 50%;
-  left: 50%;
-  margin: -5px 0 0 -36px;
+  left: 25%;
+  margin: -70px 0 0 10px;
   z-index: 1;
+}
+
+.dropzone-icon.featured:after {
+  content: "\f03e featured";
+}
+
+.dropzone-icon.widget:after {
+  content: "\f03e widget";
+  margin-left: 25px;
+}
+
+.dropzone-icon.cart:after {
+  content: "\f03e cart";
+  margin-left: 70px;
 }
