@@ -75,9 +75,11 @@ fortawesome:fontawesome@4.5.0
 geojson-utils@1.0.8
 getoutfitted:getoutfitted-layout@1.0.0
 getoutfitted:getoutfitted-theme@0.1.0
+getoutfitted:press-feed@0.1.0
 getoutfitted:reaction-advanced-fulfillment@0.8.0
 getoutfitted:reaction-product-importer@0.1.0
 getoutfitted:reaction-rental-products@0.4.0
+getoutfitted:static-pages@0.1.0
 getoutfitted:transit-times@0.1.0
 google@1.1.11
 harrison:papa-parse@1.1.1
