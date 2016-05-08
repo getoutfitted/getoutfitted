@@ -4,12 +4,19 @@
     <div class="row">
       <div class="col-xs-12">
         <span class="rental-price">
-          <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+          {{#if rentalProduct}}
+            <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
+            <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
+          {{else}}
+            <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+          {{/if}}
         </span>
         {{#unless hasPermission "createProduct"}}
-          <div class="row reservation-calendar-container">
-            {{> reservationDatepicker}}
-          </div>
+          {{#if rentalProduct}}
+            <div class="row reservation-calendar-container">
+              {{> reservationDatepicker}}
+            </div>
+          {{/if}}
         {{/unless}}
         {{!-- Variants & Options --}}
         <div class="row options-add-to-cart">
@@ -18,7 +25,7 @@
               {{>variantList}}
             </div>
           {{else}}
-            {{#if showRentalLengthOptions}}
+            {{#if rentalProduct}}
               <div class="col-xs-4">
                 {{>rentalLengthOptions}}
               </div>

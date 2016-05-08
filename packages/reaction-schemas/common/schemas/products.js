@@ -1,3 +1,37 @@
+ReactionCore.Schemas.RentalPriceBucket = new SimpleSchema({
+  // Moment time unit
+  timeUnit: {
+    label: "Time Unit",
+    type: String,
+    optional: true,
+    defaultValue: "days",
+    allowedValues: [
+      "years",
+      "quarters",
+      "months",
+      "weeks",
+      "days",
+      "hours",
+      "minutes",
+      "seconds",
+      "milliseconds"
+    ]
+  },
+  duration: {
+    label: "Amount of specified time periods",
+    type: Number,
+    optional: true,
+    defaultValue: 6
+  },
+  price: {
+    label: "Rental price for this duration",
+    type: Number,
+    optional: true,
+    decimal: true,
+    defaultValue: 150
+  }
+});
+
 /**
  * VariantMedia Schema
  */
@@ -281,10 +315,11 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
     min: 0,
     optional: true
   },
-  // rentalPriceBucket: {
-  //   type: [ReactionCore.Schemas.rentalPriceBucket],
-  //   optional: true,
-  // },
+  rentalPriceBuckets: {
+    label: "Rental Prices",
+    type: [ReactionCore.Schemas.RentalPriceBucket],
+    optional: true
+  },
   workflow: { // XXX: Not 100% certain we need this here, definitely need it on inventory and product
     type: ReactionCore.Schemas.Workflow,
     optional: true

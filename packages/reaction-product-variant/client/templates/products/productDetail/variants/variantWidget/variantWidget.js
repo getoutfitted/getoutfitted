@@ -37,7 +37,7 @@ Template.variantWidget.onRendered(function () {
 });
 
 Template.variantWidget.helpers({
-  showRentalLengthOptions: function () {
+  rentalProduct: function () {
     return this.functionalType === "rental";
   },
   actualPrice: function () {
@@ -50,5 +50,25 @@ Template.variantWidget.helpers({
       return ReactionProduct.getProductPriceRange().range;
     }
     return undefined;
+  },
+  reservation: () => {
+    const current = ReactionProduct.selectedVariant();
+    const reservationLength = Session.get("reservationLength");
+    console.log(reservationLength);
+    if (typeof current === "object") {
+      const childVariants = ReactionProduct.getVariants(current._id);
+      if (childVariants.length === 0 && current.functionalType === "rentalVariant") {
+        let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
+          return priceBucket.duration === reservationLength;
+        });
+        if (selectedReservation) {
+          return selectedReservation;
+        }
+        if (current.rentalPriceBuckets) {
+          return current.rentalPriceBuckets[0];
+        }
+      }
+    }
+    return {};
   }
 });

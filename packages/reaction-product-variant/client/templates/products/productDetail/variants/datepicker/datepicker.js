@@ -57,7 +57,20 @@ Template.reservationDatepicker.onCreated(function () {
 
 
 Template.reservationDatepicker.onRendered(function () {
-  Session.setDefault("reservationLength", 5); // inclusive of return day, exclusive of arrivalDay
+  const variants = ReactionProduct.getVariants(this.data._id);
+  const firstChild = variants.find(function (variant) {
+    return variant.ancestors.length === 2;
+  });
+  let defaultReservationLength = 5;
+  if (firstChild) {
+    ReactionProduct.setCurrentVariant(firstChild._id);
+    Session.set("selectedVariantId", firstChild._id);
+    if (firstChild.rentalPriceBuckets) {
+      defaultReservationLength = firstChild.rentalPriceBuckets[0].duration - 1;
+    }
+  }
+
+  Session.setDefault("reservationLength", defaultReservationLength); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
   $("#rental-start").datepicker({
     startDate: "+4d",

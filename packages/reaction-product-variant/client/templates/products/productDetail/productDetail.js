@@ -76,8 +76,8 @@ Template.productDetail.helpers({
     }
     return Template.productFeatureField;
   },
-  featureImageComponent: function () {
-    this.featureKey = "featureImage";
+  productIconComponent: function () {
+    this.featureKey = "productIcon";
     if (ReactionCore.hasPermission("createProduct")) {
       return Template.productFeatureFieldForm;
     }
