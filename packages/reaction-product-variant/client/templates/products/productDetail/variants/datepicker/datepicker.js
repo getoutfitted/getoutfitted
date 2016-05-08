@@ -50,7 +50,6 @@ Template.reservationDatepicker.onCreated(function () {
     if (Session.get("selectedVariantId")) {
       this.subscribe("productReservationStatus", Session.get("selectedVariantId"));
       $("#rental-start").datepicker("update");
-      console.log("datepicker update");
     }
   });
 });

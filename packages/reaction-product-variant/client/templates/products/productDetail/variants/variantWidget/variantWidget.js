@@ -54,12 +54,11 @@ Template.variantWidget.helpers({
   reservation: () => {
     const current = ReactionProduct.selectedVariant();
     const reservationLength = Session.get("reservationLength");
-    console.log(reservationLength);
     if (typeof current === "object") {
       const childVariants = ReactionProduct.getVariants(current._id);
       if (childVariants.length === 0 && current.functionalType === "rentalVariant") {
         let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
-          return priceBucket.duration === reservationLength;
+          return priceBucket.duration === reservationLength + 1;
         });
         if (selectedReservation) {
           return selectedReservation;
