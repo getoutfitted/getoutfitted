@@ -15,15 +15,17 @@ function getSummary(items, prop, prop2) {
     return items.reduce((sum, item) => {
       if (prop2) {
         // S + a * b, where b could be b1 or b2
-        return sum + item[prop[0]] * (prop2.length === 1 ? item[prop2[0]] :
-          item[prop2[0]][prop2[1]]);
+        return sum + item[prop[0]] * (prop2.length === 1 ? item[prop2[0]] : item[prop2[0]][prop2[1]]);
       }
+      // XXX: GETOUTFITTED MOD - Fixes NaN for cart.shipping
       // S + b, where b could be b1 or b2
-      return sum + (prop.length === 1 ? item[prop[0]] :
-        item[prop[0]][prop[1]]);
+      let additive = (prop.length === 1 ? item[prop[0]] : item[prop[0]][prop[1]]);
+      if (additive) {
+        return sum + additive;
+      }
+      return sum;
     }, 0);
   }
-
   // If data not prepared we should send a number to avoid exception with
   // `toFixed`. This could happens if user stuck on `completed` checkout stage
   // by some reason.

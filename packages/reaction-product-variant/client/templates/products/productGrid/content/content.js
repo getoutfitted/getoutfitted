@@ -7,5 +7,6 @@ Template.gridContent.helpers({
     if (this.price && this.price.range) {
       return this.price.range;
     }
+    return "";
   }
 });

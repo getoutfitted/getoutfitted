@@ -50,7 +50,7 @@
               <h1 class="product-title">{{>fieldComponent field="title" value=title}}</h1>
                 <h2 class="product-subtitle">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
               <div class="row text-center margin-top-small">
-                {{> featureImageComponent}} <!-- TODO: use FA icons here -->
+                {{> productIconComponent}}
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@
         
         <!-- XS Devices --> <!-- TODO: trade this for javascript screensize check -->
         <div class="row margin-top-medium solid-break description hidden-sm hidden-md hidden-lg">
-          <div class="third-party-rentals">
+          <div>
             <div class="col-sm-12">
                 <hr>
                 {{> productImageGallery}}
@@ -93,32 +93,13 @@
       {{> largeDeviceDetails}}
     {{/with}}
     <!-- end product-container -->
-    <hr>
-    <div class="col-xs-10 col-xs-offset-1">
-      {{!-- Social Commentary --}}
-      {{#if hasPermission "createProduct"}}
-      <div class="social-media">
-        <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
-        <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
-        <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
-        <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
-        <div class="social-media-inputs">
-          {{>fieldComponent field="facebookMsg" value=facebookMsg}}
-          {{>fieldComponent field="twitterMsg" value=twitterMsg}}
-          {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
-          {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
-        </div>
-      </div>
-      {{else}}
-        {{> productSocial }}
-      {{/if}}
-    </div>
+    {{! productSocialContainer}}
   </div>
   {{/with}}
 </template>
 
 <template name="largeDeviceDetails">
-  <div class="silver-background margin-top-medium solid-break show-for-medium-up third-party-rentals description">
+  <div class="silver-background margin-top-medium solid-break show-for-medium-up description">
     <div class="container">
       <div class="row">
         <div class="col-sm-12 col-md-7">
@@ -131,10 +112,7 @@
           {{/with}}
           <hr>
           {{> productImageGallery}}
-          <hr>
-          {{> getoutfittedProductTrailer}} <!-- productVideoCompnent -->
-          <hr>
-          {{> goProductImageGallery}}
+          {{! getoutfittedProductTrailer}}
         </div>
         
       </div>
@@ -151,11 +129,7 @@
       </div> -->
     </div>
   </div>
-</template>
-
-
-
-<template name="goProductImageGallery">
+  <hr>
 </template>
 
 <template name="goProductFeatures">
@@ -305,4 +279,26 @@
     </div>
   </div>
   <hr>
+</template>
+
+<template name="productSocialContainer">
+  <div class="col-xs-10 col-xs-offset-1">
+    {{!-- Social Commentary --}}
+    {{#if hasPermission "createProduct"}}
+    <div class="social-media">
+      <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
+      <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
+      <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
+      <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
+      <div class="social-media-inputs">
+        {{>fieldComponent field="facebookMsg" value=facebookMsg}}
+        {{>fieldComponent field="twitterMsg" value=twitterMsg}}
+        {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
+        {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
+      </div>
+    </div>
+    {{else}}
+      {{> productSocial }}
+    {{/if}}
+  </div>
 </template>

@@ -4,16 +4,6 @@ ReactionCore.registerPackage({
   icon: "fa fa-cubes",
   autoEnable: true,
   registry: [{
-    route: "/product/:handle/:variantId?",
-    name: "product",
-    template: "productDetail",
-    workflow: "coreProductWorkflow"
-  }, {
-    route: "/tag/:slug?",
-    name: "tag",
-    template: "products",
-    workflow: "coreProductWorkflow"
-  }, {
     route: "/products/createProduct",
     name: "createProduct",
     label: "Add Product",
@@ -26,6 +16,31 @@ ReactionCore.registerPackage({
       label: "Create Product",
       permission: "createProduct"
     }]
+  }, {
+    route: "/product/:handle/:variantId?",
+    name: "product",
+    template: "productDetail",
+    workflow: "coreProductWorkflow"
+  }, {
+    route: "/products/:handle/:variantId?",
+    name: "productLegacy",
+    template: "productDetail",
+    workflow: "coreProductWorkflow"
+  }, {
+    route: "/tag/:slug?",
+    name: "tag",
+    template: "products",
+    workflow: "coreProductWorkflow"
+  }, {
+    route: "/collections/:slug?",
+    name: "collectionsLegacy",
+    template: "products",
+    workflow: "coreProductWorkflow"
+  }, {
+    route: "/catalog/:slug?",
+    name: "catalog",
+    template: "products",
+    workflow: "coreProductWorkflow"
   }],
   layout: [{
     layout: "coreLayout",
@@ -36,7 +51,7 @@ ReactionCore.registerPackage({
     structure: {
       template: "productDetail",
       layoutHeader: "layoutHeader",
-      layoutFooter: "",
+      layoutFooter: "layoutFooter",
       notFound: "productNotFound",
       dashboardHeader: "",
       dashboardControls: "dashboardControls",

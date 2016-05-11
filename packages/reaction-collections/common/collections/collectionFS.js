@@ -16,6 +16,16 @@ ReactionCore.Collections.Media = new FS.Collection("Media", {
   stores: [
     new FS.Store.GridFS("image", {
       chunkSize: 1 * 1024 * 1024
+    }), new FS.Store.GridFS("cart", {
+      chunkSize: 1 * 1024 * 1024,
+      transformWrite: function (fileObj, readStream, writeStream) {
+        if (gm.isAvailable) {
+          gm(readStream, fileObj.name).resize("400", "300").stream()
+            .pipe(writeStream);
+        } else {
+          readStream.pipe(writeStream);
+        }
+      }
     }), new FS.Store.GridFS("landscape", {
       chunkSize: 1 * 1024 * 1024,
       transformWrite: function (fileObj, readStream, writeStream) {

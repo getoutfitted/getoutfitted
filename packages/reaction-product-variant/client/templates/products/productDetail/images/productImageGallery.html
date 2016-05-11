@@ -10,20 +10,50 @@
   {{/if}}
 </template>
 
-<template name="productImageGallery">
-<div id="galleryDropPane" class="galleryDropPane">
-  <ul class="gallery">
-    {{#each media}}
-      {{> imageDetail}}
-    {{else}}
-     <li>
-        <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
-     </li>
-    {{/each}}
-  </ul>
-  {{>imageUploader}}
-</div>
+<template name="productWidgetImage">
+  {{#if widgetImage}}
+    <div id="widgetImage" class="widgetImage product-media" data-index="{{widgetImage._id}}">
+      <img src="{{widgetImage.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{widgetImage.title}}" data-index="{{widgetImage._id}}">
+    </div>
+  {{/if}}
+</template>
 
+<template name="productImageGallery">
+  <h4 class="description-title">{{./title}} Images</h4>
+  <div id="galleryDropPane" class="galleryDropPane">
+    <ul class="gallery">
+      {{#each media}}
+        {{> imageDetail}}
+      {{else}}
+       <li>
+          <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
+       </li>
+      {{/each}}
+    </ul>
+    {{>galleryImageUploader}}
+    {{>featuredImageUploader}}
+    {{>widgetImageUploader}}
+    {{>cartImageUploader}}
+    {{#if hasPermission "createProduct"}}
+      <div class="row">
+        <div class="col-sm-4">
+          {{#if imageWithPurpose "featured"}}
+            {{> featuredImageDetail image=(imageWithPurpose "featured")}}
+          {{/if}}
+        </div>
+        <div class="col-sm-4">
+          {{#if imageWithPurpose "cart"}}
+            {{> cartImageDetail image=(imageWithPurpose "cart")}}
+          {{/if}}
+        </div>
+        <div class="col-sm-4">
+          {{#if imageWithPurpose "widget"}}
+            {{> widgetImageDetail image=(imageWithPurpose "widget")}}
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  </div>
 </template>
 
 <template name="imageDetail">
@@ -36,15 +66,134 @@
       <div class="gallery-tools">
         <a class="image-remove-link" data-index="{{_id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
       </div>
+      <span>{{metadata.purpose}} Image</span>
     {{/if}}
   </li>
 </template>
 
-<template name="imageUploader">
+<template name="carousel">
+    <div class="modal fade and carousel" id="lightbox">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-body">
+                <ol class="carousel-indicators">
+                  {{#each media}}
+                    <li data-target="#lightbox" data-slide-to="{{@index}}" class="{{isActive _id @index}}"></li>
+                  {{else}}
+                  <li data-target="#lightbox" data-slide-to="0" class="active"></li>
+                  {{/each}}
+                </ol>
+                <div class="carousel-inner">
+                  {{#each media}}
+                   {{! add session tracking what image triggered this modal was clicked}}
+                    <div class="item {{isActive _id @index}}">
+                      <img src="{{url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{title}}" data-index="{{_id}}">
+                    </div>
+                  {{else}}
+                    <div class="item active">
+                      <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
+                    </div>
+                  {{/each}}
+                </div>
+                <a class="left carousel-control" href="#lightbox" data-slide="prev">
+                  <i class="fa fa-chevron-left"></i>
+                </a>
+                <a class="right carousel-control" href="#lightbox" data-slide="next">
+                  <i class="fa fa-chevron-right"></i>
+                </a>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+    </div>
+</template>
+
+<template name="featuredImageDetail">
+  {{#if hasPermission "createProduct"}}
+    <div class="productCartImage">
+      <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
+      {{#unless image.isUploaded}}
+        {{> FS.UploadProgressBar bootstrap=true}}
+      {{/unless}}
+      <div class="gallery-tools">
+        <a class="image-remove-link" data-index="{{image._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
+      </div>
+      <span>Featured Image</span>
+    </div>
+  {{/if}}
+</template>
+
+<template name="cartImageDetail">
+  {{#if hasPermission "createProduct"}}
+    <div class="productCartImage">
+      <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
+      {{#unless image.isUploaded}}
+        {{> FS.UploadProgressBar bootstrap=true}}
+      {{/unless}}
+      <div class="gallery-tools">
+        <a class="image-remove-link" data-index="{{image._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
+      </div>
+      <span>Cart Image</span>
+    </div>
+  {{/if}}
+</template>
+
+<template name="widgetImageDetail">
+  {{#if hasPermission "createProduct"}}
+    <div class="productCartImage">
+      <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
+      {{#unless image.isUploaded}}
+        {{> FS.UploadProgressBar bootstrap=true}}
+      {{/unless}}
+      <div class="gallery-tools">
+        <a class="image-remove-link" data-index="{{image._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
+      </div>
+      <span>Widget Image</span>
+    </div>
+  {{/if}}
+</template>
+
+
+<template name="galleryImageUploader">
 {{#if hasPermission "createProduct"}}
   <div id="dropzone" class="dropzone">
    <input name="files" id="files" class="hidden" type="file" multiple/>
-    <div class="btn btn-default btn-block" id="btn-upload" data-i18n="productDetail.dropFile">Drop file to upload</div>
+    <div class="btn btn-default btn-block" id="btn-upload" data-i18n="productDetail.dropFile">Drop file to upload to gallery</div>
+  </div>
+{{/if}}
+</template>
+
+<template name="featuredImageUploader">
+{{#if hasPermission "createProduct"}}
+  <div class="relative-pos {{noImageWithPurpose 'featured'}}">
+    <div id="featuredDropzone" class="dropzone dropzone-icon featured">
+     <input name="files" id="featuredFiles" class="hidden" type="file"/>
+      <div class="btn btn-default btn-block" id="btn-featured-upload" data-i18n="productDetail.dropFile">Drop file to upload featured image</div>
+    </div>
+  </div>
+{{/if}}
+</template>
+
+<template name="widgetImageUploader">
+{{#if hasPermission "createProduct"}}
+  <div class="relative-pos {{noImageWithPurpose 'widget'}}">
+    <div id="widgetDropzone" class="dropzone dropzone-icon widget">
+     <input name="files" id="widgetFiles" class="hidden" type="file"/>
+      <div class="btn btn-default btn-block" id="btn-widget-upload" data-i18n="productDetail.dropFile">Drop file to upload widget image</div>
+    </div>
+  </div>
+{{/if}}
+</template>
+
+<template name="cartImageUploader">
+{{#if hasPermission "createProduct"}}
+  <div class="relative-pos {{noImageWithPurpose 'cart'}}">
+    <div id="cartDropzone" class="dropzone dropzone-icon cart">
+     <input name="files" id="cartFiles" class="hidden" type="file"/>
+      <div class="btn btn-default btn-block" id="btn-cart-upload" data-i18n="productDetail.dropFile">Drop file to upload cart image</div>
+    </div>
   </div>
 {{/if}}
 </template>

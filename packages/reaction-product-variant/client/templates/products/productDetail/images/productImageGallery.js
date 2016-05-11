@@ -10,7 +10,7 @@ let Media = ReactionCore.Collections.Media;
 /**
  * uploadHandler method
  */
-function uploadHandler(event) {
+function uploadHandler(event, metaOptions = {}) {
   // TODO: It would be cool to move this logic to common ValidatedMethod, but
   // I can't find a way to do this, because of browser's `FileList` collection
   // and it `Blob`s which is our event.target.files.
@@ -37,8 +37,7 @@ function uploadHandler(event) {
 
   return FS.Utility.eachFile(event, function (file) {
     let fileObj;
-    fileObj = new FS.File(file);
-    fileObj.metadata = {
+    let metadata = {
       ownerId: userId,
       productId: productId,
       variantId: variantId,
@@ -46,9 +45,27 @@ function uploadHandler(event) {
       priority: count,
       toGrid: +toGrid // we need number
     };
+    fileObj = new FS.File(file);
+    fileObj.metadata = Object.assign(metadata, metaOptions);
     Media.insert(fileObj);
     return count++;
   });
+}
+
+function featuredUploadHandler (event) {
+  return uploadHandler(event, {purpose: "featured"});
+}
+
+function widgetUploadHandler (event) {
+  return uploadHandler(event, {purpose: "widget"});
+}
+
+function cartUploadHandler (event) {
+  return uploadHandler(event, {purpose: "cart"});
+}
+
+function galleryUploadHandler (event) {
+  return uploadHandler(event, {purpose: "gallery"});
 }
 
 /**
@@ -65,6 +82,23 @@ function updateImagePriorities() {
   return ReactionProductAPI.methods.updateMediaPriorities.call({ sortedMedias });
 }
 
+Template.registerHelper("imageWithPurpose", (purpose) => {
+  let cartMedia;
+  let variant = ReactionProduct.selectedVariant();
+
+  if (variant) {
+    cartMedia = Media.findOne({
+      "metadata.variantId": variant._id,
+      "metadata.purpose": purpose
+    }, {
+      sort: {
+        "metadata.priority": 1
+      }
+    });
+  }
+  return cartMedia;
+});
+
 Template.productLeadImage.helpers({
   leadImage: function () {
     const variant = ReactionProduct.selectedVariant();
@@ -72,7 +106,8 @@ Template.productLeadImage.helpers({
 
     if (variant) {
       leadImage = Media.findOne({
-        "metadata.variantId": variant._id
+        "metadata.variantId": variant._id,
+        "metadata.purpose": "featured"
       }, {
         sort: {
           "metadata.priority": 1
@@ -80,6 +115,39 @@ Template.productLeadImage.helpers({
       });
     }
     return leadImage;
+  }
+});
+
+Template.productLeadImage.events({
+  "click .leadImage": (event) => {
+    Session.set("selectedMediaId", event.currentTarget.dataset.index);
+    Modal.show('carousel');
+  }
+});
+
+Template.productWidgetImage.events({
+  "click .widgetImage": (event) => {
+    Session.set("selectedMediaId", event.currentTarget.dataset.index);
+    Modal.show('carousel');
+  }
+});
+
+Template.productWidgetImage.helpers({
+  widgetImage: function () {
+    const variant = ReactionProduct.selectedVariant();
+    let widgetImage;
+
+    if (variant) {
+      widgetImage = Media.findOne({
+        "metadata.variantId": variant._id,
+        "metadata.purpose": "widget"
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return widgetImage;
   }
 });
 
@@ -94,7 +162,8 @@ Template.productImageGallery.helpers({
 
     if (variant) {
       mediaArray = Media.find({
-        "metadata.variantId": variant._id
+        "metadata.variantId": variant._id,
+        "metadata.purpose": {$in: ["gallery", "featured", "widget"]}
       }, {
         sort: {
           "metadata.priority": 1
@@ -107,6 +176,8 @@ Template.productImageGallery.helpers({
     return ReactionProduct.selectedVariant();
   }
 });
+
+
 
 /**
  * productImageGallery onRendered
@@ -164,7 +235,12 @@ Template.productImageGallery.events({
     return undefined;
   },
   "click .remove-image": function () {
-    const mediaId = this._id;
+    let instance = this;
+    if (this.image) {
+      instance = this.image;
+    }
+
+    const mediaId = instance._id;
     ReactionProductAPI.methods.removeMedia.call({ mediaId }, error => {
       // Media doesn't return success result
       if (error) {
@@ -174,20 +250,61 @@ Template.productImageGallery.events({
       }
       return updateImagePriorities();
     });
-  },
-  "dropped #galleryDropPane": uploadHandler
+  }
+  // TODO: Add gallery dropzone handler
+  // "dropped #galleryDropPane": uploadHandler
 });
 
 /**
  * imageUploader events
  */
 
-Template.imageUploader.events({
+Template.galleryImageUploader.events({
   "click #btn-upload": function () {
     return $("#files").click();
   },
-  "change #files": uploadHandler,
-  "dropped #dropzone": uploadHandler
+  "change #files": galleryUploadHandler,
+  "dropped #dropzone": galleryUploadHandler
+});
+Template.featuredImageUploader.events({
+  // Featured Image Event Handling
+  "click #btn-featured-upload": function () {
+    return $("#featuredFiles").click();
+  },
+  "change #featuredFiles": featuredUploadHandler,
+  "dropped #featuredDropzone": featuredUploadHandler
+});
+Template.widgetImageUploader.events({
+  // Widget Image Event Handling
+  "click #btn-widget-upload": function () {
+    return $("#widgetFiles").click();
+  },
+  "change #widgetFiles": widgetUploadHandler,
+  "dropped #widgetDropzone": widgetUploadHandler
+});
+Template.cartImageUploader.events({
+  // Cart Image Event Handling
+  "click #btn-cart-upload": function () {
+    return $("#cartFiles").click();
+  },
+  "change #cartFiles": cartUploadHandler,
+  "dropped #cartDropzone": cartUploadHandler
+});
+
+Template.registerHelper("noImageWithPurpose", (purpose) => {
+  let variant = ReactionProduct.selectedVariant();
+
+  if (variant) {
+    cartMedia = Media.findOne({
+      "metadata.variantId": variant._id,
+      "metadata.purpose": purpose
+    }, {
+      sort: {
+        "metadata.priority": 1
+      }
+    });
+  }
+  return cartMedia ? "hidden" : "";
 });
 
 /**
@@ -201,5 +318,44 @@ Template.productImageGallery.events({
   "load .img-responsive": function (event, template) {
     return Session.set("variantImgSrc", template.$(".img-responsive").attr(
       "src"));
+  }
+});
+
+Template.carousel.helpers({
+  media: function () {
+    let mediaArray = [];
+    let variant = ReactionProduct.selectedVariant();
+
+    if (variant) {
+      mediaArray = Media.find({
+        "metadata.variantId": variant._id,
+        "metadata.purpose": {$in: ["featured", "widget", "gallery"]}
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return mediaArray;
+  },
+
+  isActive: function (mediaId, index) {
+    selectedMediaId = Session.get("selectedMediaId");
+    if (selectedMediaId) {
+      if (mediaId === selectedMediaId) {
+        return "active";
+      }
+    } else if (index === 0) {
+      return "active";
+    }
+
+    return "";
+  }
+});
+
+Template.imageDetail.events({
+  "click .img-responsive": function (event) {
+    Session.set("selectedMediaId", event.currentTarget.dataset.index);
+    Modal.show('carousel');
   }
 });

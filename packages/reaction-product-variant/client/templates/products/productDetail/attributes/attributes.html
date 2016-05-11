@@ -52,7 +52,7 @@
     {{#each features}}
         {{#if value}}
           <div class="col-sm-3">
-            <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/{{value}}.png">
+            <i class="fa fa-3x fa-{{value}}"></i>
           </div>
         {{/if}}
     {{/each}}
@@ -88,8 +88,8 @@
       <div class="show-for-medium-up col-md-9 description-body">
         {{#each features}}
           <div class="included icon row">
-            <div class="col-md-2 col-lg-1">
-              <i class="fa fa-check-circle fa-lg"></i>
+            <div class="col-md-2 col-lg-1 icon">
+              <i class="fa fa-check-circle"></i>
             </div>
             {{#if value}}
               <div class="col-md-10 col-lg-11">

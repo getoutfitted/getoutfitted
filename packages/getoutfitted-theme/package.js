@@ -45,8 +45,10 @@ Package.onUse(function (api) {
     "styles/footer/footer.less",
 
     // ----- Product Styles ----- //
+    "styles/products/productGrid/productGrid.less",
     "styles/products/productDetail/productDetail.less",
     "styles/products/productDetail/images/productImageGallery.less",
+    "styles/products/productDetail/images/modalGallery.less",
     "styles/products/productDetail/variants/variantWidget/variantWidget.less",
 
     // ----- Calendar Styles ------ //
@@ -54,6 +56,9 @@ Package.onUse(function (api) {
 
     // ----- Tags Styles ----- //
     "styles/tags/tags.less",
+
+    // ----- Cart Styles ----- //
+    "styles/cart/cart.less",
 
     // ----- Admin Styles ---- // TODO: Move to specific packages
     "styles/admin/settings.less",

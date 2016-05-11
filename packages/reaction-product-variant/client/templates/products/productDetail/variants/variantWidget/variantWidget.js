@@ -15,11 +15,6 @@ function stickyWidget() {
         left: left,
         width: width
       });
-      if ($("#variantWidget").find("#leadImageContainer").length === 0) {
-        $("#variantWidget").prepend($("#leadImageContainer").clone().hide(0, function () {
-          $("#leadImageContainer").slideDown(100);
-        }));
-      }
     } else if ($variantWidget.css("position") === "fixed") {
       if (scrollTop < 2 * bubbleTop) {
         $variantWidget.removeClass("sticky");
@@ -27,7 +22,6 @@ function stickyWidget() {
           left: "",
           width: ""
         });
-        $("#variantWidget #leadImageContainer").remove();
       }
     }
   }
@@ -43,7 +37,7 @@ Template.variantWidget.onRendered(function () {
 });
 
 Template.variantWidget.helpers({
-  showRentalLengthOptions: function () {
+  rentalProduct: function () {
     return this.functionalType === "rental";
   },
   actualPrice: function () {
@@ -56,5 +50,24 @@ Template.variantWidget.helpers({
       return ReactionProduct.getProductPriceRange().range;
     }
     return undefined;
+  },
+  reservation: () => {
+    const current = ReactionProduct.selectedVariant();
+    const reservationLength = Session.get("reservationLength");
+    if (typeof current === "object") {
+      const childVariants = ReactionProduct.getVariants(current._id);
+      if (childVariants.length === 0 && current.functionalType === "rentalVariant") {
+        let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
+          return priceBucket.duration === reservationLength + 1;
+        });
+        if (selectedReservation) {
+          return selectedReservation;
+        }
+        if (current.rentalPriceBuckets) {
+          return current.rentalPriceBuckets[0];
+        }
+      }
+    }
+    return {};
   }
 });

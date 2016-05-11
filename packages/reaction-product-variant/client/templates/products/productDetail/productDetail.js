@@ -76,8 +76,8 @@ Template.productDetail.helpers({
     }
     return Template.productFeatureField;
   },
-  featureImageComponent: function () {
-    this.featureKey = "featureImage";
+  productIconComponent: function () {
+    this.featureKey = "productIcon";
     if (ReactionCore.hasPermission("createProduct")) {
       return Template.productFeatureFieldForm;
     }
@@ -207,7 +207,7 @@ Template.productDetail.events({
         }
 
         template.$(".variant-select-option").removeClass("active");
-        ReactionProduct.setCurrentVariant(null);
+        // XXX: GETOUTFITTED MOD - Remove set current variant to null
         qtyField.val(1);
         // scroll to top on cart add
         $("html,body").animate({

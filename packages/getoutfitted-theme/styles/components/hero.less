@@ -59,22 +59,28 @@
   }
 }
 
-.hero-container.hero-about {
-  background-image: url('/packages/getoutfitted_static-pages/public/images/hero.jpg');
-  background-position: center;
-
-  h1 {
-    color: @white;
-    margin-top: 20%;
+@media (max-width: @screen-xs-max) and (max-width: @screen-sm-max) {
+  .hero:after { padding-top: 65%; } // 5:3 ratio
+  .hero-container h1 {
+    margin-top: 30px;
   }
-}
-.hero-container.hero-press {
-  background-image: url('/packages/getoutfitted_static-pages/public/images/press-lead.jpg');
-  background-position: center;
+  .hero-container.hero-about {
+    background-image: url('/packages/getoutfitted_static-pages/public/images/hero.jpg');
+    background-position: center;
 
-  h1 {
-    color: @white;
-    margin-top: 20%;
+    h1 {
+      color: @white;
+      margin-top: 20%;
+    }
+  }
+  .hero-container.hero-press {
+    background-image: url('/packages/getoutfitted_static-pages/public/images/press-lead.jpg');
+    background-position: center;
+
+    h1 {
+      color: @white;
+      margin-top: 20%;
+    }
   }
 }
 
@@ -86,13 +92,16 @@
 
 @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
   .hero:after { padding-top: 45%; } // 5:2 ratio
+  .hero-container h1 {
+    margin-top: 50px;
+  }
 }
 
 @media (min-width: @screen-md-min) {
   .hero:after { padding-top: 40%; } // 5:2 ratio
   .hero-container h1 {
-    font-size: 32px;
-    margin-top: 50px;
+    font-size: 36px;
+    margin-top: 70px;
   }
   .hero-container h1 .hero-line-2 {
     font-size: 26px;

@@ -290,9 +290,9 @@
         "checkout": "Checkout now"
       },
       "cartSubTotals": {
-        "head": "Your cart",
-        "items": "Items in cart",
-        "subtotal": "Sub total",
+        "head": "Your reservation",
+        "items": "Items",
+        "subtotal": "Subtotal",
         "shipping": "Shipping",
         "tax": "Tax",
         "total": "Total"

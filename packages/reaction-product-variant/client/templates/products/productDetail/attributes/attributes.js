@@ -26,11 +26,11 @@ Template.metaComponent.events({
       const productId = ReactionProduct.selectedProductId();
       Meteor.call("products/updateMetaFields", productId, updateMeta,
         this);
-      $(event.currentTarget).animate({
-        backgroundColor: "#e2f2e2"
-      }).animate({
-        backgroundColor: "#fff"
-      });
+
+      $(event.currentTarget).animate([
+        {"backgroundColor": $(event.currentTarget).css('background-color')},
+        {"backgroundColor": "#BBFFCC"}
+      ], 1000);
       return Tracker.flush();
     }
 
@@ -70,11 +70,10 @@ Template.featureComponent.events({
     if (this.key) {
       const productId = ReactionProduct.selectedProductId();
       Meteor.call("products/updateMetaFields", productId, updateMeta, this);
-      $(event.currentTarget).animate({
-        backgroundColor: "#e2f2e2"
-      }).animate({
-        backgroundColor: "#fff"
-      });
+      $(event.currentTarget).animate([
+        {"backgroundColor": $(event.currentTarget).css('background-color')},
+        {"backgroundColor": "#BBFFCC"}
+      ], 1000);
       return Tracker.flush();
     }
 
