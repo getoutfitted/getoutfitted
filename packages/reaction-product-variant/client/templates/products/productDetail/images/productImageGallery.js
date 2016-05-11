@@ -53,22 +53,18 @@ function uploadHandler(event, metaOptions = {}) {
 }
 
 function featuredUploadHandler (event) {
-  console.log("featured handler called");
   return uploadHandler(event, {purpose: "featured"});
 }
 
 function widgetUploadHandler (event) {
-  console.log("widget handler called");
   return uploadHandler(event, {purpose: "widget"});
 }
 
 function cartUploadHandler (event) {
-  console.log("cart handler called");
   return uploadHandler(event, {purpose: "cart"});
 }
 
 function galleryUploadHandler (event) {
-  console.log("gallery handler called");
   return uploadHandler(event, {purpose: "gallery"});
 }
 
@@ -255,6 +251,7 @@ Template.productImageGallery.events({
       return updateImagePriorities();
     });
   }
+  // TODO: Add gallery dropzone handler
   // "dropped #galleryDropPane": uploadHandler
 });
 
@@ -307,7 +304,7 @@ Template.registerHelper("noImageWithPurpose", (purpose) => {
       }
     });
   }
-  return !cartMedia ? "" : "hidden";
+  return cartMedia ? "hidden" : "";
 });
 
 /**
