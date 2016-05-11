@@ -68,11 +68,20 @@
     margin-top: 20%;
   }
 }
+.hero-container.hero-press {
+  background-image: url('/packages/getoutfitted_static-pages/public/images/press-lead.jpg');
+  background-position: center;
 
+  h1 {
+    color: @white;
+    margin-top: 20%;
+  }
+}
 
 @media (min-width: @screen-sm-min) {
 
   .hero-container.hero-about h1 { font-size: 40px; }
+  .hero-container.hero-press h1 { font-size: 40px; }
 }
 
 @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
@@ -106,4 +115,5 @@
   }
   .hero-container h2 { font-size: 18px; }
   .hero-container.hero-about h1 { margin-top: 15%; }
+  .hero-container.hero-press h1 { margin-top: 20%; }
 }
