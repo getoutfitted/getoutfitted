@@ -49,7 +49,7 @@
   background-size: cover;
   -moz-background-size: cover;  /* Firefox 3.6 */
   background-position: center;  /* Internet Explorer 7/8 */
-  
+
   h2 small {
     color: #FFF;
     font-family: @font-family-sans-serif;
@@ -64,6 +64,30 @@
   .hero-container h1 {
     margin-top: 30px;
   }
+  .hero-container.hero-about {
+    background-image: url('/packages/getoutfitted_static-pages/public/images/hero.jpg');
+    background-position: center;
+
+    h1 {
+      color: @white;
+      margin-top: 20%;
+    }
+  }
+  .hero-container.hero-press {
+    background-image: url('/packages/getoutfitted_static-pages/public/images/press-lead.jpg');
+    background-position: center;
+
+    h1 {
+      color: @white;
+      margin-top: 20%;
+    }
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+
+  .hero-container.hero-about h1 { font-size: 40px; }
+  .hero-container.hero-press h1 { font-size: 40px; }
 }
 
 @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
@@ -99,4 +123,6 @@
     margin-top: 0;
   }
   .hero-container h2 { font-size: 18px; }
+  .hero-container.hero-about h1 { margin-top: 15%; }
+  .hero-container.hero-press h1 { margin-top: 20%; }
 }
