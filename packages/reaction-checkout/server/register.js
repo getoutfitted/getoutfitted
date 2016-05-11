@@ -54,7 +54,7 @@ ReactionCore.registerPackage({
     template: "coreCheckoutShipping",
     label: "Shipping Options",
     workflow: "coreCartWorkflow",
-    container: "checkout-steps-main",
+    container: "checkout-steps-side",
     audience: ["guest", "anonymous"],
     priority: 3,
     position: "3"
