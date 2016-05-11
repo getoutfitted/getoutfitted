@@ -4,9 +4,11 @@
  */
 Template.ordersListItems.helpers({
   media: function () {
+    // XXX: GETOUTFITTED MOD - use variant's cart image
     const variantImage = ReactionCore.Collections.Media.findOne({
       "metadata.productId": this.productId,
-      "metadata.variantId": this.variants._id
+      "metadata.variantId": this.variants._id,
+      "metadata.purpose": "cart"
     });
     // variant image
     if (variantImage) {

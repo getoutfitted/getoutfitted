@@ -16,3 +16,19 @@ Template.registerHelper("displayTimeUnit", (timeUnit) => {
   }
   return "";
 });
+
+Template.registerHelper("startReservationHuman", () => {
+  let cart = ReactionCore.Collections.Cart.findOne();
+  if (cart && cart.startTime) {
+    return moment(cart.startTime).format("ddd M/DD");
+  }
+  return "";
+});
+
+Template.registerHelper("endReservationHuman", () => {
+  let cart = ReactionCore.Collections.Cart.findOne();
+  if (cart && cart.endTime) {
+    return moment(cart.endTime).format("ddd M/DD");
+  }
+  return "";
+});

@@ -2,12 +2,31 @@
   <div class="cart-items">
     <div class="cart-totals">
       <table class="table table-condensed">
-        <thead data-i18n='cartSubTotals.head'>Your cart</thead>
+        <thead data-i18n='cartSubTotals.head'>Your reservation</thead>
+        <tr><td cols="2"><div class="reservation-dates">{{startReservationHuman}} - {{endReservationHuman}}</div></td></tr>
         <tr><td data-i18n='cartSubTotals.items'>Items in cart</td><td>{{cart.cartCount}}</td></tr>
         <tr><td data-i18n='cartSubTotals.subtotal'>Sub total</td><td>{{formatPrice cart.cartSubTotal}}</td></tr>
-        <tr><td data-i18n='cartSubTotals.shipping'>Shipping</td><td>{{formatPrice cart.cartShipping}}</td></tr>
-        <tr><td data-i18n='cartSubTotals.tax'>Tax</td><td>{{formatPrice cart.cartTaxes}}</td></tr>
-        <tr><td data-i18n='cartSubTotals.total'>Total</td><td>{{formatPrice cart.cartTotal}}</td></tr>
+        <tr><td data-i18n='cartSubTotals.shipping'>Shipping</td><td>
+          {{#if isZero cart.cartShipping}}
+            FREE!
+          {{else}}
+            {{formatPrice cart.cartShipping}}
+          {{/if}}
+          </td></tr>
+        {{#if isZero cart.cartTaxes}}
+        {{else}}
+          <tr><td data-i18n='cartSubTotals.tax'>Tax</td><td>{{formatPrice cart.cartTaxes}}</td></tr>
+        {{/if}}
+        <tr class="total">
+          <td>
+            <div class="total-text"><strong data-i18n='cartSubTotals.total'>Total</strong></div>
+          </td>
+          <td>
+            <div class="total-text">{{formatPrice cart.cartTotal}}</div></td>
+          </tr>
+          {{#if isZero cart.cartTaxes}}
+            <tr><td cols="2"><small>+ Tax (if applicable)</small></td></tr>
+          {{/if}}
       </table>
     </div>
   </div>

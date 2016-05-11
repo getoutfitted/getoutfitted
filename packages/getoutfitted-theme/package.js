@@ -57,6 +57,9 @@ Package.onUse(function (api) {
     // ----- Tags Styles ----- //
     "styles/tags/tags.less",
 
+    // ----- Cart Styles ----- //
+    "styles/cart/cart.less",
+
     // ----- Admin Styles ---- // TODO: Move to specific packages
     "styles/admin/settings.less",
     "styles/admin/rentalProducts/rentalProducts.less"

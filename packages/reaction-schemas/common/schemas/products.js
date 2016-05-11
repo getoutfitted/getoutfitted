@@ -265,12 +265,6 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
     type: String,
     optional: true
   },
-  // Duplicate product title to keep things moving in the cart
-  productTitle: {
-    label: "Product Title",
-    type: String,
-    optional: true
-  },
   metafields: {
     type: [ReactionCore.Schemas.Metafield],
     optional: true
@@ -318,6 +312,12 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
   rentalPriceBuckets: {
     label: "Rental Prices",
     type: [ReactionCore.Schemas.RentalPriceBucket],
+    optional: true
+  },
+  // Duplicate product title to keep things moving in the cart
+  productTitle: {
+    label: "Product Title",
+    type: String,
     optional: true
   },
   workflow: { // XXX: Not 100% certain we need this here, definitely need it on inventory and product

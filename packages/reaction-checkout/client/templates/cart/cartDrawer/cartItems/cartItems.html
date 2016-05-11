@@ -5,8 +5,8 @@
   <a href="{{pathFor 'product' handle=product.handle variantId=variants._id}}" data-event-category="cart" data-event-action="product-click" data-event-label="Cart product click" data-event-value="{{productId}}">
 
       {{#with media}}
-      <div class="center-cropped" style="background-image: url('{{url store='small'}}');">
-        <img src="{{url store='small'}}" class="product-grid-item-images img-responsive">
+      <div class="cart-item-image">
+        <img src="{{url store='cart'}}" class="product-grid-item-images img-responsive">
       </div>
       {{else}}
       <div class="center-cropped" style="background-image: url('/resources/placeholder.gif');">
@@ -20,7 +20,8 @@
     <div class="badge badge-low-inv-warning" title="{{variants.inventoryQuantity}}" data-i18n="cartDrawerItems.left">!</div>
     {{/if}}
     <span class="badge">{{quantity}}</span>
-    <span class="cart-item-title">{{product.title}} {{filteredVariantOption variants.title}}</span>
+    {{! XXX: GETOUTFITTED MOD - to show productTitle}}
+    <span class="cart-item-title">{{variants.productTitle}} {{filteredVariantOption variants.title}}</span>
   </div>
 </div>
 </template>

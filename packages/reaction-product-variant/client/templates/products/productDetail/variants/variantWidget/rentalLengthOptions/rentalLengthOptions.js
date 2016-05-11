@@ -4,7 +4,7 @@ import "bootstrap-datepicker";
 Template.rentalLengthOptions.helpers({
   twoOptions: () => {
     const current = ReactionProduct.selectedVariant();
-    if (current.rentalPriceBuckets && current.rentalPriceBuckets.length === 2) {
+    if (current && current.rentalPriceBuckets && current.rentalPriceBuckets.length === 2) {
       return true;
     }
     return false;
@@ -12,7 +12,7 @@ Template.rentalLengthOptions.helpers({
 
   moreThanTwoOptions: () => {
     const current = ReactionProduct.selectedVariant();
-    if (current.rentalPriceBuckets && current.rentalPriceBuckets.length > 2) {
+    if (current && current.rentalPriceBuckets && current.rentalPriceBuckets.length > 2) {
       return true;
     }
     return false;
@@ -20,7 +20,7 @@ Template.rentalLengthOptions.helpers({
 
   rentalPriceBuckets: () => {
     const current = ReactionProduct.selectedVariant();
-    if (current.rentalPriceBuckets) {
+    if (current && current.rentalPriceBuckets) {
       return current.rentalPriceBuckets;
     }
     return [];
@@ -28,7 +28,7 @@ Template.rentalLengthOptions.helpers({
 
   rentalPriceBucket: () => {
     const current = ReactionProduct.selectedVariant();
-    if (current.rentalPriceBuckets) {
+    if (current && current.rentalPriceBuckets) {
       return current.rentalPriceBuckets[0];
     }
     return [];
