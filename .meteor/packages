@@ -72,6 +72,8 @@ getoutfitted:transit-times
 #getoutfitted:reaction-shopify-orders
 #getoutfitted:reaction-shopify-products
 #getoutfitted:reaction-local-delivery
+getoutfitted:static-pages#
+getoutfitted:press-feed
 
 # Reaction Commerce Data
 reactioncommerce:reaction-sample-data   # default Reaction data
