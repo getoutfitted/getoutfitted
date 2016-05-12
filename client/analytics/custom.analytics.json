@@ -1,6 +1,6 @@
 {
     "libs": {
-        "segmentio": false,
+        "segmentio": true,
         "googleAnalytics": true,
         "mixpanel": true
     }
