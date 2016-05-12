@@ -5,7 +5,8 @@
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
         {{! winterProductNavDropdown}}
-        {{> summerProductNavDropdown}}
+        {{> demoProductNavDropdown}}
+        {{! rentalProductNavDropdown}}
         {{! aboutNavDropdown}}
         {{> tagNav tagNavProps}}
       </ul>
@@ -45,7 +46,8 @@
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
         {{! winterProductNavDropdown}}
-        {{> summerProductNavDropdown}}
+        {{> demoProductNavDropdown}}
+        {{! rentalProductNavDropdown}}
         {{! aboutNavDropdown}}
         {{> tagNav tagNavProps}}
         <div class="languages hide">{{> i18nChooser}}</div>
@@ -79,16 +81,24 @@
   </li>
 </template>
 
-<template name="summerProductNavDropdown">
+<template name="demoProductNavDropdown">
   <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Summer <span class="caret"></span></a>
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Demo <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li><a href="/collections/oru-kayaks">Oru Kayaks</a></li>
       <li><a href="/product/imagine-icon-lte-sup-paddleboard">Imagine Paddleboards</a></li>
-      <li><a href="/collections/tentsile-treetents">Tentsile Tree Tents</a></li>
-      <li><a href="/collections/camping-backpacking">Camping &amp; Backpacking</a></li>
       <li><a href="/product/onewheel">Onewheel</a></li>
+      <li><a href="/collections/tentsile-treetents">Tentsile Tree Tents</a></li>
       <li><a href="/product/kammok-hammock-package">Kammok Hammock Camping</a></li>
+    </ul>
+  </li>
+</template>
+
+<template name="rentalProductNavDropdown">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rental <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a href="/collections/camping-backpacking">Camping &amp; Backpacking</a></li>
     </ul>
   </li>
 </template>

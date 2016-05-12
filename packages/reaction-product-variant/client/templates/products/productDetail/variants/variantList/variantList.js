@@ -165,12 +165,3 @@ Template.variantList.events({
     return variantId;
   }
 });
-
-// Template.variantList.onRendered(function () {
-//   const variants = ReactionProduct.getVariants(this.data._id);
-//   const firstChild = variants.find(function (variant) {
-//     return variant.ancestors.length === 2;
-//   });
-//   ReactionProduct.setCurrentVariant(firstChild._id);
-//   Session.set("selectedVariantId", firstChild._id);
-// });
