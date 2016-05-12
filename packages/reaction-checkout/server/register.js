@@ -64,7 +64,7 @@ ReactionCore.registerPackage({
     template: "coreCheckoutShipping",
     label: "Shipping Options",
     workflow: "coreCartWorkflow",
-    container: "checkout-steps-side",
+    container: "checkout-steps-main",
     audience: ["guest", "anonymous"],
     priority: 3,
     position: "3"
@@ -72,7 +72,7 @@ ReactionCore.registerPackage({
     template: "checkoutReview",
     label: "Review Payment",
     workflow: "coreCartWorkflow",
-    container: "checkout-steps-side",
+    container: "checkout-steps-main",
     audience: ["guest", "anonymous"],
     priority: 4,
     position: "4"
@@ -80,7 +80,7 @@ ReactionCore.registerPackage({
     template: "checkoutPayment",
     label: "Complete",
     workflow: "coreCartWorkflow",
-    container: "checkout-steps-side",
+    container: "checkout-steps-main",
     audience: ["guest", "anonymous"],
     priority: 5,
     position: "5"

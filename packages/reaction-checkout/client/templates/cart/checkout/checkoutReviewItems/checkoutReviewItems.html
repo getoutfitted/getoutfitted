@@ -6,12 +6,23 @@
           <h3 class="panel-title">Your Cart</h3>
         </div>
         <div class="panel-body">
-          <div class='row'>
+          <div class='row text-center'>
             {{#each cartItems}}
-              <div class='col-sm-3'>
-
-                {{>cartDrawerItems}}
-                {{test}}
+              <div class='col-sm-3 col-xs-12'>
+                {{#with media}}
+                  <img src="{{url store='cart'}}" class="product-grid-item-images img-responsive center-block">
+                {{else}}
+                  <div class="center-cropped">
+                    <img src= "/resources/placeholder.gif" class="product-grid-item-images center-block img-responsive">
+                  </div>
+                {{/with}}
+                <p>{{filteredVariantGender variants.gender}} <strong>{{variants.vendor}}</strong> {{variants.productTitle}} </p>
+                <div class='pull-left'>
+                  <p>${{variants.price}}</p>
+                </div>
+                <div class='pull-right'>
+                  <p>Qty: <span class="badge">{{quantity}}</span></p>
+                </div>
               </div>
             {{/each}}
           </div>
