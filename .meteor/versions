@@ -79,6 +79,7 @@ getoutfitted:press-feed@0.1.0
 getoutfitted:reaction-advanced-fulfillment@0.8.0
 getoutfitted:reaction-product-importer@0.1.0
 getoutfitted:reaction-rental-products@0.4.0
+getoutfitted:reaction-zopim@0.4.0
 getoutfitted:static-pages@0.1.0
 getoutfitted:transit-times@0.1.0
 google@1.1.11
