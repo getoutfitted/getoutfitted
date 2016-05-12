@@ -11,17 +11,7 @@
       <div class="container container-lg">
         <div class="checkout-steps">
           <div class="checkout-steps-main">
-          <div class='checkout-step-completed'>
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <i class="checkout-step-badge">0</i>
-                  <h3 class="panel-title">Your Cart</h3>
-                </div>
-                <div class="panel-body">
-                  {{> openCartDrawer}}
-                </div>
-              </div>
-          </div>
+          {{> checkoutReviewItems}}
             {{#each reactionTemplate workflow="coreCartWorkflow" container="checkout-steps-main"}}
               {{> checkoutSteps}}
             {{/each}}
@@ -39,8 +29,6 @@
     {{> emptyCheckoutCart}}
   {{/if}}
 </template>
-
-
 
 <template name="checkoutSteps">
     {{#if isPending }}

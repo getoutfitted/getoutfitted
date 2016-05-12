@@ -34,7 +34,17 @@ ReactionCore.registerPackage({
       dashboardHeaderControls: "",
       adminControlsFooter: "adminControlsFooter"
     }
-  }, {
+  },
+  // {
+  //   template: "checkoutReviewItems",
+  //   label: "Review Items",
+  //   workflow: "coreCartWorkflow",
+  //   container: "checkout-steps-main",
+  //   audience: ["guest", "anonymous"],
+  //   priority: 0,
+  //   position: "0"
+  // },
+  {
     template: "checkoutLogin",
     label: "Login",
     workflow: "coreCartWorkflow",
