@@ -27,6 +27,9 @@ Package.onUse(function (api) {
     "styles/_appstyles.less",
     "styles/base.less",
 
+    // ----- Index Styles ----- //
+    "styles/index.less",
+
     // ----- Component Styles ----- //
     "styles/components/buttons.less",
     "styles/components/captions.less",

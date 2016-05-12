@@ -7,12 +7,15 @@
 </template>
 
 <template name="getOutfittedIndex">
-  {{> goIndexHero}}
-  {{> goCallUsBreak}}
-  {{> goFeaturedCategories}}
-  {{> goMediaBreak}}
-  {{! getoutfittedTrailer}}
-  {{! goServiceDescription}}
+  <div class="index">
+    {{> goIndexHero}}
+    {{> goCallUsBreak}}
+    {{> goFeaturedCategories}}
+    {{> goHowItWorks}}
+    {{> goMediaBreak}}
+    {{! getoutfittedTrailer}}
+    {{! goServiceDescription}}
+  </div>
 </template>
 
 <template name="goIndexHero">
@@ -73,7 +76,7 @@
         
         <div class="col-sm-12 col-md-4 columns tile">
           <div class="camping-backpacking-tile">
-            <a href="/collections/camping-backpacking" class="btn btn-lg btn-v-middle wire white radius">Camping &amp; Backpacking</a>
+            <a href="#" class="btn btn-lg btn-v-middle wire white radius">Camping &amp; Backpacking <br /> Coming Soon!</a>
           </div>
         </div>
 
@@ -153,7 +156,7 @@
 
 
 <template name="goMediaBreak">
-  <section id="media-coverage" class="groups solid-break">
+  <section id="media-coverage" class="solid-break">
     <div class="text-center visible-md-block visible-lg-block">
       <div class="row fullwidth">
         <div class="col-sm-12 columns">
@@ -171,4 +174,35 @@
       </div>
     </div>
   </section>
+</template>
+
+<template name="goHowItWorks">
+  <section id="go-how-it-works" class="go-how-it-works">
+      <div class="text-center container solid-break">
+        <h2 class="section-header">How GetOutfitted works</h2>
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 columns">
+            <div class="how-it-works-step">
+              <span class="position">1</span>
+              <h3>Rent gear for one-time use or demo before you buy.</h3>
+              <p>Browse our gear closet and select a delivery date. We'll deliver the gear directly to your doorstep or destination. Free shipping, anywhere in the US.</p>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 columns">
+            <div class="how-it-works-step">
+              <span class="position">2</span>
+              <h3>Step outside<br>and explore.</h3>
+              <p>Getting outside has never been easier. Your gear will arrive fresh, celan, and ready for whatever adventures you have planned.</p>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 columns">
+            <div class="how-it-works-step">
+              <span class="position">3</span>
+              <h3>Ship it back.<br>If you loved it, buy it!</h3>
+              <p>Once your rental or demo period has ended, drop the gear off at any UPS location. Loved your demo? Buy it and we'll send you a brand new one, ready for a lifetime of adventure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 </template>
