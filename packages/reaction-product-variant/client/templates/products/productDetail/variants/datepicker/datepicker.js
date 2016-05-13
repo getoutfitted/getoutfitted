@@ -745,6 +745,17 @@ const calendarHtml = "<div class='calendar-header'>" +
                      "<a class='thursday-modal-link'>Read about why we deliver on Thursdays</a>" +
                      "</div>";
 
+const calendarLegendHtml = "<div class='calendar-footer'>" +
+            "<div class='arrival-day-legend'>" +
+            "<div class='cal-square'></div>" +
+            "<label>We'll deliver your gear<br>before 8:00pm</label>" +
+            "</div>" +
+            "<div class='return-day-legend'>" +
+            "<div class='cal-square'></div>" +
+            "<label>Return to a UPS<br>location by 5:00pm</label>" +
+            "</div>" +
+            "</div>";
+
 Template.reservationDatepicker.events({
   "changeDate #datepicker": function (event) {
     const cart = ReactionCore.Collections.Cart.findOne();
@@ -764,13 +775,14 @@ Template.reservationDatepicker.events({
     $("#rental-start").datepicker("show");
     if ($(".datepicker-days .calendar-header").length === 0) {
       $(".datepicker-days").prepend(calendarHtml);
+      $(".datepicker-days").append(calendarLegendHtml);
       $(".datepicker-days").tooltip({
         selector: ".day",
         container: "body"
       });
     }
     $(".datepicker-days .calendar-header").on("click", ".thursday-modal-link", function () {
-      console.log("Thursday Modal!!");
+      Modal.show("thursdayDeliveryExplanation");
     });
   }
 });
