@@ -323,6 +323,11 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
   workflow: { // XXX: Not 100% certain we need this here, definitely need it on inventory and product
     type: ReactionCore.Schemas.Workflow,
     optional: true
+  },
+  vendor: {
+    type: String,
+    optional: true,
+    label: "Vendor"
   }
 });
 

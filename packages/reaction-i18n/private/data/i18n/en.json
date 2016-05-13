@@ -357,12 +357,12 @@
         "createOrLogin": "Create an account, or sign in",
         "guestOrLogin": "Sign in, or checkout as a guest",
         "continueAsGuest": "Continue as Guest",
-        "guestMessage": "You can checkout without creating an account. You'll have a chance to create an account later."
+        "guestMessage": "Please enter an email address to checkout as a guest"
       },
       "addressBookGrid": {
-        "addAddress": "Add Address",
+        "addAddress": "Add Billing Address",
         "chooseAddress": "Choose shipping & billing address",
-        "createDefault": "Create your default address",
+        "createDefault": "Create your shipping address",
         "edit": "Edit",
         "removeAddress": "Remove Address",
         "selectShippingAddress": "Select a shipping address",
@@ -371,7 +371,7 @@
       },
       "addressBookAdd": {
         "addAddress": "Add a new address entry",
-        "createAddress": "Create your default address",
+        "createAddress": "Create your shipping address",
         "failedToAddAddress": "Failed to add address: {{err}}"
       },
       "addressBookEdit": {

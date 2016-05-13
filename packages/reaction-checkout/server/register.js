@@ -34,7 +34,17 @@ ReactionCore.registerPackage({
       dashboardHeaderControls: "",
       adminControlsFooter: "adminControlsFooter"
     }
-  }, {
+  },
+  // {
+  //   template: "checkoutReviewItems",
+  //   label: "Review Items",
+  //   workflow: "coreCartWorkflow",
+  //   container: "checkout-steps-main",
+  //   audience: ["guest", "anonymous"],
+  //   priority: 0,
+  //   position: "0"
+  // },
+  {
     template: "checkoutLogin",
     label: "Login",
     workflow: "coreCartWorkflow",
@@ -62,7 +72,7 @@ ReactionCore.registerPackage({
     template: "checkoutReview",
     label: "Review Payment",
     workflow: "coreCartWorkflow",
-    container: "checkout-steps-side",
+    container: "checkout-steps-main",
     audience: ["guest", "anonymous"],
     priority: 4,
     position: "4"
@@ -70,7 +80,7 @@ ReactionCore.registerPackage({
     template: "checkoutPayment",
     label: "Complete",
     workflow: "coreCartWorkflow",
-    container: "checkout-steps-side",
+    container: "checkout-steps-main",
     audience: ["guest", "anonymous"],
     priority: 5,
     position: "5"

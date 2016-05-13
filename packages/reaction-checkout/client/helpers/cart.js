@@ -91,3 +91,7 @@ Template.registerHelper("cartPayerName", function () {
 Template.registerHelper("filteredVariantOption", function (variantOption) {
   return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
 });
+
+Template.registerHelper("filteredVariantGender", function (variantGender) {
+  return variantGender.replace(/unisex/i, "");
+});

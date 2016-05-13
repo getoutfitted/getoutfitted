@@ -1,6 +1,5 @@
 <template name="cartCheckout">
   {{#if cart.items}}
-
     <div class="checkout-progress">
       <div class="container">
         {{>checkoutProgressBar}}
@@ -11,6 +10,7 @@
       <div class="container container-lg">
         <div class="checkout-steps">
           <div class="checkout-steps-main">
+          {{> checkoutReviewItems}}
             {{#each reactionTemplate workflow="coreCartWorkflow" container="checkout-steps-main"}}
               {{> checkoutSteps}}
             {{/each}}
@@ -28,8 +28,6 @@
     {{> emptyCheckoutCart}}
   {{/if}}
 </template>
-
-
 
 <template name="checkoutSteps">
     {{#if isPending }}

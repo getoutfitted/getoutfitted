@@ -59,19 +59,19 @@
   }
 }
 
+.hero-container.hero-about {
+  background-image: url('/packages/getoutfitted_static-pages/public/images/hero.jpg');
+  background-position: center;
+  h1 {
+    color: @white;
+    margin-top: 20%;
+  }
+}
+
 @media (max-width: @screen-xs-max) and (max-width: @screen-sm-max) {
   .hero:after { padding-top: 65%; } // 5:3 ratio
   .hero-container h1 {
     margin-top: 30px;
-  }
-  .hero-container.hero-about {
-    background-image: url('/packages/getoutfitted_static-pages/public/images/hero.jpg');
-    background-position: center;
-
-    h1 {
-      color: @white;
-      margin-top: 20%;
-    }
   }
   .hero-container.hero-press {
     background-image: url('/packages/getoutfitted_static-pages/public/images/press-lead.jpg');

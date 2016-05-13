@@ -86,6 +86,8 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/cart/checkout/addressBook/addressBook.html", "client");
   api.addFiles("client/templates/cart/checkout/addressBook/addressBook.js", "client");
 
+  api.addFiles("client/templates/cart/checkout/checkoutReviewItems/checkoutReviewItems.html", "client");
+  api.addFiles("client/templates/cart/checkout/checkoutReviewItems/checkoutReviewItems.js", "client");
   // register package
   api.addFiles("server/register.js", "server");
   // api.addFiles("server/logger.js", "server");

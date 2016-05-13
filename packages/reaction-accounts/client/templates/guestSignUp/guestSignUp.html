@@ -3,10 +3,15 @@
     {{#unless currentUser}}
       <div class="col-md-6 pull-left checkout-guest">
         <div class="guest-checkout">
+          <div class="form-group">
+            <label for="guestEmail">Enter an Email</label>
+            <input  id="guestEmail" class="form-control" name="guestEmail">
+          </div>
           <p class="text-justify" data-i18n="checkoutLogin.guestMessage">Continue as a guest, and you can create an account later.
           </p>
+
           <div class="login-button single-login-button continue-guest">
-            <a class="btn btn-primary btn-box" data-i18n="checkoutLogin.continueAsGuest" href>Continue as Guest</a>
+            <a  class="btn btn-primary btn-box" data-i18n="checkoutLogin.continueAsGuest"  href>Continue as Guest</a>
           </div>
         </div>
       </div>
