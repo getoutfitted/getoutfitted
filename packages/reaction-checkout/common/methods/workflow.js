@@ -338,5 +338,16 @@ Meteor.methods({
     });
 
     return result;
+  },
+  "checkout/addEmailToCart": function (cartId, email) {
+    check(cartId, String);
+    check(email, String);
+    ReactionCore.Collections.Cart.update({
+      _id: cartId
+    }, {
+      $set: {
+        email: email
+      }
+    });
   }
 });
