@@ -1,7 +1,3 @@
-function validateEmail(email) {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(email);
-}
 /**
  * Inline login form for instance where guest login is needed.
  */
@@ -22,12 +18,16 @@ Template.loginInline.events({
   "keyup #guestEmail": (event) => {
     event.preventDefault();
     const email = event.target.value;
-    const result = validateEmail(email);
-    if (result) {
-      Session.set("validEmail", result);
-      const cart = ReactionCore.Collections.Cart.findOne({}, {fields: {_id: 1}});
-      Meteor.call("checkout/addEmailToCart", cart._id, email);
-    }
+    let result = _.debounce(function () {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      let res = re.test(email);
+      if (res) {
+        Session.set("validEmail", res);
+        const cart = ReactionCore.Collections.Cart.findOne({}, {fields: {_id: 1}});
+        Meteor.call("checkout/addEmailToCart", cart._id, email);
+      }
+    }, 300);
+    result(email);
   }
 });
 
