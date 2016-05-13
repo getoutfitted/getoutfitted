@@ -72,7 +72,7 @@
     "jquery-ui": {
       "version": "1.10.5",
       "resolved": "https://registry.npmjs.org/jquery-ui/-/jquery-ui-1.10.5.tgz",
-      "from": "https://registry.npmjs.org/jquery-ui/-/jquery-ui-1.10.5.tgz"
+      "from": "jquery-ui@1.10.5"
     },
     "postcss": {
       "version": "5.0.14",

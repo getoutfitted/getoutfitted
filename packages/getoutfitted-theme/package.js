@@ -36,6 +36,7 @@ Package.onUse(function (api) {
     "styles/components/colors.less",
     "styles/components/forms.less",
     "styles/components/hero.less",
+    "styles/components/modals.less",
     "styles/components/section.less",
     "styles/components/tiles.less",
 
