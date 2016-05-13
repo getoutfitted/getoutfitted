@@ -71,7 +71,7 @@
   {{#if hasAddressBookEntries}}
   <div class="form-group{{#if afFieldIsInvalid name='isShippingDefault'}} has-error{{/if}}">
     <label class="control-label"></label>
-    {{>afFieldInput name="isShippingDefault" value=isShippingDefault}}
+    {{>afFieldInput name="isShippingDefault" value=false}}
     {{#if afFieldIsInvalid name="isShippingDefault"}}
     <span class="help-block">{{afFieldMessage name="isShippingDefault"}}</span>
     {{/if}}
