@@ -1,7 +1,33 @@
 .datepicker-days {
+  .calendar-header {
+    background: @white;
+    padding: 5px 5px 10px 5px;
+    text-align: center;
+    h4 { font-size: 16px; }
+    a {
+      display: block;
+      font-size: 10px;
+      margin-top: -5px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+  thead {
+    border-top: 1px solid @brand-secondary-color;
+  }
+  .dow {
+    text-align: center;
+  }
+  .datepicker-switch {
+    text-align: center;
+    font-size: 20px;
+  }
+
   .day {
-  padding: 14px;
-  cursor: pointer;
+    padding: 14px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
 
   .disabled.day, .disabled.day:hover {
@@ -30,3 +56,47 @@
     color: white;
   }
 }
+
+.day.selected.selected-start:before, .day:not(.disabled):hover:before {
+    content: "\00a0";
+    background-color: @primary-color-shadow;
+    border: 6px solid @primary-color-shadow;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: -2px;
+    margin-top:  -10px;
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.day.selected.selected-end:before, .day.highlight.last-day:before {
+    content: "\00a0";
+    background-color: @primary-color-shadow;
+    border: 6px solid @primary-color-shadow;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: -2px;
+    margin-bottom:  -10px;
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+//
+//
+// .day.disabled:before {
+//     content: "\00a0";
+//     background-color: rgba(255, 0, 0, 0.8);
+//     border: 0px solid #000;
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     margin-left: 16px;
+//     margin-top:  14px;
+//
+//     -ms-transform: rotate(45deg);
+//     -webkit-transform: rotate(45deg);
+//     transform: rotate(45deg);
+// }

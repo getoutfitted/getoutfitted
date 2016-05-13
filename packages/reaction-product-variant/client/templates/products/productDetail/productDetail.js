@@ -2,7 +2,6 @@ const $ = require("jquery");
 // load modules
 require("jquery-ui");
 
-
 Template.productDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
   this.subscribe("Tags");
