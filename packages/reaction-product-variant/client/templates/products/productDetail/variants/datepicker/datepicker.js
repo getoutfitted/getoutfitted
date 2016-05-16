@@ -518,15 +518,21 @@ import "moment-timezone";
   }
 })($);
 
-function adjustToDenverTime(time) {
+function adjustLocalToDenverTime(time) {
   let here = moment(time);
   let denver = here.clone().tz("America/Denver");
   denver.add(here.utcOffset() - denver.utcOffset(), "minutes");
   return denver.toDate();
 }
 
-const today = adjustToDenverTime(moment().startOf("day"));
+function adjustDenverToLocalTime(time) {
+  let denver = moment(time).tz("America/Denver");
+  let here = moment(time);
+  here.add(denver.utcOffset() - here.utcOffset(), "minutes");
+  return here.toDate();
+}
 
+const today = adjustLocalToDenverTime(moment().startOf("day"));
 
 function includedWeekendDays(startDay, endDay) {
   const dayRange = moment(startDay).endOf("day").twix(moment(endDay).endOf("day"), {allDay: true});
@@ -611,11 +617,11 @@ Template.reservationDatepicker.onRendered(function () {
         available = false;
         tooltip = "Please pick an available Thursday to take delivery."
       } else {
-        const s = moment(date).startOf("day").tz("America/Denver");
-        const e = moment(date).startOf("day").add(reservationLength, "days").tz("America/Denver");
-        console.log(adjustToDenverTime(s.clone().tz("America/New_York")));
-        const shippingDay = TransitTimes.calculateShippingDay(s.toDate(), 4); // Default of 4 shipping days until zip-calculation is done
-        const returnDay = TransitTimes.calculateReturnDay(e.toDate(), 4); // Default of 4 ^^
+        // Change date checkers to check against Denver time
+        const s = adjustLocalToDenverTime(moment(date).startOf("day"));
+        const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
+        const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
+        const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4 ^^
         const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
           Session.get("selectedVariantId"),
           {startTime: shippingDay, endTime: returnDay}
@@ -635,10 +641,10 @@ Template.reservationDatepicker.onRendered(function () {
       if (!selectedDate) {
         return {enabled: available, classes: classes, tooltip: tooltip};
       }
-      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day").tz("America/Denver");
-      reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days").tz("America/Denver");
+      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
+      reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
 
-      let compareDate = moment(date).startOf("day").tz("America/Denver");
+      let compareDate = moment(date).startOf("day");
       if (+compareDate === +selectedDate) {
         inRange = true; // to highlight a range of dates
         return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, gear delivered today!"};
@@ -684,12 +690,16 @@ Template.reservationDatepicker.onRendered(function () {
       const cart = ReactionCore.Collections.Cart.findOne();
       const reservationLength = Session.get("reservationLength");
 
-      const startDate = moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").tz("America/Denver");
-      const endDate = moment(startDate).add(reservationLength, "days");
+      // Sets cart dates to Denver time - need to set as local time on display.
+      const startDate = adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day"));
+      const endDate = adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").add(reservationLength, "days"));
+
+      console.log("startDate", startDate);
+      console.log("endDate", endDate);
 
       if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
-        Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
-        Session.set("reservationStart", startDate.toDate());
+        Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate, endDate);
+        Session.set("reservationStart", startDate);
         $("#rental-start").datepicker("update");
       }
     }
@@ -700,7 +710,7 @@ Template.reservationDatepicker.helpers({
   startDate: function () {
     let cart = ReactionCore.Collections.Cart.findOne();
     if (cart && cart.startTime) {
-      return moment(cart.startTime).format("MM/DD/YYYY");
+      return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
     }
     return "";
   },
@@ -709,27 +719,27 @@ Template.reservationDatepicker.helpers({
     const cart = ReactionCore.Collections.Cart.findOne();
     const resLength = Session.get("reservationLength");
     if (cart && cart.startTime) {
-      return moment(cart.startTime).format("ddd M/DD")
-        + " - " + moment(cart.startTime).add(resLength, "days").format("ddd M/DD");
+      return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("ddd M/DD")
+        + " - " + moment(adjustDenverToLocalTime(moment(cart.startTime).add(resLength, "days"))).format("ddd M/DD");
     }
     return "";
   },
-
-  endDate: function () {
-    let cart = ReactionCore.Collections.Cart.findOne();
-    if (cart && cart.endTime) {
-      return moment(cart.endTime).format("MM/DD/YYYY");
-    }
-    return "";
-  },
-
-  endDateHuman: function () {
-    let cart = ReactionCore.Collections.Cart.findOne();
-    if (cart && cart.endTime) {
-      return moment(cart.endTime).format("MMM DD, YYYY");
-    }
-    return "";
-  },
+  //
+  // endDate: function () {
+  //   let cart = ReactionCore.Collections.Cart.findOne();
+  //   if (cart && cart.endTime) {
+  //     return moment(cart.endTime).format("MM/DD/YYYY");
+  //   }
+  //   return "";
+  // },
+  //
+  // endDateHuman: function () {
+  //   let cart = ReactionCore.Collections.Cart.findOne();
+  //   if (cart && cart.endTime) {
+  //     return moment(cart.endTime).format("MMM DD, YYYY");
+  //   }
+  //   return "";
+  // },
 
   rentalLength: function () {
     if (Session.get("cartRentalLength")) {
@@ -757,16 +767,16 @@ const calendarLegendHtml = "<div class='calendar-footer'>" +
             "</div>";
 
 Template.reservationDatepicker.events({
-  "changeDate #datepicker": function (event) {
-    const cart = ReactionCore.Collections.Cart.findOne();
-    const reservationLength = Session.get("reservationLength");
-
-    const startDate = moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").tz("America/Denver");
-    const endDate = moment(startDate).add(reservationLength, "days");
-    if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
-      Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
-    }
-  },
+  // "changeDate #datepicker": function (event) {
+  //   const cart = ReactionCore.Collections.Cart.findOne();
+  //   const reservationLength = Session.get("reservationLength");
+  //
+  //   const startDate = moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").tz("America/Denver");
+  //   const endDate = moment(startDate).add(reservationLength, "days");
+  //   if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
+  //     Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
+  //   }
+  // },
 
   "click .show-start": function () {
     $("#rental-start").datepicker("show");
