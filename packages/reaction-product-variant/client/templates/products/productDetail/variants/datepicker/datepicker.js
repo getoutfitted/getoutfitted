@@ -694,9 +694,6 @@ Template.reservationDatepicker.onRendered(function () {
       const startDate = adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day"));
       const endDate = adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").add(reservationLength, "days"));
 
-      console.log("startDate", startDate);
-      console.log("endDate", endDate);
-
       if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
         Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate, endDate);
         Session.set("reservationStart", startDate);
@@ -724,22 +721,6 @@ Template.reservationDatepicker.helpers({
     }
     return "";
   },
-  //
-  // endDate: function () {
-  //   let cart = ReactionCore.Collections.Cart.findOne();
-  //   if (cart && cart.endTime) {
-  //     return moment(cart.endTime).format("MM/DD/YYYY");
-  //   }
-  //   return "";
-  // },
-  //
-  // endDateHuman: function () {
-  //   let cart = ReactionCore.Collections.Cart.findOne();
-  //   if (cart && cart.endTime) {
-  //     return moment(cart.endTime).format("MMM DD, YYYY");
-  //   }
-  //   return "";
-  // },
 
   rentalLength: function () {
     if (Session.get("cartRentalLength")) {
@@ -767,17 +748,6 @@ const calendarLegendHtml = "<div class='calendar-footer'>" +
             "</div>";
 
 Template.reservationDatepicker.events({
-  // "changeDate #datepicker": function (event) {
-  //   const cart = ReactionCore.Collections.Cart.findOne();
-  //   const reservationLength = Session.get("reservationLength");
-  //
-  //   const startDate = moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").tz("America/Denver");
-  //   const endDate = moment(startDate).add(reservationLength, "days");
-  //   if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
-  //     Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate.toDate(), endDate.toDate());
-  //   }
-  // },
-
   "click .show-start": function () {
     $("#rental-start").datepicker("show");
   },

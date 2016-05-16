@@ -257,7 +257,7 @@ Meteor.methods({
 
     // merge session carts into the current cart
     if (sessionCartCount > 0 && !anonymousUser) {
-      Log.info("create cart: found existing cart. merge into " + currentCartId
+      Log.debug("create cart: found existing cart. merge into " + currentCartId
         + " for user " + userId);
       Meteor.call("cart/mergeCart", currentCartId, sessionId);
     }
