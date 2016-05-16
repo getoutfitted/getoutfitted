@@ -75,6 +75,8 @@ getoutfitted:transit-times
 getoutfitted:static-pages
 getoutfitted:press-feed
 getoutfitted:reaction-zopim
+getoutfitted:reaction-shipstation
+getoutfitted:reaction-klaviyo
 
 # Reaction Commerce Data
 reactioncommerce:reaction-sample-data   # default Reaction data
