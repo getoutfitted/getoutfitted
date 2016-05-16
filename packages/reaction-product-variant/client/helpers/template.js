@@ -1,3 +1,21 @@
+import moment from "moment";
+import "moment-timezone";
+
+function adjustLocalToDenverTime(time) {
+  let here = moment(time);
+  let denver = here.clone().tz("America/Denver");
+  denver.add(here.utcOffset() - denver.utcOffset(), "minutes");
+  return denver.toDate();
+}
+
+function adjustDenverToLocalTime(time) {
+  let denver = moment(time).tz("America/Denver");
+  let here = moment(time);
+  here.add(denver.utcOffset() - here.utcOffset(), "minutes");
+  return here.toDate();
+}
+
+
 Template.registerHelper("fieldComponent", function () {
   if (ReactionCore.hasPermission("createProduct")) {
     return Template.productDetailEdit;
@@ -20,7 +38,7 @@ Template.registerHelper("displayTimeUnit", (timeUnit) => {
 Template.registerHelper("startReservationHuman", () => {
   let cart = ReactionCore.Collections.Cart.findOne();
   if (cart && cart.startTime) {
-    return moment(cart.startTime).format("ddd M/DD");
+    return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("ddd M/DD");
   }
   return "";
 });
@@ -28,7 +46,7 @@ Template.registerHelper("startReservationHuman", () => {
 Template.registerHelper("endReservationHuman", () => {
   let cart = ReactionCore.Collections.Cart.findOne();
   if (cart && cart.endTime) {
-    return moment(cart.endTime).format("ddd M/DD");
+    return moment(adjustDenverToLocalTime(moment(cart.endTime))).format("ddd M/DD");
   }
   return "";
 });

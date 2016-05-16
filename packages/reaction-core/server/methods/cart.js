@@ -162,7 +162,17 @@ Meteor.methods({
         // We got an additional db call because of `workflow/revertCartWorkflow`
         // call, but we also got things more cleaner in my opinion.
         // merge session cart into current cart
+        // XXX: GETOUTFITTED MOD
         Cart.update(currentCart._id, {
+          $set: {
+            startTime: sessionCart.startTime,
+            endTime: sessionCart.endTime,
+            rentalMonths: sessionCart.rentalMonths,
+            rentalWeeks: sessionCart.rentalWeeks,
+            rentalDays: sessionCart.rentalDays,
+            rentalHours: sessionCart.rentalHours,
+            rentalMinutes: sessionCart.rentalMinutes
+          },
           $addToSet: {
             items: {
               $each: sessionCart.items

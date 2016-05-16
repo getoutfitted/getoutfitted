@@ -10,7 +10,11 @@
           <div class="row">
             <div class="text-center">
               <h3>
-                <span data-i18n="app.noProductsFound">No Products Found</span>
+                {{#if Template.subscriptionsReady}}
+                  <span data-i18n="app.noProductsFound">No Products Found</span>
+                {{else}}
+                  <span>Loading <i class="fa fa-pulse fa-lg fa-spinner"></i></span>
+                {{/if}}
               </h3>
             </div>
           </div>
