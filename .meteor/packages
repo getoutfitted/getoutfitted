@@ -79,7 +79,7 @@ getoutfitted:reaction-shipstation
 getoutfitted:reaction-klaviyo
 
 # Reaction Commerce Data
-reactioncommerce:reaction-sample-data   # default Reaction data
+# reactioncommerce:reaction-sample-data   # default Reaction data
 
 # Themes
 getoutfitted:getoutfitted-theme
