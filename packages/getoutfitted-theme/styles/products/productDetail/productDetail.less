@@ -1,0 +1,337 @@
+.brand-logo {
+  max-width: 150px;
+  padding: 20px;
+}
+.product-container {
+  position: relative;
+}
+
+h1.product-title {
+  font-size: 24px;
+  text-transform: none;
+  font-weight: @font-weight-normal;
+}
+h2.product-subtitle {
+  font-size: 14px;
+  color: @brand-dark-color;
+  text-transform: none;
+}
+h4.description-title {
+  font-size: 14px;
+  font-weight: @font-weight-heading;
+  color: @brand-dark-color;
+}
+
+.description-body {
+  font-size: 13px;
+}
+
+.included.icon.row {
+  line-height: 1.6;
+}
+
+.included.icon.row .icon {
+  text-align: right;
+}
+
+.description hr { border-top-color: @brand-muted-color; }
+
+.tag-icon {
+  display: inline-block;
+  font-size: 18px;
+  margin: 0 20px;
+}
+
+
+// Admin Panel
+.floating-admin-panel {
+  padding: 30px;
+  position: relative;
+  background: @white-smoke;
+}
+
+.floating-admin-panel h3 {
+  color: @brand-dark-color;
+}
+.floating-admin-panel p {
+  color: @brand-dark-color;
+}
+.panel-note {
+  float: right;
+}
+
+.floating-admin-panel .alert {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.toggle-admin-panel-visibility-on {
+  position: absolute;
+  margin: 20px;
+}
+
+.floating-admin-panel .list-group-item {
+  padding: 8px 10px;
+  display: inline-block;
+  border-radius: @global-radius;
+}
+
+.floating-admin-panel .metafield-remove {
+  position: absolute;
+  top: 10px;
+  right: 1px;
+  cursor: pointer;
+  &:hover {
+    color: @brand-accent-color;
+  }
+}
+
+
+// Inline Metafields and Feature Fields
+.metafield-remove.feature-remove {
+  margin-left: -40px;
+  font-size: 14px;
+  color: @brand-vivid-color;
+  cursor: pointer;
+  &:hover {
+    color: @vivid-color-shadow;
+  }
+}
+.metafield-remove.feature-remove .fa {
+  padding: 5px 0;
+}
+
+.beginner-ski, .intermediate-ski {
+  color: @beginner;
+  font-size: 36px;
+  margin-left: 5px;
+  margin-right: 5px;
+  line-height: 36px;
+  display: inline-block;
+}
+
+.intermediate-ski {
+  color: @intermediate;
+  
+}
+
+.advanced-ski, .expert-ski {
+  color: @expert;
+  font-size: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 45px;
+  line-height: 30px;
+  display: inline-block;
+}
+
+.product-type-skis .fa-truck.fa-2x, .product-type-skis .fa-building.fa-2x {
+  font-size: 36px;
+}
+
+.product-description-header-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.product-type-skis .product-description-header-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.product-description-header {
+  font-size: 11px;
+}
+
+.package-logo {
+  margin-top: 20px;
+  width: 100px;
+}
+
+.summer-package-option {
+  margin-top: 15px;
+}
+
+.slick { max-width: 100%;}
+
+.selector-wrapper label { display: none; }
+
+.subtemplate-summer-activity .selector-wrapper label {
+  display: block;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.rent-tip {
+  display: inline-block;
+  margin: 5px -20px 0 0;
+}
+
+.product-swatch {
+  width: 20px;
+  height: 20px;
+}
+
+
+.ui-datepicker { max-width: 450px;}
+
+
+label.rush-label { font-size: 11px; }
+.shipping-text { font-weight: bold; }
+.return-text, .arrive-text { color: @primary-color; }
+.arrive-text { margin-right: 15px; }
+.spacer {padding: 0 10px;}
+
+// Image Gallery
+.gallery-img {
+  display: inline-block;
+  cursor: pointer;
+  margin: 10px 10px 0 0;
+}
+
+.gallery-img:nth-child(5n) {
+  margin-right:0;
+}
+
+.slick-gallery .slick-slide {
+  max-height: initial;
+  height: initial;
+}
+
+.social .social div, .social .social span { float:left; margin: 0 10px; }
+
+.swatch {
+  margin:1em 0;
+}
+/* Label */
+.swatch .header {
+  margin: 0.5em 0;
+}
+/* Hide radio buttons.*/
+.swatch input {
+  display:none;
+}
+.swatch label {
+  text-transform:uppercase;
+}
+.swatch-element label { padding:0 10px; }
+.color.swatch-element label { padding:0; }
+/* Styling selected swatch */
+/* Slightly raised */
+.swatch .swatch-element {
+  float:left;
+  -webkit-transform:translateZ(0); /* webkit flicker fix */
+  -webkit-font-smoothing:antialiased; /* webkit text rendering fix */
+  /* Spacing between buttons */
+  margin:0px 10px 10px 0;
+  /* To position the sold out graphic and tooltip */
+  position:relative;
+}
+
+.swatch.error {
+  background-color:#E8D2D2!important;
+  color:#333!important;
+  padding:1em;
+  border-radius:5px;
+}
+.swatch.error p {
+  margin:0.7em 0;
+}
+.swatch.error p:first-child {
+  margin-top:0;
+}
+.swatch.error p:last-child {
+  margin-bottom:0;
+}
+.swatch.error code {
+  font-family:monospace;
+}
+
+.change-ski-dates {
+  display: none;
+  font-weight: normal;
+}
+
+.product-percent-off {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: red;
+  color: #FFF;
+  padding: 10px;
+  border-radius: 0 0 0 10px;
+}
+
+.product-page-percent-off {
+  display: inline-block;
+  background: red;
+  color: #FFF;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.variant-inventory {
+  display: inline-block;
+  background: #D2691E;
+  color: #FFF;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.product-sold-out {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: red;
+  color: #FFF;
+  padding: 10px;
+  border-radius: 0 0 0 10px;
+  font-size: 1.3rem;
+}
+
+@media (min-width: @screen-md-min) {
+  .rental-length-selection-header {
+    padding: 10px;
+    background-color: #FFF;
+    border-radius: 4px 4px 0 0;
+    width: 329px;
+    margin-left: -4px;
+  }
+  
+  .rental-length-selection-header .button.expand {
+    margin-bottom: 0;
+  }
+  
+  .daily-price-tab {
+    padding: 5px 10px;
+    margin-left: -4px;
+    background: #FFF;
+    border-radius: 4px 4px 0 0;
+    font-size: 14px;
+    width:329px;
+  }
+  
+  .daily-price-tab h3.rental-price {
+    font-size: 16px;
+  }
+  
+  #date_pane, #size_pane {
+    overflow: hidden;
+    height: 485px;
+    transition: height .15s ease-in-out;
+  }
+
+  #date_pane {
+    height: 0;
+  }
+  
+  #price_tab {
+    display: none;
+  }
+
+  #change_dates_button_tab {
+    display: none;
+  }
+}

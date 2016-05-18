@@ -1,0 +1,46 @@
+.modal.carousel {
+  position: fixed;
+}
+
+.modal-dialog {
+  width: 900px;
+  max-width: 100%;
+  margin: 30px auto;
+}
+
+.carousel-control {
+  .fa.fa-chevron-left,
+  .fa.fa-chevron-right {
+    position: absolute;
+    top: 50%;
+    margin-top: -15px;
+    font-size: 35px;
+  }
+  .fa.fa-chevron-right {
+    right: 45%;
+  }
+}
+
+.carousel-control {
+  width: 10%;
+  &.left {
+    background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.0001) 80%);
+    background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.0001) 80%);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.0001) 80%);
+    background-repeat: repeat-x;
+  }
+  &.right {
+    background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.1) 80%);
+    background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.1) 80%);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.1) 80%);
+    background-repeat: repeat-x;
+  }
+
+  :hover, :focus {
+    outline: 0;
+    color: #ffffff;
+    text-decoration: none;
+    opacity: 0.75;
+    filter: alpha(opacity=75);
+  }
+}

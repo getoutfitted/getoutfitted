@@ -1,0 +1,21 @@
+<template name="cartIcon">
+  {{#with cart}}
+    <div class="cart-icon hidden-xs">
+      <span data-event-category="cart" data-event-action="cart-click" data-event-label="cart toggle click" data-event-value="{{_id}}">
+        <i class="fa fa-shopping-cart fa-2x"></i>
+      </span>
+      {{#if showCartIconWarning}}
+      <div class="badge badge-warning">!</div>
+      {{/if}}
+      <div class="badge">{{orElse cartCount 0}}</div>
+    </div>
+    <div class="cart-icon little-cart hidden-sm hidden-md hidden-lg">
+      <span data-event-category="cart" data-event-action="cart-click" data-event-label="cart toggle click" data-event-value="{{_id}}">
+        <i class="fa fa-shopping-cart fa-2x"><div class="badge">{{orElse cartCount 0}}</div></i>
+      </span>
+      {{#if showCartIconWarning}}
+      <div class="badge badge-warning">!</div>
+      {{/if}}
+    </div>
+  {{/with}}
+</template>

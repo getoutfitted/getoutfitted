@@ -32,6 +32,7 @@ Meteor.methods({
    * @summary sets status from one status to a new status. Defaults to "new" to "reserved"
    * @param  {Array} cartItems array of objects of type ReactionCore.Schemas.CartItems
    * @param  {String} status optional - sets the inventory workflow status, defaults to "reserved"
+   * @todo move this to bulkOp
    * @return {undefined} returns undefined
    */
   "inventory/setStatus": function (cartItems, status, currentStatus, notFoundStatus) {
@@ -54,74 +55,76 @@ Meteor.methods({
 
     // update inventory status for cartItems
     for (let item of cartItems) {
-      // check of existing reserved inventory for this cart
-      let existingReservations = ReactionCore.Collections.Inventory.find({
-        productId: item.productId,
-        variantId: item.variants._id,
-        shopId: item.shopId,
-        orderItemId: item._id
-      });
-
-      // define a new reservation
-      let availableInventory = ReactionCore.Collections.Inventory.find({
-        "productId": item.productId,
-        "variantId": item.variants._id,
-        "shopId": item.shopId,
-        "workflow.status": defaultStatus
-      });
-
-      const totalRequiredQty = item.quantity;
-      const availableInventoryQty = availableInventory.count();
-      let existingReservationQty = existingReservations.count();
-
-      ReactionInventory.Log.info("totalRequiredQty", totalRequiredQty);
-      ReactionInventory.Log.info("availableInventoryQty", availableInventoryQty);
-
-      // if we don't have existing inventory we create backorders
-      if (totalRequiredQty > availableInventoryQty) {
-        // TODO put in a dashboard setting to allow backorder or altenate handler to be used
-        let backOrderQty = Number(totalRequiredQty - availableInventoryQty - existingReservationQty);
-        ReactionInventory.Log.info(`no inventory found, create ${backOrderQty} ${backorderStatus}`);
-        // define a new reservation
-        const reservation = {
+      if (item.functionalType === "simple") {
+        // check of existing reserved inventory for this cart
+        let existingReservations = ReactionCore.Collections.Inventory.find({
           productId: item.productId,
           variantId: item.variants._id,
           shopId: item.shopId,
-          orderItemId: item._id,
-          workflow: {
-            status: backorderStatus
-          }
-        };
+          orderItemId: item._id
+        });
 
-        Meteor.call("inventory/backorder", reservation, backOrderQty);
-        existingReservationQty = backOrderQty;
-      }
-      // if we have inventory available, only create additional required reservations
-      ReactionInventory.Log.debug("existingReservationQty", existingReservationQty);
-      reservationCount = existingReservationQty;
-      let newReservedQty = totalRequiredQty - existingReservationQty + 1;
-      let i = 1;
-
-      while (i < newReservedQty) {
-        // updated existing new inventory to be reserved
-        ReactionInventory.Log.info(
-          `updating reservation status ${i} of ${newReservedQty - 1}/${totalRequiredQty} items.`);
-        // we should be updating existing inventory here.
-        // backorder process created additional backorder inventory if there
-        // wasn't enough.
-        ReactionCore.Collections.Inventory.update({
+        // define a new reservation
+        let availableInventory = ReactionCore.Collections.Inventory.find({
           "productId": item.productId,
           "variantId": item.variants._id,
           "shopId": item.shopId,
-          "workflow.status": "new"
-        }, {
-          $set: {
-            "orderItemId": item._id,
-            "workflow.status": reservationStatus
-          }
+          "workflow.status": defaultStatus
         });
-        reservationCount++;
-        i++;
+
+        const totalRequiredQty = item.quantity;
+        const availableInventoryQty = availableInventory.count();
+        let existingReservationQty = existingReservations.count();
+
+        ReactionInventory.Log.info("totalRequiredQty", totalRequiredQty);
+        ReactionInventory.Log.info("availableInventoryQty", availableInventoryQty);
+
+        // if we don't have existing inventory we create backorders
+        if (totalRequiredQty > availableInventoryQty) {
+          // TODO put in a dashboard setting to allow backorder or altenate handler to be used
+          let backOrderQty = Number(totalRequiredQty - availableInventoryQty - existingReservationQty);
+          ReactionInventory.Log.info(`no inventory found, create ${backOrderQty} ${backorderStatus}`);
+          // define a new reservation
+          const reservation = {
+            productId: item.productId,
+            variantId: item.variants._id,
+            shopId: item.shopId,
+            orderItemId: item._id,
+            workflow: {
+              status: backorderStatus
+            }
+          };
+
+          Meteor.call("inventory/backorder", reservation, backOrderQty);
+          existingReservationQty = backOrderQty;
+        }
+        // if we have inventory available, only create additional required reservations
+        ReactionInventory.Log.debug("existingReservationQty", existingReservationQty);
+        reservationCount = existingReservationQty;
+        let newReservedQty = totalRequiredQty - existingReservationQty + 1;
+        let i = 1;
+
+        while (i < newReservedQty) {
+          // updated existing new inventory to be reserved
+          ReactionInventory.Log.info(
+            `updating reservation status ${i} of ${newReservedQty - 1}/${totalRequiredQty} items.`);
+          // we should be updating existing inventory here.
+          // backorder process created additional backorder inventory if there
+          // wasn't enough.
+          ReactionCore.Collections.Inventory.update({
+            "productId": item.productId,
+            "variantId": item.variants._id,
+            "shopId": item.shopId,
+            "workflow.status": "new"
+          }, {
+            $set: {
+              "orderItemId": item._id,
+              "workflow.status": reservationStatus
+            }
+          });
+          reservationCount++;
+          i++;
+        }
       }
     }
     ReactionInventory.Log.info(
@@ -180,7 +183,6 @@ Meteor.methods({
       }
     }
     ReactionInventory.Log.info("inventory/clearReserve", newStatus);
-    return;
   },
   /**
    * inventory/clearReserve
@@ -213,12 +215,22 @@ Meteor.methods({
    *
    * @param {Object} reservation ReactionCore.Schemas.Inventory
    * @param {Number} backOrderQty number of backorder items to create
-   * @returns {Array} inserts into collection and returns array of inserted inventory id
+   * @returns {Number} number of inserted backorder documents
    */
   "inventory/backorder": function (reservation, backOrderQty) {
     check(reservation, ReactionCore.Schemas.Inventory);
     check(backOrderQty, Number);
     this.unblock();
+
+    // this use case could happen then mergeCart is fires. We don't add anything
+    // or remove, just item owner changed. We need to add this check here
+    // because of bulk operation. It thows exception if nothing to operate.
+    if (backOrderQty === 0) {
+      return 0;
+    }
+
+    // TODO: need to look carefully and understand is it possible ho have a
+    // negative `backOrderQty` value here?
 
     // check basic user permissions
     // if (!ReactionCore.hasPermission(["guest","anonymous"])) {
@@ -226,7 +238,6 @@ Meteor.methods({
     // }
 
     // set defaults
-    const inventoryBackorder = [];
     let newReservation = reservation;
     if (!newReservation.workflow) {
       newReservation.workflow = {
@@ -236,13 +247,25 @@ Meteor.methods({
 
     // insert backorder
     let i = 0;
+    const batch = ReactionCore.Collections.Inventory.
+    _collection.rawCollection().initializeUnorderedBulkOp();
     while (i < backOrderQty) {
-      inventoryId = ReactionCore.Collections.Inventory.insert(newReservation);
-      inventoryBackorder.push(inventoryId);
-      ReactionInventory.Log.debug("demand created backorder", inventoryId);
+      let id = ReactionCore.Collections.Inventory._makeNewID();
+      batch.insert(Object.assign({
+        _id: id
+      }, newReservation));
       i++;
     }
-    return inventoryBackorder;
+
+    const execute = Meteor.wrapAsync(batch.execute, batch);
+    const inventoryBackorder = execute();
+    const inserted = inventoryBackorder.nInserted;
+    ReactionInventory.Log.info(
+      `created ${inserted} backorder records for product ${
+        newReservation.productId}, variant ${newReservation.variantId}`
+    );
+
+    return inserted;
   },
   //
   // send low stock warnings
@@ -251,6 +274,5 @@ Meteor.methods({
     check(product, ReactionCore.Schemas.Product);
     // WIP placeholder
     ReactionInventory.Log.info("inventory/lowStock");
-    return;
   }
 });

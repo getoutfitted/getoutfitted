@@ -1,0 +1,61 @@
+<template name="variantList">
+  {{#if hasPermission "createProduct"}}
+    <div class="product-variants">
+      <ul class="variant-list list-unstyled" id="variant-list">
+      {{#each variants}}
+        {{> variant}}
+      {{else}}
+        <a href="#" id="create-variant">+ <span data-i18n="variantList.createVariant">Create Variant</span></a>
+      {{/each}}
+      </ul>
+    </div>
+  {{else}}
+    <div class="product-variants form-horizontal {{showChoices variants}}">
+      {{#if variants}}
+        <div class="form-group row">
+          <label for="variantSelect" class="control-label col-xs-2">{{variantOptionLabel}}</label>
+          <div class=" col-xs-9">
+            <select class="variant-select form-control" name="variantSelect" id="variant-select">
+              {{#each variants}}
+                {{> variantOption}}
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+  {{#if childVariants}}
+    {{#if hasPermission "createProduct"}}
+      <div class="row variant-product-options">
+        {{#each childVariants}}
+        <button type="button" class="btn btn-default variant-select-option">{{childVariantOptionLabel}}</button>
+        {{/each}}
+      </div>
+    {{else}}
+    <div class="form-horizontal {{showChoices childVariants}}">
+      <div class="form-group row">
+        <label for="variantOptionsSelect" class="control-label col-xs-2">{{childVariantOptionLabel}}</label>
+        <div class="col-xs-9">
+          <select class="variant-product-options form-control" name="variantOptionsSelect" id="variant-options-select">
+            {{#each childVariants}}
+              <option class="variant-select-option" value="{{_id}}" {{isAvailable}}>
+                {{#if inventoryManagement}}
+                  {{#if isSoldOut}}
+                    {{#if inventoryPolicy}}
+                      (Sold Out!)
+                    {{else}}
+                      (Backordered)
+                    {{/if}}
+                  {{/if}}
+                {{/if}}
+                {{title}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  {{/if}}
+</template>

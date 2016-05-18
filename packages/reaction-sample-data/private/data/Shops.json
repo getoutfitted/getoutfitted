@@ -1,5 +1,11 @@
 [{
   "_id": "J8Bhq3uTtdgwZx3rz",
+  "domains": [
+    "dev.gtfttd.com",
+    "getoutfitted.com",
+    "new.getoutfitted.com",
+    "localhost"
+  ],
   "currencies": {
     "AED": {
       "format": "%v %s",
@@ -3016,7 +3022,7 @@
       }
     }
   },
-  "name": "REACTION",
+  "name": "GetOutfitted",
   "taxes": [{
     "taxesIncluded": null,
     "taxShipping": null,
@@ -3039,45 +3045,47 @@
     "label": "Kilograms"
   }],
   "addressBook": [{
-    "company": "Reaction Commerce",
-    "fullName": "Ongo Works",
-    "address1": "1119 Colorado Ave",
-    "address2": "Ste. 7",
-    "city": "Santa Monica",
-    "region": "CA",
-    "postal": "90401",
+    "company": "GetOutfitted",
+    "fullName": "GetOutfitted",
+    "address1": "739 E Pikes Peak Ave",
+    "address2": "",
+    "city": "Colorado Springs",
+    "region": "CO",
+    "postal": "80903",
     "country": "US",
-    "phone": "8885551212",
+    "phone": "8886180305",
     "isCommercial": true,
     "isShippingDefault": true,
     "isBillingDefault": true
   }],
-  "defaultRoles": [
+  "defaultVisitorRole": [
+    "anonymous",
     "guest",
-    "account/profile"
+    "product",
+    "products",
+    "catalog",
+    "collection",
+    "tag",
+    "index",
+    "cart/checkout",
+    "cart/completed",
+    "getoutfittedAbout",
+    "getoutfittedPrivacyPolicy",
+    "getoutfittedPressPage"
   ],
-  "layout": [{
-    "layout": "coreLayout",
-    "workflow": "coreLayout",
-    "theme": "default",
-    "enabled": true
-  }, {
-    "layout": "coreLayout",
-    "workflow": "coreCartWorkflow",
-    "collection": "Cart",
-    "theme": "default",
-    "enabled": true
-  }, {
-    "layout": "coreLayout",
-    "workflow": "coreOrderWorkflow",
-    "collection": "Orders",
-    "theme": "default",
-    "enabled": true
-  }, {
-    "layout": "coreLayout",
-    "workflow": "coreOrderShipmentWorkflow",
-    "collection": "Orders",
-    "theme": "default",
-    "enabled": true
-  }]
+  "defaultRoles": [
+    "account/profile",
+    "guest",
+    "product",
+    "products",
+    "catalog",
+    "collection",
+    "tag",
+    "index",
+    "cart/checkout",
+    "cart/completed",
+    "getoutfittedAbout",
+    "getoutfittedPrivacyPolicy",
+    "getoutfittedPressPage"
+  ]
 }]

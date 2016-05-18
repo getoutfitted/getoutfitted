@@ -120,7 +120,9 @@ describe("Account Meteor method ", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookAdd",
-            () => { console.log("test"); }
+            () => {
+              // TODO: Write tests here
+            }
           );
         }).not.toThrow();
 
@@ -314,7 +316,9 @@ describe("Account Meteor method ", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookUpdate",
-            () => { console.log("test"); }
+            () => {
+              // TODO: Write tests here
+            }
           );
         }).not.toThrow();
 
@@ -532,7 +536,9 @@ describe("Account Meteor method ", function () {
         expect(function () {
           return Meteor.call(
             "accounts/addressBookRemove",
-            () => { console.log("test"); }
+            () => {
+              // TODO: Write tests here
+            }
           );
         }).not.toThrow();
 
@@ -602,34 +608,42 @@ describe("Account Meteor method ", function () {
   });
 
   describe("accounts/inviteShopMember", function () {
-    it("should not let non-Owners invite a user to the shop", function (
+    it(
+      "should not let non-Owners invite a user to the shop", function (
       done) {
-      spyOn(ReactionCore, "hasOwnerAccess").and.returnValue(false);
-      spyOn(Accounts, "createUser");
-      // create user
-      expect(function () {
-        return Meteor.call("accounts/inviteShopMember", shopId,
-          fakeUser.emails[0].address, fakeUser.profile.name);
-      }).toThrow(new Meteor.Error(403, "Access denied"));
-      // expect that createUser shouldnt have run
-      expect(Accounts.createUser).not.toHaveBeenCalledWith({
-        username: fakeUser.profile.name
-      });
-      return done();
-    });
+        // spyOn(ReactionCore, "hasOwnerAccess").and.returnValue(false);
+        spyOn(ReactionCore, "hasPermission").and.returnValue(false);
+        spyOn(Accounts, "createUser");
+        // create user
+        expect(function () {
+          return Meteor.call("accounts/inviteShopMember", shopId,
+            fakeUser.emails[0].address,
+            fakeUser.profile.addressBook[0].fullName);
+        }).toThrow(new Meteor.Error(403, "Access denied"));
+        // expect that createUser shouldnt have run
+        expect(Accounts.createUser).not.toHaveBeenCalledWith({
+          username: fakeUser.profile.addressBook[0].fullName
+        });
+        return done();
+      }
+    );
 
-    it("should let a Owner invite a user to the shop", function (done) {
-      spyOn(Roles, "userIsInRole").and.returnValue(true);
-      //  TODO checking this is failing, even though we can see it happening in the log.
-      // spyOn(Email, "send");
-      expect(function () {
-        return Meteor.call("accounts/inviteShopMember",
-          shopId,
-          fakeUser.emails[0].address,
-          fakeUser.profile.name);
-      }).not.toThrow(new Meteor.Error(403, "Access denied"));
-      // expect(Email.send).toHaveBeenCalled();
-      return done();
-    });
+    it(
+      "should let a Owner invite a user to the shop",
+      function (done) {
+        // spyOn(Roles, "userIsInRole").and.returnValue(true);
+        spyOn(ReactionCore, "hasPermission").and.returnValue(true);
+        // TODO checking this is failing, even though we can see it happening in the log.
+        // spyOn(Email, "send");
+        expect(function () {
+          return Meteor.call("accounts/inviteShopMember",
+            shopId,
+            fakeUser.emails[0].address,
+            fakeUser.profile.addressBook[0].fullName);
+        }).not.toThrow(new Meteor.Error(403, "Access denied"));
+        // expect(Email.send).toHaveBeenCalled();
+        return done();
+      }
+    );
   });
 });

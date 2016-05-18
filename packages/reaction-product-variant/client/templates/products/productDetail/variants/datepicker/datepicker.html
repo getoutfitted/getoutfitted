@@ -1,0 +1,46 @@
+<template name="reservationDatepicker">
+  <div class="col-sm-12">
+    <div id="datepicker" class="form-group form-group-lg input-group date">
+      <input type="text" class="form-control start" style="height: 0; margin: 0; padding: 0; border: 0;" id="rental-start" name="start" placeholder="Select Arrival Date" value={{startDate}} />
+      <input type="text" class="form-control display-date" id="display-date" placeholder="Select Arrival Date" value={{startDateHuman}} />
+      <span class="input-group-addon show-start">
+        <i class="fa fa-calendar" aria-hidden="true"></i>
+      </span>
+    </div>
+  </div>
+</template>
+
+<template name="thursdayDeliveryExplanation">
+  <div class="modal thursday-delivery-explanation">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h1>Why Thursdays?</h1>
+          <p>Because Thursdays are rad. But also, because thursday is the day
+            before Friday, and we want you to have the gear you rented in you
+            hands and ready-to-rock before you take off for the week(end).</p>
+          
+          <h2 class="go-how-it-works">How GetOutfitted Works</h2>
+          <div class="row">
+            <div class="col-xs-4">
+              <i class="fa fa-3x fa-truck"></i>
+              <h4>Order Online</h4>
+              <h5>Free Shipping</h5>
+            </div>
+            <div class="col-xs-4 middle">
+              <i class="fa fa-3x fa-map-o"></i>
+              <h4>Go Explore</h4>
+              <h5>Have fun</h5>
+            </div>
+            <div class="col-xs-4">
+              <i class="fa fa-3x fa-paper-plane"></i>
+              <h4>Drop off at UPS</h4>
+              <h5>Free Returns</h5>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default close-modal" data-dismiss="modal">&times;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

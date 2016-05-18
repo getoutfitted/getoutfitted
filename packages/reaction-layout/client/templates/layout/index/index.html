@@ -1,0 +1,144 @@
+<template name="getoutfittedIndex">
+  {{> goIndexHero}}
+  {{> goCallUsBreak}}
+  {{> goFeaturedCategories}}
+  {{> goMediaBreak}}
+  {{> getoutfittedTrailer}}
+</template>
+
+<template name="getOutfittedIndex">
+  <div class="index">
+    {{> goIndexHero}}
+    {{> goCallUsBreak}}
+    {{> goFeaturedCategories}}
+    {{> goHowItWorks}}
+    {{> goMediaBreak}}
+    {{! getoutfittedTrailer}}
+    {{! goServiceDescription}}
+  </div>
+</template>
+
+<template name="goIndexHero">
+  <section class="main-section">
+    <section class="hero home-hero fullwidth">
+      <div class="hero-container text-center-sm">
+        <div class="row cta">
+          <div class="col-sm-12 text-center">
+            <h1>The World's Outdoor Gear Closet</h1>
+            <h2 class="visible-sm visible-md-block visible-lg-block">Rent or demo the coolest gear on the market and have it delivered<br />directly to your doorstep or destination for easy one-time use.<br /></h2>
+            <h2 class="visible-xs">Rent or demo the coolest gear on the market and have it delivered directly to your doorstep or destination for easy one-time use.<br /></h2>
+            <a id="rent-now-home-hero" href="{{pathFor 'catalog'}}" class="btn radius btn-lg btn-brand-primary margin-top-small">Browse Gear</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+</template>
+
+<template name="goCallUsBreak">
+  <section class="solid-break text-center sub-header-break visible-xs-block visible-sm-block">
+    <h2><small>Call Us: <a href="tel:8886180305">888-618-0305</a></small></h2>
+  </section>
+</template>
+
+<template name="goFeaturedCategories">
+  <section id="summer-sports">
+    <div class="tile-grid">
+      <div class="row fullwidth">
+
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="oru-kayak-tile">
+            <a href="/collections/oru-kayak" class="btn btn-lg btn-v-middle wire white radius">Oru Kayaks</a>
+          </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="onewheel-tile">
+            <a href="/product/onewheel" class="btn btn-lg btn-v-middle wire white radius">Onewheel</a>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-4 columns end tile">
+          <div class="tentsile-tile">
+            <a href="/collections/tentsile" class="btn btn-lg btn-v-middle wire white radius">Tree Tents</a>
+          </div>
+        </div>
+
+      </div>
+      <!-- Featured Products Row 2 -->
+      <div class="row fullwidth">
+
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="imagine-tile">
+            <a href="/product/imagine-icon-lte-sup-paddleboard" class="btn btn-lg btn-v-middle wire white radius">Inflatable SUP</a>
+          </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-4 columns tile">
+          <div class="camping-backpacking-tile">
+            <a href="#" class="btn btn-lg btn-v-middle wire white radius">Camping &amp; Backpacking <br /> Coming Soon!</a>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-4 columns end tile">
+          <div class="kammok-tile">
+            <a href="/product/hammock-camper-package" class="btn btn-lg btn-v-middle wire white radius">Hammocks</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</template>
+
+<template name="goMediaBreak">
+  <section id="media-coverage" class="solid-break">
+    <div class="text-center visible-md-block visible-lg-block">
+      <div class="row fullwidth">
+        <div class="col-sm-12 columns">
+          <!-- <a href="/pages/press" alt="GetOutfitted Media Coverage"> -->
+          <span>
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/yahootravel.png" alt="Yahoo Travel">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/usatoday.png" alt="USA Today">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/huffingtonpost.png" alt="Huffington Post">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/instyle.png" alt="In Style">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/townandcountry.png" alt="Town and Country">
+            <img class="home-press" src="https://d2wpxyz1up89r3.cloudfront.net/logos/skimagazine.png" alt="Ski Magazine">
+          </span>
+          <!-- </a> -->
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<template name="goHowItWorks">
+  <section id="go-how-it-works" class="go-how-it-works">
+      <div class="text-center container solid-break">
+        <h2 class="section-header">How GetOutfitted Works</h2>
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 columns">
+            <div class="how-it-works-step">
+              <span class="position">1</span>
+              <h3>Demo before you buy or rent gear for one-time use.</h3>
+              <p>Browse our gear closet and select a delivery date. We'll deliver the gear directly to your doorstep or destination. Free shipping, anywhere in the US.</p>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 columns">
+            <div class="how-it-works-step">
+              <span class="position">2</span>
+              <h3>Step outside<br>and explore.</h3>
+              <p>Getting outside has never been easier. Your gear will arrive fresh, clean, and ready for whatever adventures you have planned.</p>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 columns">
+            <div class="how-it-works-step">
+              <span class="position">3</span>
+              <h3>Ship it back.<br>If you loved it, buy it!</h3>
+              <p>Once your rental or demo period has ended, drop the gear off at any UPS location. Loved your demo? Buy it and we'll send you a brand new one, ready for a lifetime of adventure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+</template>

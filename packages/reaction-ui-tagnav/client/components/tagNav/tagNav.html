@@ -1,0 +1,29 @@
+
+<template name="tagNav">
+  <li class="rui tagnav {{navbarOrientation}} {{navbarPosition}} {{navbarAnchor}} {{navbarVisibility}}">
+    <span class="navbar-header">
+      {{> button
+        icon="times"
+        className="close-button"
+        status="default"
+        onClick=handleMenuClose
+      }}
+    </span>
+    <span class="navbar-items">
+      {{#each tag in tags}}
+        <span class="navbar-item {{navbarSelectedClassName tag}} {{hasDropdownClassName tag}}" data-id={{tag._id}}>
+          {{> tagItem (tagProps tag)}}
+
+          <span class="dropdown-container" data-tag={{tag._id}}>
+            {{> tagTree (tagTreeProps tag)}}
+          </span>
+        </span>
+      {{/each}}
+      {{#if isEditing}}
+        <span class="navbar-item create">
+          {{> tagItem blankTagProps}}
+        </span>
+      {{/if}}
+    </span>
+  </li>
+</template>
