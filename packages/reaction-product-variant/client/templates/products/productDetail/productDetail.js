@@ -93,6 +93,12 @@ Template.productDetail.helpers({
       return "";
     }
     return "hidden";
+  },
+  widget: function () {
+    if (this.functionalType === "bundle") {
+      return "bundleVariantWidget";
+    }
+    return "variantWidget";
   }
 });
 

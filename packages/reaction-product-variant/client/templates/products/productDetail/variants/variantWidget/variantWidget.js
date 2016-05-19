@@ -71,3 +71,60 @@ Template.variantWidget.helpers({
     return {};
   }
 });
+
+Template.bundleVariantWidget.onRendered(function () {
+  if (window.innerWidth > 767) {
+    stickyWidget();
+  }
+});
+
+Template.bundleVariantWidget.helpers({
+  showRentalLengthOptions: function () {
+    return this.functionalType === "rental";
+  },
+  actualPrice: function () {
+    const current = ReactionProduct.selectedVariant();
+    if (typeof current === "object") {
+      const childVariants = ReactionProduct.getVariants(current._id);
+      if (childVariants.length === 0) {
+        return current.price;
+      }
+      return ReactionProduct.getProductPriceRange().range;
+    }
+    return undefined;
+  },
+  bundleVariant: function () {
+    const variants = ReactionCore.getVariants(this._id);
+    if (variants) {
+      return variants[0];
+    }
+    return "";
+  }
+});
+
+Template.bundleVariantOptions.onCreated(function () {
+  this.subscribe("justVariants");
+});
+
+Template.bundleVariantOptions.helpers({
+  bundleOptions: function () {
+    return this.bundleProducts;
+  },
+  displayLabel: function () {
+    if (this.label) {
+      return this.label;
+    }
+    let product = ReactionCore.Collections.Products.findOne(this.productId);
+    return product.productType || product.title;
+  },
+  variantDisplay: function () {
+    if (this.label) {
+      return this.label;
+    }
+    let variantProduct = ReactionCore.Collections.Products.findOne(this.variantId);
+    if (variantProduct) {
+      return variantProduct.size + '-' + variantProductvariant.color;
+    }
+    return _id;
+  }
+});

@@ -37,7 +37,7 @@
     <div id="leadImageContainer">
       {{> productLeadImage}}
     </div>
-    
+
     <div id="description" class="container">
       <!-- START NON IMAGE CONTENT ALL DEVICE SIZES -->
       <div class="row">
@@ -66,7 +66,7 @@
           </div> <!-- end product icon descriptions -->
         </div>
         <!-- START DEVICE SPECIFIC LAYOUT -->
-        
+
         <!-- XS Devices --> <!-- TODO: trade this for javascript screensize check -->
         <div class="row margin-top-medium solid-break description hidden-sm hidden-md hidden-lg">
           <div>
@@ -74,7 +74,7 @@
                 <hr>
                 {{> productImageGallery}}
                 <hr>
-                
+
                 <h4 class="description-title">About This Rental:</h4>
                 <div class="description-body">
                   {{>fieldComponent field="description" value=description type="textarea"}}
@@ -85,7 +85,8 @@
             </div>
           </div>
         </div> <!-- end small devices details -->
-        {{> variantWidget}}
+        {{> Template.dynamic template=widget}}
+        <!-- {{> variantWidget}} -->
       </div>
     </div>
     <!-- {{> featureComponent}} -->
@@ -115,7 +116,7 @@
           {{> productImageGallery}}
           {{! getoutfittedProductTrailer}}
         </div>
-        
+
       </div>
     </div>
   </div>
@@ -254,28 +255,28 @@
     </div>
     <div class="col-xs-9">
       <div class="icon row">
-        
+
           <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
             <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/navy-blue-underwater-blue.jpg?3239250009026326159" width="32" height="32" alt="Navy Blue/Underwater Blue" class="product-swatch">
           </div>
           <div class="col-xs-10 col-lg-5 " style="line-height: 26px;">
             Navy Blue/Underwater Blue
           </div>
-        
+
           <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
             <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/black-black.jpg?3239250009026326159" width="32" height="32" alt=" Black/Black" class="product-swatch">
           </div>
           <div class="col-xs-10 col-lg-5 " style="line-height: 26px;">
              Black/Black
           </div>
-        
+
           <div class="col-xs-2 col-lg-1" style="line-height: 26px;">
             <img src="//cdn.shopify.com/s/files/1/0258/2103/t/20/assets/aquastone-black.jpg?3239250009026326159" width="32" height="32" alt=" Aquastone/Black" class="product-swatch">
           </div>
           <div class="col-xs-10 col-lg-5  end" style="line-height: 26px;">
              Aquastone/Black
           </div>
-        
+
       </div>
     </div>
   </div>

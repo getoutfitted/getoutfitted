@@ -62,236 +62,48 @@
   </div>
 </template>
 
-<template name="oldwidget">
-  <div id="pricing_widget" class="pricing-widget col-sm-12 col-md-5 col-lg-4">
-    <div class="row" id="rental_length_selector">
-      <div class="col-sm-12" style="padding: 0;">
-        <div id="price_tab" class="rental-length-selection-header" style="margin-left: 0px; margin-right: 0px; width: 284px;">
-        </div>
-        <div id="change_dates_button_tab" class="rental-length-selection-header">
-          <span id="change_dates_button" data-reveal-id="dates-already-selected" class="button small expand secondary radius show-for-medium-up">
-            <i class="fa fa-calendar"></i> Change Dates
-          </span>
-        </div>
-        
-          <div class="daily-price-tab" id="daily-price-tab">
-            <h3 class="rental-price"><span itemprop="price">$49.00</span></h3>
-            <span class="right">Per Day</span>
-          </div>
-        
-      </div>
-    </div>
-    <div id="date_selection_widget" class="date-selection-widget">
-      <div id="size_pane" style="height: 444px;">
-        <div class="row">
-            <!-- <div class="col-sm-12"><h3><small>Who is this for?</small></h3></div> -->
-            <div class="group-member-selector" id="group-member-selector">
-              <!-- <div class="col-sm-4 col-md-4 col-lg-2">
-                <span class="prefix radius steel-border">Name</span>
-              </div> -->
-              <div class="col-sm-8">
-                <label>Name (who is this for?)
-                  <select class="sort-by radius steel-border no-margin" id="select-group-member" name="properties[For]">
-                    <option value="Me">Me</option>
-                  <option value="Jessica">Jessica</option><option value="Amy">Amy</option><option value="Austin">Austin</option></select>
-                </label>
-                <!-- <small class="error">You must select a person. Nicknames or pseudonyms are okay.</small> -->
-              </div>
-              
-              <div class="col-sm-4" id="group-member-add-input-container">
-                <label>New
-                  <a href="#" id="group-member-add-input" class="tiny button radius wire grey">+ Name</a>
-                </label>
-              </div>
+<template name='bundleVariantWidget'>
+  <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
+    <div class="row">
+      {{#unless hasPermission "createProduct"}}
+<!--           {{#if rentalProduct}}
+ -->         <div class="row reservation-calendar-container">
+              {{> reservationDatepicker}}
             </div>
-            
-            
-            <div id="group-member-adder" style="display: none;">
-              <div class="col-sm-8">
-                <input type="text" class="steel-border radius" id="add-group-member-field" placeholder="Name - e.g. 'Jessica' or 'John'">
-                <!-- <small class="error add-name-error">Please add a name for this item. Nicknames or pseudonyms are okay.</small> -->
-              </div>
-              <div class="col-sm-4 end">
-                <a class="radius button tiny wire grey" id="add-group-member-button">Add</a>
-                <a id="cancel-add-member" class="cancel"><i class="fa fa-times-circle"></i></a>
-              </div>
-            </div>
-          
-            
-                  
-              <div class="col-sm-12 size-selection">
-                
-                  <label>Color
-                    <select class="sort-by radius steel-border" id="package-color" name="properties[Color]">
-                      
-                        <option value="Navy Blue/Underwater Blue" id="color-navy-blue-underwater-blue">Navy Blue/Underwater Blue</option>
-                      
-                        <option value="Black/Black" id="color-black-black">Black/Black</option>
-                      
-                        <option value="Aquastone/Black" id="color-aquastone-black">Aquastone/Black</option>
-                      
-                    </select>
-                  </label>
-                
-
-                
-                  <a href="#mobile_sizing_guide" class="button secondary radius expand hide-for-medium-up">Sizing Guide</a>
-                  <label>Jacket Size <a href="#sizing_guide" class="right show-for-medium-up">Sizing Guide</a>
-                    <select class="sort-by radius steel-border" id="package-jacket-size" name="properties[Jacket Size]">
-                      <option value="unselected">Choose</option>
-                      
-                        <option value="Extra Small" id="jacket-size-extra small">Extra Small</option>
-                      
-                        <option value="Small" id="jacket-size-small">Small</option>
-                      
-                        <option value="Medium" id="jacket-size-medium">Medium</option>
-                      
-                        <option value="Large" id="jacket-size-large">Large</option>
-                      
-                        <option value="Extra Large" id="jacket-size-extra large">Extra Large</option>
-                      
-                    </select>
-                  </label>
-                
-                
-                  <label>Pants Size <a href="#sizing_guide" class="right show-for-medium-up">Sizing Guide</a>
-                    <select class="sort-by radius steel-border" id="package-pants-size" name="properties[Pants Size]">
-                      <option value="unselected">Choose</option>
-                      
-                        <option value="Extra Small" id="pants-size-extra small">Extra Small</option>
-                      
-                        <option value="Small" id="pants-size-small">Small</option>
-                      
-                        <option value="Medium" id="pants-size-medium">Medium</option>
-                      
-                        <option value="Large" id="pants-size-large">Large</option>
-                      
-                        <option value="Extra Large" id="pants-size-extra large">Extra Large</option>
-                      
-                    </select>
-                  </label>
-                
-                
-                  <label>Gloves Size
-                    <select class="sort-by radius steel-border" id="package-gloves-size" name="properties[Gloves Size]">
-                      <option value="unselected">Choose</option>
-                      
-                        <option value="Extra Small" id="gloves-size-extra small">Extra Small</option>
-                      
-                        <option value="Small" id="gloves-size-small">Small</option>
-                      
-                        <option value="Medium" id="gloves-size-medium">Medium</option>
-                      
-                        <option value="Large" id="gloves-size-large">Large</option>
-                      
-                        <option value="Extra Large" id="gloves-size-extra large">Extra Large</option>
-                      
-                    </select>
-                  </label>
-                
-                 
-                  <label>Type of Goggles
-                    <select class="sort-by radius steel-border" id="package-goggle-type" name="properties[Goggles Choice]">
-                      
-                        <option value="Standard" id="goggle-type-standard">Standard</option>
-                      
-                        <option value="Over Glasses" id="goggle-type-over glasses">Over Glasses</option>
-                      
-                    </select>
-                  </label>
-                
-                
-              </div>
-            
-          <div class="col-sm-12 text-center">
-            
-            
-              <div class="text-right price-table">
-                <div class="daily-rate" id="daily-rate" style="display: none;">$49.00 / day</div>
-                <div class="rental-days" id="rental-days-price" style="display: none;">× 3 Days</div>
-                <div class="total-price" id="rental-price" itemprop="price" style="display: none;">$147.00</div>
-                <div class="rush-fee hide" id="rush-fee-price">+ $39.00 (Rush Charge)</div>
-              </div>
-            
-            <a href="#select_dates_panel" name="select_dates" id="select_dates_button" class="button success radius expand show-for-medium-up">
-              <span>Select Dates</span>
-            </a>
-          </div>
-        </div>
+<!--           {{/if}}
+ -->        {{/unless}}
+      <div class="col-xs-12">
+        <span class="rental-price">
+          <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+        </span>
+        {{#with bundleVariant}}
+          {{> bundleVariantOptions}}
+        {{/with}}
       </div>
-      <div id="date_pane">
-        <div class="row" id="calendar_and_legend">
-          <!-- <input type="text" name="daterange" /> -->
-          <div class="col-sm-12 col-md-12">
-            <div id="calendar" class="calendar hasDatepicker" style="max-width: 1082.9px;"><div class="ui-datepicker-inline ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" style="display: block;"><div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all"><a class="ui-datepicker-prev ui-corner-all ui-state-disabled" title=""><span><i class="fa fa-caret-left"></i> </span></a><a class="ui-datepicker-next ui-corner-all" data-handler="next" data-event="click" title=""><span> <i class="fa fa-caret-right"></i></span></a><div class="ui-datepicker-title"><span class="ui-datepicker-month">March</span>&nbsp;<span class="ui-datepicker-year">2016</span></div></div><table class="ui-datepicker-calendar"><thead><tr><th scope="col" class="ui-datepicker-week-end"><span title="Sunday">Su</span></th><th scope="col"><span title="Monday">Mo</span></th><th scope="col"><span title="Tuesday">Tu</span></th><th scope="col"><span title="Wednesday">We</span></th><th scope="col"><span title="Thursday">Th</span></th><th scope="col"><span title="Friday">Fr</span></th><th scope="col" class="ui-datepicker-week-end"><span title="Saturday">Sa</span></th></tr></thead><tbody><tr><td class=" ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">28</span></td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">29</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">1</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">2</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">3</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">4</span></td><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">5</span></td></tr><tr><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled blocked-day ui-datepicker-today" title="Available with rush shipping"><span class="ui-state-default">6</span></td><td class=" ui-datepicker-unselectable ui-state-disabled blocked-day" title="Available with rush shipping"><span class="ui-state-default">7</span></td><td class=" local-day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">8</a></td><td class=" local-day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">9</a></td><td class=" local-day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">10</a></td><td class=" local-day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">11</a></td><td class=" ui-datepicker-week-end arrival-day local-day" title="Your gear arrives at your specified destination!" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">12</a></td></tr><tr><td class=" ui-datepicker-week-end ui-datepicker-days-cell-over first-rental-day ui-datepicker-current-day" title="first paid rental day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default ui-state-active ui-state-hover" href="#">13</a></td><td class=" rental-day" title="Paid Rental Day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">14</a></td><td class=" last-rental-day" title="last paid rental day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">15</a></td><td class=" return-day" title="drop your gear off on this day" data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">16</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">17</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">18</a></td><td class=" ui-datepicker-week-end " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">19</a></td></tr><tr><td class=" ui-datepicker-week-end " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">20</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">21</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">22</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">23</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">24</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">25</a></td><td class=" ui-datepicker-week-end " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">26</a></td></tr><tr><td class=" ui-datepicker-week-end " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">27</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">28</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">29</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">30</a></td><td class=" " data-handler="selectDay" data-event="click" data-month="2" data-year="2016"><a class="ui-state-default" href="#">31</a></td><td class=" ui-datepicker-other-month " data-handler="selectDay" data-event="click" data-month="3" data-year="2016"><a class="ui-state-default ui-priority-secondary" href="#">1</a></td><td class=" ui-datepicker-week-end ui-datepicker-other-month " data-handler="selectDay" data-event="click" data-month="3" data-year="2016"><a class="ui-state-default ui-priority-secondary" href="#">2</a></td></tr></tbody></table></div></div>
-            <input type="checkbox" id="rush-check" class="hide" name="properties[Rush]" value="rush">
-            <input type="checkbox" id="local-check" class="hide" name="properties[Local]" value="local">
-            <dl class="calendar-legend">
-              <div class="row">
-                <div class="legend_arrival_day col-sm-4" style="padding: 0 5px;">
-                  <dt><i class="fa fa-lg fa-square arrival-day"></i></dt>
-                  <dd>Gear Arrival</dd><br>
-                </div>
-                <div id="legend_rental_day" class="col-sm-4" style="padding: 0 5px;">
-                  <dt class="rental-day"><i class="fa fa-lg fa-square rental-day"></i></dt>
-                  <dd>Rental Days</dd>
-                </div>
-                <div class="legend_return_day col-sm-4" style="padding: 0 5px;">
-                  <dt><i class="fa fa-lg fa-square return-day"></i></dt>
-                  <dd>Return Day</dd><br>
-                </div>
-              </div>
-              
-                <div class="row">
-                  <div id="legend_rush_day" class="col-sm-12 hide" style="padding: 0 5px;">
-                    <dt>
-                      <i class="fa-stack rush-day fa-lg">
-                        <i class="fa fa-stack-1x fa-square rush-day"></i>
-                        <i class="fa fa-check-square-o fa-stack-1x hide"></i>
-                      </i>
-                    </dt>
-                    <dd>Rush Charge Applies ($39.00 per order)</dd>
-                  </div>
-                  <div id="legend_local_day" class="col-sm-12 hide" style="padding: 0 5px;">
-                    <dt>
-                      <i class="fa-stack local-day fa-lg">
-                        <i class="fa fa-stack-1x fa-square local-day"></i>
-                        <i class="fa fa-check-square-o fa-stack-1x hide"></i>
-                      </i>
-                    </dt>
-                    <dd>Free Local Delivery</dd>
-                  </div>
-                  <div id="legend_local_or_rush" class="col-sm-12" style="padding: 0 5px;">
-                    <dt>
-                      <i class="fa fa-lg fa-square local-day"></i>
-                    </dt>
-                    <dd>Local Delivery or Rush</dd>
-                  </div>
-                </div>
-              
-            </dl>
-          </div>
-        </div>
-      
-        <div class="row">
-          <div class="col-sm-12 text-right">
-            
-            <div class="text-right price-table show-for-medium-up">
-              <div class="daily-rate" id="datepane-daily-rate">$49.00 / day</div>
-              <div class="rental-days" id="datepane-rental-days-price">× 3 Days</div>
-              <div class="total-price" id="datepane-rental-price" itemprop="price">$147.00</div>
-              <div class="rush-fee hide" id="datepane-rush-fee-price">+ $39.00 (Rush Charge)</div>
-            </div>
-            
-              <input type="hidden" placeholder="QTY" id="quantity" class="select-on-focus text-center" name="quantity" value="1" size="2">
-              <button type="submit" name="add" id="add" class="button success radius expand" style="opacity: 1;">
-                <span id="addText">Book Now</span>
-              </button>
-            
-          </div>
-        </div>
-      </div>
-      <!-- end date pane -->
     </div>
   </div>
+</template>
+
+<template name="bundleVariantOptions">
+  {{#if Template.subscriptionsReady}}
+  <h4>Select Options:</h4>
+  {{#each bundleOptions}}
+    <div class="row">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="{{productId}}">{{displayLabel}}</label>
+          <div class="col-sm-10">
+            <select id="{{productId}}" class="form-control">
+              {{#each variantIds}}
+                <option value='{{variantId}}'>{{variantDisplay}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  {{/each}}
+  <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="add-to-cart" data-i18n="productDetail.addToCart">Book</button>
+  {{/if}}
 </template>
