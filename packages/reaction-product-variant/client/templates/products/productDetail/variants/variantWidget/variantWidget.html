@@ -66,12 +66,10 @@
   <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
     <div class="row">
       {{#unless hasPermission "createProduct"}}
-<!--           {{#if rentalProduct}}
- -->         <div class="row reservation-calendar-container">
-              {{> reservationDatepicker}}
-            </div>
-<!--           {{/if}}
- -->        {{/unless}}
+        <div class="row reservation-calendar-container">
+            {{> reservationDatepicker}}
+          </div>
+      {{/unless}}
       <div class="col-xs-12">
         <span class="rental-price">
           <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
@@ -85,15 +83,15 @@
 </template>
 
 <template name="bundleVariantOptions">
-  {{#if Template.subscriptionsReady}}
-  <h4>Select Options:</h4>
+<!--   {{#if Template.subscriptionsReady}}
+ -->  <h4>Select Options:</h4>
   {{#each bundleOptions}}
     <div class="row">
       <form class="form-horizontal">
         <div class="form-group">
           <label class="control-label col-sm-2" for="{{productId}}">{{displayLabel}}</label>
           <div class="col-sm-10">
-            <select id="{{productId}}" class="form-control">
+            <select data-index="{{@index}}" id="{{productId}}" class="form-control selectedProduct">
               {{#each variantIds}}
                 <option value='{{variantId}}'>{{variantDisplay}}</option>
               {{/each}}
@@ -105,5 +103,5 @@
     </div>
   {{/each}}
   <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="add-to-cart" data-i18n="productDetail.addToCart">Book</button>
-  {{/if}}
-</template>
+<!--   {{/if}}
+ --></template>

@@ -103,7 +103,22 @@ Template.bundleVariantWidget.helpers({
 });
 
 Template.bundleVariantOptions.onCreated(function () {
-  this.subscribe("justVariants");
+  let bundleVariants = ReactionCore.Collections.Products.findOne({
+    ancestors: {
+      $size: 1
+    }
+  });
+  // if (bundleVariants && bundleVariants.bundleProducts) {
+  let defaultSelectedVariants = [];
+  _.each(bundleVariants.bundleProducts, function (bundleOptions) {
+    defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
+  });
+  Session.setDefault("selectedBundleOptions", defaultSelectedVariants);
+  Tracker.autorun(() => {
+    let selectedOptions = Session.get("selectedBundleOptions");
+    this.subscribe("bundleReservationStatus", selectedOptions);
+  });
+  // }
 });
 
 Template.bundleVariantOptions.helpers({
@@ -123,8 +138,18 @@ Template.bundleVariantOptions.helpers({
     }
     let variantProduct = ReactionCore.Collections.Products.findOne(this.variantId);
     if (variantProduct) {
-      return variantProduct.size + '-' + variantProductvariant.color;
+      return variantProduct.size + "-" + variantProductvariant.color;
     }
     return _id;
+  }
+});
+
+Template.bundleVariantOptions.events({
+  "change select.selectedProduct": function (event) {
+    const index = event.target.dataset.index;
+    const selectedVariant = event.target.value;
+    let selectedBundleVariants = Session.get("selectedBundleOptions");
+    selectedBundleVariants[index] = selectedVariant;
+    Session.set("selectedBundleOptions", selectedBundleVariants);
   }
 });
