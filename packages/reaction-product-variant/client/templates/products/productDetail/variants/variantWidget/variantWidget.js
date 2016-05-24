@@ -103,17 +103,17 @@ Template.bundleVariantWidget.helpers({
 });
 
 Template.bundleVariantOptions.onCreated(function () {
-  let bundleVariants = ReactionCore.Collections.Products.findOne({
-    ancestors: {
-      $size: 1
-    }
-  });
-  // if (bundleVariants && bundleVariants.bundleProducts) {
-  let defaultSelectedVariants = [];
-  _.each(bundleVariants.bundleProducts, function (bundleOptions) {
-    defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
-  });
-  Session.setDefault("selectedBundleOptions", defaultSelectedVariants);
+  // let bundleVariants = ReactionCore.Collections.Products.findOne({
+  //   ancestors: {
+  //     $size: 1
+  //   }
+  // });
+  // // if (bundleVariants && bundleVariants.bundleProducts) {
+  // let defaultSelectedVariants = [];
+  // _.each(bundleVariants.bundleProducts, function (bundleOptions) {
+  //   defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
+  // });
+  // Session.set("selectedBundleOptions", defaultSelectedVariants);
   Tracker.autorun(() => {
     let selectedOptions = Session.get("selectedBundleOptions");
     this.subscribe("bundleReservationStatus", selectedOptions);
