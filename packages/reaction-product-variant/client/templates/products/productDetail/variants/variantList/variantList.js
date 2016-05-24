@@ -157,11 +157,16 @@ Template.variantList.events({
   },
   "change select": function (event) {
     const variantId = event.currentTarget.value;
+    const product = ReactionCore.Collections.Products.findOne(variantId);
     const childVariants = ReactionProduct.getVariants(variantId);
     if (childVariants.length > 0) {
       Session.set("selectedVariantId", childVariants[0]._id);
       return ReactionProduct.setCurrentVariant(childVariants[0]._id);
     }
-    return variantId;
+    if (product.ancestors.length > 0) {
+      Session.set("selectedVariantId", variantId);
+      return ReactionProduct.setCurrentVariant(variantId);
+    }
+    throw new Meteor.Error("Selected variantId is invalid");
   }
 });
