@@ -56,6 +56,7 @@ Join us on our **[Gitter chat room](https://gitter.im/reactioncommerce/reaction)
 
 
 ## Renewing SSL Cert
+__Needs to be done every 60 days__
 
 1. Comment out SSL forwarding in `/etc/nginx/sites-available/gtfttd`
 

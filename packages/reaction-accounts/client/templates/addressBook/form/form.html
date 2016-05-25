@@ -1,7 +1,7 @@
 <template name="addressBookForm">
 <div class="row">
   <div class="col-md-6 form-group{{#if afFieldIsInvalid name='country'}} has-error{{/if}}">
-      <label class="control-label">{{afFieldLabelText name='country'}}</label>
+      <label class="control-label">{{afFieldLabelText name='country'}} <span style="font-weight: 400;">(US only currently)</span></label>
       {{>afFieldInput name="country"  defaultValue='US' options=countryOptions value=country}}
       {{#if afFieldIsInvalid name="country"}}
       <span class="help-block">{{afFieldMessage name="country"}}</span>

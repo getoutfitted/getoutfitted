@@ -3,8 +3,9 @@ Template.addressBookForm.helpers({
   /*
    * TODO: update for i18n
    */
+  // XXX: .find is a hack to limit allowed countries to US only.
   countryOptions: function () {
-    return ReactionCore.Collections.Countries.find().fetch();
+    return ReactionCore.Collections.Countries.find({value: "US"}).fetch();
   },
   statesForCountry: function() {
     var locale, options, ref, selectedCountry, shop, state;
