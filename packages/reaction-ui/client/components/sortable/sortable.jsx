@@ -35,8 +35,8 @@ ReactionUI.Components.SortableItems = React.createClass({
   },
 
   handleSort(event) {
-    console.log(event);
-    console.log(this.state.items);
+    // console.log(event);
+    // console.log(this.state.items);
 
     if (this.props.onSort) {
       this.props.onSort(this.state.items);
