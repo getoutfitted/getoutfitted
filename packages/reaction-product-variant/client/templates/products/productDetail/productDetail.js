@@ -160,7 +160,7 @@ Template.productDetail.events({
     let quantity;
     let currentVariant = ReactionProduct.selectedVariant();
     let currentProduct = ReactionProduct.selectedProduct();
-
+    console.log("add-to-cart pressed", currentVariant, currentProduct);
     if (currentVariant) {
       if (currentVariant.ancestors.length === 1) {
         const options = ReactionProduct.getVariants(currentVariant._id);
