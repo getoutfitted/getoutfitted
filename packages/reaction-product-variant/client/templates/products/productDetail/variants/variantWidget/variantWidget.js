@@ -106,8 +106,9 @@ Template.bundleVariantOptions.onCreated(function () {
   Tracker.autorun(() => {
     let selectedOptions = Session.get("selectedBundleOptions");
     this.subscribe("bundleReservationStatus", selectedOptions);
+    this.subscribe("productTypeAndTitle");
   });
-  // }
+  this.subscribe("productTypeAndTitle");
 });
 
 Template.bundleVariantOptions.helpers({
@@ -118,8 +119,12 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
+    debugger;
     let product = ReactionCore.Collections.Products.findOne(this.productId);
-    return product.productType || product.title;
+    if (product) {
+      return product.productType || product.title;
+    }
+    return 'Option';
   },
   variantDisplay: function () {
     if (this.label) {
