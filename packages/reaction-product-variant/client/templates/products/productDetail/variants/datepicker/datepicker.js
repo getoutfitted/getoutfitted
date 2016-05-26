@@ -684,7 +684,6 @@ Template.reservationDatepicker.onRendered(function () {
   let inventoryVariants = ReactionCore.Collections.InventoryVariants.find();
   this.autorun(() => {
     if (inventoryVariants.fetch().length > 0) {
-      console.log("rerender datepicker");
       $("#rental-start").datepicker("update");
     }
   });
