@@ -79,8 +79,8 @@ Template.bundleVariantWidget.onRendered(function () {
 });
 
 Template.bundleVariantWidget.helpers({
-  showRentalLengthOptions: function () {
-    return this.functionalType === "rental";
+  bundleProduct: function () {
+    return this.functionalType === "bundle";
   },
   actualPrice: function () {
     const current = ReactionProduct.selectedVariant();
@@ -99,6 +99,25 @@ Template.bundleVariantWidget.helpers({
       return variants[0];
     }
     return "";
+  },
+  reservation: () => {
+    const current = ReactionProduct.selectedVariant();
+    const reservationLength = Session.get("reservationLength");
+    if (typeof current === "object" && reservationLength) {
+      const childVariants = ReactionProduct.getVariants(current._id);
+      if (childVariants.length === 0 && current.functionalType === "bundleVariant") {
+        let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
+          return priceBucket.duration === reservationLength + 1;
+        });
+        if (selectedReservation) {
+          return selectedReservation;
+        }
+        if (current.rentalPriceBuckets) {
+          return current.rentalPriceBuckets[0];
+        }
+      }
+    }
+    return {};
   }
 });
 
@@ -119,7 +138,6 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    debugger;
     let product = ReactionCore.Collections.Products.findOne(this.productId);
     if (product) {
       return product.productType || product.title;

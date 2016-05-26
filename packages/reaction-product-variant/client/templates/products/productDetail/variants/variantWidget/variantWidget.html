@@ -64,16 +64,26 @@
 
 <template name='bundleVariantWidget'>
   <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
+    <div class='row'>
+      <div class='col-xs-12'>
+        <span class="rental-price">
+          {{#if bundleProduct}}
+            <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
+            <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
+          {{else}}
+            <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+          {{/if}}
+        </span>
+      </div>
+    </div>
     <div class="row">
       {{#unless hasPermission "createProduct"}}
         <div class="row reservation-calendar-container">
             {{> bundleReservationDatepicker}}
-          </div>
+            {{> rentalLengthOptions}}
+        </div>
       {{/unless}}
       <div class="col-xs-12">
-        <span class="rental-price">
-          <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
-        </span>
         {{#with bundleVariant}}
           {{> bundleVariantOptions}}
         {{/with}}
