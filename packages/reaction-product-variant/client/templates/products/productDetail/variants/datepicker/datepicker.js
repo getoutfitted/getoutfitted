@@ -646,6 +646,19 @@ Template.reservationDatepicker.onRendered(function () {
 
       let compareDate = moment(date).startOf("day");
       if (+compareDate === +selectedDate) {
+        if (!available) {
+          // if dates are unavailable, reset dates;
+          $("#add-to-cart").prop("disabled", true);
+          if ($("#unavailable-note").length === 0) {
+            $("#add-to-cart").parent().prepend(
+              "<div class='small text-center' id='unavailable-note'>"
+              + "<em>This product is unavailable for the selected dates</em></div>"
+            );
+          }
+        } else {
+          $("#add-to-cart").prop("disabled", false);
+          $("#unavailable-note").remove();
+        }
         inRange = true; // to highlight a range of dates
         return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, gear delivered today!"};
       } else if (+compareDate === +reservationEndDate) {
@@ -661,6 +674,12 @@ Template.reservationDatepicker.onRendered(function () {
         return {enabled: available, classes: "selected selected-range", tooltip: "Rental day, have fun!"}; // create a custom class in css with back color you want
       }
       return {enabled: available, classes: classes, tooltip: tooltip};
+    }
+  });
+  let inventoryVariants = ReactionCore.Collections.InventoryVariants.find();
+  this.autorun(() => {
+    if (inventoryVariants.fetch().length > 0) {
+      $("#rental-start").datepicker("update");
     }
   });
 
