@@ -34,6 +34,10 @@ ReactionCore.Schemas.BundleProducts = new SimpleSchema({
 });
 
 ReactionCore.Schemas.SelectedBundleOption = new SimpleSchema({
+  selectionForQtyNumber: {
+    type: Number,
+    optional: true
+  },
   productId: {
     type: String,
     optional: true // TODO - see if these have to be optional
