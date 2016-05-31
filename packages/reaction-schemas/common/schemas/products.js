@@ -1,3 +1,53 @@
+ReactionCore.Schemas.BundleVariants = new SimpleSchema({
+  variantId: {
+    type: String,
+    optional: true
+  },
+  label: {
+    type: String,
+    optional: true
+  }
+});
+
+ReactionCore.Schemas.BundleProducts = new SimpleSchema({
+  productId: {
+    type: String,
+    optional: true
+  },
+  variantIds: {
+    type: [ReactionCore.Schemas.BundleVariants],
+    optional: true
+  },
+  label: {
+    type: String,
+    optional: true
+  },
+  optional: {
+    type: String,
+    optional: true
+  },
+  addOnPrice: {
+    type: Number,
+    optional: true,
+    decimal: true
+  }
+});
+
+ReactionCore.Schemas.SelectedBundleOption = new SimpleSchema({
+  productId: {
+    type: String,
+    optional: true // TODO - see if these have to be optional
+  },
+  variantId: {
+    type: String,
+    optional: true // TODO - see if these have to be optional if parent is optional
+  },
+  cartLabel: {
+    type: String,
+    optional: true
+  }
+});
+
 ReactionCore.Schemas.RentalPriceBucket = new SimpleSchema({
   // Moment time unit
   timeUnit: {
@@ -328,6 +378,15 @@ ReactionCore.Schemas.ProductVariant = new SimpleSchema({
     type: String,
     optional: true,
     label: "Vendor"
+  },
+  bundleProducts: {
+    type: [ReactionCore.Schemas.BundleProducts],
+    optional: true
+  },
+  selectedBundleOptions: {
+    type: [ReactionCore.Schemas.SelectedBundleOption],
+    optional: true,
+    defaultValue: []
   }
 });
 
