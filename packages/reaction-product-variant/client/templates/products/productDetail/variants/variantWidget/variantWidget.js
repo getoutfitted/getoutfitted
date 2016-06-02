@@ -215,18 +215,6 @@ Template.bundleVariantWidget.events({
         autoHide: 8000
       });
     }
-    // console.log("#add-to-cart bundle variant clicked", window.performance.now());
-    // setTimeout(function () {
-    //   const cart = ReactionCore.Collections.Cart.findOne({}, {fields: {_id: 1}});
-    //   const productId = ReactionProduct.selectedProductId();
-    //   const variantId = ReactionProduct.selectedVariantId();
-    //   const selectedVariants = Session.get("selectedBundleOptions");
-    //   Meteor.call("productBundler/updateCartItems",
-    //               cart._id,
-    //               productId,
-    //               variantId,
-    //               selectedVariants);
-    // }, 3000);
   }
 });
 
