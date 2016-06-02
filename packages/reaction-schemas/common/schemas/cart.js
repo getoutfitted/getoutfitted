@@ -29,6 +29,21 @@ ReactionCore.Schemas.CartItem = new SimpleSchema({
     label: "Product Type",
     type: String,
     optional: true
+  },
+  bundleIndex: { // index
+    type: Number,
+    label: "Id of Bundle Item Came From",
+    optional: true
+  },
+  bundleProductId: {
+    type: String,
+    optional: true
+  },
+  customerViewType: {
+    type: String,
+    optional: true,
+    label: "Display properties for Customer",
+    allowedValues: ["bundle", "bundleComponent", "rental", "purchase", "demo"]
   }
 });
 

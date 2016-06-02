@@ -76,6 +76,7 @@ geojson-utils@1.0.8
 getoutfitted:getoutfitted-layout@1.0.0
 getoutfitted:getoutfitted-theme@0.1.0
 getoutfitted:press-feed@0.1.0
+getoutfitted:product-bundler@0.1.0
 getoutfitted:reaction-advanced-fulfillment@0.8.0
 getoutfitted:reaction-klaviyo@0.1.0
 getoutfitted:reaction-product-importer@0.1.0
