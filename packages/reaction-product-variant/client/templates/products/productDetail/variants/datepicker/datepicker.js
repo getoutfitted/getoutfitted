@@ -847,26 +847,25 @@ Template.bundleReservationDatepicker.onRendered(function () {
       // if disabled day, skip this
       if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
         available = false;
-        tooltip = "Please pick an available Thursday to take delivery."
+        tooltip = "Please pick an available Thursday to take delivery.";
       } else {
         // Change date checkers to check against Denver time
         const s = adjustLocalToDenverTime(moment(date).startOf("day"));
         const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
         const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
         const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4
-        let selectedVariantIds = Session.get('selectedBundleOptions');
-        available = _.every(selectedVariantIds, function (variantId) {
+        let selectedVariantIds = Session.get("selectedBundleOptions");
+        let selectedVariantsCount = _.countBy(selectedVariantIds);
+        // Should give us {variantId: 1, variantId2: 1}
+        let keys = Object.keys(selectedVariantsCount);
+        available = _.every(keys, function (variantId) {
           let inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
             variantId,
-            {startTime: shippingDay, endTime: returnDay}
+            {startTime: shippingDay, endTime: returnDay},
+            selectedVariantsCount[variantId]
           );
           return inventoryVariantsAvailable.length > 0;
         });
-        // const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
-        //   Session.get("selectedVariantId"),
-        //   {startTime: shippingDay, endTime: returnDay}
-        // );
-        // available = inventoryVariantsAvailable.length > 0;
         if (available) {
           if (+s > +today) {
             tooltip = "Available!";
