@@ -221,7 +221,9 @@ Template.bundleVariantWidget.events({
 Template.bundleVariantOptions.onCreated(function () {
   Tracker.autorun(() => {
     let selectedOptions = Session.get("selectedBundleOptions");
-    this.subscribe("bundleReservationStatus", selectedOptions);
+    if (selectedOptions) {
+      this.subscribe("bundleReservationStatus", selectedOptions);
+    }
   });
   this.subscribe("productTypeAndTitle");
 });
