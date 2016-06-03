@@ -806,8 +806,10 @@ Template.bundleReservationDatepicker.onCreated(function () {
   this.autorun(() => {
     if (Session.get('selectedBundleOptions')) {
       let selectedOptions = Session.get('selectedBundleOptions');
-      this.subscribe('bundleReservationStatus', selectedOptions);
-      $('#rental-start').datepicker('update');
+      if (selectedOptions) {
+        this.subscribe('bundleReservationStatus', selectedOptions);
+        $('#rental-start').datepicker('update');
+      }
     }
   });
 });
@@ -1010,4 +1012,3 @@ Template.bundleReservationDatepicker.events({
     });
   }
 });
-
