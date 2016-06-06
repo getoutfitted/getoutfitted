@@ -93,6 +93,12 @@ Template.productDetail.helpers({
       return "";
     }
     return "hidden";
+  },
+  widget: function () {
+    if (this.functionalType === "bundle") {
+      return "bundleVariantWidget";
+    }
+    return "variantWidget";
   }
 });
 
@@ -154,7 +160,6 @@ Template.productDetail.events({
     let quantity;
     let currentVariant = ReactionProduct.selectedVariant();
     let currentProduct = ReactionProduct.selectedProduct();
-
     if (currentVariant) {
       if (currentVariant.ancestors.length === 1) {
         const options = ReactionProduct.getVariants(currentVariant._id);
