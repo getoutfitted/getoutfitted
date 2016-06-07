@@ -7,11 +7,19 @@ function stickyWidget() {
   let $pricingAnchor = $("#description");
   let width = parseInt($variantWidget.outerWidth(), 10) + "px";
   let left = parseInt($variantWidget.offset().left, 10) + "px";
-
+  
+  let verticalOffset = $variantWidget.outerHeight() - 250;
+  if (verticalOffset > 115) {
+    $variantWidget.css("margin-bottom", `-${verticalOffset}px`);
+  }
+  
+  
   function adjustPosition() {
     let anchorTop = $pricingAnchor.offset().top - bubbleTop;
     let scrollTop = $(window).scrollTop();
-    if (scrollTop > anchorTop && $variantWidget.css("position") !== "fixed" ||
+    if (anchorTop === -20) {
+      // Catch image not loaded yet.
+    } else if (scrollTop > anchorTop && $variantWidget.css("position") !== "fixed" ||
     scrollTop > anchorTop && scrollTop > bubbleTop && $variantWidget.css("position") !== "fixed") {
       $variantWidget.addClass("sticky");
       $variantWidget.css({
