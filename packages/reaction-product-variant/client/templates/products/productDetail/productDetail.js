@@ -160,6 +160,16 @@ Template.productDetail.events({
     let quantity;
     let currentVariant = ReactionProduct.selectedVariant();
     let currentProduct = ReactionProduct.selectedProduct();
+
+    let cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId() });
+    if (!cart.startTime && this.functionalType === "rental") {
+      Alerts.inline("Please select an arrival date before booking", "error", {
+        placement: "datepicker",
+        autoHide: 10000
+      });
+      return [];
+    }
+
     if (currentVariant) {
       if (currentVariant.ancestors.length === 1) {
         const options = ReactionProduct.getVariants(currentVariant._id);
