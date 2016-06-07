@@ -44,19 +44,32 @@ Template.checkoutCompletedOrder.helpers({
  */
 Template.checkoutCompleteListItems.helpers({
   bundles: function () {
-    return _.filter(this.items, function (item) {
+    let bundleIndexNumbers = {};
+    let bundles = _.filter(this.items, function (item) {
       return item.variants.functionalType === "bundleVariant";
     });
+    _.map(bundles, function (bundle) {
+      if (bundleIndexNumbers[bundle.productId]) {
+        bundleIndexNumbers[bundle.productId] += 1;
+        bundle.bundleIndexNumber = bundleIndexNumbers[bundle.productId];
+      } else {
+        bundleIndexNumbers[bundle.productId] = 1;
+        bundle.bundleIndexNumber = 1;
+      }
+      return bundle;
+    });
+
+    return bundles;
   },
 
-  bundleComponents: function (index) {
+  bundleComponents: function () {
     const currentBundle = this;
     const orderItems = Template.parentData().items;
-
     let components = _.filter(orderItems, function (item) {
       const isComponent = item.customerViewType === "bundleComponent";
-      const isCurrentBundle = currentBundle.productId === item.bundleProductId;
-      return isComponent && isCurrentBundle;
+      const isCurrentBundleId = currentBundle.productId === item.bundleProductId;
+      const isCurrentBundleIndex = currentBundle.bundleIndexNumber === item.bundleIndex;
+      return isComponent && isCurrentBundleId && isCurrentBundleIndex;
     });
 
     let count = {};

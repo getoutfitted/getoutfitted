@@ -170,8 +170,8 @@
             </div>
             <div class="grid-order-detail-additional col-xs-4 col-md-8">
               <div class="row">
-                <h4>{{variants.title}} includes</h4>
-                {{#each bundleComponents @index}}
+                <span class="grid-item-includes"><em>{{variants.title}} includes</em></span>
+                {{#each bundleComponents}}
                   <div class="col-xs-12 col-md-6 grid-component-order-item">
                     <div class="grid-order-item-component-media">
                       {{#with media}}
