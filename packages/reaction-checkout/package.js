@@ -79,6 +79,8 @@ Package.onUse(function (api) {
 
   api.addFiles("client/templates/cart/checkout/completed/completed.html", "client");
   api.addFiles("client/templates/cart/checkout/completed/completed.js", "client");
+  api.addFiles("client/templates/cart/checkout/completed/items/checkoutCompleteListItems.html", "client");
+  api.addFiles("client/templates/cart/checkout/completed/items/checkoutCompleteListItems.js", "client");
 
   api.addFiles("client/templates/cart/checkout/shipping/shipping.html", "client");
   api.addFiles("client/templates/cart/checkout/shipping/shipping.js", "client");

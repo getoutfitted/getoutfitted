@@ -18,8 +18,8 @@ Template.cartCompleted.helpers({
   },
   orderStatus: function () {
     if (this.workflow.status === "new") {
-      return i18next.t("cartCompleted.submitted");
-    }
+      return "submitted"; // Remove i18next b/c not working properly and
+    }                     // not running `this.workflow.status` through anyway.
     return this.workflow.status;
   },
   userOrders: function () {
