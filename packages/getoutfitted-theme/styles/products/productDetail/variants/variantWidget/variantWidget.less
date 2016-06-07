@@ -67,12 +67,12 @@
   display: inline-block;
   font-size: 16px;
   font-weight: @font-weight-heading;
-  margin: 10px 0;
+  margin: 10px 0 5px 0;
 }
 
 .rental-price span, .rental-price small {
   display: inline-block;
-  padding-bottom: 10px;
+  padding-bottom: 0px;
 }
 
 .beginner-trail {
@@ -150,6 +150,39 @@ a.input-descriptor {
     margin-top: 8px;
     margin-right: 10px;
   }
+}
+
+// Multiple Price Buckets
+.reservation-length-options {
+  margin-bottom: 15px;
+}
+.reservation-length-options .radio {
+  display: inline-block;
+  &:not(:first-child) {
+    margin-left: 10px;
+  }
+}
+
+
+// Bundles
+.bundle-options .form-group {
+  margin: 0;
+}
+
+.variant-widget .bundle-options select {
+  margin: 1px 0 4px 0;
+}
+
+.variant-widget .no-choice-item {
+  display: block;
+}
+
+.bundle-variant-default {
+  padding: 5px 0;
+}
+
+.variant-default-option {
+  padding-left: 15px;
 }
 
 @media (min-width: @screen-sm-min) {
