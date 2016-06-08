@@ -590,13 +590,18 @@ Template.reservationDatepicker.onRendered(function () {
   const firstChild = variants.find(function (variant) {
     return variant.ancestors.length === 2;
   });
+  // default reservation length is one less than customer facing and rental
+  // bucket lengths because the datepicker includes the selected day
+  // So duration is default to 5 for a 6 day rental.
   let defaultReservationLength = 5;
   if (firstChild) {
     ReactionProduct.setCurrentVariant(firstChild._id);
     Session.set("selectedVariantId", firstChild._id);
     if (firstChild.rentalPriceBuckets) {
+      // find duration - 1 of the price bucket because selected day is not included
       defaultReservationLength = firstChild.rentalPriceBuckets[0].duration - 1;
     }
+    // TODO: If we can't find a price bucket, exit gracefully.
   }
 
   Session.setDefault("reservationLength", defaultReservationLength); // inclusive of return day, exclusive of arrivalDay
@@ -767,6 +772,228 @@ const calendarLegendHtml = "<div class='calendar-footer'>" +
             "</div>";
 
 Template.reservationDatepicker.events({
+  "click .show-start": function () {
+    $("#rental-start").datepicker("show");
+  },
+  "click #display-date": function () {
+    $("#rental-start").datepicker("show");
+    if ($(".datepicker-days .calendar-header").length === 0) {
+      $(".datepicker-days").prepend(calendarHtml);
+      $(".datepicker-days").append(calendarLegendHtml);
+      $(".datepicker-days").tooltip({
+        selector: ".day",
+        container: "body"
+      });
+    }
+    $(".datepicker-days .calendar-header").on("click", ".thursday-modal-link", function () {
+      Modal.show("thursdayDeliveryExplanation");
+    });
+  }
+});
+
+Template.bundleReservationDatepicker.onCreated(function () {
+  let bundleVariants = ReactionCore.Collections.Products.findOne({
+    ancestors: {
+      $size: 1
+    }
+  });
+  // if (bundleVariants && bundleVariants.bundleProducts) {
+  let defaultSelectedVariants = [];
+  _.each(bundleVariants.bundleProducts, function (bundleOptions) {
+    defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
+  });
+  Session.setDefault("selectedBundleOptions", defaultSelectedVariants);
+  this.autorun(() => {
+    if (Session.get('selectedBundleOptions')) {
+      let selectedOptions = Session.get('selectedBundleOptions');
+      if (selectedOptions) {
+        this.subscribe('bundleReservationStatus', selectedOptions);
+        $('#rental-start').datepicker('update');
+      }
+    }
+  });
+});
+
+
+Template.bundleReservationDatepicker.onRendered(function () {
+  const variants = ReactionProduct.getVariants();
+  const firstChild = variants.find(function (variant) {
+    return variant.ancestors.length === 1;
+  });
+  // default reservation length is one less than customer facing and rental
+  // bucket lengths because the datepicker includes the selected day
+  // So duration is default to 5 for a 6 day rental.
+  let defaultReservationLength = 5;
+  if (firstChild) {
+    ReactionProduct.setCurrentVariant(firstChild._id);
+    if (firstChild.rentalPriceBuckets) {
+      // find duration - 1 of the price bucket because selected day is not included
+      defaultReservationLength = firstChild.rentalPriceBuckets[0].duration - 1;
+    }
+    // TODO: If we can't find a price bucket, exit gracefully.
+  }
+
+  Session.setDefault("reservationLength", defaultReservationLength); // inclusive of return day, exclusive of arrivalDay
+  Session.setDefault("nextMonthHighlight", 0);
+  $("#rental-start").datepicker({
+    startDate: "+4d",
+    autoclose: true,
+    daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
+    endDate: "+540d",
+    maxViewMode: 0,
+    beforeShowDay: function (date) {
+      let reservationLength = Session.get("reservationLength");
+      let available;
+      let classes = "";
+      let tooltip = "";
+      // if disabled day, skip this
+      if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
+        available = false;
+        tooltip = "Please pick an available Thursday to take delivery.";
+      } else {
+        // Change date checkers to check against Denver time
+        const s = adjustLocalToDenverTime(moment(date).startOf("day"));
+        const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
+        const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
+        const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4
+        let selectedVariantIds = Session.get("selectedBundleOptions");
+        let selectedVariantsCount = _.countBy(selectedVariantIds);
+        // Should give us {variantId: 1, variantId2: 1}
+        let keys = Object.keys(selectedVariantsCount);
+        available = _.every(keys, function (variantId) {
+          let inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
+            variantId,
+            {startTime: shippingDay, endTime: returnDay},
+            selectedVariantsCount[variantId]
+          );
+          return inventoryVariantsAvailable.length > 0;
+        });
+        if (available) {
+          if (+s > +today) {
+            tooltip = "Available!";
+          } else {
+            tooltip = "Pick a date in the future";
+          }
+        } else {
+          tooltip = "Fully Booked";
+        }
+      }
+      let selectedDate = $("#rental-start").val();
+      if (!selectedDate) {
+        return {enabled: available, classes: classes, tooltip: tooltip};
+      }
+      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
+      reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
+
+      let compareDate = moment(date).startOf("day");
+      if (+compareDate === +selectedDate) {
+        if (!available) {
+           // if dates are unavailable, reset dates;
+          $("#add-to-cart").prop("disabled", true);
+          if ($("#unavailable-note").length === 0) {
+            $("#add-to-cart").parent().prepend(
+              "<div class='small text-center' id='unavailable-note'>"
+              + "<em>This product is unavailable for the selected dates</em></div>"
+            );
+          }
+        } else {
+          $("#add-to-cart").prop("disabled", false);
+          $("#unavailable-note").remove();
+        }
+        inRange = true; // to highlight a range of dates
+        return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, gear delivered today!"};
+      } else if (+compareDate === +reservationEndDate) {
+        if (inRange) inRange = false;  // to stop the highlight of dates ranges
+        return {enabled: available, classes: "selected selected-end", tooltip: "Drop gear off at UPS by 3pm to be returned"};
+      } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
+        inRange = true;
+      } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
+        inRange = false;
+      }
+
+      if (inRange) {
+        return {enabled: available, classes: "selected selected-range", tooltip: "Rental day, have fun!"}; // create a custom class in css with back color you want
+      }
+      return {enabled: available, classes: classes, tooltip: tooltip};
+    }
+  });
+  let inventoryVariants = ReactionCore.Collections.InventoryVariants.find();
+  this.autorun(() => {
+    if (inventoryVariants.fetch().length > 0) {
+      $("#rental-start").datepicker("update");
+    }
+  });
+
+  $(document).on({
+    mouseenter: function () {
+      let $nextWeeks = $(this).parent().nextAll().find(".day");
+      let $remainingDaysThisWeek = $(this).nextAll();
+      let numDaysToHighlight = Session.get("reservationLength");
+
+      if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
+        $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
+        return $remainingDaysThisWeek.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
+      }
+      $remainingDaysThisWeek.addClass("highlight");
+      numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
+      $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
+      return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
+    },
+    mouseleave: function () {
+      $(".day").removeClass("highlight");
+    }
+  }, ".day:not(.disabled)");
+
+  $("#rental-start").on({
+    changeDate: function (event) {
+      $(".tooltip").remove();
+      const cart = ReactionCore.Collections.Cart.findOne();
+      const reservationLength = Session.get("reservationLength");
+
+      // Sets cart dates to Denver time - need to set as local time on display.
+      const startDate = adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day"));
+      const endDate = adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").add(reservationLength, "days"));
+
+      if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
+        Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate, endDate);
+        Session.set("reservationStart", startDate);
+        $("#rental-start").datepicker("update");
+      }
+    }
+  });
+});
+
+Template.bundleReservationDatepicker.helpers({
+  startDate: function () {
+    let cart = ReactionCore.Collections.Cart.findOne();
+    if (cart && cart.startTime) {
+      return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
+    }
+    return "";
+  },
+
+  startDateHuman: function () {
+    const cart = ReactionCore.Collections.Cart.findOne();
+    const resLength = Session.get("reservationLength");
+    if (cart && cart.startTime) {
+      return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("ddd M/DD")
+        + " - " + moment(adjustDenverToLocalTime(moment(cart.startTime).add(resLength, "days"))).format("ddd M/DD");
+    }
+    return "";
+  },
+
+  rentalLength: function () {
+    if (Session.get("cartRentalLength")) {
+      return Session.get("cartRentalLength");
+    }
+    let cart = ReactionCore.Collections.Cart.findOne();
+    return cart.rentalDays;
+  }
+});
+
+
+
+Template.bundleReservationDatepicker.events({
   "click .show-start": function () {
     $("#rental-start").datepicker("show");
   },
