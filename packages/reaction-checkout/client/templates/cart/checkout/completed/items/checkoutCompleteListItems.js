@@ -43,6 +43,15 @@ Template.checkoutCompletedOrder.helpers({
  *
  */
 Template.checkoutCompleteListItems.helpers({
+  items: function () {
+    let items = _.filter(this.items, function (item) {
+      const notBundle = item.variants.functionalType !== "bundleVariant";
+      const notComponent = item.customerViewType !== "bundleComponent";
+      return notBundle && notComponent;
+    });
+    return items;
+  },
+
   bundles: function () {
     let bundleIndexNumbers = {};
     let bundles = _.filter(this.items, function (item) {

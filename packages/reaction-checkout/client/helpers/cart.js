@@ -98,11 +98,17 @@ Template.registerHelper("cartPayerName", function () {
  */
 
 Template.registerHelper("filteredVariantOption", function (variantOption) {
-  return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+  if (variantOption) {
+    return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+  }
+  return "";
 });
 
 Template.registerHelper("filteredVariantGender", function (variantGender) {
-  return variantGender.replace(/unisex/i, "");
+  if (variantGender) {
+    return variantGender.replace(/unisex/i, "");
+  }
+  return "";
 });
 
 Template.registerHelper("hasReservationDates", function (order) {
