@@ -90,6 +90,8 @@ Package.onUse(function (api) {
 
   api.addFiles("client/templates/cart/checkout/checkoutReviewItems/checkoutReviewItems.html", "client");
   api.addFiles("client/templates/cart/checkout/checkoutReviewItems/checkoutReviewItems.js", "client");
+  api.addFiles("client/templates/cart/checkout/termsOfService/termsOfService.html", "client");
+  api.addFiles("client/templates/cart/checkout/termsOfService/termsOfService.js", "client");
   // register package
   api.addFiles("server/register.js", "server");
   // api.addFiles("server/logger.js", "server");
