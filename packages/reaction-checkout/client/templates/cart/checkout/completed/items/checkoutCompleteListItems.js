@@ -43,6 +43,15 @@ Template.checkoutCompletedOrder.helpers({
  *
  */
 Template.checkoutCompleteListItems.helpers({
+  items: function () {
+    let items = _.filter(this.items, function (item) {
+      const notBundle = item.variants.functionalType !== "bundleVariant";
+      const notComponent = item.customerViewType !== "bundleComponent";
+      return notBundle && notComponent;
+    });
+    return items;
+  },
+
   bundles: function () {
     let bundleIndexNumbers = {};
     let bundles = _.filter(this.items, function (item) {
@@ -65,6 +74,7 @@ Template.checkoutCompleteListItems.helpers({
   bundleComponents: function () {
     const currentBundle = this;
     const orderItems = Template.parentData().items;
+    console.log(orderItems);
     let components = _.filter(orderItems, function (item) {
       const isComponent = item.customerViewType === "bundleComponent";
       const isCurrentBundleId = currentBundle.productId === item.bundleProductId;
@@ -72,6 +82,7 @@ Template.checkoutCompleteListItems.helpers({
       return isComponent && isCurrentBundleId && isCurrentBundleIndex;
     });
 
+    console.log("all components", components);
     let count = {};
     uniqueComponents = _.reduce(components, function(components, component) {
       let id = component.variants._id;
@@ -85,6 +96,7 @@ Template.checkoutCompleteListItems.helpers({
 
       return components;
     }, []);
+    console.log("unique pre map", uniqueComponents);
 
     _.map(uniqueComponents, function(component) {
       let id = component.variants._id;
@@ -94,6 +106,7 @@ Template.checkoutCompleteListItems.helpers({
       return component;
     });
 
+    console.log("unique post map", uniqueComponents);
     return uniqueComponents;
   },
 

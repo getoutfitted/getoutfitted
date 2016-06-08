@@ -166,7 +166,12 @@
         <div class="grid-order-item-details col-xs-10 col-md-11">
           <div class="row">
             <div class="grid-order-detail-title col-xs-4 col-md-2">
+              {{this.variants.vendor}}
+              {{filteredVariantGender this.variants.gender}}
               {{variants.title}}
+              {{this.variants.productTitle}}
+              {{filteredVariantOption this.variants.size}}
+              {{filteredVariantOption this.variants.color}}
             </div>
             <div class="grid-order-detail-additional col-xs-4 col-md-8">
               <div class="row">
@@ -206,35 +211,38 @@
         </div>
       </div>
   {{/each}}
-</div>
+  {{#each items}}
+    <div class="grid-order-item row">
+      <div class="grid-order-item-media col-xs-2 col-md-1">
+        {{#with media}}
+          <img src="{{url store='thumbnail'}}">
+        {{else}}
+          <img src= "/resources/placeholder.gif">
+        {{/with}}
+      </div>
 
-<!-- {{#each items}}
-  <div class="order-items">
-      <div class="order-item">
-        <div class="order-item-media">
-          {{#with media}}
-            <img src="{{url store='thumbnail'}}">
-          {{else}}
-            <img src= "/resources/placeholder.gif">
-          {{/with}}
+      <div class="grid-order-item-details col-xs-10 col-md-11">
+        <div class="row">
+          <div class="grid-order-detail-title col-xs-4 col-md-2">
+            {{this.variants.vendor}}
+            {{filteredVariantGender this.variants.gender}}
+            {{this.variants.productTitle}}
+            {{filteredVariantOption this.variants.size}}
+            {{filteredVariantOption this.variants.color}}
+          </div>
+          <div class="grid-order-detail-additional col-xs-4 col-md-8">
+          </div>
+          <div class="grid-order-detail-quantity col-xs-2 col-md-1">
+            <span class="badge badge-info">{{quantity}}</span>
+          </div>
+          <div class="col-xs-2 col-md-1">
+            <span class="grid-order-detail-price">
+              <span>{{formatPrice variants.price}}</span>
+            </span>
+          </div>
         </div>
-
-      <div class="order-item-details">
-
-        <div class="order-detail-title">
-          {{variants.title}}
-        </div>
-
-        <div class="order-detail-quantity">
-        </div>
-
-        <span class="order-detail-price">
-          <span class="badge badge-info">{{quantity}}</span>
-          -
-          <span>{{formatPrice variants.price}}</span>
-        </span>
       </div>
     </div>
-  </div>
-{{/each}} -->
+{{/each}}
+</div>
 </template>
