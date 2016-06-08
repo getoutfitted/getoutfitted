@@ -29,6 +29,21 @@ ReactionCore.Schemas.CartItem = new SimpleSchema({
     label: "Product Type",
     type: String,
     optional: true
+  },
+  bundleIndex: { // index
+    type: Number,
+    label: "Id of Bundle Item Came From",
+    optional: true
+  },
+  bundleProductId: {
+    type: String,
+    optional: true
+  },
+  customerViewType: {
+    type: String,
+    optional: true,
+    label: "Display properties for Customer",
+    allowedValues: ["bundle", "bundleComponent", "rental", "purchase", "demo"]
   }
 });
 
@@ -123,5 +138,15 @@ ReactionCore.Schemas.Cart = new SimpleSchema({
       }
     },
     optional: true
+  },
+  customerAgreedToTermsOfService: {
+    type: Boolean,
+    defaultValue: false,
+    label: "Customer has agreed to Terms"
+  },
+  dateCustomerAgreedToTermsOfService: {
+    type: Date,
+    optional: true,
+    label: "Date Customer Agreed to Terms"
   }
 });
