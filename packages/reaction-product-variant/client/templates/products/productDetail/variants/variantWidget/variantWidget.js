@@ -7,11 +7,19 @@ function stickyWidget() {
   let $pricingAnchor = $("#description");
   let width = parseInt($variantWidget.outerWidth(), 10) + "px";
   let left = parseInt($variantWidget.offset().left, 10) + "px";
-
+  
+  let verticalOffset = $variantWidget.outerHeight() - 250;
+  if (verticalOffset > 115) {
+    $variantWidget.css("margin-bottom", `-${verticalOffset}px`);
+  }
+  
+  
   function adjustPosition() {
     let anchorTop = $pricingAnchor.offset().top - bubbleTop;
     let scrollTop = $(window).scrollTop();
-    if (scrollTop > anchorTop && $variantWidget.css("position") !== "fixed" ||
+    if (anchorTop === -20) {
+      // Catch image not loaded yet.
+    } else if (scrollTop > anchorTop && $variantWidget.css("position") !== "fixed" ||
     scrollTop > anchorTop && scrollTop > bubbleTop && $variantWidget.css("position") !== "fixed") {
       $variantWidget.addClass("sticky");
       $variantWidget.css({
@@ -131,6 +139,14 @@ Template.bundleVariantWidget.events({
     let quantity;
     let currentVariant = ReactionProduct.selectedVariant();
     let currentProduct = ReactionProduct.selectedProduct();
+    let cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId() });
+    if (!cart.startTime) {
+      Alerts.inline("Please select an arrival date before booking", "error", {
+        placement: "datepicker",
+        autoHide: 10000
+      });
+      return [];
+    }
     if (currentVariant) {
       if (currentVariant.ancestors.length === 1) {
         const options = ReactionProduct.getVariants(currentVariant._id);
@@ -251,7 +267,11 @@ Template.bundleVariantOptions.helpers({
       return variantProduct.size + "-" + variantProductvariant.color;
     }
     return _id;
+  },
+  hasOptions: function () {
+    return this.variantIds.length > 1;
   }
+  
 });
 
 Template.bundleVariantOptions.events({
@@ -263,3 +283,30 @@ Template.bundleVariantOptions.events({
     Session.set("selectedBundleOptions", selectedBundleVariants);
   }
 });
+
+Template.bundleVariantDefaults.helpers({
+  defaultOptions: function () {
+    let defaultOptions = _.reduce(this.bundleProducts, function(bundles, bundle) {
+        let id = bundle.variantIds[0].variantId;
+        if (bundle.variantIds.length === 1) {
+          if (bundles[id]) {
+            bundles[id]["quantity"] += 1;
+          } else {
+            bundles[id] = {
+              quantity: 1,
+              title: `${bundle.label}`,
+              option: `${bundle.variantIds[0].label}`
+            }
+          }
+        }
+        return bundles;
+    }, {});
+
+    return _.map(defaultOptions, function(val) {
+      return val;
+    });
+  },
+  moreThanOne: function (qty) {
+    return qty > 1;
+  }
+})
