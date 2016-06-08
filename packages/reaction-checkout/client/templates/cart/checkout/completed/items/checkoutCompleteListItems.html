@@ -82,6 +82,10 @@
         {{#each shipping}}
         <div class="col-xs-10">
           {{shipmentMethod.label}}
+          
+          {{#if hasReservationDates ..}}
+          <em>Arrives on: {{orderStartReservationHuman ..}}</em>
+          {{/if}}
         </div>
         {{/each}}
       </div>
@@ -95,8 +99,8 @@
         <div class="col-xs-10">
           {{#each billing}}
           <span id="order-payment-method">{{paymentMethod.storedCard}}</span>
-          <small><span data-id="cartCompleted.reference">Ref:</span></small>
-          <span id="order-payment-transaction">{{paymentMethod.transactionId}}</span>
+          <small><span data-id="cartCompleted.reference">Ref:</span>
+          <span id="order-payment-transaction">{{paymentMethod.transactionId}}</span></small>
           &nbsp;
           {{/each}}
         </div>
@@ -157,7 +161,7 @@
       <div class="grid-order-item row">
         <div class="grid-order-item-media col-xs-2 col-md-1">
           {{#with media}}
-            <img src="{{url store='thumbnail'}}">
+            <img src="{{url store='cart'}}">
           {{else}}
             <img src= "/resources/placeholder.gif">
           {{/with}}
@@ -166,12 +170,12 @@
         <div class="grid-order-item-details col-xs-10 col-md-11">
           <div class="row">
             <div class="grid-order-detail-title col-xs-4 col-md-2">
-              {{this.variants.vendor}}
-              {{filteredVariantGender this.variants.gender}}
+              {{variants.vendor}}
+              {{filteredVariantGender variants.gender}}
               {{variants.title}}
-              {{this.variants.productTitle}}
-              {{filteredVariantOption this.variants.size}}
-              {{filteredVariantOption this.variants.color}}
+              {{variants.productTitle}}
+              {{filteredVariantOption variants.size}}
+              {{filteredVariantOption variants.color}}
             </div>
             <div class="grid-order-detail-additional col-xs-4 col-md-8">
               <div class="row">
@@ -180,7 +184,7 @@
                   <div class="col-xs-12 col-md-6 grid-component-order-item">
                     <div class="grid-order-item-component-media">
                       {{#with media}}
-                        <img src="{{url store='thumbnail'}}">
+                        <img src="{{url store='cart'}}">
                       {{else}}
                         <img src= "/resources/placeholder.gif">
                       {{/with}}
@@ -188,11 +192,11 @@
                     <div class="grid-component-item-details">
                       <div class="grid-component-detail-title">
                         <span class="badge badge-info">{{quantity}}</span>
-                        {{this.variants.vendor}}
-                        {{filteredVariantGender this.variants.gender}}
-                        {{this.variants.productTitle}}
-                        {{filteredVariantOption this.variants.size}}
-                        {{filteredVariantOption this.variants.color}}
+                        {{variants.vendor}}
+                        {{filteredVariantGender variants.gender}}
+                        {{variants.productTitle}}
+                        {{filteredVariantOption variants.size}}
+                        {{filteredVariantOption variants.color}}
                       </div>
                     </div>
                   </div>
@@ -224,11 +228,11 @@
       <div class="grid-order-item-details col-xs-10 col-md-11">
         <div class="row">
           <div class="grid-order-detail-title col-xs-4 col-md-2">
-            {{this.variants.vendor}}
-            {{filteredVariantGender this.variants.gender}}
-            {{this.variants.productTitle}}
-            {{filteredVariantOption this.variants.size}}
-            {{filteredVariantOption this.variants.color}}
+            {{variants.vendor}}
+            {{filteredVariantGender variants.gender}}
+            {{variants.productTitle}}
+            {{filteredVariantOption variants.size}}
+            {{filteredVariantOption variants.color}}
           </div>
           <div class="grid-order-detail-additional col-xs-4 col-md-8">
           </div>
