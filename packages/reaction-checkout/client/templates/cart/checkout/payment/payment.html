@@ -1,4 +1,5 @@
 <template name="checkoutPayment">
+  {{#if customerHasAgreedToTermsOfService}}
   <div class="panel panel-default">
 
     <div class="panel-heading">
@@ -14,4 +15,5 @@
     </div>
 
   </div>
+  {{/if}}
 </template>

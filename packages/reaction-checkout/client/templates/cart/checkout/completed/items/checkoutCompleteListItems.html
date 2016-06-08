@@ -1,0 +1,252 @@
+<template name="checkoutCompletedOrder">
+{{#each orders data=data}}
+  <div class="panel panel-default order-list-detail">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <span data-i18n="cartCompleted.placed">Placed</span>
+        <span>{{orderAge}}</span>
+        <span data-i18n="cartCompleted.on">on</span>
+        <span>{{dateFormat createdAt format="MMM D h:mm"}}</span>
+      </h3>
+    </div>
+    <div class="panel-body">
+
+
+      <div class="row">
+        <div class="col-xs-6 col-sm-2">
+          <strong>
+            <span data-i18n="cartCompleted.status">Order Number</span>
+          </strong>
+        </div>
+        <div class="col-xs-6 col-sm-10">
+          <span>{{orderNumber}}</span>
+        </div>
+      </div>
+      
+      {{#if hasReservationDates}}
+      <div class="row">
+        <div class="col-xs-6 col-sm-2">
+          <strong>
+            <span data-i18n="cartCompleted.status">Reservation Dates</span>
+          </strong>
+        </div>
+        <div class="col-xs-6 col-sm-10">
+          <span>{{orderStartReservationHuman}}</span> - <span>{{orderEndReservationHuman}}</span>
+        </div>
+      </div>
+      {{/if}}
+      
+      <div class="row">
+        <div class="col-xs-6 col-sm-2">
+          <strong>
+            <span data-i18n="cartCompleted.status">Status</span>
+          </strong>
+        </div>
+        <div class="col-xs-6 col-sm-10">
+          {{#if orderStatus}}
+              <span data-i18n="orderShipping.shipped">Completed</span>
+          {{else}}
+              <span data-i18n="orderShipping.notShipped">Processing</span>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="row order-address-info">
+        <div class="col-xs-6 col-sm-2">
+          <strong>
+            <span data-i18n="cartCompleted.destination">Destination</span>
+          </strong>
+        </div>
+        <div class="col-xs-10">
+          {{#each shipping}}
+            {{#with address}}
+              <span>
+                <address>
+                  {{address1}}
+                  {{address2}}
+                  {{city}}, {{region}} {{postal}} {{country}}
+                  {{phone}}
+                </address>
+              </span>
+            {{/with}}
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="row order-shipment-info">
+        <div class="col-xs-6 col-sm-2">
+          <strong>
+            <span data-i18n="cartCompleted.shipment">Shipment</span>
+          </strong>
+        </div>
+        {{#each shipping}}
+        <div class="col-xs-10">
+          {{shipmentMethod.label}}
+          
+          {{#if hasReservationDates ..}}
+          <em>Arrives on: {{orderStartReservationHuman ..}}</em>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+
+      <div class="row order-payment-info">
+        <div class="col-xs-6 col-sm-2">
+          <strong>
+            <span data-i18n="cartCompleted.payment">Payment</span>
+          </strong>
+        </div>
+        <div class="col-xs-10">
+          {{#each billing}}
+          <span id="order-payment-method">{{paymentMethod.storedCard}}</span>
+          <small><span data-id="cartCompleted.reference">Ref:</span>
+          <span id="order-payment-transaction">{{paymentMethod.transactionId}}</span></small>
+          &nbsp;
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="row order-group-title">
+        <div class="col-xs-12">
+          <strong>
+            <span id="order-item-count">{{nonComponentItemCount}}</span>
+            <span data-i18n="cartCompleted.itemsFrom">item(s) from</span>
+            <span id="order-group-name">{{shopName}}</span>
+          </strong>
+        </div>
+      </div>
+
+      <div class="row order-list-items">
+        <div class="col-xs-12">
+          {{> checkoutCompleteListItems}}
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-footer">
+      {{> ordersListSummary}}
+    </div>
+  </div>
+
+{{else}}
+  <div class="alert alert-info">
+    <span data-i18n="cartCompleted.noOrdersFound">No orders found.</span>
+  </div>
+{{/each}}
+</template>
+
+<template name="checkoutCompleteListItems">
+  <div class="grid-order-items">
+    <header>
+      <div class="grid-order-item">
+        <div class="grid-order-item-media text-center col-xs-2 col-md-1">
+        </div>
+        <div class="grid-order-item-details col-xs-10 col-md-11">
+          <div class="grid-order-detail-title col-xs-4 col-md-2">
+            Title
+          </div>
+          <div class="grid-order-detail-additional col-xs-4 col-md-8">
+            Item Details
+          </div>
+          <div class="grid-order-detail-quantity col-xs-2 col-md-1">
+            Quantity
+          </div>
+          <div class="grid-order-detail-price col-xs-2 col-md-1">
+            Price
+          </div>
+        </div>
+      </div>
+    </header>
+    {{#each bundles}}
+      <div class="grid-order-item row">
+        <div class="grid-order-item-media col-xs-2 col-md-1">
+          {{#with media}}
+            <img src="{{url store='cart'}}">
+          {{else}}
+            <img src= "/resources/placeholder.gif">
+          {{/with}}
+        </div>
+
+        <div class="grid-order-item-details col-xs-10 col-md-11">
+          <div class="row">
+            <div class="grid-order-detail-title col-xs-4 col-md-2">
+              {{variants.vendor}}
+              {{filteredVariantGender variants.gender}}
+              {{variants.title}}
+              {{variants.productTitle}}
+              {{filteredVariantOption variants.size}}
+              {{filteredVariantOption variants.color}}
+            </div>
+            <div class="grid-order-detail-additional col-xs-4 col-md-8">
+              <div class="row">
+                <span class="grid-item-includes"><em>{{variants.title}} includes</em></span>
+                {{#each bundleComponents}}
+                  <div class="col-xs-12 col-md-6 grid-component-order-item">
+                    <div class="grid-order-item-component-media">
+                      {{#with media}}
+                        <img src="{{url store='cart'}}">
+                      {{else}}
+                        <img src= "/resources/placeholder.gif">
+                      {{/with}}
+                    </div>
+                    <div class="grid-component-item-details">
+                      <div class="grid-component-detail-title">
+                        <span class="badge badge-info">{{quantity}}</span>
+                        {{variants.vendor}}
+                        {{filteredVariantGender variants.gender}}
+                        {{variants.productTitle}}
+                        {{filteredVariantOption variants.size}}
+                        {{filteredVariantOption variants.color}}
+                      </div>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            <div class="grid-order-detail-quantity col-xs-2 col-md-1">
+              <span class="badge badge-info">{{quantity}}</span>
+            </div>
+            <div class="col-xs-2 col-md-1">
+              <span class="grid-order-detail-price">
+                <span>{{formatPrice variants.price}}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+  {{/each}}
+  {{#each items}}
+    <div class="grid-order-item row">
+      <div class="grid-order-item-media col-xs-2 col-md-1">
+        {{#with media}}
+          <img src="{{url store='thumbnail'}}">
+        {{else}}
+          <img src= "/resources/placeholder.gif">
+        {{/with}}
+      </div>
+
+      <div class="grid-order-item-details col-xs-10 col-md-11">
+        <div class="row">
+          <div class="grid-order-detail-title col-xs-4 col-md-2">
+            {{variants.vendor}}
+            {{filteredVariantGender variants.gender}}
+            {{variants.productTitle}}
+            {{filteredVariantOption variants.size}}
+            {{filteredVariantOption variants.color}}
+          </div>
+          <div class="grid-order-detail-additional col-xs-4 col-md-8">
+          </div>
+          <div class="grid-order-detail-quantity col-xs-2 col-md-1">
+            <span class="badge badge-info">{{quantity}}</span>
+          </div>
+          <div class="col-xs-2 col-md-1">
+            <span class="grid-order-detail-price">
+              <span>{{formatPrice variants.price}}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+{{/each}}
+</div>
+</template>

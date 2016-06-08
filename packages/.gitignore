@@ -77,9 +77,11 @@ transit-times
 reaction-shipstation
 reaction-klaviyo
 reaction-zopim
-product-bundles
+product-bundler
 reaction-local-delivery
 reaction-shopify-orders
 static-pages
 press-feed
+slack
+
 

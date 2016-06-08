@@ -3,6 +3,15 @@
  *
  */
 
+
+function adjustDenverToLocalTime(time) {
+  let denver = moment(time).tz("America/Denver");
+  let here = moment(time);
+  here.add(denver.utcOffset() - here.utcOffset(), "minutes");
+  return here.toDate();
+}
+
+
 /**
  * cart template helper
  * @description
@@ -89,9 +98,48 @@ Template.registerHelper("cartPayerName", function () {
  */
 
 Template.registerHelper("filteredVariantOption", function (variantOption) {
-  return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+  if (variantOption) {
+    return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+  }
+  return "";
 });
 
 Template.registerHelper("filteredVariantGender", function (variantGender) {
-  return variantGender.replace(/unisex/i, "");
+  if (variantGender) {
+    return variantGender.replace(/unisex/i, "");
+  }
+  return "";
+});
+
+Template.registerHelper("hasReservationDates", function (order) {
+  if (order && order.startTime && order.endTime) {
+    return true;
+  }
+  if (this && this.startTime && this.endTime) {
+    return true;
+  }
+  return false;
+});
+
+Template.registerHelper("orderStartReservationHuman", function (order) {
+  if (order && order.startTime) {
+    return moment(adjustDenverToLocalTime(moment(order.startTime))).format("ddd M/DD");
+  }
+
+  if (this && this.startTime) {
+    return moment(adjustDenverToLocalTime(moment(this.startTime))).format("ddd M/DD");
+  }
+
+  return "";
+});
+
+Template.registerHelper("orderEndReservationHuman", function (order) {
+  if (order && order.endTime) {
+    return moment(adjustDenverToLocalTime(moment(order.endTime))).format("ddd M/DD");
+  }
+  if (this && this.endTime) {
+    return moment(adjustDenverToLocalTime(moment(this.endTime))).format("ddd M/DD");
+  }
+
+  return "";
 });

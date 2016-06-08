@@ -66,6 +66,7 @@ Package.onUse(function (api) {
 
     // ----- Checkout Styles ----- //
     "styles/checkout/checkout.less",
+    "styles/checkout/completed.less",
 
     // ----- Admin Styles ---- // TODO: Move to specific packages
     "styles/admin/settings.less",
