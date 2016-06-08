@@ -74,6 +74,7 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/cart/checkout/review/review.js", "client");
 
   api.addFiles("client/templates/cart/checkout/payment/payment.html", "client");
+  api.addFiles("client/templates/cart/checkout/payment/payment.js", "client");
   api.addFiles("client/templates/cart/checkout/payment/methods/cards.html", "client");
   api.addFiles("client/templates/cart/checkout/payment/methods/cards.js", "client");
 

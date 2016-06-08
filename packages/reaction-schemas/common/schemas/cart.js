@@ -138,5 +138,15 @@ ReactionCore.Schemas.Cart = new SimpleSchema({
       }
     },
     optional: true
+  },
+  customerAgreedToTermsOfService: {
+    type: Boolean,
+    defaultValue: false,
+    label: "Customer has agreed to Terms"
+  },
+  dateCustomerAgreedToTermsOfService: {
+    type: Date,
+    optional: true,
+    label: "Date Customer Agreed to Terms"
   }
 });
