@@ -78,6 +78,7 @@ getoutfitted:reaction-zopim
 getoutfitted:reaction-shipstation
 getoutfitted:reaction-klaviyo
 getoutfitted:product-bundler
+getoutfitted:slack
 
 # Reaction Commerce Data
 # reactioncommerce:reaction-sample-data   # default Reaction data
