@@ -15,6 +15,7 @@
           {{#if rentalProduct}}
             <div class="row reservation-calendar-container">
               {{> reservationDatepicker}}
+              {{> inlineAlerts placement="datepicker"}}
             </div>
           {{/if}}
         {{/unless}}
@@ -64,6 +65,7 @@
 
 <template name='bundleVariantWidget'>
   <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
+    {{> productWidgetImage}}
     <div class='row'>
       <div class='col-xs-12'>
         <span class="rental-price">
@@ -78,14 +80,16 @@
     </div>
     <div class="row">
       {{#unless hasPermission "createProduct"}}
-        <div class="row reservation-calendar-container">
+        <div class="reservation-calendar-container">
             {{> bundleReservationDatepicker}}
+            {{> inlineAlerts placement="datepicker"}}
             {{> rentalLengthOptions}}
         </div>
       {{/unless}}
       <div class="col-xs-12">
         {{#with bundleVariant}}
           {{> bundleVariantOptions}}
+          {{> bundleVariantDefaults}}
         {{/with}}
       </div>
       <div class="row form-horizontal">
@@ -105,11 +109,10 @@
 </template>
 
 <template name="bundleVariantOptions">
-<!--   {{#if Template.subscriptionsReady}}
- -->  <h4>Select Options:</h4>
   {{#each bundleOptions}}
+    {{#if hasOptions}}
     <div class="row">
-      <form class="form-horizontal">
+      <form class="form-horizontal bundle-options">
         <div class="form-group">
           <label class="control-label col-sm-6" for="{{productId}}">{{displayLabel}}</label>
           <div class="col-sm-6">
@@ -120,10 +123,23 @@
             </select>
           </div>
         </div>
-
       </form>
     </div>
+    {{/if}}
   {{/each}}
-
-<!--   {{/if}}
- --></template>
+</template>
+<template name="bundleVariantDefaults">
+  {{#each defaultOptions}}
+    <div class="row text-right bundle-variant-default">
+      <div class="col-xs-6">
+        <strong>{{title}}</strong>
+      </div>
+      <div class="col-xs-6 text-left variant-default-option">
+        {{option}}
+        {{#if moreThanOne quantity}}
+          <small>x{{quantity}}</small>
+        {{/if}}
+      </div>
+    </div>
+  {{/each}}
+</template>
