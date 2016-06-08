@@ -79,3 +79,17 @@ if (Meteor.isClient) {
     }
   });
 }
+
+Meteor.methods({
+  "cart/customerAgreedToTermsOfService": function (agreed) {
+    check(agreed, Boolean);
+    ReactionCore.Collections.Cart.update({
+      userId: Meteor.userId()
+    }, {
+      $set: {
+        customerAgreedToTermsOfService: agreed,
+        dateCustomerAgreedToTermsOfService: new Date()
+      }
+    });
+  }
+});
