@@ -65,14 +65,30 @@ Template.variantWidget.helpers({
   reservation: () => {
     const current = ReactionProduct.selectedVariant();
     const reservationLength = Session.get("reservationLength");
+    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId()});
     if (typeof current === "object") {
+      console.log("res length", reservationLength);
       const childVariants = ReactionProduct.getVariants(current._id);
       if (childVariants.length === 0 && current.functionalType === "rentalVariant") {
         let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
           return priceBucket.duration === reservationLength + 1;
         });
         if (selectedReservation) {
+          console.log("returning selected reservation", selectedReservation, reservationLength);
           return selectedReservation;
+        }
+        // Determine if product can be added to current cart/reservation.
+        if (cart && cart.startTime && cart.endTime) {
+          if (cart.items && cart.items.length > 0) {
+            console.log("disallow booking");
+          } else {
+            console.log("reset cart dates to current product");
+          }
+        } else if (cart && !cart.startTime && !cart.endTime) {
+          if (current.rentalPriceBuckets && current.rentalPriceBuckets[0]) {
+            Session.set("reservationLength", current.rentalPriceBuckets[0].duration - 1);
+            return current.rentalPriceBuckets[0];
+          }
         }
         if (current.rentalPriceBuckets) {
           return current.rentalPriceBuckets[0];
@@ -114,7 +130,10 @@ Template.bundleVariantWidget.helpers({
   reservation: () => {
     const current = ReactionProduct.selectedVariant();
     const reservationLength = Session.get("reservationLength");
+    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId()});
+
     if (typeof current === "object" && reservationLength) {
+      console.log("res length", reservationLength);
       const childVariants = ReactionProduct.getVariants(current._id);
       if (childVariants.length === 0 && current.functionalType === "bundleVariant") {
         let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
@@ -122,6 +141,19 @@ Template.bundleVariantWidget.helpers({
         });
         if (selectedReservation) {
           return selectedReservation;
+        }
+        // Determine if product can be added to current cart/reservation.
+        if (cart && cart.startTime && cart.endTime) {
+          if (cart.items && cart.items.length > 0) {
+            console.log("disallow booking");
+          } else {
+            console.log("disallow booking until new dates are selected");
+          }
+        } else if (cart && !cart.startTime && !cart.endTime) {
+          if (current.rentalPriceBuckets && current.rentalPriceBuckets[0]) {
+            Session.set("reservationLength", current.rentalPriceBuckets[0].duration - 1);
+            return current.rentalPriceBuckets[0];
+          }
         }
         if (current.rentalPriceBuckets) {
           return current.rentalPriceBuckets[0];
