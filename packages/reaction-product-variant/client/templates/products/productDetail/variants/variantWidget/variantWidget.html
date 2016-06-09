@@ -1,110 +1,129 @@
 <template name="variantWidget">
   <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
     {{> productWidgetImage}}
-    <div class="row">
-      <div class="col-xs-12">
-        <span class="rental-price">
-          {{#if rentalProduct}}
-            <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
-            <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
-          {{else}}
-            <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
-          {{/if}}
-        </span>
-        {{#unless hasPermission "createProduct"}}
-          {{#if rentalProduct}}
-            <div class="row reservation-calendar-container">
-              {{> reservationDatepicker}}
-              {{> inlineAlerts placement="datepicker"}}
-            </div>
-          {{/if}}
-        {{/unless}}
-        {{!-- Variants & Options --}}
-        <div class="row options-add-to-cart">
-          {{#if hasPermission "createProduct"}}
-            <div class="col-xs-12">
-              {{>variantList}}
-            </div>
-          {{else}}
+    {{#if availableToBook reservation}}
+      <div class="row">
+        <div class="col-xs-12">
+          <span class="rental-price">
             {{#if rentalProduct}}
-              <div class="col-xs-12">
-                {{>rentalLengthOptions}}
+              <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
+              <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
+            {{else}}
+              <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+            {{/if}}
+          </span>
+          {{#unless hasPermission "createProduct"}}
+            {{#if rentalProduct}}
+              <div class="row reservation-calendar-container">
+                {{> reservationDatepicker}}
+                {{> inlineAlerts placement="datepicker"}}
               </div>
+            {{/if}}
+          {{/unless}}
+          {{!-- Variants & Options --}}
+          <div class="row options-add-to-cart">
+            {{#if hasPermission "createProduct"}}
               <div class="col-xs-12">
                 {{>variantList}}
               </div>
             {{else}}
-              <div class="col-xs-12">
-                {{>variantList}}
-              </div>
+              {{#if rentalProduct}}
+                <div class="col-xs-12">
+                  {{>rentalLengthOptions}}
+                </div>
+                <div class="col-xs-12">
+                  {{>variantList}}
+                </div>
+              {{else}}
+                <div class="col-xs-12">
+                  {{>variantList}}
+                </div>
+              {{/if}}
             {{/if}}
-          {{/if}}
-        </div>
-        {{!-- Cart Add Block --}}
-        <div class="row form-horizontal">
-          <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
-          <div class="form-group hide">
-            <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
-            <div class="col-xs-2">
-              <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+          </div>
+          {{!-- Cart Add Block --}}
+          <div class="row form-horizontal">
+            <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
+            <div class="form-group hide">
+              <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
+              <div class="col-xs-2">
+                <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <!-- <div class="btn btn-success add-to-cart-block" id="add-to-cart"> -->
-            <!-- <div class="add-to-cart-quantity pull-left">
-              <input type="number" class="form-control input-md" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
-            </div> -->
+          <div class="row">
             <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="add-to-cart" data-i18n="productDetail.addToCart">Book</button>
-          <!-- </div> -->
+          </div>
         </div>
       </div>
-    </div>
+      {{else}}
+      <div class='row'>
+        <div class="col-xs-12">
+          <div class="alert alert-warning" role="alert">
+            <i class="fa fa-warning"></i><small> {{{unavailableReason}}}</small>
+          </div>
+          <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="unavailable-add-to-cart" disabled>Unavailable</button>
+        </div>
+      </div>
+      {{/if}}
   </div>
 </template>
 
 <template name='bundleVariantWidget'>
   <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
     {{> productWidgetImage}}
-    <div class='row'>
-      <div class='col-xs-12'>
-        <span class="rental-price">
-          {{#if bundleProduct}}
-            <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
-            <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
-          {{else}}
-            <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
-          {{/if}}
-        </span>
-      </div>
-    </div>
-    <div class="row">
-      {{#unless hasPermission "createProduct"}}
-        <div class="reservation-calendar-container">
-            {{> bundleReservationDatepicker}}
-            {{> inlineAlerts placement="datepicker"}}
-            {{> rentalLengthOptions}}
+    {{#if availableToBook reservation}}
+      <div class='row'>
+        <div class='col-xs-12'>
+          <span class="rental-price">
+            {{#if bundleProduct}}
+              <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
+              <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
+            {{else}}
+              <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+            {{/if}}
+          </span>
         </div>
-      {{/unless}}
-      <div class="col-xs-12">
-        {{#with bundleVariant}}
-          {{> bundleVariantOptions}}
-          {{> bundleVariantDefaults}}
-        {{/with}}
       </div>
-      <div class="row form-horizontal">
-          <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
-          <div class="form-group hide">
-            <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
-            <div class="col-xs-2">
-              <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+      <div class="row">
+        {{#unless hasPermission "createProduct"}}
+          <div class="reservation-calendar-container">
+              {{> bundleReservationDatepicker}}
+              {{> inlineAlerts placement="datepicker"}}
+              {{> rentalLengthOptions}}
+          </div>
+        {{/unless}}
+        <div class="col-xs-12">
+          {{#with bundleVariant}}
+            {{> bundleVariantOptions}}
+            {{> bundleVariantDefaults}}
+          {{/with}}
+        </div>
+        <div class="row form-horizontal">
+            <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
+            <div class="form-group hide">
+              <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
+              <div class="col-xs-2">
+                <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
+              </div>
             </div>
           </div>
+        <div class='row'>
+          <div class="col-xs-12">
+              <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="bundle-add-to-cart" data-i18n="productDetail.addToCart">Book</button>
+          </div>
         </div>
-      <div class='row'>
-        <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="bundle-add-to-cart" data-i18n="productDetail.addToCart">Book</button>
       </div>
-    </div>
+    {{else}}
+      <div class='row'>
+        <div class="col-xs-12">
+          <div class="alert alert-warning" role="alert">
+            <i class="fa fa-warning"></i><small> {{{unavailableReason}}}</small>
+          </div>
+          <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="unavailable-bundle-add-to-cart" disabled>Unavailable</button>
+        </div>
+      </div>
+    {{/if}}
   </div>
 </template>
 
