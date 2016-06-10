@@ -4,7 +4,7 @@
       {{#each rentalPriceBuckets}}
         <div class="radio">
           <label>
-            <input type="radio" name="reservationLength" id="reservationLength{{duration}}" value="{{adjustedDuration duration}}" {{isFirst @index}}>{{duration}} {{displayTimeUnit timeUnit}} Rental
+            <input type="radio" name="reservationLength" id="reservationLength{{duration}}" value="{{adjustedDuration duration}}" {{isChecked index duration}}>{{duration}} {{displayTimeUnit timeUnit}} Rental
           </label>
         </div>
       {{/each}}
@@ -14,7 +14,7 @@
           {{#each rentalPriceBuckets}}
             <div class="radio">
               <label>
-                <input type="radio" name="reservationLength" id="reservationLength{{duration}}" value="{{adjustedDuration duration}}" {{isFirst @index}}>{{duration}} {{displayTimeUnit timeUnit}} Rental
+                <input type="radio" name="reservationLength" id="reservationLength{{duration}}" value="{{adjustedDuration duration}}" {{isChecked @index}}>{{duration}} {{displayTimeUnit timeUnit}} Rental
               </label>
             </div>
           {{/each}}
