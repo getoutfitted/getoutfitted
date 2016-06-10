@@ -43,6 +43,14 @@ Template.rentalLengthOptions.helpers({
   adjustedDuration: (duration) => {
     return duration - 1;
   },
+  isChecked: (index, duration) => {
+    const currentResLength = Session.get("reservationLength");
+    const adjustedDuration = duration - 1; // Subtract one because we count from selected day
+    if (!currentResLength && index === 0) {
+      return "checked";
+    }
+    return adjustedDuration  === currentResLength ? "checked" : "";
+  },
   isFirst: (index) => {
     if (index === 0) {
       return "checked";
