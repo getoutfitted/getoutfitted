@@ -74,11 +74,14 @@ Package.onUse(function (api) {
   api.addFiles("client/templates/cart/checkout/review/review.js", "client");
 
   api.addFiles("client/templates/cart/checkout/payment/payment.html", "client");
+  api.addFiles("client/templates/cart/checkout/payment/payment.js", "client");
   api.addFiles("client/templates/cart/checkout/payment/methods/cards.html", "client");
   api.addFiles("client/templates/cart/checkout/payment/methods/cards.js", "client");
 
   api.addFiles("client/templates/cart/checkout/completed/completed.html", "client");
   api.addFiles("client/templates/cart/checkout/completed/completed.js", "client");
+  api.addFiles("client/templates/cart/checkout/completed/items/checkoutCompleteListItems.html", "client");
+  api.addFiles("client/templates/cart/checkout/completed/items/checkoutCompleteListItems.js", "client");
 
   api.addFiles("client/templates/cart/checkout/shipping/shipping.html", "client");
   api.addFiles("client/templates/cart/checkout/shipping/shipping.js", "client");
@@ -88,6 +91,8 @@ Package.onUse(function (api) {
 
   api.addFiles("client/templates/cart/checkout/checkoutReviewItems/checkoutReviewItems.html", "client");
   api.addFiles("client/templates/cart/checkout/checkoutReviewItems/checkoutReviewItems.js", "client");
+  api.addFiles("client/templates/cart/checkout/termsOfService/termsOfService.html", "client");
+  api.addFiles("client/templates/cart/checkout/termsOfService/termsOfService.js", "client");
   // register package
   api.addFiles("server/register.js", "server");
   // api.addFiles("server/logger.js", "server");

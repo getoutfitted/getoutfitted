@@ -20,5 +20,13 @@ Template.checkoutReviewItems.helpers({
       });
     }
     return defaultImage;
+  },
+  productTitle: function () {
+    if (this.variants.productTitle) {
+      return this.variants.productTitle;
+    } else if (this.variants.title) {
+      return this.variants.title;
+    }
+    return "";
   }
 });
