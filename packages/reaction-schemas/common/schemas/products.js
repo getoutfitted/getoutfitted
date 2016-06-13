@@ -606,5 +606,10 @@ ReactionCore.Schemas.Product = new SimpleSchema({
     type: String,
     index: 1,
     optional: true
+  },
+  emailListId: {
+    type: String,
+    optional: true,
+    label: "A unique id for emails"
   }
 });

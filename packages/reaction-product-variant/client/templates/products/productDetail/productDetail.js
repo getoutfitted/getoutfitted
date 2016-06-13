@@ -99,6 +99,12 @@ Template.productDetail.helpers({
       return "bundleVariantWidget";
     }
     return "variantWidget";
+  },
+  productHasEmailList: function () {
+    if (this.emailListId) {
+      return true;
+    }
+    return false;
   }
 });
 
@@ -319,6 +325,21 @@ Template.productDetail.events({
   "focusout .facebookMsg-edit-input,.twitterMsg-edit-input,.pinterestMsg-edit-input,.googleplusMsg-edit": function () {
     Session.set("editing-" + this.field, false);
     return $(".social-media-inputs > *").hide();
+  },
+  "submit .subscribeToEmailList": function (event) {
+    event.preventDefault();
+    const email = event.target.subscribeEmail.value;
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (re.test(email)) {
+      const productId = ReactionProduct.selectedProductId();
+      Klaviyo.addUserToList(productId, email);
+      event.target.subscribeEmail.value = "";
+    } else {
+      Alerts.removeSeen();
+      Alerts.add(`${email} is not a valid email. Please enter a valid email to subscribe.`,
+        'danger',
+        {autoHide: true});
+    }
   }
 });
 
