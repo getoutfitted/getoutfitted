@@ -1,6 +1,13 @@
 
 let Future = Npm.require("fibers/future");
 
+function adjustDenverToLocalTime(time) {
+  let denver = moment(time).tz("America/Denver");
+  let here = moment(time);
+  here.add(denver.utcOffset() - here.utcOffset(), "minutes");
+  return here.toDate();
+}
+
 /**
  * Reaction Order Methods
  */
@@ -260,6 +267,64 @@ Meteor.methods({
       // loads defaults from reaction-email-templates/templates
       let tpl = `orders/${order.workflow.status}`;
       SSR.compileTemplate(tpl, ReactionEmailTemplate(tpl));
+      Template[tpl].helpers({
+        customerShippingName: function (o) {
+          if (o && o.shipping && o.shipping[0] && o.shipping[0].address) {
+            return o.shipping[0].address.fullName;
+          }
+          return "";
+        },
+        itemsExcludingComponents: function (o) { // o is order
+          return _.filter(o.items, function (item) {
+            return item.customerViewType !== "bundleComponent";
+          });
+        },
+        composedTitle: function (i) { // i is item
+          const title = i.variants.productTitle || i.variants.title;
+          let gender = i.variants.gender || "";
+          if (gender) {
+            gender = gender.replace(/unisex/i, "");
+          }
+          let color = i.variants.color || "";
+          if (color) {
+            color = color.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+          }
+          let size = i.variants.size || "";
+          if (size) {
+            size = size.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+          }
+          return `${gender} ${title} ${size} ${color}`;
+        },
+        // XXX: NOT COMPATIBLE WITH I18N!!
+        formattedPrice: function (price) {
+          let priceNumber = typeof price === "number" ? price : parseFloat(price);
+          if (priceNumber) {
+            return "$" + priceNumber.toFixed(2);
+          }
+          return "$";
+        },
+        formattedCartTotal: function (o) {
+          const reducedCartTotal = o.billing.reduce( function (acc, transaction) {
+            return acc + transaction.invoice.total;
+           }, 0);
+          if (typeof reducedCartTotal === "number") {
+            return "$" + reducedCartTotal.toFixed(2);
+          }
+          return reducedCartTotal;
+        },
+        hasReservationDates: function (o) {
+          if (o && o.startTime && o.endTime) {
+            return true;
+          }
+          return false;
+        },
+        humanizeDate: function (d) {
+          if (d) {
+            return moment(adjustDenverToLocalTime(d)).format("ddd M/DD");
+          }
+          return "";
+        },
+      });
       try {
         return Email.send({
           to: order.email,
