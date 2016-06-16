@@ -274,6 +274,12 @@ Meteor.methods({
           }
           return "";
         },
+        customerBillingName: function (o) {
+          if (o && o.billing && o.billing[0] && o.billing[0].address) {
+            return o.billing[0].address.fullName + ",";
+          }
+          return "";
+        },
         itemsExcludingComponents: function (o) { // o is order
           return _.filter(o.items, function (item) {
             return item.customerViewType !== "bundleComponent";
