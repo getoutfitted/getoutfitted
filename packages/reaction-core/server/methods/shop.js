@@ -125,7 +125,7 @@ Meteor.methods({
           if (typeof exchangeRate === "number") {
             result.currency.exchangeRate = exchangeRate;
           } else {
-            ReactionCore.Log.warn("Failed to get currency exchange rates.");
+            ReactionCore.Log.debug("Failed to get currency exchange rates.");
           }
         }
       }

@@ -113,7 +113,7 @@ blockquote h5 {
 .jet-background { background: @jet; }
 .base-background {background: @info-color; }
 .silver-background { background: @silver; border-top: 1px solid @iron }
-
+.silver-background-no-top { background: @silver;}
 // HOME PAGE
 .home-press {
     margin: 0 15px;
@@ -367,26 +367,26 @@ input[type="text"] {
       margin-top: 80px !important;
     }
   }
-  
+
   .outer-box.show-for-medium-up {
     display: inline-block !important;
   }
-  
+
   .solid-break { padding: 40px; }
   .tb-break { padding: 30px 0;}
   .solid-break-small { padding: 20px; }
   .break-bottom { padding-bottom: 40px; }
   .break-bottom-small { padding-bottom: 20px; }
-  
+
   .medium-up-border-sides {
     border-right: 1px solid @white;
     border-left: 1px solid @white;
   }
-  
+
   .callout.callout-bot-left:after {
     top: 80%;
   }
-  
+
   .callout:after {
     bottom: auto;
     left: auto;
@@ -395,20 +395,20 @@ input[type="text"] {
     border-bottom-color: transparent;
     border-right-color: #FFF;
   }
-    
+
 }
 
 @media (min-width: @screen-lg-min) {
   .hero:after { padding-top: 35%; } // 20:7 ratio
-  
+
   .large-up-menu {
     display: inline;
   }
-  
+
   .small-for-large-up {
     font-size: 68%;
   }
-  
+
   .row .margin-top, .margin-top {
     &-xsmall {
       margin-top: 10px !important;
@@ -426,17 +426,17 @@ input[type="text"] {
       margin-top: 120px !important;
     }
   }
-  
+
   .img-callout { min-height: 475px; }
-  
+
   .hero .cta .button { font-size: 22px; }
   .hero-container h1 { font-size: 40px; }
   .hero-container h2 { font-size: 22px; }
-  
+
   .product-icon span {
     font-size: 70%;
   }
-  
+
 }
 
 // No XL or XXL in bootstrap for now
