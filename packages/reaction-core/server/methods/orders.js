@@ -329,7 +329,7 @@ Meteor.methods({
         return Email.send({
           to: order.email,
           from: `${shop.name} <${shop.emails[0].address}>`,
-          subject: `Order update from ${shop.name}`,
+          subject: `GetOutfitted Order #${order.orderNumber} Confirmation`,
           html: SSR.render(tpl, {
             homepage: Meteor.absoluteUrl(),
             shop: shop,
