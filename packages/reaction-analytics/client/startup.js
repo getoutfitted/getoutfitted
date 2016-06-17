@@ -18,6 +18,7 @@ function trackPageWhenReady() {
   const _args = arguments;
   analytics.ready(function () {analytics.page.apply(this, _args);});
 }
+const debouncedTrackpageWhenReady = _.debounce(trackPageWhenReady, 300, true);
 
 function identifyWhenReady() {
   const _args = arguments;
@@ -113,7 +114,7 @@ function initReactionRouter() {
       }
       ReactionRouter.lastRoutePath = page.path;
 
-      trackPageWhenReady(page.name, page);
+      debouncedTrackpageWhenReady(page.name, page);
     }]);
   }
 }
