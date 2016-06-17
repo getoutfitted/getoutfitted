@@ -1,7 +1,7 @@
 Package.describe({
   summary: "Reaction Analytics - Integrate third-party analytics libraries",
   name: "reactioncommerce:reaction-analytics",
-  version: "1.3.0",
+  version: "1.4.0",
   documentation: "README.md"
 });
 
@@ -20,8 +20,9 @@ Package.registerBuildPlugin({
 
 Package.on_use(function (api) {
   api.versionsFrom("METEOR@1.3");
-  // meteor base packages
+
   api.use("meteor-base");
+  api.use("accounts-base", ["client", "server"], {weak: true});
   api.use("mongo");
   api.use("blaze-html-templates");
   api.use("session");
@@ -67,3 +68,30 @@ Package.on_use(function (api) {
 
   api.export("ReactionAnalytics", ["client", "server"]);
 });
+
+
+// Package.describe({
+//   name: 'okgrow:analytics',
+//
+//   summary: 'Complete Google Analytics, Mixpanel, KISSmetrics (and more) integration for ReactionCommerce',
+//   documentation: 'README.md'
+// });
+//
+// Package.onUse(function(api) {
+//   api.versionsFrom('1.0.3.1');
+//   api.use('mongo');
+//   api.use('accounts-base', ['client', 'server'], {weak: true});
+//   api.use('browser-policy-content', 'server', {weak: true});
+//
+//   api.addFiles([
+//     'server/browser-policy.js',
+//     'server/publications.js'
+//   ], 'server');
+//   api.addFiles([
+//     'vendor/analytics.min.js',
+//     'client/collections.js',
+//     'client/meteor-analytics.js',
+//   ], 'client');
+//
+//   api.export('analytics', ['client']);
+// });
