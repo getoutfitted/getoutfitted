@@ -61,38 +61,22 @@ Meteor.startup(function () {
     }
   });
   return $(document.body).click(function (e) {
-    var $targets;
+    let $targets;
     $targets = $(e.target).closest("*[data-event-action]");
     $targets = $targets.parents("*[data-event-action]").add($targets);
     return $targets.each(function (index, element) {
-      var $element, analyticsEvent;
-      $element = $(element);
-      analyticsEvent = {
+      const $element = $(element);
+
+      const analyticsEvent = {
         eventType: "event",
         category: $element.data("event-category"),
         action: $element.data("event-action"),
         label: $element.data("event-label"),
         value: $element.data("event-value")
       };
-      if (typeof ga === "function") {
-        ga("send", "event", analyticsEvent.category, analyticsEvent.action, analyticsEvent.label,
-          analyticsEvent.value);
-      }
-      if (typeof mixpanel === "object" && mixpanel.length > 0) {
-        mixpanel.track(analyticsEvent.action, {
-          "Category": analyticsEvent.category,
-          "Label": analyticsEvent.label,
-          "Value": analyticsEvent.value
-        });
-      }
-      if (typeof analytics === "object" && analytics.length > 0) {
-        analytics.track(analyticsEvent.action, {
-          "Category": analyticsEvent.category,
-          "Label": analyticsEvent.label,
-          "Value": analyticsEvent.value
-        });
-      }
-      return ReactionCore.Collections.AnalyticsEvents.insert(analyticsEvent);
+
+      // call ReactionAnalytics
+      ReactionAnalytics.track(analyticsEvent);
     });
   });
 });

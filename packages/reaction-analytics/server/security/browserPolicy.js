@@ -7,5 +7,6 @@ Meteor.startup(function() {
   BrowserPolicy.content.allowOriginForAll("connect.facebook.net");
   BrowserPolicy.content.allowOriginForAll("fonts.googleapis.com");
   BrowserPolicy.content.allowOriginForAll("fonts.gstatic.com");
+  BrowserPolicy.content.allowScriptDataUrl();
   return BrowserPolicy.content.allowOriginForAll("www.paypal.com");
 });

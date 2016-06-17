@@ -46,11 +46,13 @@ Package.on_use(function (api) {
   api.use("reactioncommerce:reaction-analytics-libs@1.2.0", "client");
 
   api.addFiles([
+    "common/globals.js",
     "common/collections.js",
     "common/hooks.js"
   ], ["client", "server"]);
 
   api.addFiles([
+    "client/globals.js",
     "client/startup.js",
     "client/templates/reactionAnalytics/reactionAnalytics.html",
     "client/templates/reactionAnalytics/reactionAnalytics.js"
@@ -62,4 +64,6 @@ Package.on_use(function (api) {
     "server/publications.js",
     "server/register.js"
   ], ["server"]);
+
+  api.export("ReactionAnalytics", ["client", "server"]);
 });
