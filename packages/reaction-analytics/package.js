@@ -41,10 +41,9 @@ Package.on_use(function (api) {
   api.use("browser-policy-content", "server");
 
   api.use("reactioncommerce:reaction-router@1.1.0");
-
   api.use("getoutfitted:getoutfitted-layout");
   api.use("reactioncommerce:core@0.13.0");
-  api.use("reactioncommerce:reaction-analytics-libs@1.2.0", "client");
+  // api.use("reactioncommerce:reaction-analytics-libs@1.2.0", "client");
 
   api.addFiles([
     "common/globals.js",
@@ -53,6 +52,8 @@ Package.on_use(function (api) {
   ], ["client", "server"]);
 
   api.addFiles([
+    "import/analytics.js",
+    "client/collections.js",
     "client/globals.js",
     "client/startup.js",
     "client/templates/reactionAnalytics/reactionAnalytics.html",
@@ -66,7 +67,7 @@ Package.on_use(function (api) {
     "server/register.js"
   ], ["server"]);
 
-  api.export("ReactionAnalytics", ["client", "server"]);
+  api.export("analytics", ["client", "server"]);
 });
 
 
