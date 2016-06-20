@@ -21,6 +21,9 @@ ReactionCore.MethodHooks.after("cart/submitPayment", function (options) {
         // This is done by extending the existing result.
         result.orderId = orderId;
       } else {
+        ReactionCore.Log.error("WSoD Error, payment captured. cart: ", cart);
+        ReactionCore.Log.error("WSoD Error, payment captured. payment method object: ", cart.billing[0].paymentMethod);
+        ReactionCore.Log.error("WSoD Error, payment captured. cart.items", cart.items);
         throw new Meteor.Error(
           "An error occurred verifing payment method. Failed to save order."
         );
