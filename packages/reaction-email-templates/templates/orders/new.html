@@ -30,10 +30,12 @@
                       please call us at <strong><a href="tel:18886180305" style="color:#3869D4;" >1-888-618-0305</a></strong> or reply to this e-mail. Thank you for choosing GetOutfitted!.
                     </p>
                     <table class="invoice-wrapper" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:35px;padding-bottom:35px;padding-right:0;padding-left:0;" >
+                      {{#if order.orderNumber}}
                       <tr>
                         <td width="30%"><strong>Order Number:</strong></td>
                         <td width="30%">{{order.orderNumber}}</td>
                       </tr>
+                      {{/if}}
                       {{#if hasReservationDates order}}
                         <tr>
                           <td width="30%"><strong>Reservation Dates:</strong></td>
