@@ -15,7 +15,7 @@ Template.loginInline.events({
       Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin");
     }
   },
-  "keyup #guestEmail": (event) => {
+  "keyup #guestEmail, blur #guestEmail": (event) => {
     event.preventDefault();
     const email = event.target.value;
     let result = _.debounce(function () {
@@ -25,6 +25,9 @@ Template.loginInline.events({
         Session.set("validEmail", res);
         const cart = ReactionCore.Collections.Cart.findOne({}, {fields: {_id: 1}});
         Meteor.call("checkout/addEmailToCart", cart._id, email);
+      } else {
+        // Set to false if they delete part of email;
+        Session.set("validEmail", res);
       }
     }, 300);
     result(email);
