@@ -956,14 +956,13 @@ Meteor.methods({
       };
     }
 
-    return ReactionCore.Collections.Cart.update(selector, update,
-      function (error, result) {
-        if (error) {
-          ReactionCore.Log.warn(error);
-          throw new Meteor.Error("An error occurred saving the order",
-            error);
-        }
-        return result;
-      });
+    // Synchronous version of the previous cart update function
+    // ensures that method hook runs after db update completed
+    try {
+      ReactionCore.Collections.Cart.update(selector, update);
+    } catch (e) {
+      ReactionCore.Log.warn(e);
+      throw new Meteor.Error("An error occurred saving the order", e);
+    }
   }
 });
