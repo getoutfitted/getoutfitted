@@ -9,21 +9,23 @@ import analytics from "../import/analytics";
 // tracking events, page views and identifies.
 // So we can use these *WhenReady() functions to cause the action to be
 // deferred until all the intgrations are ready.
-function trackEventWhenReady() {
+ReactionAnalytics.trackEventWhenReady = function () {
   const _args = arguments;
   analytics.ready(function () {analytics.track.apply(this, _args);});
-}
+};
 
-function trackPageWhenReady() {
+ReactionAnalytics.trackPageWhenReady = function () {
   const _args = arguments;
   analytics.ready(function () {analytics.page.apply(this, _args);});
-}
-const debouncedTrackpageWhenReady = _.debounce(trackPageWhenReady, 300, true);
+};
 
-function identifyWhenReady() {
+ReactionAnalytics.debouncedTrackpageWhenReady = _.debounce(ReactionAnalytics.trackPageWhenReady, 300, true);
+// const debouncedTrackpageWhenReady = _.debounce(trackPageWhenReady, 300, true);
+
+ReactionAnalytics.identifyWhenReady = function () {
   const _args = arguments;
   analytics.ready(function () {analytics.identify.apply(this, _args);});
-}
+};
 
 /*
 * getUserEmail()
@@ -73,10 +75,10 @@ function trackLogins() {
     if (Meteor.userId()) {
       // TODO I think it's not guaranteed that userEmail has been set because
       // the 'analyticsusers' publication might not be ready yet.
-      identifyWhenReady(Meteor.userId(), {email: userEmail});
-      trackEventWhenReady("Signed in");
+      ReactionAnalytics.identifyWhenReady(Meteor.userId(), {email: userEmail});
+      ReactionAnalytics.trackEventWhenReady("Signed in");
     } else {
-      trackEventWhenReady("Signed out");
+      ReactionAnalytics.trackEventWhenReady("Signed out");
     }
   }
   initialized = true;
@@ -114,7 +116,7 @@ function initReactionRouter() {
       }
       ReactionRouter.lastRoutePath = page.path;
 
-      debouncedTrackpageWhenReady(page.name, page);
+      ReactionAnalytics.debouncedTrackpageWhenReady(page.name, page);
     }]);
   }
 }

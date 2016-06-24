@@ -53,32 +53,5 @@ Package.on_use(function (api) {
     "server/register.js"
   ], ["server"]);
 
-  api.export("analytics", ["client", "server"]);
+  api.export("ReactionAnalytics", ["client", "server"]);
 });
-
-
-// Package.describe({
-//   name: 'okgrow:analytics',
-//
-//   summary: 'Complete Google Analytics, Mixpanel, KISSmetrics (and more) integration for ReactionCommerce',
-//   documentation: 'README.md'
-// });
-//
-// Package.onUse(function(api) {
-//   api.versionsFrom('1.0.3.1');
-//   api.use('mongo');
-//   api.use('accounts-base', ['client', 'server'], {weak: true});
-//   api.use('browser-policy-content', 'server', {weak: true});
-//
-//   api.addFiles([
-//     'server/browser-policy.js',
-//     'server/publications.js'
-//   ], 'server');
-//   api.addFiles([
-//     'vendor/analytics.min.js',
-//     'client/collections.js',
-//     'client/meteor-analytics.js',
-//   ], 'client');
-//
-//   api.export('analytics', ['client']);
-// });
