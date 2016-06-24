@@ -16,7 +16,7 @@ ReactionAnalytics.track = function (event, properties) {
         analyticsEvent.value);
     }
     console.log("analyticsEvent", analyticsEvent);
-    return ReactionCore.Collections.AnalyticsEvents.insert(analyticsEvent);
+    // return ReactionCore.Collections.AnalyticsEvents.insert(analyticsEvent);
   }
   return false;
 };

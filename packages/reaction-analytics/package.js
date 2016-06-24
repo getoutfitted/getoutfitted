@@ -5,19 +5,6 @@ Package.describe({
   documentation: "README.md"
 });
 
-Package.registerBuildPlugin({
-  name: "analyticsConfigurator",
-  use: [
-    "underscore@1.0.7",
-    "reactioncommerce:reaction-analytics-libs@1.2.0"
-  ],
-  sources: [
-    "server/buildtools/analyticsSources.js",
-    "server/buildtools/defaultConfiguration.js",
-    "server/buildtools/analyticsConfigurator.js"
-  ]
-});
-
 Package.on_use(function (api) {
   api.versionsFrom("METEOR@1.3");
 
@@ -43,7 +30,6 @@ Package.on_use(function (api) {
   api.use("reactioncommerce:reaction-router@1.1.0");
   api.use("getoutfitted:getoutfitted-layout");
   api.use("reactioncommerce:core@0.13.0");
-  // api.use("reactioncommerce:reaction-analytics-libs@1.2.0", "client");
 
   api.addFiles([
     "common/globals.js",
