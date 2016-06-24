@@ -138,13 +138,12 @@ Meteor.startup(function () {
           coreAnalytics.settings.public.analyticsSettings) {
         // if coreAnalytics is enabled and has keys
 
+        // TODO: add mixpanel page tracking, etc options to settings screen.
+        // use dynamic, dashboard-set keys and tokens for analytics.
         let settings = coreAnalytics.settings.public.analyticsSettings;
         initReactionRouter();
         analytics.initialize(settings);
         Session.set("analyticsInitialized", true);
-        console.log("ReactionAnalytics Initialized");
-      } else {
-        console.log("Reaction Analytics loading...");
       }
     }
   });
@@ -162,7 +161,15 @@ Meteor.startup(function () {
 
     $targets.each(function (index, element) {
       const $element = $(element);
-      const event = $element.data("event-action");
+      let event = $element.data("event-action");
+      // Split into words
+      event = event.replace(/([A-Z])/g, " $1").replace(/[\W_]+/g, " ");
+
+      // Capitalize words
+      event = event.replace(/([^[a-zA-Z0-9]|^)([a-zA-Z0-9])([\w]*)/g, function (_, g1, g2, g3) {
+        return g1 + g2.toUpperCase() + g3;
+      });
+
       const data = $element.data();
 
       let properties = Object.keys(data).reduce(
@@ -171,11 +178,26 @@ Meteor.startup(function () {
           if (data[attr] && attr.indexOf("event") === 0) {
             // don't save the event action, we'll pass that separately
             if (attr !== "eventAction") {
+              let propValue = data[attr];
+
+              // XXX: Not sure this is necessary as it is for event.
+              // Normalize string to Capitalized Words
+              if (_.contains(["category", "label"], prop)) {
+                // Split camelcase or other value to words.
+                const splitValue = propValue.replace(/([A-Z])/g, " $1").replace(/[\W_]+/g, " ");
+                // Capitalize words
+                propValue = splitValue.replace(/([^[a-zA-Z0-9]|^)([a-zA-Z0-9])([\w]*)/g, function (_, g1, g2, g3) {
+                  return g1 + g2.toUpperCase() + g3;
+                });
+
+                propValue = splitValue[0].toUpperCase() + splitValue.substring(1);
+              }
+
               // create a new property that is the `data-event`
               // strip "event" and lowercase the result;
               const prop = attr.replace("event", "").toLowerCase();
               // add new property to props object.
-              props[prop] = data[attr];
+              props[prop] = propValue;
             }
           }
           return props;
