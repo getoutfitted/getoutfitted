@@ -65,6 +65,11 @@ Template.productGrid.onRendered(() => {
   // run the above func every time the user scrolls
   $("#reactionAppContainer").on("scroll", loadMoreProducts);
   $(window).on("scroll", loadMoreProducts);
+
+  ReactionAnalytics.trackEventWhenReady("Viewed Product Category", {
+    category: ReactionAnalytics.capitalizeEventString(ReactionRouter.getParam("slug")) || "All",
+    routeName: ReactionRouter.getRouteName()
+  });
 });
 
 Template.productGrid.events({

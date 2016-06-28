@@ -44,6 +44,10 @@ Template.variantWidget.onRendered(function () {
   if (window.innerWidth > 767) {
     stickyWidget();
   }
+  const product = ReactionProduct.selectedProduct();
+  const variant = ReactionProduct.selectedVariant();
+  const props = ReactionAnalytics.getProductTrackingProps(product, variant);
+  ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
 });
 
 Template.variantWidget.helpers({

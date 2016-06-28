@@ -9,10 +9,16 @@ Template.cartCompleted.helpers({
     if (id) {
       const ccoSub = Meteor.subscribe("CompletedCartOrder", Meteor.userId(), id);
       if (ccoSub.ready()) {
-        return ReactionCore.Collections.Orders.findOne({
+        let order = ReactionCore.Collections.Orders.findOne({
           userId: Meteor.userId(),
           cartId: ReactionRouter.getQueryParam("_id")
         });
+        ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
+        ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+          "step": 7,
+          "Step Name": "Checkout Completed"
+        });
+        return order;
       }
     }
   },
@@ -58,4 +64,17 @@ Template.cartCompleted.onCreated(function () {
   let cartSub = ReactionCore.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
   cartSub.stop();
   ReactionCore.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
+});
+
+
+Template.cartCompleted.onRendered(function () {
+  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+    "step": 6,
+    "Step Name": "Payment Information"
+  });
+
+  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
+    "step": 7,
+    "Step Name": "Checkout Completed"
+  });
 });

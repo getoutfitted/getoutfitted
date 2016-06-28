@@ -20,7 +20,6 @@ ReactionAnalytics.trackPageWhenReady = function () {
 };
 
 ReactionAnalytics.debouncedTrackpageWhenReady = _.debounce(ReactionAnalytics.trackPageWhenReady, 300, true);
-// const debouncedTrackpageWhenReady = _.debounce(trackPageWhenReady, 300, true);
 
 ReactionAnalytics.identifyWhenReady = function () {
   const _args = arguments;
@@ -161,14 +160,7 @@ Meteor.startup(function () {
 
     $targets.each(function (index, element) {
       const $element = $(element);
-      let event = $element.data("event-action");
-      // Split into words
-      event = event.replace(/([A-Z])/g, " $1").replace(/[\W_]+/g, " ");
-
-      // Capitalize words
-      event = event.replace(/([^[a-zA-Z0-9]|^)([a-zA-Z0-9])([\w]*)/g, function (_, g1, g2, g3) {
-        return g1 + g2.toUpperCase() + g3;
-      });
+      let event = ReactionAnalytics.capitalizeEventString($element.data("event-action"));
 
       const data = $element.data();
 
@@ -183,14 +175,7 @@ Meteor.startup(function () {
               // XXX: Not sure this is necessary as it is for event.
               // Normalize string to Capitalized Words
               if (_.contains(["category", "label"], prop)) {
-                // Split camelcase or other value to words.
-                const splitValue = propValue.replace(/([A-Z])/g, " $1").replace(/[\W_]+/g, " ");
-                // Capitalize words
-                propValue = splitValue.replace(/([^[a-zA-Z0-9]|^)([a-zA-Z0-9])([\w]*)/g, function (_, g1, g2, g3) {
-                  return g1 + g2.toUpperCase() + g3;
-                });
-
-                propValue = splitValue[0].toUpperCase() + splitValue.substring(1);
+                propValue = ReactionAnalytics.capitalizeEventString(propValue);
               }
 
               // create a new property that is the `data-event`
