@@ -3071,7 +3071,8 @@
     "cart/completed",
     "getoutfittedAbout",
     "getoutfittedPrivacyPolicy",
-    "getoutfittedPressPage"
+    "getoutfittedPressPage",
+    "newBelgium"
   ],
   "defaultRoles": [
     "account/profile",
@@ -3086,6 +3087,7 @@
     "cart/completed",
     "getoutfittedAbout",
     "getoutfittedPrivacyPolicy",
-    "getoutfittedPressPage"
+    "getoutfittedPressPage",
+    "newBelgium"
   ]
 }]

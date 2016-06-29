@@ -38,6 +38,7 @@ Package.onUse(function (api) {
     "styles/components/hero.less",
     "styles/components/modals.less",
     "styles/components/section.less",
+    "styles/components/staticPages.less",
     "styles/components/tiles.less",
 
     // ------ Header Styles ------ //
