@@ -46,8 +46,6 @@ Template.checkoutCompleteListItems.helpers({
   trackOrderCompleted: function (order) {
     if (order._id) {
       ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
-    } else {
-      console.log("Tracking snippet issue");
     }
     return "";
   },
