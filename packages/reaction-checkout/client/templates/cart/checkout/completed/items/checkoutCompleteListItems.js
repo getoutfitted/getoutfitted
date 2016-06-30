@@ -43,6 +43,14 @@ Template.checkoutCompletedOrder.helpers({
  *
  */
 Template.checkoutCompleteListItems.helpers({
+  trackOrderCompleted: function (order) {
+    if (order._id) {
+      ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
+    } else {
+      console.log("Tracking snippet issue");
+    }
+    return "";
+  },
   items: function () {
     let items = _.filter(this.items, function (item) {
       const notBundle = item.variants.functionalType !== "bundleVariant";
