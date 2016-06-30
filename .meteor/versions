@@ -85,6 +85,7 @@ getoutfitted:reaction-shipstation@0.1.0
 getoutfitted:reaction-zopim@0.4.0
 getoutfitted:slack@0.1.0
 getoutfitted:static-pages@0.1.0
+getoutfitted:trail-guide@0.1.0
 getoutfitted:transit-times@0.1.0
 google@1.1.11
 harrison:papa-parse@1.1.1

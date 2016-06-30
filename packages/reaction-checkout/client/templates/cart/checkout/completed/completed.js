@@ -9,12 +9,10 @@ Template.cartCompleted.helpers({
     if (id) {
       const ccoSub = Meteor.subscribe("CompletedCartOrder", Meteor.userId(), id);
       if (ccoSub.ready()) {
-        let order = ReactionCore.Collections.Orders.findOne({
+        return ReactionCore.Collections.Orders.findOne({
           userId: Meteor.userId(),
           cartId: ReactionRouter.getQueryParam("_id")
         });
-        ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
-        return order;
       }
     }
   },
