@@ -14,10 +14,6 @@ Template.cartCompleted.helpers({
           cartId: ReactionRouter.getQueryParam("_id")
         });
         ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
-        ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
-          "step": 7,
-          "Step Name": "Checkout Completed"
-        });
         return order;
       }
     }
@@ -71,10 +67,5 @@ Template.cartCompleted.onRendered(function () {
   ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
     "step": 6,
     "Step Name": "Payment Information"
-  });
-
-  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
-    "step": 7,
-    "Step Name": "Checkout Completed"
   });
 });

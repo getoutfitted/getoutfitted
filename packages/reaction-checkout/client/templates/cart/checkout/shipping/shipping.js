@@ -93,8 +93,8 @@ Template.coreCheckoutShipping.events({
       throw new Meteor.Error(error,
         "Cannot change methods while processing.");
     }
-    console.log(self);
-    ReactionAnalytics.trackEventWhenReady("Selected Shipping Option", {
-    });
+    ReactionAnalytics.trackEventWhenReady("Selected Shipping Option",
+      Object.assign({}, self.method, {carrier: self.carrier})
+    );
   }
 });

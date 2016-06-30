@@ -1,78 +1,3 @@
-/*
- *  AnalyticsEvents Collection
- *  Store the Analytics Events in a Collection
- */
-
-
-// ReactionCore.Schemas.AnalyticsEvents = new SimpleSchema({
-//   eventType: {
-//     type: String
-//   },
-//   category: {
-//     type: String,
-//     optional: true
-//   },
-//   action: {
-//     type: String,
-//     optional: true
-//   },
-//   label: {
-//     type: String,
-//     optional: true
-//   },
-//   value: {
-//     type: String,
-//     optional: true
-//   },
-//   user: {
-//     type: Object,
-//     optional: true
-//   },
-//   'user.id': {
-//     type: String,
-//     regEx: SimpleSchema.RegEx.Id,
-//     optional: true,
-//     autoValue: function() {
-//       return Meteor.userId()
-//     }
-//   },
-//   'user.isAnonymous': {
-//     type: Boolean,
-//     optional: true,
-//     autoValue: function() {
-//       return Roles.userIsInRole(Meteor.user(), 'anonymous', ReactionCore.getShopId())
-//     }
-//   },
-//   shopId: {
-//     type: String,
-//     regEx: SimpleSchema.RegEx.Id,
-//     autoValue: ReactionCore.shopIdAutoValue,
-//     label: "AnalyticsEvents shopId"
-//   },
-//   createdAt: {
-//     type: Date,
-//     autoValue: function() {
-//       return new Date
-//     }
-//   },
-//   // Any additional data
-//   data: {
-//     type: Object,
-//     blackbox: true,
-//     optional: true
-//   }
-// })
-//
-// ReactionCore.Collections.AnalyticsEvents = new Mongo.Collection('AnalyticsEvents');
-//
-// ReactionCore.Collections.AnalyticsEvents.attachSchema(ReactionCore.Schemas.AnalyticsEvents);
-
-
-/*
- *   Analytics
- *   api_key: "UA-XXXXX-X" (this is your tracking ID)
- */
-
 ReactionCore.Schemas.ReactionAnalyticsPackageConfig = new SimpleSchema([
   ReactionCore.Schemas.PackageConfig, {
     "settings.public.analyticsSettings.GoogleAnalytics.trackingId": {
@@ -140,5 +65,10 @@ ReactionCore.Schemas.ReactionAnalyticsPackageConfig = new SimpleSchema([
       label: "Segment.io API Key",
       optional: true
     },
+    "settings.public.analyticsSettings.FacebookCustomAudiences.pixelId": {
+      type: String,
+      label: "Facebook PixelId",
+      optional: true
+    }
   }
 ]);
