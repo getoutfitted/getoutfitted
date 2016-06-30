@@ -40,7 +40,6 @@ Package.on_use(function (api) {
   api.addFiles([
     "import/analytics.js",
     "client/collections.js",
-    "client/globals.js",
     "client/startup.js",
     "client/templates/reactionAnalytics/reactionAnalytics.html",
     "client/templates/reactionAnalytics/reactionAnalytics.js"
@@ -48,7 +47,6 @@ Package.on_use(function (api) {
 
   api.addFiles([
     "server/security/browserPolicy.js",
-    "server/security/AnalyticsEvents.js",
     "server/publications.js",
     "server/register.js"
   ], ["server"]);
