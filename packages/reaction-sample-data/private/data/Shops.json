@@ -3072,7 +3072,8 @@
     "getoutfittedAbout",
     "getoutfittedPrivacyPolicy",
     "getoutfittedPressPage",
-    "newBelgium"
+    "newBelgium",
+    "winter"
   ],
   "defaultRoles": [
     "account/profile",
@@ -3088,6 +3089,7 @@
     "getoutfittedAbout",
     "getoutfittedPrivacyPolicy",
     "getoutfittedPressPage",
-    "newBelgium"
+    "newBelgium",
+    "winter"
   ]
 }]
