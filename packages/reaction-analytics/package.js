@@ -1,27 +1,15 @@
 Package.describe({
   summary: "Reaction Analytics - Integrate third-party analytics libraries",
   name: "reactioncommerce:reaction-analytics",
-  version: "1.3.0",
+  version: "1.4.0",
   documentation: "README.md"
-});
-
-Package.registerBuildPlugin({
-  name: "analyticsConfigurator",
-  use: [
-    "underscore@1.0.7",
-    "reactioncommerce:reaction-analytics-libs@1.2.0"
-  ],
-  sources: [
-    "server/buildtools/analyticsSources.js",
-    "server/buildtools/defaultConfiguration.js",
-    "server/buildtools/analyticsConfigurator.js"
-  ]
 });
 
 Package.on_use(function (api) {
   api.versionsFrom("METEOR@1.3");
-  // meteor base packages
+
   api.use("meteor-base");
+  api.use("accounts-base", ["client", "server"], {weak: true});
   api.use("mongo");
   api.use("blaze-html-templates");
   api.use("session");
@@ -40,17 +28,18 @@ Package.on_use(function (api) {
   api.use("browser-policy-content", "server");
 
   api.use("reactioncommerce:reaction-router@1.1.0");
-
   api.use("getoutfitted:getoutfitted-layout");
   api.use("reactioncommerce:core@0.13.0");
-  api.use("reactioncommerce:reaction-analytics-libs@1.2.0", "client");
 
   api.addFiles([
+    "common/globals.js",
     "common/collections.js",
     "common/hooks.js"
   ], ["client", "server"]);
 
   api.addFiles([
+    "import/analytics.js",
+    "client/collections.js",
     "client/startup.js",
     "client/templates/reactionAnalytics/reactionAnalytics.html",
     "client/templates/reactionAnalytics/reactionAnalytics.js"
@@ -58,8 +47,9 @@ Package.on_use(function (api) {
 
   api.addFiles([
     "server/security/browserPolicy.js",
-    "server/security/AnalyticsEvents.js",
     "server/publications.js",
     "server/register.js"
   ], ["server"]);
+
+  api.export("ReactionAnalytics", ["client", "server"]);
 });
