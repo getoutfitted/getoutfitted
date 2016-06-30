@@ -13,6 +13,18 @@ Template.corePaymentMethods.onCreated(function () {
   });
 });
 
+Template.corePaymentMethods.onRendered(function () {
+  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+    "step": 5,
+    "Step Name": "Review Terms of Service"
+  });
+
+  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
+    "step": 6,
+    "Step Name": "Payment Information"
+  });
+});
+
 Template.corePaymentMethods.helpers({
   isOpen(current) {
     const instance = Template.instance();

@@ -1,3 +1,14 @@
+Template.checkoutReviewItems.onRendered(function () {
+  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
+    "step": 1,
+    "Step Name": "Review Cart"
+  });
+  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+    "step": 1,
+    "Step Name": "Review Cart"
+  });
+});
+
 Template.checkoutReviewItems.helpers({
   cartItems: function () {
     return ReactionCore.Collections.Cart.findOne().items;

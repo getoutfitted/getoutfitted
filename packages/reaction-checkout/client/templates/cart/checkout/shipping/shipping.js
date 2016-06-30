@@ -33,6 +33,18 @@ Template.coreCheckoutShipping.onCreated(function () {
   });
 });
 
+Template.coreCheckoutShipping.onRendered(function () {
+  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+    "step": 3,
+    "Step Name": "Choose Shipping and Billing Address"
+  });
+
+  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
+    "step": 4,
+    "Step Name": "Select Shipping Option"
+  });
+});
+
 Template.coreCheckoutShipping.helpers({
   // retrieves current rates and updates shipping rates
   // in the users cart collection (historical, and prevents repeated rate lookup)
@@ -81,5 +93,8 @@ Template.coreCheckoutShipping.events({
       throw new Meteor.Error(error,
         "Cannot change methods while processing.");
     }
+    ReactionAnalytics.trackEventWhenReady("Selected Shipping Option",
+      Object.assign({}, self.method, {carrier: self.carrier})
+    );
   }
 });
