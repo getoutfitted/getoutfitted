@@ -28,6 +28,9 @@ ReactionAnalytics.filteredProductVariantTitle = function (variant) {
 };
 
 ReactionAnalytics.getProductTrackingProps = function (product, variant) {
+  if (!product || !variant) {
+    return {};
+  }
   let props = {
     "id": variant._id,
     "sku": variant.sku,
@@ -57,6 +60,9 @@ ReactionAnalytics.getProductTrackingProps = function (product, variant) {
 };
 
 ReactionAnalytics.getOrderTrackingProps = function (order) {
+  if (!order) {
+    return {};
+  }
   let props = {
     "id": order._id,
     "orderId": order._id,
