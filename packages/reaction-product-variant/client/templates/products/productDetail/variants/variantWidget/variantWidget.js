@@ -138,6 +138,10 @@ Template.bundleVariantWidget.onRendered(function () {
   if (window.innerWidth > 767) {
     stickyWidget();
   }
+  const product = ReactionProduct.selectedProduct();
+  const variant = ReactionProduct.selectedVariant();
+  const props = ReactionAnalytics.getProductTrackingProps(product, variant);
+  ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
 });
 
 Template.bundleVariantWidget.helpers({
@@ -286,7 +290,7 @@ Template.bundleVariantWidget.events({
 
         if (productId) {
           Meteor.call("cart/addToCart", productId, currentVariant._id, quantity,
-            function (error, result) {
+            function (error) {
               if (error) {
                 ReactionCore.Log.error("Failed to add to cart.", error);
                 return error;
@@ -296,6 +300,12 @@ Template.bundleVariantWidget.events({
                 currentVariant._id,
                 Session.get("selectedBundleOptions")
               );
+              let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
+              trackReadyProduct.quantity = quantity;
+              trackReadyProduct["Reservation Start"] = cart.startTime;
+              trackReadyProduct["Reservation End"] = cart.endTime;
+              trackReadyProduct["Reservation Length"] = cart.rentalDays;
+              return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
             }
           );
         }
