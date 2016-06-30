@@ -54,10 +54,20 @@ Template.openCartDrawer.events({
   "click .remove-cart-item": function (event) {
     event.stopPropagation();
     event.preventDefault();
+    const currentCartItem = this;
     const currentCartItemId = this._id;
+    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId() });
 
     return $(event.currentTarget).fadeOut(300, function () {
-      return Meteor.call("cart/removeFromCart", currentCartItemId);
+      Meteor.call("cart/removeFromCart", currentCartItemId);
+      let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentCartItem, currentCartItem.variants);
+      trackReadyProduct.quantity = currentCartItem.quantity;
+      if (cart) {
+        trackReadyProduct["Reservation Start"] = cart.startTime;
+        trackReadyProduct["Reservation End"] = cart.endTime;
+        trackReadyProduct["Reservation Length"] = cart.rentalDays;
+      }
+      return ReactionAnalytics.trackEventWhenReady("Removed Product", trackReadyProduct);
     });
   }
 });

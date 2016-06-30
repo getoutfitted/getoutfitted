@@ -222,6 +222,12 @@ Template.productDetail.events({
                 ReactionCore.Log.error("Failed to add to cart.", error);
                 return error;
               }
+              let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
+              trackReadyProduct.quantity = quantity;
+              trackReadyProduct["Reservation Start"] = cart.startTime;
+              trackReadyProduct["Reservation End"] = cart.endTime;
+              trackReadyProduct["Reservation Length"] = cart.rentalDays;
+              return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
             }
           );
         }
