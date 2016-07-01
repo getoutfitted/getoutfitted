@@ -4,6 +4,13 @@
  * or if the user is a guest but not anonymous
  */
 
+Template.checkoutLogin.onRendered(function () {
+  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
+    "step": 2,
+    "Step Name": "Sign In or Checkout As Guest"
+  });
+});
+
 Template.checkoutLogin.helpers({
   checkoutLoginCompleted: function () {
     const self = this;

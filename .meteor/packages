@@ -42,7 +42,6 @@ reactioncommerce:reaction-i18n
 reactioncommerce:reaction-product-variant
 reactioncommerce:reaction-dashboard
 reactioncommerce:reaction-orders
-reactioncommerce:reaction-analytics-libs
 reactioncommerce:reaction-analytics
 reactioncommerce:reaction-inventory
 reactioncommerce:reaction-shipping
@@ -79,6 +78,7 @@ getoutfitted:reaction-shipstation
 getoutfitted:reaction-klaviyo
 getoutfitted:product-bundler
 getoutfitted:slack
+getoutfitted:trail-guide
 
 # Reaction Commerce Data
 # reactioncommerce:reaction-sample-data   # default Reaction data

@@ -3,15 +3,6 @@ Template.reactionAnalyticsSettings.helpers({
     return ReactionCore.Collections.Packages.findOne({
       name: "reaction-analytics"
     });
-  },
-  googleAnalyticsEnabled() {
-    return typeof ga === "function";
-  },
-  segmentioEnabled() {
-    return typeof analytics === "object";
-  },
-  mixpanelEnabled() {
-    return typeof mixpanel === "object";
   }
 });
 

@@ -59,3 +59,11 @@ Template.cartCompleted.onCreated(function () {
   cartSub.stop();
   ReactionCore.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
 });
+
+
+Template.cartCompleted.onRendered(function () {
+  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+    "step": 6,
+    "Step Name": "Payment Information"
+  });
+});
