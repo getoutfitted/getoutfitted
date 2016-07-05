@@ -80,43 +80,252 @@ let shopLanguage;
 let defaultLanguage;
 let packages;
 
-Meteor.startup(() => {
-  Tracker.autorun(function () {
-    if (ReactionCore.Subscriptions.Shops.ready()) {
-      const shop = ReactionCore.Collections.Shops.findOne(ReactionCore.getShopId());
-      shopLanguage = shop.language;
-      defaultLanguage = shopLanguage;
-      // TODO: i18nextBrowserLanguageDetector
-      // const defaultLanguage = lng.detect() || shopLanguage;
-
-      // set default session language
-      Session.setDefault("language", getLang());
-
-      // every package gets a namespace, fetch them
-      // const packageNamespaces = [];
-      packages = ReactionCore.Collections.Packages.find({}, {
-        fields: {
-          name: 1
-        }
-      }).fetch();
-      for (const pkg of packages) {
-        packageNamespaces.push(pkg.name);
+let localeShop = {
+  locale: {
+    "name": "United States",
+    "native": "United States",
+    "phone": "1",
+    "continent": "NA",
+    "capital": "Washington D.C.",
+    "currency": "USD,USN,USS",
+    "languages": "en",
+    "states": {
+      "AL": {
+        "name": "Alabama"
+      },
+      "AK": {
+        "name": "Alaska"
+      },
+      "AS": {
+        "name": "American Samoa"
+      },
+      "AZ": {
+        "name": "Arizona"
+      },
+      "AR": {
+        "name": "Arkansas"
+      },
+      "CA": {
+        "name": "California"
+      },
+      "CO": {
+        "name": "Colorado"
+      },
+      "CT": {
+        "name": "Connecticut"
+      },
+      "DE": {
+        "name": "Delaware"
+      },
+      "DC": {
+        "name": "District Of Columbia"
+      },
+      "FM": {
+        "name": "Federated States Of Micronesia"
+      },
+      "FL": {
+        "name": "Florida"
+      },
+      "GA": {
+        "name": "Georgia"
+      },
+      "GU": {
+        "name": "Guam"
+      },
+      "HI": {
+        "name": "Hawaii"
+      },
+      "ID": {
+        "name": "Idaho"
+      },
+      "IL": {
+        "name": "Illinois"
+      },
+      "IN": {
+        "name": "Indiana"
+      },
+      "IA": {
+        "name": "Iowa"
+      },
+      "KS": {
+        "name": "Kansas"
+      },
+      "KY": {
+        "name": "Kentucky"
+      },
+      "LA": {
+        "name": "Louisiana"
+      },
+      "ME": {
+        "name": "Maine"
+      },
+      "MH": {
+        "name": "Marshall Islands"
+      },
+      "MD": {
+        "name": "Maryland"
+      },
+      "MA": {
+        "name": "Massachusetts"
+      },
+      "MI": {
+        "name": "Michigan"
+      },
+      "MN": {
+        "name": "Minnesota"
+      },
+      "MS": {
+        "name": "Mississippi"
+      },
+      "MO": {
+        "name": "Missouri"
+      },
+      "MT": {
+        "name": "Montana"
+      },
+      "NE": {
+        "name": "Nebraska"
+      },
+      "NV": {
+        "name": "Nevada"
+      },
+      "NH": {
+        "name": "New Hampshire"
+      },
+      "NJ": {
+        "name": "New Jersey"
+      },
+      "NM": {
+        "name": "New Mexico"
+      },
+      "NY": {
+        "name": "New York"
+      },
+      "NC": {
+        "name": "North Carolina"
+      },
+      "ND": {
+        "name": "North Dakota"
+      },
+      "MP": {
+        "name": "Northern Mariana Islands"
+      },
+      "OH": {
+        "name": "Ohio"
+      },
+      "OK": {
+        "name": "Oklahoma"
+      },
+      "OR": {
+        "name": "Oregon"
+      },
+      "PW": {
+        "name": "Palau"
+      },
+      "PA": {
+        "name": "Pennsylvania"
+      },
+      "PR": {
+        "name": "Puerto Rico"
+      },
+      "RI": {
+        "name": "Rhode Island"
+      },
+      "SC": {
+        "name": "South Carolina"
+      },
+      "SD": {
+        "name": "South Dakota"
+      },
+      "TN": {
+        "name": "Tennessee"
+      },
+      "TX": {
+        "name": "Texas"
+      },
+      "UT": {
+        "name": "Utah"
+      },
+      "VT": {
+        "name": "Vermont"
+      },
+      "VI": {
+        "name": "Virgin Islands"
+      },
+      "VA": {
+        "name": "Virginia"
+      },
+      "WA": {
+        "name": "Washington"
+      },
+      "WV": {
+        "name": "West Virginia"
+      },
+      "WI": {
+        "name": "Wisconsin"
+      },
+      "WY": {
+        "name": "Wyoming"
       }
-
-      // use i18n detected language to getLocale info
-      Meteor.call("shop/getLocale", function (error, result) {
-        if (result) {
-          ReactionCore.Locale = result;
-          ReactionCore.Locale.language = Session.get("language");
-          moment.locale(ReactionCore.Locale.language);
-          localeDep.changed();
-        }
-      });
-
-      // Stop the tracker
-      this.stop();
     }
-  });
+  },
+  currency: {
+    format: "%s%v",
+    symbol: "$"
+  },
+  shopCurrency: {
+    format: "%s%v",
+    symbol: "$"
+  },
+  language: "en"
+};
+
+
+Meteor.startup(() => {
+  // Tracker.autorun(function () {
+  //   if (ReactionCore.Subscriptions.Shops.ready()) {
+  //     const shop = ReactionCore.Collections.Shops.findOne(ReactionCore.getShopId());
+  //     shopLanguage = shop.language;
+  //     defaultLanguage = shopLanguage;
+  //     // TODO: i18nextBrowserLanguageDetector
+  //     // const defaultLanguage = lng.detect() || shopLanguage;
+
+  //     // set default session language
+  //     Session.setDefault("language", getLang());
+
+  //     // every package gets a namespace, fetch them
+  //     // const packageNamespaces = [];
+  //     packages = ReactionCore.Collections.Packages.find({}, {
+  //       fields: {
+  //         name: 1
+  //       }
+  //     }).fetch();
+  //     for (const pkg of packages) {
+  //       packageNamespaces.push(pkg.name);
+  //     }
+
+  //     // use i18n detected language to getLocale info
+  //     console.log("running tracker.autorun");
+  //     Meteor.call("shop/getLocale", function (error, result) {
+  //       if (error) {
+  //         console.log("Shop/getLocale error!", error);
+  //       }
+  //       if (result) {
+  //         ReactionCore.Locale = result;
+  //         ReactionCore.Locale.language = Session.get("language");
+  //         console.log(result);
+  //         moment.locale(ReactionCore.Locale.language);
+
+  //         // localeDep.changed();
+  //       }
+  //     });
+
+  //     // Stop the tracker
+  //     this.stop();
+  //   }
+  // });
+  ReactionCore.Locale = localeShop;
+  moment.locale(ReactionCore.Locale.language);
 });
 
 // use tracker autorun to detect language changes
