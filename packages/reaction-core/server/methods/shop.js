@@ -68,8 +68,9 @@ Meteor.methods({
     // } else {
     //   clientAddress = "127.0.0.1";
     // }
-    ReactionCore.Log.warn("IP Address of getLocale hit", this.connection.clientAddress);
-    ReactionCore.Log.warn("Geo of getLocale hit", geo.geoip(this.connection.clientAddress));
+    const clientIp = this.connection.clientAddress;
+    const loc = geo.geoip(clientIp);
+    ReactionCore.Log.warn(`IP: ${loc.ip} - ${loc.city}, ${loc.region_code} ${loc.zip_code}`);
     // //
     // // // get shop locale/currency related data
     // // let shop = ReactionCore.Collections.Shops.findOne(ReactionCore.getShopId(), {
