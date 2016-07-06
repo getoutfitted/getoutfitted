@@ -18,35 +18,58 @@ Template.numericInput.onCreated(() => {
  */
 Template.numericInput.onRendered(() => {
   const template = Template.instance();
+  const data = Template.currentData();
 
-  template.autorun(() => {
-    const data = Template.currentData();
+  const options = Object.assign({},
+    {
+      format: "%s%v",
+      symbol: "$"
+    },
+    {
+      minValue: "0.00",
+      maxValue: "999999999.99"
+    },
+    data
+  );
 
-    Meteor.call("shop/getLocale", (error, result) => {
-      if (_.isObject(result)) {
-        // Set options
-        const options = Object.assign({},
-          result.currency,
-          {
-            minValue: "0.00",
-            maxValue: "999999999.99"
-          },
-          data
-        );
-
-        $(template.find("input")).autoNumeric(template.autoNumericFieldState, {
-          aSep: options.thousand,
-          dGroup: options.grouping,
-          aSign: options.symbol,
-          aDec: options.decimal,
-          vMax: accounting.toFixed(options.maxValue, 2),
-          vMin: accounting.toFixed(options.minValue, 2),
-          wEmpty: "sign"
-        });
-
-        // Subsquent calls runs will update autoNumeric on our field, instead of init
-        template.autoNumericFieldState = "update";
-      }
-    });
+  $(template.find("input")).autoNumeric(template.autoNumericFieldState, {
+    aSep: options.thousand,
+    dGroup: options.grouping,
+    aSign: options.symbol,
+    aDec: options.decimal,
+    vMax: accounting.toFixed(options.maxValue, 2),
+    vMin: accounting.toFixed(options.minValue, 2),
+    wEmpty: "sign"
   });
+
+  // Subsquent calls runs will update autoNumeric on our field, instead of init
+  template.autoNumericFieldState = "update";
+  // template.autorun(() => {
+    // Meteor.call("shop/getLocale", (error, result) => {
+    //   if (_.isObject(result)) {
+    //     // Set options
+    //     const options = Object.assign({},
+    //       result.currency,
+    //       {
+    //         minValue: "0.00",
+    //         maxValue: "999999999.99"
+    //       },
+    //       data
+    //     );
+    //
+    //     $(template.find("input")).autoNumeric(template.autoNumericFieldState, {
+    //       aSep: options.thousand,
+    //       dGroup: options.grouping,
+    //       aSign: options.symbol,
+    //       aDec: options.decimal,
+    //       vMax: accounting.toFixed(options.maxValue, 2),
+    //       vMin: accounting.toFixed(options.minValue, 2),
+    //       wEmpty: "sign"
+    //     });
+    //
+    //     // Subsquent calls runs will update autoNumeric on our field, instead of init
+    //     template.autoNumericFieldState = "update";
+    //   }
+    // });
+  // });
 });
