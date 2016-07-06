@@ -57,80 +57,283 @@ Meteor.methods({
    */
   "shop/getLocale": function () {
     this.unblock();
-    let clientAddress;
-    let geo = new GeoCoder();
-    let result = {};
-    let defaultCountryCode = "US";
-    let localeCurrency = "USD";
-    // if called from server, ip won't be defined.
-    if (this.connection !== null) {
-      clientAddress = this.connection.clientAddress;
-    } else {
-      clientAddress = "127.0.0.1";
-    }
-
-    // get shop locale/currency related data
-    let shop = ReactionCore.Collections.Shops.findOne(ReactionCore.getShopId(), {
-      fields: {
-        addressBook: 1,
-        locales: 1,
-        currencies: 1,
-        currency: 1
-      }
-    });
-
-    if (!shop) {
-      throw new Meteor.Error(
-        "Failed to find shop data. Unable to determine locale.");
-    }
-    // cofigure default defaultCountryCode
-    // fallback to shop settings
-    if (shop.addressBook) {
-      if (shop.addressBook.length >= 1) {
-        if (shop.addressBook[0].country) {
-          defaultCountryCode = shop.addressBook[0].country;
-        }
-      }
-    }
-    // geocode reverse ip lookup
-    let geoCountryCode = geo.geoip(clientAddress).country_code;
-
-    // countryCode either from geo or defaults
-    let countryCode = (geoCountryCode || defaultCountryCode).toUpperCase();
-
-    // get currency rates
-    result.currency = {};
-    result.locale = shop.locales.countries[countryCode];
-
-    // to return default currency if rates will failed, we need to bring access
-    // to this data
-    result.shopCurrency = shop.currencies[shop.currency];
-
-    // check if locale has a currency defined
-    if (typeof result.locale === "object" &&
-      typeof result.locale.currency === "string") {
-      localeCurrency = result.locale.currency.split(",");
-    }
-
-    // localeCurrency is an array of allowed currencies
-    _.each(localeCurrency, function (currency) {
-      let exchangeRate;
-      if (shop.currencies[currency]) {
-        result.currency = shop.currencies[currency];
-        // only fetch rates if locale and shop currency are not equal
-        // if shop.curency = locale currency the rate is 1
-        if (shop.currency !== currency) {
-          exchangeRate = Meteor.call("shop/getCurrencyRates", currency);
-
-          if (typeof exchangeRate === "number") {
-            result.currency.exchangeRate = exchangeRate;
-          } else {
-            ReactionCore.Log.info("Failed to get currency exchange rates.");
+    // // let clientAddress;
+    // // let geo = new GeoCoder();
+    // // let result = {};
+    // // let defaultCountryCode = "US";
+    // // let localeCurrency = "USD";
+    // // // if called from server, ip won't be defined.
+    // // if (this.connection !== null) {
+    // //   clientAddress = this.connection.clientAddress;
+    // // } else {
+    // //   clientAddress = "127.0.0.1";
+    // // }
+    // //
+    // // // get shop locale/currency related data
+    // // let shop = ReactionCore.Collections.Shops.findOne(ReactionCore.getShopId(), {
+    // //   fields: {
+    // //     addressBook: 1,
+    // //     locales: 1,
+    // //     currencies: 1,
+    // //     currency: 1
+    // //   }
+    // // });
+    // //
+    // // if (!shop) {
+    // //   throw new Meteor.Error(
+    // //     "Failed to find shop data. Unable to determine locale.");
+    // // }
+    // // // cofigure default defaultCountryCode
+    // // // fallback to shop settings
+    // // if (shop.addressBook) {
+    // //   if (shop.addressBook.length >= 1) {
+    // //     if (shop.addressBook[0].country) {
+    // //       defaultCountryCode = shop.addressBook[0].country;
+    // //     }
+    // //   }
+    // // }
+    // // // geocode reverse ip lookup
+    // // let geoCountryCode = geo.geoip(clientAddress).country_code;
+    // //
+    // // // countryCode either from geo or defaults
+    // // let countryCode = (geoCountryCode || defaultCountryCode).toUpperCase();
+    // //
+    // // // get currency rates
+    // // result.currency = {};
+    // // result.locale = shop.locales.countries[countryCode];
+    // //
+    // // // to return default currency if rates will failed, we need to bring access
+    // // // to this data
+    // // result.shopCurrency = shop.currencies[shop.currency];
+    // //
+    // // // check if locale has a currency defined
+    // // if (typeof result.locale === "object" &&
+    // //   typeof result.locale.currency === "string") {
+    // //   localeCurrency = result.locale.currency.split(",");
+    // // }
+    // //
+    // // // localeCurrency is an array of allowed currencies
+    // // _.each(localeCurrency, function (currency) {
+    // //   let exchangeRate;
+    // //   if (shop.currencies[currency]) {
+    // //     result.currency = shop.currencies[currency];
+    // //     // only fetch rates if locale and shop currency are not equal
+    // //     // if shop.curency = locale currency the rate is 1
+    // //     if (shop.currency !== currency) {
+    // //       exchangeRate = Meteor.call("shop/getCurrencyRates", currency);
+    // //
+    // //       if (typeof exchangeRate === "number") {
+    // //         result.currency.exchangeRate = exchangeRate;
+    // //       } else {
+    // //         ReactionCore.Log.info("Failed to get currency exchange rates.");
+    // //       }
+    // //     }
+    // //   }
+    // // });
+    // // // should contain rates, locale, currency
+    // // ReactionCore.Log.info("Result");
+    // console.log(result.shopCurrency);
+    let result = {
+      locale: {
+        "name": "United States",
+        "native": "United States",
+        "phone": "1",
+        "continent": "NA",
+        "capital": "Washington D.C.",
+        "currency": "USD,USN,USS",
+        "languages": "en",
+        "states": {
+          "AL": {
+            "name": "Alabama"
+          },
+          "AK": {
+            "name": "Alaska"
+          },
+          "AS": {
+            "name": "American Samoa"
+          },
+          "AZ": {
+            "name": "Arizona"
+          },
+          "AR": {
+            "name": "Arkansas"
+          },
+          "CA": {
+            "name": "California"
+          },
+          "CO": {
+            "name": "Colorado"
+          },
+          "CT": {
+            "name": "Connecticut"
+          },
+          "DE": {
+            "name": "Delaware"
+          },
+          "DC": {
+            "name": "District Of Columbia"
+          },
+          "FM": {
+            "name": "Federated States Of Micronesia"
+          },
+          "FL": {
+            "name": "Florida"
+          },
+          "GA": {
+            "name": "Georgia"
+          },
+          "GU": {
+            "name": "Guam"
+          },
+          "HI": {
+            "name": "Hawaii"
+          },
+          "ID": {
+            "name": "Idaho"
+          },
+          "IL": {
+            "name": "Illinois"
+          },
+          "IN": {
+            "name": "Indiana"
+          },
+          "IA": {
+            "name": "Iowa"
+          },
+          "KS": {
+            "name": "Kansas"
+          },
+          "KY": {
+            "name": "Kentucky"
+          },
+          "LA": {
+            "name": "Louisiana"
+          },
+          "ME": {
+            "name": "Maine"
+          },
+          "MH": {
+            "name": "Marshall Islands"
+          },
+          "MD": {
+            "name": "Maryland"
+          },
+          "MA": {
+            "name": "Massachusetts"
+          },
+          "MI": {
+            "name": "Michigan"
+          },
+          "MN": {
+            "name": "Minnesota"
+          },
+          "MS": {
+            "name": "Mississippi"
+          },
+          "MO": {
+            "name": "Missouri"
+          },
+          "MT": {
+            "name": "Montana"
+          },
+          "NE": {
+            "name": "Nebraska"
+          },
+          "NV": {
+            "name": "Nevada"
+          },
+          "NH": {
+            "name": "New Hampshire"
+          },
+          "NJ": {
+            "name": "New Jersey"
+          },
+          "NM": {
+            "name": "New Mexico"
+          },
+          "NY": {
+            "name": "New York"
+          },
+          "NC": {
+            "name": "North Carolina"
+          },
+          "ND": {
+            "name": "North Dakota"
+          },
+          "MP": {
+            "name": "Northern Mariana Islands"
+          },
+          "OH": {
+            "name": "Ohio"
+          },
+          "OK": {
+            "name": "Oklahoma"
+          },
+          "OR": {
+            "name": "Oregon"
+          },
+          "PW": {
+            "name": "Palau"
+          },
+          "PA": {
+            "name": "Pennsylvania"
+          },
+          "PR": {
+            "name": "Puerto Rico"
+          },
+          "RI": {
+            "name": "Rhode Island"
+          },
+          "SC": {
+            "name": "South Carolina"
+          },
+          "SD": {
+            "name": "South Dakota"
+          },
+          "TN": {
+            "name": "Tennessee"
+          },
+          "TX": {
+            "name": "Texas"
+          },
+          "UT": {
+            "name": "Utah"
+          },
+          "VT": {
+            "name": "Vermont"
+          },
+          "VI": {
+            "name": "Virgin Islands"
+          },
+          "VA": {
+            "name": "Virginia"
+          },
+          "WA": {
+            "name": "Washington"
+          },
+          "WV": {
+            "name": "West Virginia"
+          },
+          "WI": {
+            "name": "Wisconsin"
+          },
+          "WY": {
+            "name": "Wyoming"
           }
         }
-      }
-    });
-    // should contain rates, locale, currency
+      },
+      currency: {
+        format: "%s%v",
+        symbol: "$"
+      },
+      shopCurrency: {
+        format: "%s%v",
+        symbol: "$"
+      },
+      language: "en"
+    };
+
+
     return result;
   },
 
