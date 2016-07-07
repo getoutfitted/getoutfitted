@@ -1,4 +1,15 @@
 import { GeoCoder } from "../../lib/geocoder.js";
+import { DDPRateLimiter } from "meteor/ddp-rate-limiter";
+
+// Only allow 1 attempt per connection per 30 seconds
+DDPRateLimiter.addRule({
+  name(name) {
+    return name === "shop/getLocale";
+  },
+  // Rate limit per connection ID
+  connectionId() { return true; }
+}, 1, 30000);
+
 /**
  * Reaction Shop Methods
  */
