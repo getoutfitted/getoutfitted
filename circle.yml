@@ -13,12 +13,6 @@ test:
     - curl --retry 10 --retry-delay 5 -v http://localhost
 
 deployment:
-  test:
-    branch: docker-ci-updates
-    commands:
-      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:test
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push getoutfitted/getoutfitted:test
   development:
     branch: development
     commands:
