@@ -81,7 +81,7 @@ getoutfitted:slack
 getoutfitted:trail-guide
 
 # Reaction Commerce Data
-# reactioncommerce:reaction-sample-data   # default Reaction data
+reactioncommerce:reaction-sample-data   # default Reaction data
 
 # Themes
 getoutfitted:getoutfitted-theme
