@@ -9,11 +9,11 @@ ReactionEmailTemplate = function (template) {
   let source;
   let lang = "en";
 
-  const shopLocale = Meteor.call("shop/getLocale");
-
-  if (shopLocale && shopLocale.locale && shopLocale.locale.languages) {
-    lang = shopLocale.locale.languages;
-  }
+  // const shopLocale = Meteor.call("shop/getLocale");
+  //
+  // if (shopLocale && shopLocale.locale && shopLocale.locale.languages) {
+  //   lang = shopLocale.locale.languages;
+  // }
 
   // using layout where in the future a more comprehensive rule based
   // filter of the email templates can be implemented.
