@@ -17,10 +17,13 @@ Meteor.publish("Accounts", function (userId) {
   }
   // global admin can get all accounts
   if (Roles.userIsInRole(this.userId, ["owner"], Roles.GLOBAL_GROUP)) {
-    return Accounts.find();
+    return ReactionCore.Collections.Accounts.find({
+      userId: this.userId
+    });
     // shop admin gets accounts for just this shop
   } else if (Roles.userIsInRole(this.userId, ["admin", "owner"], shopId)) {
     return Accounts.find({
+      userId: this.userId,
       shopId: shopId
     });
   }
