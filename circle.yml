@@ -16,7 +16,8 @@ deployment:
   development:
     branch: development
     commands:
-      - docker tag getoutfitted/getoutfitted:staging getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
+      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
+      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker push getoutfitted/getoutfitted:staging
