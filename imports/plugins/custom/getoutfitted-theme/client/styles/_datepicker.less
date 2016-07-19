@@ -1,0 +1,298 @@
+$unavailable-day-bg-color: #B9B9B9;
+$rental-day-bg-color: $primary-color;
+$rental-day-text-color: $white;
+$arrival-day-bg-color: #C7E6D3;
+$arrival-day-text-color: $oil;
+$return-day-bg-color: #F0B5A8;
+$return-day-text-color: $oil;
+$rush-day-bg-color: #D7EBEF;
+$rush-day-text-color: $oil;
+
+/*-----main-----*/
+.ui-datepicker {
+    width: 100%;
+  
+    font-size: 14px;
+    font-family: $font-family-impact;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
+    cursor: default;
+}
+
+.ui-datepicker a {
+    text-decoration: none;
+}
+
+.ui-datepicker table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    // border: solid 1px #23272A;
+    letter-spacing: 0px;
+}
+
+
+/*-----header-----*/
+.ui-datepicker-header {
+    position: relative;
+    padding-top: 5px;
+    padding-bottom: 8px;
+    
+    background: $smoke;
+    font-size: 1.1em;
+    letter-spacing: 0.2em;
+    color: $steel;
+    
+    text-transform: uppercase;
+    
+}
+ 
+.ui-datepicker-title {
+    text-align: center;
+}
+
+
+/*-----buttons-----*/
+.ui-datepicker-prev, .ui-datepicker-next {
+    
+    display: inline-block;
+    
+    cursor: pointer;
+    // font-size: 14px;
+    line-height: 30px;
+    
+    i {color: $steel; font-size: 1.4rem;}
+    &:hover { color: $black;}
+    &.ui-state-disabled { visibility: hidden;}
+}
+
+.ui-datepicker-prev {
+    float: left;
+    margin-left:3%;
+}
+
+.ui-datepicker-next {
+    float: right;
+    margin-right:3%;
+}
+
+
+/*-----table-----*/
+.ui-datepicker-calendar {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+
+    background-color: $smoke;
+    // font-family: Arial;f
+}
+
+
+/*-----table header-----*/
+.ui-datepicker thead {
+    background-color: transparent;
+}
+
+.ui-datepicker-calendar th {
+
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: normal;
+    font-size: .8em !important;
+    color: $jumbo;
+  
+    // border: 1px solid $silver;
+}
+
+
+/*-----table body-----*/
+#calendar .ui-datepicker tbody td {
+    padding: 0;
+    text-align: center;
+    font-size: .8em;
+    background: $snow;
+    border:1px solid $vapor;
+}
+
+.ui-datepicker tbody td:last-child {
+    border-right: 0px;
+}
+
+
+/*-----state-----*/
+.ui-datepicker td span, .ui-datepicker td a {
+    display: block;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    
+    background: white;
+}
+
+.ui-datepicker-calendar .ui-state-default {
+    color: $steel;
+    opacity: 1.0;
+}
+
+.ui-datepicker-calendar .ui-datepicker-other-month a {
+    background: $vapor;
+    // color: #8A8F93 !important;
+    // opacity: .3;
+}
+
+tbody td {
+&.ui-datepicker-unselectable,
+&.arrive-day,
+&.active-day,
+&.arrival-day,
+&.first-rental-day,
+&.last-rental-day,
+&.rental-day,
+&.return-day { border: 0; }
+}
+
+.ui-datepicker-unselectable .ui-state-default {
+    background: $greyed;
+    color: $greyed-text;
+}
+
+/*.ui-datepicker-calendar .ui-state-hover {
+    border: 1px solid black;
+}
+
+.ui-datepicker-calendar .ui-state-active {
+    background: #0F76BB;
+    color: white;
+    opacity: 1.0;
+}*/
+
+
+
+
+/*-----selection-----*/
+
+.ui-datepicker-calendar .rush-day a, .ui-datepicker-calendar .local-day a {
+    background: $rush-day-bg-color;
+}
+
+// Arrival day if blocked out
+.ui-datepicker-unselectable.arrival-day .ui-state-default {
+  background: $arrival-day-bg-color;
+  color: #444;
+  border-radius: 15px;
+  width: 30px;
+  margin: auto;
+}
+
+#calendar td.ui-datepicker-unselectable.ui-state-disabled.arrival-day {
+  background: $unavailable-day-bg-color;
+}
+
+#calendar .ui-datepicker tbody td.arrival-day.rush-day,
+#calendar .ui-datepicker tbody td.arrival-day.local-day {
+  background-color: $rush-day-bg-color;
+}
+
+.ui-datepicker-calendar .arrival-day a {
+  background: $arrival-day-bg-color;
+  color: #444;
+  border-radius: 15px;
+  width: 30px;
+  margin: auto;
+    // border:0;
+}
+
+.ui-datepicker-calendar .first-rental-day a {
+  background: $rental-day-bg-color;
+  color: $rental-day-text-color;
+  border-radius: 15px 0 0 15px;
+}
+
+#calendar .ui-datepicker tbody td.first-rental-day {
+    border-right: 1px solid $rental-day-bg-color;
+}
+
+.ui-datepicker-calendar .rental-day a {
+  background: $rental-day-bg-color;
+  color: $rental-day-text-color;
+}
+
+#calendar .ui-datepicker tbody td.rental-day {
+    border-left: 1px solid $rental-day-bg-color;
+    border-right: 1px solid $rental-day-bg-color;
+}
+
+
+.ui-datepicker-calendar .last-rental-day a {
+  background: $rental-day-bg-color;
+  color: $rental-day-text-color;
+  border-radius: 0 15px 15px 0;
+    // border:0;
+}
+
+
+
+.ui-datepicker-calendar .return-day a {
+  background: $return-day-bg-color;
+  color: #444;
+  border-radius: 15px;
+  width: 30px;
+  margin: auto;
+}
+
+/*----- legend ----*/
+.calendar-legend {
+  font-size: 11px;
+  margin-top: 11px;
+  margin-bottom: 11px;
+  border-bottom: 1px solid $smoke;
+}
+
+.calendar-legend dt, .calendar-legend dd {
+  display: inline-block;
+}
+
+.calendar-legend .arrival-day {
+  color: $arrival-day-bg-color;
+}
+.calendar-legend .return-day {
+  color: $return-day-bg-color;
+}
+.calendar-legend .rental-day {
+  color: $rental-day-bg-color;
+}
+.calendar-legend .rush-day, .calendar-legend .local-day {
+  color: $rush-day-bg-color;
+}
+.calendar-legend .unavailable-day {
+  color: $unavailable-day-bg-color;
+}
+
+.product-type-skis .legend_arrival_day,
+.product-type-skis .legend_return_day {
+  display: none;
+}
+
+// Rush Days Indicator / Selector
+.rush-day.fa-stack, .local-day.fa-stack {
+  height: 1em;
+  width: 1em;
+  line-height: 1em;
+}
+
+.rush-day .fa-check-square-o, .local-day .fa-check-square-o {
+  color: $oil;
+}
+
+@media (min-width: @screen-md-min) {
+  .calendar-legend {
+    width: 302px;
+  }
+}

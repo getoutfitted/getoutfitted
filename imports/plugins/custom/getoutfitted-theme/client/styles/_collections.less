@@ -1,0 +1,175 @@
+.ski-collection-title { font-size: 13px; }
+.ski-collection-header {
+  text-align: center;
+  display: block;
+  margin: 10px 0 0 0;
+}
+
+.winter .product-icon {
+  display: inline-block;
+  width: 9%;
+  margin: 0 -5px;
+  border-left: 1px solid #eee;
+}
+.winter .product-icon.wide {
+  width: 15%;
+}
+
+.winter .product-icon:first-child {
+  border-left: none;
+}
+
+.winter .product-icon img {
+    max-height: 36px;
+    max-width: 36px;
+}
+
+.winter .product-icon img.complete-outfit-icon-img {
+  max-width: 64px;
+}
+
+.product-icon:hover, .product-icon.active {
+  background: $white;
+}
+
+.product-icon:hover span, .product-icon.active span {
+  text-decoration: underline;
+}
+
+.catalog {
+  background: $silver;
+}
+
+.product-pane {
+  background: $white;
+}
+
+.catalog-category-header .text-center {
+    margin: 0.575rem 0;
+    font-size: 14px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.row .row.catalog-category-header {
+    margin-top: 10px;
+}
+
+// Legacy Catalog SCSS
+
+.current-tags {
+  margin-bottom: 10px !important;
+  text-align: right;
+}
+
+.active-tag {
+  @include label(
+    // This options sets label padding
+    $padding: 5px 5px 6px,
+    // This option sets label text-size
+    $text-size:12px,
+    // This option sets label background-color
+    $bg: $white,
+    // This option sets the radius of the label
+    $radius:4px
+  );
+  font-style: italic;
+  border: 1px solid $steel;
+  cursor: pointer;
+}
+
+.active-tag a {
+  color: $steel;
+  transition: color 0.25s;
+  &:before {
+    font-family: 'FontAwesome';
+    content: '\f00d';
+    font-size: 10px;
+  }
+  &:hover { color: #CC2222; }
+}
+
+.meta-pane {
+  padding: 30px 0 50px;
+}
+
+.meta-pane ul { list-style: none; margin:0}
+
+.meta-pane .side-nav { padding: 0 0 0.875em 0;}
+
+.meta-pane h1 { line-height: 1.2; }
+
+.color-filter {
+  width: 30px;
+  height: 30px;
+  margin: 5px 0 5px 10px;
+  float: left;
+  border: 1px solid $steel;
+  cursor: pointer;
+  overflow: hidden;
+  color: rgba(180, 180, 180, 0.8);
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  .active { border: 3px solid $jet;}
+}
+
+.color-swatches {
+  background-color: $ghost;
+  border: 1px solid #CCC;
+  border-radius: 0 4px 4px;
+  -webkit-border-radius:  0 4px 4px;
+  -moz-border-radius:  0 4px 4px;
+  padding: 5px 0;
+}
+
+img.ski-package {
+  border: 2px solid $oil;
+}
+
+.prefix.steel-border, .steel-border { border-color: #666; border-width: 1px; }
+
+.row.product-list { padding: 20px 0; }
+
+.collection-product-item { margin: 15px 0; }
+
+// Product Items inside collection
+.collection-product-caption { text-align: center; }
+.collection-product-brand {  margin: 0; font-weight: 400; font-size: 12px; font-style: italic; }
+.collection-product-brand a { color: $oil; }
+.collection-product-title { margin: 0; }
+.collection-product-title a {
+  color: $oil;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 15px;
+  display: inline-block;
+ }
+
+.collection-product-price { font-size: 14px; color: $oil; }
+.collection-rental-length { font-size: 10px; color: $oil; }
+
+// .collection-product-item {transition: border 0.3s; }
+// .collection-product-item:hover { border: 1px solid #efefef; }
+
+.pagination .arrow.unavailable { color: #DDD; }
+
+.type-filter {
+  cursor: pointer;
+}
+
+
+
+@media (min-width: @screen-lg-min) {
+  .collection-title { font-size: 34px; }
+  .collection-product-brand { font-size: 14px; }
+  
+  .catalog-category-header .text-center {
+    font-size: 16px;
+  }
+  
+  .row .row.catalog-category-header {
+      margin-top: 20px;
+  }
+  .ski-collection-title { font-size: 24px; }
+}

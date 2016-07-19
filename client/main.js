@@ -25,4 +25,5 @@ import "/imports/plugins/included/braintree/client";
 /**
  * Themes
  */
-import "/imports/themes/default";
+// import "/imports/themes/default";
+import "/imports/plugins/custom/getoutfitted-theme/client";
