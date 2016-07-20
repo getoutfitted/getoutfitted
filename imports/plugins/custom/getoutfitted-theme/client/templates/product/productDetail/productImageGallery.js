@@ -1,11 +1,17 @@
-const $ = require("jquery");
+import { $ } from "meteor/jquery";
+import { Reaction } from "/client/api";
+import { ReactionProduct } from "/lib/api";
+import { Media } from "/lib/collections";
+import { Meteor } from "meteor/meteor";
+import { Session } from "meteor/session";
+import { Template } from "meteor/templating";
+import { Modal } from "meteor/peppelg:bootstrap-3-modal";
+
 // load modules
-require("jquery-ui/sortable");
+require("jquery-ui/sortable"); // originally full jquery-ui lib
 /**
  * productImageGallery helpers
  */
-
-let Media = ReactionCore.Collections.Media;
 
 /**
  * uploadHandler method
@@ -79,7 +85,17 @@ function updateImagePriorities() {
       mediaId: index
     };
   });
-  return ReactionProductAPI.methods.updateMediaPriorities.call({ sortedMedias });
+
+  const results = [];
+  sortedMedias.forEach((image, index) => {
+    results.push(Media.update(image.mediaId, {
+      $set: {
+        "metadata.priority": index
+      }
+    }));
+  });
+
+  return results;
 }
 
 Template.registerHelper("imageWithPurpose", (purpose) => {
@@ -186,7 +202,7 @@ Template.productImageGallery.helpers({
 Template.productImageGallery.onRendered(function () {
   return this.autorun(function () {
     let $gallery;
-    if (ReactionCore.hasAdminAccess()) {
+    if (Reaction.hasAdminAccess()) {
       $gallery = $(".gallery");
       return $gallery.sortable({
         cursor: "move",
@@ -211,7 +227,6 @@ Template.productImageGallery.onRendered(function () {
     }
   });
 });
-
 /**
  * productImageGallery events
  */
@@ -223,7 +238,7 @@ Template.productImageGallery.events({
     if (event.relatedTarget === null) {
       return undefined;
     }
-    if (!ReactionCore.hasPermission("createProduct")) {
+    if (!Reaction.hasPermission("createProduct")) {
       let first = $("#leadImage > img");
       let target = $(event.currentTarget).find("img");
       if ($(target).data("index") !== first.data("index")) {
@@ -235,20 +250,36 @@ Template.productImageGallery.events({
     return undefined;
   },
   "click .remove-image": function () {
+    const imageUrl =
+      $(event.target)
+      .closest(".gallery-image")
+      .find("img")
+      .attr("src");
     let instance = this;
     if (this.image) {
       instance = this.image;
     }
 
-    const mediaId = instance._id;
-    ReactionProductAPI.methods.removeMedia.call({ mediaId }, error => {
-      // Media doesn't return success result
-      if (error) {
-        Alerts.inline(error.reason, "warning", {
-          autoHide: 10000
+    Alerts.alert({
+      title: "Remove Media?",
+      type: "warning",
+      showCancelButton: true,
+      imageUrl,
+      imageHeight: 150
+    }, (isConfirm) => {
+      if (isConfirm) {
+        const mediaId = instance._id;
+
+        Media.remove({ _id: mediaId }, (error) => {
+          if (error) {
+            Alerts.toast(error.reason, "warning", {
+              autoHide: 10000
+            });
+          }
+
+          updateImagePriorities();
         });
       }
-      return updateImagePriorities();
     });
   }
   // TODO: Add gallery dropzone handler

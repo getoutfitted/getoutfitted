@@ -1,3 +1,70 @@
+import { ReactionProduct } from "/lib/api";
+import { Meteor } from "meteor/meteor";
+import { Tracker } from "meteor/tracker";
+import { Template } from "meteor/templating";
+
+/**
+ * metaComponent helpers
+ */
+
+Template.metaComponent.helpers({
+  buttonProps() {
+    const currentData = Template.currentData();
+
+    return {
+      icon() {
+        if (currentData.createNew) {
+          return "plus";
+        }
+
+        return "times-circle";
+      },
+      onClick() {
+        if (!currentData.createNew) {
+          const productId = ReactionProduct.selectedProductId();
+          Meteor.call("products/removeMetaFields", productId, currentData);
+        }
+      }
+    };
+  }
+});
+
+Template.metaComponent.events({
+  "change input": function (event) {
+    const productId = ReactionProduct.selectedProductId();
+    const updateMeta = {
+      key: $(event.currentTarget).parent().children(
+        ".metafield-key-input").val(),
+      value: $(event.currentTarget).parent().children(
+        ".metafield-value-input").val()
+    };
+    if (this.key) {
+      Meteor.call("products/updateMetaFields", productId, updateMeta,
+        this);
+      $(event.currentTarget).animate({
+        backgroundColor: "#e2f2e2"
+      }).animate({
+        backgroundColor: "#fff"
+      });
+      return Tracker.flush();
+    }
+
+    if (updateMeta.value && !updateMeta.key) {
+      $(event.currentTarget).parent().children(".metafield-key-input").val(
+        "").focus();
+    }
+    if (updateMeta.key && updateMeta.value) {
+      Meteor.call("products/updateMetaFields", productId, updateMeta);
+      Tracker.flush();
+      $(event.currentTarget).parent().children(".metafield-key-input").val(
+        "").focus();
+      return $(event.currentTarget).parent().children(
+        ".metafield-value-input").val("");
+    }
+  }
+});
+
+
 /**
  * productMetaFieldForm events
  */
@@ -7,46 +74,6 @@ Template.productMetaFieldForm.events({
     let productId;
     productId = ReactionProduct.selectedProductId();
     Meteor.call("products/removeMetaFields", productId, this);
-  }
-});
-
-/**
- * metaComponent helpers
- */
-
-Template.metaComponent.events({
-  "change input": function (event) {
-    const updateMeta = {
-      key: $(event.currentTarget).parent().children(
-        ".metafield-key-input").val(),
-      value: $(event.currentTarget).parent().children(
-        ".metafield-value-input").val()
-    };
-    if (this.key) {
-      const productId = ReactionProduct.selectedProductId();
-      Meteor.call("products/updateMetaFields", productId, updateMeta,
-        this);
-
-      $(event.currentTarget).animate([
-        {"backgroundColor": $(event.currentTarget).css('background-color')},
-        {"backgroundColor": "#BBFFCC"}
-      ], 1000);
-      return Tracker.flush();
-    }
-
-    if (updateMeta.value && !updateMeta.key) {
-      $(event.currentTarget).parent().children(".metafield-key-input").val(
-        "").focus();
-    }
-    if (updateMeta.key && updateMeta.value) {
-      const productId = ReactionProduct.selectedProductId();
-      Meteor.call("products/updateMetaFields", productId, updateMeta);
-      Tracker.flush();
-      $(event.currentTarget).parent().children(".metafield-key-input").val(
-        "").focus();
-      return $(event.currentTarget).parent().children(
-        ".metafield-value-input").val("");
-    }
   }
 });
 

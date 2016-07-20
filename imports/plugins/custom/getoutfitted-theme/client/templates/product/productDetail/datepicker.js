@@ -1,4 +1,11 @@
-import $ from "jquery";
+import { ReactionProduct } from "/lib/api";
+import { Meteor } from "meteor/meteor";
+import { Session } from "meteor/session";
+import { Template } from "meteor/templating";
+import { Cart, Products } from "/lib/collections";
+// import { InventoryVariants } from "/"
+let InventoryVariants;
+import { $ } from "meteor/jquery";
 import "bootstrap-datepicker";
 import moment from "moment";
 import "twix";
@@ -518,6 +525,7 @@ import "moment-timezone";
   }
 })($);
 
+// TODO: Move these to getoutfitted client API
 function adjustLocalToDenverTime(time) {
   let here = moment(time);
   let denver = here.clone().tz("America/Denver");
@@ -681,7 +689,7 @@ Template.reservationDatepicker.onRendered(function () {
       return {enabled: available, classes: classes, tooltip: tooltip};
     }
   });
-  let inventoryVariants = ReactionCore.Collections.InventoryVariants.find();
+  let inventoryVariants = InventoryVariants.find();
   this.autorun(() => {
     if (inventoryVariants.fetch().length > 0) {
       $("#rental-start").datepicker("update");
@@ -711,7 +719,7 @@ Template.reservationDatepicker.onRendered(function () {
   $("#rental-start").on({
     changeDate: function (event) {
       $(".tooltip").remove();
-      const cart = ReactionCore.Collections.Cart.findOne();
+      const cart = Cart.findOne();
       const reservationLength = Session.get("reservationLength");
 
       // Sets cart dates to Denver time - need to set as local time on display.
@@ -729,7 +737,7 @@ Template.reservationDatepicker.onRendered(function () {
 
 Template.reservationDatepicker.helpers({
   startDate: function () {
-    let cart = ReactionCore.Collections.Cart.findOne();
+    let cart = Cart.findOne();
     if (cart && cart.startTime) {
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
     }
@@ -737,7 +745,7 @@ Template.reservationDatepicker.helpers({
   },
 
   startDateHuman: function () {
-    const cart = ReactionCore.Collections.Cart.findOne();
+    const cart = Cart.findOne();
     const resLength = Session.get("reservationLength");
     if (cart && cart.startTime) {
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("ddd M/DD")
@@ -750,7 +758,7 @@ Template.reservationDatepicker.helpers({
     if (Session.get("cartRentalLength")) {
       return Session.get("cartRentalLength");
     }
-    let cart = ReactionCore.Collections.Cart.findOne();
+    let cart = Cart.findOne();
     return cart.rentalDays;
   }
 });
@@ -792,7 +800,7 @@ Template.reservationDatepicker.events({
 });
 
 Template.bundleReservationDatepicker.onCreated(function () {
-  let bundleVariants = ReactionCore.Collections.Products.findOne({
+  let bundleVariants = Products.findOne({
     ancestors: {
       $size: 1
     }
@@ -917,7 +925,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
       return {enabled: available, classes: classes, tooltip: tooltip};
     }
   });
-  let inventoryVariants = ReactionCore.Collections.InventoryVariants.find();
+  let inventoryVariants = InventoryVariants.find();
   this.autorun(() => {
     if (inventoryVariants.fetch().length > 0) {
       $("#rental-start").datepicker("update");
@@ -947,7 +955,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
   $("#rental-start").on({
     changeDate: function (event) {
       $(".tooltip").remove();
-      const cart = ReactionCore.Collections.Cart.findOne();
+      const cart = Cart.findOne();
       const reservationLength = Session.get("reservationLength");
 
       // Sets cart dates to Denver time - need to set as local time on display.
@@ -965,7 +973,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
 
 Template.bundleReservationDatepicker.helpers({
   startDate: function () {
-    let cart = ReactionCore.Collections.Cart.findOne();
+    let cart = Cart.findOne();
     if (cart && cart.startTime) {
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
     }
@@ -973,7 +981,7 @@ Template.bundleReservationDatepicker.helpers({
   },
 
   startDateHuman: function () {
-    const cart = ReactionCore.Collections.Cart.findOne();
+    const cart = Cart.findOne();
     const resLength = Session.get("reservationLength");
     if (cart && cart.startTime) {
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("ddd M/DD")
@@ -986,7 +994,7 @@ Template.bundleReservationDatepicker.helpers({
     if (Session.get("cartRentalLength")) {
       return Session.get("cartRentalLength");
     }
-    let cart = ReactionCore.Collections.Cart.findOne();
+    let cart = Cart.findOne();
     return cart.rentalDays;
   }
 });
