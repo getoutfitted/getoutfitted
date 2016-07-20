@@ -45,3 +45,14 @@ import "/imports/plugins/included/stripe/register";
 import "/imports/plugins/included/example-paymentmethod/register";
 import "/imports/plugins/included/authnet/register";
 import "/imports/plugins/included/braintree/register";
+
+/**
+ * Custom Plugins
+ */
+import "/imports/plugins/custom/getoutfitted-theme/server";
+
+/**
+ * Custom Plugin Registry
+ */
+
+import "/imports/plugins/custom/getoutfitted-theme/register";
