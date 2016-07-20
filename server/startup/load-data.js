@@ -9,9 +9,12 @@ export default function () {
     Logger.info("Load default data from /private/data/");
 
     try {
-      Reaction.Import.fixture().process(Assets.getText("data/Shops.json"), ["name"], Reaction.Import.shop);
-      // ensure Shops are loaded first.
-      Reaction.Import.flush(Shops);
+      if (!Shops.findOne()) {
+        Reaction.Import.fixture().process(Assets.getText("data/Shops.json"), ["name"], Reaction.Import.shop);
+        // ensure Shops are loaded first.
+        Reaction.Import.flush(Shops);
+      }
+      Logger.info("Shop exists, Skipping shop data import.");
     } catch (error) {
       Logger.info("Bypassing loading Shop default data.");
     }
