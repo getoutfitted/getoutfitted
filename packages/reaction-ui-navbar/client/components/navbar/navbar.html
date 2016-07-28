@@ -4,11 +4,14 @@
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
+        {{> rentCompleteOutfitsLink}}
+        {{> rentWomensLink}}
+        {{> rentMensLink}}
         {{! winterProductNavDropdown}}
-        {{> demoProductNavDropdown}}
-        {{> rentalProductNavDropdown}}
+        {{! demoProductNavDropdown}}
+        {{! rentalProductNavDropdown}}
         {{! aboutNavDropdown}}
-        {{> tagNav tagNavProps}}
+        {{! tagNav tagNavProps}}
       </ul>
     </div>
     <div class="languages hide">{{> i18nChooser}}</div>
@@ -62,6 +65,24 @@
 <template name="phoneNumberLink">
   <li>
     <a href="tel:8886180305" class="dropdown-toggle">888-618-0305</a>
+  </li>
+</template>
+
+<template name="rentCompleteOutfitsLink">
+  <li>
+    <a href="/collections/complete-outfits" class="dropdown-toggle">Complete Outfits</a>
+  </li>
+</template>
+
+<template name="rentMensLink">
+  <li>
+    <a href="/collections/mens" class="dropdown-toggle">Mens</a>
+  </li>
+</template>
+
+<template name="rentWomensLink">
+  <li>
+    <a href="/collections/womens" class="dropdown-toggle">Womens</a>
   </li>
 </template>
 
