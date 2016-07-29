@@ -25,16 +25,12 @@ accounts-password
 accounts-facebook
 accounts-google
 accounts-twitter
-# accounts-github
-# accounts-weibo
-# accounts-oauth
 
 # Reaction Commerce Packages
 
 reactioncommerce:core
 reactioncommerce:reaction-catalog
 reactioncommerce:core-theme
-# reactioncommerce:reaction-layout
 reactioncommerce:launchdock-connect
 reactioncommerce:reaction-accounts
 reactioncommerce:reaction-router
@@ -68,9 +64,6 @@ getoutfitted:reaction-rental-products
 getoutfitted:reaction-product-importer
 getoutfitted:reaction-advanced-fulfillment
 getoutfitted:transit-times
-#getoutfitted:reaction-shopify-orders
-#getoutfitted:reaction-shopify-products
-#getoutfitted:reaction-local-delivery
 getoutfitted:static-pages
 getoutfitted:press-feed
 getoutfitted:reaction-zopim
@@ -85,21 +78,12 @@ reactioncommerce:reaction-sample-data   # default Reaction data
 
 # Themes
 getoutfitted:getoutfitted-theme
-# reactioncommerce:default-theme          # default Reaction theme
-# my:custom-theme                       # Example custom theme
 
 # Forced version updates
 # mdg:validation-error@0.5.1
 
 # Performance & Debugging Tools
-# meteorhacks:fast-render                   # improve initial page loads
-# meteortoys:allthings                      # developer tools
-# meteortoys:notifications                  # logging notification
-# meteorhacks:kadira                        # performance monitoring
-# meteorhacks:kadira-profiler               # cpu profiling
-# spiderable                                # adds phantomjs SEO rendering, use ongoworks:spiderable with Docker
-# meteorhacks:sikka                         # additional ddp, login security
-
-
-# Custom Packages
+meteorhacks:fast-render                   # improve initial page loads
+ongoworks:spiderable                      # adds phantomjs SEO rendering, use ongoworks:spiderable with Docker
 meteorhacks:kadira
+meteorhacks:kadira-profiler

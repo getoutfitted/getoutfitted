@@ -28,6 +28,10 @@ Template.productDetail.helpers({
         instance.variantId());
     }
   },
+  subsReady: function () {
+    const instance = Template.instance();
+    return instance.subscriptionsReady();
+  },
   tags: function () {
     let product = ReactionProduct.selectedProduct();
     if (product) {

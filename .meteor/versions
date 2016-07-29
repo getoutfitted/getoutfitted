@@ -120,6 +120,8 @@ meteor-platform@1.2.6
 meteorhacks:fast-render@2.13.0
 meteorhacks:inject-data@2.0.0
 meteorhacks:kadira@2.29.1
+meteorhacks:kadira-binary-deps@1.4.0
+meteorhacks:kadira-profiler@1.2.1
 meteorhacks:meteorx@1.4.1
 meteorhacks:picker@1.0.3
 meteorhacks:ssr@2.2.0
@@ -147,6 +149,7 @@ oauth2@1.1.9
 observe-sequence@1.0.11
 ongoworks:ddp-login@0.2.1
 ongoworks:security@2.0.1
+ongoworks:spiderable@1.0.7
 ongoworks:transliteration@0.1.1
 ordered-dict@1.0.7
 peppelg:bootstrap-3-modal@1.0.4
