@@ -100,7 +100,24 @@
     {{/if}}
     {{> goHowItWorks}}
   </div>
+  {{else}}
+    {{#if subsReady}}
+      {{> notFound}}
+    {{else}}
+      {{> waitingForProductToLoad}}
+    {{/if}}
   {{/with}}
+</template>
+
+<template name='waitingForProductToLoad'>
+    <div class='container'>
+      <div class='row text-center'>
+        <h1>Product Loading</h1>
+        <br />
+        <br />
+        <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+      </div>
+    </div>
 </template>
 
 <template name="largeDeviceDetails">
