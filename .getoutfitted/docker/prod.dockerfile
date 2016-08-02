@@ -1,14 +1,14 @@
 FROM debian:jessie
 MAINTAINER Reaction Commerce <hello@reactioncommerce.com>
 
-ENV NODE_VERSION "0.10.45"
+ENV NODE_VERSION "4.4.7"
 
 # Install PhantomJS
 ENV INSTALL_PHANTOMJS "true"
 
 # Meteor environment variables
-ENV ROOT_URL "http://localhost"
 ENV PORT "80"
+ENV ROOT_URL "http://localhost"
 
 # build script directories
 ENV APP_SOURCE_DIR "/var/src"
@@ -16,7 +16,7 @@ ENV APP_BUNDLE_DIR "/var/www"
 ENV BUILD_SCRIPTS_DIR "/opt/reaction"
 
 # Install entrypoint and build scripts
-COPY docker/scripts $BUILD_SCRIPTS_DIR
+COPY .reaction/docker/scripts $BUILD_SCRIPTS_DIR
 
 RUN chmod -R +x $BUILD_SCRIPTS_DIR
 
