@@ -30,6 +30,3 @@ custom/server/*
 
 private/custom/*
 !private/custom/.gitkeep
-
-imports/plugins/custom/*
-!imports/plugins/custom/.gitkeep
