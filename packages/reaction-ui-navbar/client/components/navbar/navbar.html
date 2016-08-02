@@ -4,14 +4,9 @@
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{> rentCompleteOutfitsLink}}
+        {{! rentCompleteOutfitsLink}}
         {{> rentWomensLink}}
         {{> rentMensLink}}
-        {{! winterProductNavDropdown}}
-        {{! demoProductNavDropdown}}
-        {{! rentalProductNavDropdown}}
-        {{! aboutNavDropdown}}
-        {{! tagNav tagNavProps}}
       </ul>
     </div>
     <div class="languages hide">{{> i18nChooser}}</div>
@@ -48,12 +43,9 @@
       <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{! winterProductNavDropdown}}
-        {{> demoProductNavDropdown}}
-        {{> rentalProductNavDropdown}}
-        {{! aboutNavDropdown}}
-        {{> tagNav tagNavProps}}
-        <div class="languages hide">{{> i18nChooser}}</div>
+        {{! rentCompleteOutfitsLink}}
+        {{> rentWomensLink}}
+        {{> rentMensLink}}
         <hr>
         <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
       </ul>
