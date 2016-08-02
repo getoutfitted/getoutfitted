@@ -3,8 +3,8 @@
     {{> coreNavigationBrand}}
     <div class="menu">
       <ul class="nav navbar-nav">
-        {{> phoneNumberLink}}
-        {{> rentCompleteOutfitsLink}}
+        {{! phoneNumberLink}}
+        {{! rentCompleteOutfitsLink}}
         {{> rentWomensLink}}
         {{> rentMensLink}}
         {{! winterProductNavDropdown}}
@@ -48,12 +48,9 @@
       <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{! winterProductNavDropdown}}
-        {{> demoProductNavDropdown}}
-        {{> rentalProductNavDropdown}}
-        {{! aboutNavDropdown}}
-        {{> tagNav tagNavProps}}
-        <div class="languages hide">{{> i18nChooser}}</div>
+        {{! rentCompleteOutfitsLink}}
+        {{> rentWomensLink}}
+        {{> rentMensLink}}
         <hr>
         <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
       </ul>
