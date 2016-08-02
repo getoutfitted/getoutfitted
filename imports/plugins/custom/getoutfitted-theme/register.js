@@ -7,12 +7,28 @@ Reaction.registerPackage({
   autoEnable: true,
   layout: [{
     layout: "getoutfittedLayout",
-    workflow: "coreWorkflow",
+    workflow: "coreProductWorkflow",
     collection: "Products",
     theme: "default",
     enabled: true,
     structure: {
-      template: "getoutfittedProducts",
+      template: "goProductDetail",
+      layoutHeader: "goLayoutHeader",
+      layoutFooter: "goLayoutFooter",
+      notFound: "goProductNotFound",
+      dashboardHeader: "",
+      dashboardControls: "dashboardControls",
+      dashboardHeaderControls: "",
+      adminControlsFooter: "adminControlsFooter"
+    }
+  },
+  {
+    layout: "getoutfittedLayout",
+    workflow: "coreWorkflow",
+    theme: "default",
+    enabled: true,
+    structure: {
+      template: "goProducts",
       layoutHeader: "getoutfittedLayoutHeader",
       layoutFooter: "getoutfittedLayoutFooter",
       notFound: "getoutfittedProductNotFound",

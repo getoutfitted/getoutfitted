@@ -5,6 +5,7 @@ machine:
 dependencies:
   override:
     - bash .getoutfitted/clone-packages.sh
+    - bash .reaction/docker/scripts/plugin-loader.sh
     - docker build -f .getoutfitted/docker/prod.dockerfile -t getoutfitted/getoutfitted:latest .
 
 test:
@@ -16,8 +17,8 @@ deployment:
   development:
     branch: development
     commands:
-      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging
+      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker push getoutfitted/getoutfitted:staging

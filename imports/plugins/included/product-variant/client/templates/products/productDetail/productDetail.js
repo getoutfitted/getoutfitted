@@ -7,6 +7,7 @@ import { Tags } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
+import { EditButton } from "/imports/plugins/core/ui/client/components";
 
 // load modules
 require("jquery-ui");
@@ -127,6 +128,22 @@ Template.productDetail.helpers({
       }
     };
   },
+  SocialEditButton() {
+    return {
+      component: EditButton,
+      toggleOn: Reaction.getActionView().template === "productDetailSocialForm" && Reaction.isActionViewOpen(),
+      onClick() {
+        if (Reaction.hasPermission("createProduct")) {
+          Reaction.showActionView({
+            label: "Social",
+            i18nKeyLabel: "social.socialTitle",
+            template: "productDetailSocialForm"
+          });
+        }
+      }
+    };
+  },
+
   showTagTitle() {
     const instance = Template.instance();
     const product = instance.state.get("product") || {};
@@ -344,7 +361,7 @@ Template.productDetail.events({
 
     return null;
   },
-  "click .toggle-product-isVisible-link": function (event, template) {
+  "click [data-event-action=publishProduct]": function (event, template) {
     let errorMsg = "";
     const self = this;
     if (!self.title) {
@@ -385,17 +402,11 @@ Template.productDetail.events({
       });
     }
   },
-  "click .delete-product-link": function () {
-    ReactionProduct.maybeDeleteProduct(this);
+  "click [data-event-action=cloneProduct]": function () {
+    ReactionProduct.cloneProduct(this);
   },
-  "click .js-edit-social"() {
-    if (Reaction.hasPermission("createProduct")) {
-      Reaction.showActionView({
-        label: "Social",
-        i18nKeyLabel: "social.socialTitle",
-        template: "productDetailSocialForm"
-      });
-    }
+  "click [data-event-action=deleteProduct]": function () {
+    ReactionProduct.maybeDeleteProduct(this);
   }
 });
 
@@ -426,7 +437,7 @@ Template.productDetailForm.helpers({
 });
 
 Template.productDetailForm.events({
-  "click .toggle-product-isVisible-link": function (event, instance) {
+  "click [data-event-action=publishProduct]": function (event, instance) {
     let errorMsg = "";
     const self = instance.state.get("product");
     if (!self.title) {
@@ -467,9 +478,13 @@ Template.productDetailForm.events({
       });
     }
   },
-  "click .delete-product-link": function (event, instance) {
+  "click [data-event-action=deleteProduct]": function (event, instance) {
     const product = instance.state.get("product");
     ReactionProduct.maybeDeleteProduct(product);
+  },
+  "click [data-event-action=cloneProduct]": function (event, instance) {
+    const product = instance.state.get("product");
+    ReactionProduct.cloneProduct(product);
   }
 });
 
@@ -496,6 +511,73 @@ Template.productDetailSocialForm.events({
 
     if (message.length > 140) {
       Alerts.toast("Message is over 140 characters", "warning");
+    }
+  }
+});
+
+Template.productDetailDashboardControls.onCreated(function () {
+  this.state = new ReactiveDict();
+
+  this.autorun(() => {
+    this.state.set({
+      product: ReactionProduct.selectedProduct()
+    });
+  });
+});
+
+/**
+ * productDetailDashboardControls helpers
+ */
+Template.productDetailDashboardControls.helpers({
+  product() {
+    return Template.instance().state.get("product");
+  }
+});
+
+/**
+ * productDetailDashboardControls events
+ */
+Template.productDetailDashboardControls.events({
+  "click [data-event-action=publishProduct]": function (event, template) {
+    let errorMsg = "";
+    const instance = Template.instance();
+    const self = instance.state.get("product") || {};
+    if (!self.title) {
+      errorMsg += `${i18next.t("error.isRequired", { field: i18next.t("productDetailEdit.title") })} `;
+      template.$(".title-edit-input").focus();
+    }
+    const variants = ReactionProduct.getVariants(self._id);
+    variants.forEach((variant, index) => {
+      if (!variant.title) {
+        errorMsg +=
+          `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.title"), number: index + 1 })} `;
+      }
+      // if top variant has children, it is not necessary to check its price
+      if (variant.ancestors.length === 1 && !ReactionProduct.checkChildVariants(variant._id) ||
+        variant.ancestors.length !== 1) {
+        if (!variant.price) {
+          errorMsg +=
+            `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.price"), number: index + 1 })} `;
+        }
+      }
+    });
+    if (errorMsg.length > 0) {
+      Alerts.inline(errorMsg, "warning", {
+        placement: "productManagement",
+        i18nKey: "productDetail.errorMsg"
+      });
+    } else {
+      Meteor.call("products/publishProduct", self._id, function (error) {
+        if (error) {
+          return Alerts.inline(error.reason, "error", {
+            placement: "productManagement",
+            id: self._id,
+            i18nKey: "productDetail.errorMsg"
+          });
+        }
+
+        return true;
+      });
     }
   }
 });

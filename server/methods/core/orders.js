@@ -139,6 +139,18 @@ Meteor.methods({
       throw new Meteor.Error(403, "Access Denied");
     }
 
+    // Server-side check to make sure discount is not greater than orderTotal.
+    let orderTotal =
+      order.billing[0].invoice.subtotal
+      + order.billing[0].invoice.shipping
+      + order.billing[0].invoice.taxes;
+
+    if (discount > orderTotal) {
+      const error = "Discount is greater than the order total";
+      Logger.error(error);
+      throw new Meteor.Error("orders/approvePayment.discount-amount", error);
+    }
+
     this.unblock();
 
     let total =
@@ -511,10 +523,15 @@ Meteor.methods({
   "orders/addOrderEmail": function (cartId, email) {
     check(cartId, String);
     check(email, String);
+    /**
+    *Instead of checking the Orders permission, we should check if user is
+    *connected.This is only needed for guest where email is
+    *provided for tracking order progress.
+    */
 
-    if (!Reaction.hasPermission("orders")) {
-      throw new Meteor.Error(403, "Access Denied");
-    }
+    if (!Meteor.userId()) {
+       throw new Meteor.Error(403, "Access Denied. You are not connected.");
+     }
 
     return Orders.update({cartId: cartId}, {
       $set: {
@@ -721,35 +738,31 @@ Meteor.methods({
    */
   "orders/refunds/create": function (orderId, paymentMethod, amount) {
     check(orderId, String);
-    check(paymentMethod, Object);
+    check(paymentMethod, Reaction.Schemas.PaymentMethod);
     check(amount, Number);
 
     if (!Reaction.hasPermission("orders")) {
       throw new Meteor.Error(403, "Access Denied");
     }
-
-    this.unblock();
-
     const processor = paymentMethod.processor.toLowerCase();
     let order = Orders.findOne(orderId);
     let transactionId = paymentMethod.transactionId;
 
-    Meteor.call(`${processor}/refund/create`, paymentMethod, amount, (error, result) => {
-      Orders.update({
-        "_id": orderId,
-        "billing.paymentMethod.transactionId": transactionId
-      }, {
-        $push: {
-          "billing.$.paymentMethod.transactions": result
-        }
-      });
-
-      if (result.saved === false) {
-        Logger.fatal("Attempt for refund transaction failed", order, paymentMethod.transactionId, result.error);
-
-        throw new Meteor.Error(
-          "Attempt to refund transaction failed");
+    const result = Meteor.call(`${processor}/refund/create`, paymentMethod, amount);
+    Orders.update({
+      "_id": orderId,
+      "billing.paymentMethod.transactionId": transactionId
+    }, {
+      $push: {
+        "billing.$.paymentMethod.transactions": result
       }
     });
+
+    if (result.saved === false) {
+      Logger.fatal("Attempt for refund transaction failed", order, paymentMethod.transactionId, result.error);
+
+      throw new Meteor.Error(
+        "Attempt to refund transaction failed", result.error);
+    }
   }
 });

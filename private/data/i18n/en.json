@@ -170,10 +170,6 @@
       },
       "productDetail": {
         "productManagement": "Product management",
-        "makeInvisible": "Make invisible",
-        "makeVisible": "Make visible",
-        "isNotVisible": "This product is not visible to customers.",
-        "makeItVisible": "You can make it visible",
         "whenYouAreDone": "when you're done editing.",
         "tags": "Tags",
         "tagsAdd": "Add tag",
@@ -322,6 +318,7 @@
         "applyRefundToThisOrder": "Apply refund of {{refund}} to this order?",
         "applyRefund": "Apply Refund",
         "adjustedTotal": "Adjusted Total",
+        "invalidDiscount": "Discount cannot be greater than original total price",
         "processor": "Processor",
         "placed": "Placed",
         "on": "on",

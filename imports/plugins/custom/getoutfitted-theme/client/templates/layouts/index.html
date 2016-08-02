@@ -2,10 +2,10 @@
   <div class="index">
     {{> goIndexHero}}
     {{> goCallUsBreak}}
-    {{> goFeaturedCategories}}
-    {{> goHowItWorks}}
     {{> goMediaBreak}}
-    {{! getoutfittedTrailer}}
+    {{! goFeaturedCategories}}
+    {{> goHowItWorks}}
+    {{> getoutfittedTrailer}}
     {{! goServiceDescription}}
   </div>
 </template>
@@ -17,8 +17,7 @@
         <div class="row cta">
           <div class="col-sm-12 text-center">
             <h1>The World's Outdoor Gear Closet</h1>
-            <h2 class="visible-sm visible-md-block visible-lg-block">Rent or demo the coolest gear on the market and have it delivered<br />directly to your doorstep or destination for easy one-time use.<br /></h2>
-            <h2 class="visible-xs">Rent or demo the coolest gear on the market and have it delivered directly to your doorstep or destination for easy one-time use.<br /></h2>
+            <h2>We rent and deliver top quality ski clothing and gear directly to your resort. <br /><br/>Free Shipping and Free Returns <br> Anywhere in the US.</h2>
             <a id="rent-now-home-hero" href="{{pathFor 'catalog'}}" class="btn radius btn-lg btn-brand-primary margin-top-small">Browse Gear</a>
           </div>
         </div>
@@ -37,47 +36,17 @@
   <section id="summer-sports">
     <div class="tile-grid">
       <div class="row fullwidth">
-
-        <div class="col-sm-12 col-md-4 columns tile">
-          <div class="oru-kayak-tile">
-            <a href="/collections/oru-kayak" class="btn btn-lg btn-v-middle wire white radius">Oru Kayaks</a>
+        <div class="col-sm-12 col-md-6 columns tile">
+          <div class="womens-outfits-tile">
+            <a href="/collections/womens" class="btn btn-lg btn-v-middle wire white radius">Women's Outfits</a>
           </div>
         </div>
         
-        <div class="col-sm-12 col-md-4 columns tile">
-          <div class="onewheel-tile">
-            <a href="/product/onewheel" class="btn btn-lg btn-v-middle wire white radius">Onewheel</a>
+        <div class="col-sm-12 col-md-6 columns tile">
+          <div class="mens-outfits-tile">
+            <a href="/collections/mens" class="btn btn-lg btn-v-middle wire white radius">Men's Outfits</a>
           </div>
         </div>
-
-        <div class="col-sm-12 col-md-4 columns end tile">
-          <div class="tentsile-tile">
-            <a href="/collections/tentsile" class="btn btn-lg btn-v-middle wire white radius">Tentsile Tree Tents</a>
-          </div>
-        </div>
-
-      </div>
-      <!-- Featured Products Row 2 -->
-      <div class="row fullwidth">
-
-        <div class="col-sm-12 col-md-4 columns tile">
-          <div class="imagine-tile">
-            <a href="/product/imagine-icon-lte-sup-paddleboard" class="btn btn-lg btn-v-middle wire white radius">Inflatable SUP</a>
-          </div>
-        </div>
-        
-        <div class="col-sm-12 col-md-4 columns tile">
-          <div class="camping-backpacking-tile">
-            <a href="/collections/camping" class="btn btn-lg btn-v-middle wire white radius">Camping &amp; Backpacking</a>
-          </div>
-        </div>
-
-        <div class="col-sm-12 col-md-4 columns end tile">
-          <div class="kammok-tile">
-            <a href="/product/hammock-camper-package" class="btn btn-lg btn-v-middle wire white radius">Kammock Hammocks</a>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
@@ -111,26 +80,38 @@
         <div class="row">
           <div class="col-xs-12 col-sm-4 columns">
             <div class="how-it-works-step">
-              <span class="position">1</span>
-              <h3>Demo before you buy or rent gear for one-time use.</h3>
+              <img class="round" src="https://d2wpxyz1up89r3.cloudfront.net/heros/sketch1.jpg">
+              <h3>Order<br>Online</h3>
               <p>Browse our gear closet and select a delivery date. We'll deliver the gear directly to your doorstep or destination. Free shipping, anywhere in the US.</p>
             </div>
           </div>
           <div class="col-xs-12 col-sm-4 columns">
             <div class="how-it-works-step">
-              <span class="position">2</span>
+              <img class="round" src="https://d2wpxyz1up89r3.cloudfront.net/heros/sketch2.jpg">
               <h3>Step outside<br>and explore.</h3>
-              <p>Getting outside has never been easier. Your gear will arrive fresh, clean, and ready for whatever adventures you have planned.</p>
+              <p>Going skiing or snowboarding has never been easier. Your gear will arrive fresh, clean, and ready to wear for the adventures you have planned.</p>
             </div>
           </div>
           <div class="col-xs-12 col-sm-4 columns">
             <div class="how-it-works-step">
-              <span class="position">3</span>
-              <h3>Ship it back.<br>If you loved it, buy it!</h3>
-              <p>Once your rental or demo period has ended, drop the gear off at any UPS location. Loved your demo? Buy it and we'll send you a brand new one, ready for a lifetime of adventure.</p>
+              <img class="round" src="https://d2wpxyz1up89r3.cloudfront.net/heros/sketch3.jpg">
+              <h3>Ship it back<br>when you're done.<br></h3>
+              <p>Once your rental has ended, put your gear in the included prepaid UPS bag and drop the gear off at the front desk of your hotel or any UPS location.</p>
             </div>
           </div>
         </div>
       </div>
     </section>
+</template>
+
+<template name="getoutfittedTrailer">
+  <section id="trailer">
+    <div class="text-center">
+      <div class="row">
+        <div id="getoutfitted-trailer" class="trailer-container">
+          <iframe class="trailer" src="https://www.youtube.com/embed/ABKp61U6uSI?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>

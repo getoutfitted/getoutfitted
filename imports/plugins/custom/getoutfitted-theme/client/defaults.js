@@ -5,9 +5,9 @@ DEFAULT_WORKFLOW = "coreWorkflow";
 
 Session.set("INDEX_OPTIONS", {
   template: "getoutfittedIndex",
-  layoutHeader: "getoutfittedLayoutHeader",
-  layoutFooter: "getoutfittedLayoutFooter",
-  notFound: "notFound",
+  layoutHeader: "goLayoutHeader",
+  layoutFooter: "goLayoutFooter",
+  notFound: "goNotFound",
   dashboardControls: "dashboardControls",
   adminControlsFooter: "adminControlsFooter"
 });
