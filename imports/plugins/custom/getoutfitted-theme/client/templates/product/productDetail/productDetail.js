@@ -1,8 +1,15 @@
-const $ = require("jquery");
+import { $ } from "meteor/jquery";
+import { Reaction } from "/client/api";
+import { ReactionProduct } from "/lib/api";
+import { Cart, Tags } from "/lib/collections";
+import { Meteor } from "meteor/meteor";
+import { Session } from "meteor/session";
+import { Template } from "meteor/templating";
+// import { ReactionAnalytics } from "some/analtyics/module";
 // load modules
 require("jquery-ui");
 
-Template.productDetail.onCreated(function () {
+Template.goProductDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
   this.subscribe("Tags");
 
@@ -20,7 +27,7 @@ Template.productDetail.onCreated(function () {
  * see helper/product.js for
  * product data source
  */
-Template.productDetail.helpers({
+Template.goProductDetail.helpers({
   product: function () {
     const instance = Template.instance();
     if (instance.subscriptionsReady()) {
@@ -33,19 +40,19 @@ Template.productDetail.helpers({
     if (product) {
       if (product.hashtags) {
         return _.map(product.hashtags, function (id) {
-          return ReactionCore.Collections.Tags.findOne(id);
+          return Tags.findOne(id);
         });
       }
     }
   },
   tagsComponent: function () {
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       return Template.productTagInputForm;
     }
     return Template.productDetailTags;
   },
   metaComponent: function () {
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       return Template.productMetaFieldForm;
     }
     return Template.productMetaField;
@@ -63,21 +70,21 @@ Template.productDetail.helpers({
     }
   },
   fieldComponent: function () {
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       return Template.productDetailEdit;
     }
     return Template.productDetailField;
   },
   featureComponent: function () {
     this.featureKey = "feature";
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       return Template.productFeatureFieldForm;
     }
     return Template.productFeatureField;
   },
   productIconComponent: function () {
     this.featureKey = "productIcon";
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       return Template.productFeatureFieldForm;
     }
     return Template.productFeatureImageField;
@@ -112,7 +119,7 @@ Template.productDetail.helpers({
  * productDetail events
  */
 
-Template.productDetail.events({
+Template.goProductDetail.events({
   "click #toggleAdminPanelVisibilityOff": function () {
     Session.set("productManagementPanelVisibility", false);
   },
@@ -121,7 +128,7 @@ Template.productDetail.events({
   },
   "click #price": function () {
     let formName;
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       let variant = ReactionProduct.selectedVariant();
       if (!variant) {
         return;
@@ -167,7 +174,7 @@ Template.productDetail.events({
     let currentVariant = ReactionProduct.selectedVariant();
     let currentProduct = ReactionProduct.selectedProduct();
 
-    let cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId() });
+    let cart = Cart.findOne({userId: Meteor.userId() });
     if (!cart.startTime && this.functionalType === "rental") {
       Alerts.inline("Please select an arrival date before booking", "error", {
         placement: "datepicker",
@@ -222,12 +229,13 @@ Template.productDetail.events({
                 ReactionCore.Log.error("Failed to add to cart.", error);
                 return error;
               }
-              let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
-              trackReadyProduct.quantity = quantity;
-              trackReadyProduct["Reservation Start"] = cart.startTime;
-              trackReadyProduct["Reservation End"] = cart.endTime;
-              trackReadyProduct["Reservation Length"] = cart.rentalDays;
-              return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
+              // TODO: Re-add analytics tracking
+              // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
+              // trackReadyProduct.quantity = quantity;
+              // trackReadyProduct["Reservation Start"] = cart.startTime;
+              // trackReadyProduct["Reservation End"] = cart.endTime;
+              // trackReadyProduct["Reservation Length"] = cart.rentalDays;
+              // return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
             }
           );
         }
@@ -337,7 +345,7 @@ Template.productDetail.events({
 Template.goProductFeatures.helpers({
   includedComponent: function () {
     this.featureKey = 'included';
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       return Template.productIncludedFieldForm;
     }
     return Template.productIncludedField;

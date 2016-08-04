@@ -1,4 +1,8 @@
-const $ = require("jquery");
+import { $ } from "meteor/jquery";
+import { Reaction } from "/client/api";
+import { ReactionProduct } from "/lib/api";
+import { Meteor } from "meteor/meteor";
+import { Template } from "meteor/templating";
 // load modules
 require("jquery-ui/sortable");
 
@@ -45,7 +49,7 @@ Template.variant.events({
     return toggleSession("variant-form-" + this._id);
   },
   "dblclick .variant-detail": function () {
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       ReactionProduct.setCurrentVariant(this._id);
       return toggleSession("variant-form-" + this._id);
     }
@@ -65,7 +69,7 @@ Template.variant.events({
 Template.variant.onRendered(function () {
   return this.autorun(function () {
     let variantSort;
-    if (ReactionCore.hasPermission("createProduct")) {
+    if (Reaction.hasPermission("createProduct")) {
       variantSort = $(".variant-list");
       return variantSort.sortable({
         items: "> li.variant-list-item",

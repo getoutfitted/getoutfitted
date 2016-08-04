@@ -9,3 +9,6 @@ import "./defaults";
 
 // Templates
 import "./templates";
+
+// Template Helpers
+import "./helpers/template.js";

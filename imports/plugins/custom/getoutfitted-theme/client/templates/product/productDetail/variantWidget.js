@@ -1,4 +1,8 @@
-const $ = require("jquery");
+import { $ } from "meteor/jquery";
+import { ReactionProduct } from "/lib/api";
+import { Meteor } from "meteor/meteor";
+import { Session } from "meteor/session";
+import { Template } from "meteor/templating";
 // load modules
 require("jquery-ui");
 function stickyWidget() {

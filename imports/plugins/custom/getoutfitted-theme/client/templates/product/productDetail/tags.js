@@ -1,4 +1,9 @@
-const $ = require("jquery");
+import { $ } from "meteor/jquery";
+import { ReactionProduct } from "/lib/api";
+import { Meteor } from "meteor/meteor";
+import { Template } from "meteor/templating";
+import { Tags } from "/lib/collections";
+
 // load modules
 require("jquery-ui/sortable");
 require("jquery-ui/autocomplete");
@@ -17,6 +22,7 @@ Template.productDetailTags.helpers({
         }
       }
     }
+    return false;
   }
 });
 
@@ -31,6 +37,7 @@ Template.productTagInputForm.helpers({
       }
       return "fa-bookmark-o";
     }
+    return "";
   }
 });
 
@@ -56,7 +63,7 @@ Template.productTagInputForm.events({
       source: function (request, response) {
         let datums = [];
         let slug = getSlug(request.term);
-        ReactionCore.Collections.Tags.find({
+        Tags.find({
           slug: new RegExp(slug, "i")
         }).forEach(function (tag) {
           return datums.push({

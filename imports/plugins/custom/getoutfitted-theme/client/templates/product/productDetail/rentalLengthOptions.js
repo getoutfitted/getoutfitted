@@ -1,4 +1,7 @@
-import $ from "jquery";
+import { $ } from "meteor/jquery";
+import { ReactionProduct } from "/lib/api";
+import { Session } from "meteor/session";
+import { Template } from "meteor/templating";
 import "bootstrap-datepicker";
 
 Template.rentalLengthOptions.helpers({

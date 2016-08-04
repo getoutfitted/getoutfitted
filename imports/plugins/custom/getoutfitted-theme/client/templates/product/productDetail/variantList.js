@@ -1,3 +1,9 @@
+import { $ } from "meteor/jquery";
+import { ReactionProduct } from "/lib/api";
+import { Meteor } from "meteor/meteor";
+import { Session } from "meteor/session";
+import { Template } from "meteor/templating";
+import { Products } from "/lib/collections";
 /**
  * variantList helpers
  */
@@ -157,7 +163,7 @@ Template.variantList.events({
   },
   "change select": function (event) {
     const variantId = event.currentTarget.value;
-    const product = ReactionCore.Collections.Products.findOne(variantId);
+    const product = Products.findOne(variantId);
     const childVariants = ReactionProduct.getVariants(variantId);
     if (childVariants.length > 0) {
       Session.set("selectedVariantId", childVariants[0]._id);
