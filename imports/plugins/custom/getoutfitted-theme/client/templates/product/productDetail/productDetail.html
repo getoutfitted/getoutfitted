@@ -117,7 +117,7 @@
           {{/with}}
           <hr>
           {{> goProductImageGallery}}
-          {{! getoutfittedProductTrailer}}
+          {{> goProductTrailer}}
         </div>
 
       </div>
@@ -125,13 +125,10 @@
   </div>
 </template>
 
-<template name="getoutfittedProductTrailer">
+<template name="goProductTrailer">
   <div class="row">
     <div id="getoutfitted-trailer" class="show-for-medium-up col-md-12">
-      <iframe width="660" height="274" src="https://www.youtube.com/embed/ABKp61U6uSI?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
-      <!-- <div class="fluid-width-video-wrapper" style="padding-top: 41.681%;">
-        <iframe src="https://www.youtube.com/embed/ABKp61U6uSI?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen="" id="fitvid0"></iframe>
-      </div> -->
+      {{> getoutfittedTrailer}}
     </div>
   </div>
   <hr>
