@@ -118,15 +118,19 @@ export function ReactionLayout(options = {}) {
     if (Reaction.Subscriptions.Shops.ready()) {
       const shop = Shops.findOne(Reaction.getShopId());
       if (shop) {
-        console.log("Layout", layout)
-        console.log("Workflow", workflow)
+        console.log("Layout", layout);
+        console.log("Workflow", workflow);
         const newLayout = shop.layout.find((x) => selectLayout(x, layout, workflow));
         console.log("newLayout", newLayout);
         // oops this layout wasn't found. render notFound
         if (!newLayout) {
+          console.log("notFound");
           BlazeLayout.render("notFound");
         } else {
-          const layoutToRender = Object.assign({}, newLayout.structure, options, unauthorized);
+          console.log("options", options);
+          console.log("unauthorized", unauthorized);
+          const layoutToRender = Object.assign({}, options, unauthorized, newLayout.structure);
+          console.log("rendering", layoutToRender);
           BlazeLayout.render(layout, layoutToRender);
         }
       }
