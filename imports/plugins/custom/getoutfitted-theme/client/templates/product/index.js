@@ -23,10 +23,14 @@ import "./productGrid/productGrid.html";
 import "./productGrid/productGrid.js";
 
 // Product Detail
-import "./productDetail/productDetail.html";
-import "./productDetail/productDetail.js";
+import "./productDetail/attributes.html";
+import "./productDetail/attributes.js";
+import "./productDetail/childVariant.html";
+import "./productDetail/childVariant.js";
 import "./productDetail/edit.html";
 import "./productDetail/edit.js";
+import "./productDetail/productDetail.html";
+import "./productDetail/productDetail.js";
 import "./productDetail/productImageGallery.html";
 import "./productDetail/productImageGallery.js";
 import "./productDetail/tags.html";
@@ -45,10 +49,6 @@ import "./productDetail/datepicker.html";
 import "./productDetail/datepicker.js";
 import "./productDetail/variantForm.html";
 import "./productDetail/variantForm.js";
-import "./productDetail/childVariant.html";
-import "./productDetail/childVariant.js";
-import "./productDetail/attributes.html";
-import "./productDetail/attributes.js";
 
 import "./productSettings/productSettings.html";
 import "./productSettings/productSettings.js";

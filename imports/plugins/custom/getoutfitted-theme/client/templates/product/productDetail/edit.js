@@ -6,10 +6,10 @@ import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 
 /**
- * productDetailEdit helpers
+ * goProductDetailEdit helpers
  */
 
-Template.productDetailEdit.helpers({
+Template.goProductDetailEdit.helpers({
   i18nPlaceholder: function () {
     let i18nKey = `productDetailEdit.${this.field}`;
     if (i18next.t(i18nKey) === i18nKey) {
@@ -21,10 +21,10 @@ Template.productDetailEdit.helpers({
 });
 
 /**
- * productDetailEdit events
+ * goProductDetailEdit events
  */
 
-Template.productDetailEdit.events({
+Template.goProductDetailEdit.events({
   "change input,textarea": function (event) {
     const self = this;
     const productId = ReactionProduct.selectedProductId();
@@ -77,10 +77,10 @@ Template.productDetailEdit.events({
 });
 
 /**
- * productDetailField events
+ * goProductDetailField events
  */
 
-Template.productDetailField.events({
+Template.goProductDetailField.events({
   "click .product-detail-field": function () {
     if (Reaction.hasPermission("createProduct")) {
       let fieldClass = "editing-" + this.field;
@@ -92,9 +92,9 @@ Template.productDetailField.events({
 });
 
 /**
- * productDetailEdit onRendered
+ * goProductDetailEdit onRendered
  */
 
-Template.productDetailEdit.onRendered(function () {
+Template.goProductDetailEdit.onRendered(function () {
   return autosize($("textarea"));
 });

@@ -71,9 +71,9 @@ Template.goProductDetail.helpers({
   },
   fieldComponent: function () {
     if (Reaction.hasPermission("createProduct")) {
-      return Template.productDetailEdit;
+      return Template.goProductDetailEdit;
     }
-    return Template.productDetailField;
+    return Template.goProductDetailField;
   },
   goFeatureComponent: function () {
     this.featureKey = "feature";

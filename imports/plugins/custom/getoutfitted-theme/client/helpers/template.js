@@ -21,7 +21,7 @@ Template.registerHelper("fieldComponent", function () {
   if (ReactionCore.hasPermission("createProduct")) {
     return Template.productDetailEdit;
   }
-  return Template.productDetailField;
+  return Template.goProductDetailField;
 });
 
 Template.registerHelper("handleize", (str) => {

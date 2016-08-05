@@ -4,7 +4,7 @@ import { Media } from "/lib/collections";
 import { Icon } from "/imports/plugins/core/ui/client/components";
 
 /**
- * childVariantForm onRendered
+ * goChildVariantForm onRendered
  */
 Template.onRendered(function () {
   this.autorun(() => {
@@ -16,14 +16,14 @@ Template.onRendered(function () {
 });
 
 /**
- * childVariantForm helpers
+ * goChildVariantForm helpers
  */
 
-Template.childVariantForm.helpers({
+Template.goChildVariantForm.helpers({
   Icon() {
     return Icon;
   },
-  childVariantFormId: function () {
+  goChildVariantFormId: function () {
     return "child-variant-form-" + this._id;
   },
   media: function () {
@@ -84,10 +84,10 @@ Template.childVariantForm.helpers({
 });
 
 /**
- * childVariantForm events
+ * goChildVariantForm events
  */
 
-Template.childVariantForm.events({
+Template.goChildVariantForm.events({
   "click .child-variant-form :input, click li": function (event, template) {
     const selectedProduct = ReactionProduct.selectedProduct();
     const variantId = template.data._id;

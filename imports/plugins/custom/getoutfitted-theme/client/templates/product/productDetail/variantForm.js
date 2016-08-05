@@ -11,7 +11,7 @@ Template.variantForm.helpers({
     if (this.ancestors.length === 1) {
       return Template.parentVariantForm;
     }
-    return Template.childVariantForm;
+    return Template.goChildVariantForm;
   },
   childVariants: function () {
     const _id = this._id;
