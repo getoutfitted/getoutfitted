@@ -78,10 +78,10 @@ Template.productMetaFieldForm.events({
 });
 
 /**
- * featureComponent helpers
+ * goFeatureComponent helpers
  */
 
-Template.featureComponent.events({
+Template.goFeatureComponent.events({
   "change input": function (event) {
     const updateMeta = {
       key: $(event.currentTarget).parent().children(
@@ -118,10 +118,10 @@ Template.featureComponent.events({
 });
 
 /**
- * productIncludedFieldForm
+ * goProductIncludedFieldForm
  */
 
-Template.productIncludedFieldForm.helpers({
+Template.goProductIncludedFieldForm.helpers({
   features: function () {
     const featureKey = this.featureKey;
     return _.filter(this.metafields, function (metafield) {
@@ -130,7 +130,7 @@ Template.productIncludedFieldForm.helpers({
   }
 });
 
-Template.productIncludedFieldForm.events({
+Template.goProductIncludedFieldForm.events({
   "click .metafield-remove": function () {
     let productId;
     productId = ReactionProduct.selectedProductId();
@@ -139,10 +139,10 @@ Template.productIncludedFieldForm.events({
 });
 
 /**
- * productIncludedField
+ * goProductIncludedField
  */
 
-Template.productIncludedField.helpers({
+Template.goProductIncludedField.helpers({
   features: function () {
     const featureKey = this.featureKey;
     return _.filter(this.metafields, function (metafield) {
@@ -153,9 +153,9 @@ Template.productIncludedField.helpers({
 
 
 /**
- * productFeatureFieldForm
+ * goProductFeatureFieldForm
  */
-Template.productFeatureFieldForm.helpers({
+Template.goProductFeatureFieldForm.helpers({
   features: function () {
     const featureKey = this.featureKey;
     return _.filter(this.metafields, function (metafield) {
@@ -171,7 +171,7 @@ Template.productFeatureFieldForm.helpers({
   }
 });
 
-Template.productFeatureFieldForm.events({
+Template.goProductFeatureFieldForm.events({
   "click .metafield-remove": function () {
     let productId;
     productId = ReactionProduct.selectedProductId();
@@ -180,10 +180,10 @@ Template.productFeatureFieldForm.events({
 });
 
 /**
- * productFeatureField
+ * goProductFeatureField
  */
 
-Template.productFeatureField.helpers({
+Template.goProductFeatureField.helpers({
   features: function () {
     const featureKey = this.featureKey;
     return _.filter(this.metafields, function (metafield) {
@@ -192,7 +192,7 @@ Template.productFeatureField.helpers({
   }
 });
 
-Template.productFeatureImageField.helpers({
+Template.goProductFeatureImageField.helpers({
   features: function () {
     const featureKey = this.featureKey;
     return _.filter(this.metafields, function (metafield) {

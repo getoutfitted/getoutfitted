@@ -37,7 +37,7 @@
 </template>
 
 
-<template name="productFeatureField">
+<template name="goProductFeatureField">
   {{#if features}}
     {{#each features}}
         {{#if value}}
@@ -49,7 +49,7 @@
   {{/if}}
 </template>
 
-<template name="productFeatureImageField">
+<template name="goProductFeatureImageField">
   {{#if features}}
     {{#each features}}
         {{#if value}}
@@ -61,12 +61,12 @@
   {{/if}}
 </template>
 
-<template name="productFeatureFieldForm">
+<template name="goProductFeatureFieldForm">
   {{#each features}}
     <div class="col-sm-3">
       <div class="row">
         <div class="col-sm-11">
-          {{>featureComponent value=./value featureKey=../featureKey}}
+          {{>goFeatureComponent value=./value featureKey=../featureKey}}
         </div>
         <div class="col-sm-1">
           <span class="metafield-remove feature-remove"><i class="fa fa-times-circle"></i></span>
@@ -76,12 +76,12 @@
   {{/each}}
   {{#if canHaveMoreFeatures}}
     <div class="col-sm-3">
-      {{>featureComponent featureKey=featureKey}}
+      {{>goFeatureComponent featureKey=featureKey}}
     </div>
   {{/if}}
 </template>
 
-<template name="productIncludedField">
+<template name="goProductIncludedField">
   {{#if features}}
     <div class="row">
       <div class="show-for-medium-up col-md-3">
@@ -106,7 +106,7 @@
   {{/if}}
 </template>
 
-<template name="productIncludedFieldForm">
+<template name="goProductIncludedFieldForm">
   <div class="row">
     <div class="show-for-medium-up col-md-3">
       <h4 class="description-title">What's Included</h4>
@@ -115,7 +115,7 @@
       {{#each features}}
         <div class="icon row">
           <div class="col-md-11">
-            {{>featureComponent value=./value featureKey=../featureKey}}
+            {{>goFeatureComponent value=./value featureKey=../featureKey}}
           </div>
           <div class="col-md-1">
             <span class="metafield-remove feature-remove"><i class="fa fa-times-circle"></i></span>
@@ -124,14 +124,14 @@
       {{/each}}
       <div class="included row">
         <div class="col-md-11">
-          {{>featureComponent featureKey=featureKey}}
+          {{>goFeatureComponent featureKey=featureKey}}
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<template name="featureComponent">
+<template name="goFeatureComponent">
   <form role="form" name="metafield-component" class="form feature-component">
     <input type="text" name="key" class="hidden form-control metafield-key-input" value="{{featureKey}}" />
     <input type="text" name="value" class="form-control metafield-value-input" value="{{value}}" placeholder="{{i18n 'productDetail.detailsInfo' 'Detail information'}}"/>

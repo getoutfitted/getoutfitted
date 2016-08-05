@@ -75,19 +75,19 @@ Template.goProductDetail.helpers({
     }
     return Template.productDetailField;
   },
-  featureComponent: function () {
+  goFeatureComponent: function () {
     this.featureKey = "feature";
     if (Reaction.hasPermission("createProduct")) {
-      return Template.productFeatureFieldForm;
+      return Template.goProductFeatureFieldForm;
     }
-    return Template.productFeatureField;
+    return Template.goProductFeatureField;
   },
   productIconComponent: function () {
     this.featureKey = "productIcon";
     if (Reaction.hasPermission("createProduct")) {
-      return Template.productFeatureFieldForm;
+      return Template.goProductFeatureFieldForm;
     }
-    return Template.productFeatureImageField;
+    return Template.goProductFeatureImageField;
   },
   productManagementPanelVisibility: function () {
     if (Session.get("productManagementPanelVisibility")) {
@@ -346,9 +346,9 @@ Template.goProductFeatures.helpers({
   includedComponent: function () {
     this.featureKey = 'included';
     if (Reaction.hasPermission("createProduct")) {
-      return Template.productIncludedFieldForm;
+      return Template.goProductIncludedFieldForm;
     }
-    return Template.productIncludedField;
+    return Template.goProductIncludedField;
   }
 });
 
