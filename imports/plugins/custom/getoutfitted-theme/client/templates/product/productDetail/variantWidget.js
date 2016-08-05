@@ -50,8 +50,8 @@ Template.variantWidget.onRendered(function () {
   }
   const product = ReactionProduct.selectedProduct();
   const variant = ReactionProduct.selectedVariant();
-  const props = ReactionAnalytics.getProductTrackingProps(product, variant);
-  ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
+  // const props = ReactionAnalytics.getProductTrackingProps(product, variant);
+  // ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
 });
 
 Template.variantWidget.helpers({
@@ -144,8 +144,8 @@ Template.bundleVariantWidget.onRendered(function () {
   }
   const product = ReactionProduct.selectedProduct();
   const variant = ReactionProduct.selectedVariant();
-  const props = ReactionAnalytics.getProductTrackingProps(product, variant);
-  ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
+  // const props = ReactionAnalytics.getProductTrackingProps(product, variant);
+  // ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
 });
 
 Template.bundleVariantWidget.helpers({
@@ -304,12 +304,12 @@ Template.bundleVariantWidget.events({
                 currentVariant._id,
                 Session.get("selectedBundleOptions")
               );
-              let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
-              trackReadyProduct.quantity = quantity;
-              trackReadyProduct["Reservation Start"] = cart.startTime;
-              trackReadyProduct["Reservation End"] = cart.endTime;
-              trackReadyProduct["Reservation Length"] = cart.rentalDays;
-              return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
+              // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
+              // trackReadyProduct.quantity = quantity;
+              // trackReadyProduct["Reservation Start"] = cart.startTime;
+              // trackReadyProduct["Reservation End"] = cart.endTime;
+              // trackReadyProduct["Reservation Length"] = cart.rentalDays;
+              // return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
             }
           );
         }

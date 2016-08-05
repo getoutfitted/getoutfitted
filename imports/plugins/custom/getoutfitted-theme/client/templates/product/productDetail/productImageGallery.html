@@ -1,4 +1,4 @@
-<template name="productLeadImage">
+<template name="goProductLeadImage">
   {{#if leadImage}}
     <div id="leadImage" class="leadImage product-media" data-index="{{leadImage._id}}">
       <img src="{{leadImage.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{leadImage.title}}" data-index="{{leadImage._id}}">
@@ -10,7 +10,7 @@
   {{/if}}
 </template>
 
-<template name="productWidgetImage">
+<template name="goProductWidgetImage">
   {{#if widgetImage}}
     <div id="widgetImage" class="widgetImage product-media" data-index="{{widgetImage._id}}">
       <img src="{{widgetImage.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{widgetImage.title}}" data-index="{{widgetImage._id}}">
@@ -18,7 +18,7 @@
   {{/if}}
 </template>
 
-<template name="productImageGallery">
+<template name="goProductImageGallery">
   <h4 class="description-title">{{./title}} Images</h4>
   <div id="galleryDropPane" class="galleryDropPane">
     <ul class="gallery">
@@ -30,10 +30,10 @@
        </li>
       {{/each}}
     </ul>
-    {{>galleryImageUploader}}
-    {{>featuredImageUploader}}
-    {{>widgetImageUploader}}
-    {{>cartImageUploader}}
+    {{> goGalleryImageUploader}}
+    {{> goFeaturedImageUploader}}
+    {{> goWidgetImageUploader}}
+    {{> goCartImageUploader}}
     {{#if hasPermission "createProduct"}}
       <div class="row">
         <div class="col-sm-4">
@@ -56,7 +56,7 @@
   </div>
 </template>
 
-<template name="imageDetail">
+<template name="goImageDetail">
   <li class="gallery-sortable" data-index="{{_id}}">
     <img src="{{url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{title}}" data-index="{{_id}}">
     {{#unless this.isUploaded}}
@@ -71,7 +71,7 @@
   </li>
 </template>
 
-<template name="carousel">
+<template name="goCarousel">
     <div class="modal fade and carousel" id="lightbox">
       <div class="modal-dialog">
           <div class="modal-content">
@@ -110,7 +110,7 @@
     </div>
 </template>
 
-<template name="featuredImageDetail">
+<template name="goFeaturedImageDetail">
   {{#if hasPermission "createProduct"}}
     <div class="productCartImage">
       <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
@@ -125,7 +125,7 @@
   {{/if}}
 </template>
 
-<template name="cartImageDetail">
+<template name="goCartImageDetail">
   {{#if hasPermission "createProduct"}}
     <div class="productCartImage">
       <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
@@ -140,7 +140,7 @@
   {{/if}}
 </template>
 
-<template name="widgetImageDetail">
+<template name="goWidgetImageDetail">
   {{#if hasPermission "createProduct"}}
     <div class="productCartImage">
       <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
@@ -156,7 +156,7 @@
 </template>
 
 
-<template name="galleryImageUploader">
+<template name="goGalleryImageUploader">
 {{#if hasPermission "createProduct"}}
   <div id="dropzone" class="dropzone">
    <input name="files" id="files" class="hidden" type="file" multiple/>
@@ -165,7 +165,7 @@
 {{/if}}
 </template>
 
-<template name="featuredImageUploader">
+<template name="goFeaturedImageUploader">
 {{#if hasPermission "createProduct"}}
   <div class="relative-pos {{noImageWithPurpose 'featured'}}">
     <div id="featuredDropzone" class="dropzone dropzone-icon featured">
@@ -176,7 +176,7 @@
 {{/if}}
 </template>
 
-<template name="widgetImageUploader">
+<template name="goWidgetImageUploader">
 {{#if hasPermission "createProduct"}}
   <div class="relative-pos {{noImageWithPurpose 'widget'}}">
     <div id="widgetDropzone" class="dropzone dropzone-icon widget">
@@ -187,7 +187,7 @@
 {{/if}}
 </template>
 
-<template name="cartImageUploader">
+<template name="goCartImageUploader">
 {{#if hasPermission "createProduct"}}
   <div class="relative-pos {{noImageWithPurpose 'cart'}}">
     <div id="cartDropzone" class="dropzone dropzone-icon cart">

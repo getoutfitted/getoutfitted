@@ -115,7 +115,7 @@ Template.registerHelper("imageWithPurpose", (purpose) => {
   return cartMedia;
 });
 
-Template.productLeadImage.helpers({
+Template.goProductLeadImage.helpers({
   leadImage: function () {
     const variant = ReactionProduct.selectedVariant();
     let leadImage;
@@ -134,21 +134,21 @@ Template.productLeadImage.helpers({
   }
 });
 
-Template.productLeadImage.events({
+Template.goProductLeadImage.events({
   "click .leadImage": (event) => {
     Session.set("selectedMediaId", event.currentTarget.dataset.index);
     Modal.show('carousel');
   }
 });
 
-Template.productWidgetImage.events({
+Template.goProductWidgetImage.events({
   "click .widgetImage": (event) => {
     Session.set("selectedMediaId", event.currentTarget.dataset.index);
     Modal.show('carousel');
   }
 });
 
-Template.productWidgetImage.helpers({
+Template.goProductWidgetImage.helpers({
   widgetImage: function () {
     const variant = ReactionProduct.selectedVariant();
     let widgetImage;
@@ -171,7 +171,7 @@ Template.productWidgetImage.helpers({
  *  Product Image Gallery
  */
 
-Template.productImageGallery.helpers({
+Template.goProductImageGallery.helpers({
   media: function () {
     let mediaArray = [];
     let variant = ReactionProduct.selectedVariant();
@@ -199,7 +199,7 @@ Template.productImageGallery.helpers({
  * productImageGallery onRendered
  */
 
-Template.productImageGallery.onRendered(function () {
+Template.goProductImageGallery.onRendered(function () {
   return this.autorun(function () {
     let $gallery;
     if (Reaction.hasAdminAccess()) {
@@ -231,7 +231,7 @@ Template.productImageGallery.onRendered(function () {
  * productImageGallery events
  */
 
-Template.productImageGallery.events({
+Template.goProductImageGallery.events({
   "click .gallery > li": function (event) {
     event.stopImmediatePropagation();
     // This is a workaround for an issue with FF refiring mouseover when the contents change
@@ -290,14 +290,14 @@ Template.productImageGallery.events({
  * imageUploader events
  */
 
-Template.galleryImageUploader.events({
+Template.goGalleryImageUploader.events({
   "click #btn-upload": function () {
     return $("#files").click();
   },
   "change #files": galleryUploadHandler,
   "dropped #dropzone": galleryUploadHandler
 });
-Template.featuredImageUploader.events({
+Template.goFeaturedImageUploader.events({
   // Featured Image Event Handling
   "click #btn-featured-upload": function () {
     return $("#featuredFiles").click();
@@ -305,7 +305,7 @@ Template.featuredImageUploader.events({
   "change #featuredFiles": featuredUploadHandler,
   "dropped #featuredDropzone": featuredUploadHandler
 });
-Template.widgetImageUploader.events({
+Template.goWidgetImageUploader.events({
   // Widget Image Event Handling
   "click #btn-widget-upload": function () {
     return $("#widgetFiles").click();
@@ -313,7 +313,7 @@ Template.widgetImageUploader.events({
   "change #widgetFiles": widgetUploadHandler,
   "dropped #widgetDropzone": widgetUploadHandler
 });
-Template.cartImageUploader.events({
+Template.goCartImageUploader.events({
   // Cart Image Event Handling
   "click #btn-cart-upload": function () {
     return $("#cartFiles").click();
@@ -342,7 +342,7 @@ Template.registerHelper("noImageWithPurpose", (purpose) => {
  * productImageGallery events
  */
 
-Template.productImageGallery.events({
+Template.goProductImageGallery.events({
   "click #img-upload": function () {
     return $("#files").click();
   },
@@ -352,7 +352,7 @@ Template.productImageGallery.events({
   }
 });
 
-Template.carousel.helpers({
+Template.goCarousel.helpers({
   media: function () {
     let mediaArray = [];
     let variant = ReactionProduct.selectedVariant();
@@ -384,7 +384,7 @@ Template.carousel.helpers({
   }
 });
 
-Template.imageDetail.events({
+Template.goImageDetail.events({
   "click .img-responsive": function (event) {
     Session.set("selectedMediaId", event.currentTarget.dataset.index);
     Modal.show('carousel');
