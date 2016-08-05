@@ -8,7 +8,7 @@ import { Tags } from "/lib/collections";
 require("jquery-ui/sortable");
 require("jquery-ui/autocomplete");
 
-Template.productDetailTags.helpers({
+Template.goProductDetailTags.helpers({
   tags: function () {
     const instance = this;
     return instance.tags;
@@ -26,7 +26,7 @@ Template.productDetailTags.helpers({
   }
 });
 
-Template.productTagInputForm.helpers({
+Template.goProductTagInputForm.helpers({
   hashtagMark: function () {
     const product = ReactionProduct.selectedProduct();
     if (product) {
@@ -41,7 +41,7 @@ Template.productTagInputForm.helpers({
   }
 });
 
-Template.productTagInputForm.events({
+Template.goProductTagInputForm.events({
   "click .tag-input-hashtag": function () {
     return Meteor.call("products/setHandleTag", ReactionProduct.selectedProductId(), this._id,
       function (error, result) {
@@ -93,7 +93,7 @@ Template.productTagInputForm.events({
   }
 });
 
-Template.productTagInputForm.onRendered(function () {
+Template.goProductTagInputForm.onRendered(function () {
   return $(".tag-edit-list").sortable({
     items: "> li",
     handle: ".tag-input-group-handle",

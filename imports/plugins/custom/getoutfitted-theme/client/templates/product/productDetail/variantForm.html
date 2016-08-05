@@ -1,4 +1,4 @@
-<template name="variantForm">
+<template name="goVariantForm">
   <div id="variant-edit-form-{{_id}}" class="variant-edit-form {{variantFormVisible}}">
     <div class="row well well-sm variant-form" >
       {{#autoForm schema="ReactionCore.Schemas.ProductVariant" doc=. type="method" meteormethod="products/updateVariant" id=variantFormId validation="keyup" resetOnSuccess=false}}

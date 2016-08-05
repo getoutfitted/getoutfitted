@@ -5,6 +5,7 @@ import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 // load modules
 require("jquery-ui");
+
 function stickyWidget() {
   const bubbleTop = 75; // This must be set identically to the CSS bubble;
   let $variantWidget = $("#variantWidget");

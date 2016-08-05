@@ -47,9 +47,9 @@ Template.goProductDetail.helpers({
   },
   tagsComponent: function () {
     if (Reaction.hasPermission("createProduct")) {
-      return Template.productTagInputForm;
+      return Template.goProductTagInputForm;
     }
-    return Template.productDetailTags;
+    return Template.goProductDetailTags;
   },
   metaComponent: function () {
     if (Reaction.hasPermission("createProduct")) {

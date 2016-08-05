@@ -3,10 +3,10 @@ import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 /**
- * variantForm helpers
+ * goVariantForm helpers
  */
 
-Template.variantForm.helpers({
+Template.goVariantForm.helpers({
   variantDetails: function () {
     if (this.ancestors.length === 1) {
       return Template.parentVariantForm;
@@ -56,10 +56,10 @@ Template.variantForm.helpers({
 });
 
 /**
- * variantForm events
+ * goVariantForm events
  */
 
-Template.variantForm.events({
+Template.goVariantForm.events({
   "change form :input": function (event, template) {
     let formId;
     formId = "#variant-form-" + template.data._id;

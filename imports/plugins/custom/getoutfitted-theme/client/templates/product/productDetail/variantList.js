@@ -5,9 +5,9 @@ import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { Products } from "/lib/collections";
 /**
- * variantList helpers
+ * goVariantList helpers
  */
-Template.variantList.helpers({
+Template.goVariantList.helpers({
   variants: function () {
     let inventoryTotal = 0;
     const variants = ReactionProduct.getTopVariants();
@@ -147,10 +147,10 @@ Template.variantList.helpers({
 });
 
 /**
- * variantList events
+ * goVariantList events
  */
 
-Template.variantList.events({
+Template.goVariantList.events({
   "click #create-variant": function () {
     return Meteor.call("products/createVariant", this._id);
   },

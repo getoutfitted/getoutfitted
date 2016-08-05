@@ -2,10 +2,10 @@ import { ReactionProduct } from "/lib/api";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 /**
-* productSocial helpers
+* goProductSocial helpers
 */
 
-Template.productSocial.helpers({
+Template.goProductSocial.helpers({
   customSocialSettings: function () {
     const product = ReactionProduct.selectedProduct();
     let title = product.title;

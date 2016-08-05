@@ -7,10 +7,10 @@ import { Template } from "meteor/templating";
 require("jquery-ui/sortable");
 
 /**
- * variant helpers
+ * goVariant helpers
  */
 
-Template.variant.helpers({
+Template.goVariant.helpers({
   progressBar: function () {
     if (this.inventoryPercentage <= 10) {
       return "progress-bar-danger";
@@ -40,10 +40,10 @@ Template.variant.helpers({
 });
 
 /**
- * variant events
+ * goVariant events
  */
 
-Template.variant.events({
+Template.goVariant.events({
   "click .variant-edit": function () {
     ReactionProduct.setCurrentVariant(this._id);
     return toggleSession("variant-form-" + this._id);
@@ -63,10 +63,10 @@ Template.variant.events({
 });
 
 /**
- * variant onRendered
+ * goVariant onRendered
  */
 
-Template.variant.onRendered(function () {
+Template.goVariant.onRendered(function () {
   return this.autorun(function () {
     let variantSort;
     if (Reaction.hasPermission("createProduct")) {
@@ -100,7 +100,7 @@ Template.variant.onRendered(function () {
   });
 });
 
-Template.variantOption.helpers({
+Template.goVariantOption.helpers({
   isAvailable: function () {
     const inventoryManaged = this.inventoryManagement;
     const soldOut = ReactionProduct.getVariantQuantity(this) < 1;

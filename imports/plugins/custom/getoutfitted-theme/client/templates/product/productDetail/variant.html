@@ -1,4 +1,4 @@
-<template name="variant">
+<template name="goVariant">
 <li class="variant-list-item" id="variant-list-item-{{_id}}" data-id="{{_id}}">
   <div class="variant-detail {{selectedVariant}}">
     <div class="progress">
@@ -28,12 +28,12 @@
     </div>
   </div>
   {{#if hasPermission "createProduct"}}
-    {{>variantForm}}
+    {{>goVariantForm}}
   {{/if}}
 </li>
 </template>
 
-<template name="variantOption">
+<template name="goVariantOption">
   <option class="variant-list-item" value="{{_id}}" id="variant-list-item-{{_id}}" data-id="{{_id}}" {{isAvailable}}>
     {{#if inventoryManagement}}
       {{#if isSoldOut}}
@@ -86,7 +86,7 @@
       </div>
     </div>
     {{#if hasPermission "createProduct"}}
-      {{>variantForm}}
+      {{>goVariantForm}}
     {{/if}}
   </option> -->
 </template>
