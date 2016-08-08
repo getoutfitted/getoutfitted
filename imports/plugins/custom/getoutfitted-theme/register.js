@@ -12,7 +12,7 @@ Reaction.registerPackage({
       theme: "default",
       enabled: true,
       structure: {
-        template: "products",
+        template: "goProducts",
         layoutHeader: "goLayoutHeader",
         layoutFooter: "goLayoutFooter",
         notFound: "goProductNotFound",
@@ -39,7 +39,7 @@ Reaction.registerPackage({
     },
     {
       layout: "getoutfittedLayout",
-      workflow: "coreProductWorkflow",
+      workflow: "coreProductListWorkflow",
       collection: "Products",
       theme: "default",
       enabled: true,
