@@ -53,8 +53,8 @@ Reaction.registerPackage({
         dashboardHeaderControls: "",
         adminControlsFooter: "adminControlsFooter"
       }
-    },
-    {
+      // Checkout
+    }, {
       layout: "getoutfittedLayout",
       workflow: "coreCartWorkflow",
       collection: "Cart",
@@ -62,14 +62,68 @@ Reaction.registerPackage({
       enabled: true,
       structure: {
         template: "cartCheckout",
-        layoutHeader: "checkoutHeader",
-        layoutFooter: "",
+        layoutHeader: "goLayoutHeader",
+        layoutFooter: "goLayoutFooter",
         notFound: "notFound",
         dashboardHeader: "",
         dashboardControls: "dashboardControls",
         dashboardHeaderControls: "",
         adminControlsFooter: "adminControlsFooter"
       }
+    }, {
+      template: "checkoutItemReview",
+      label: "Review Cart",
+      workflow: "coreCartWorkflow",
+      container: "checkout-steps-main",
+      namespace: "getoutfitted",
+      audience: ["guest", "anonymous"],
+      priority: 0,
+      position: "0"
+    }, {
+      template: "checkoutLogin",
+      label: "Login",
+      workflow: "coreCartWorkflow",
+      container: "checkout-steps-main",
+      namespace: "getoutfitted",
+      audience: ["guest", "anonymous"],
+      priority: 1,
+      position: "1"
+    }, {
+      template: "checkoutAddressBook",
+      label: "Shipping Billing",
+      workflow: "coreCartWorkflow",
+      container: "checkout-steps-main",
+      namespace: "getoutfitted",
+      audience: ["guest", "anonymous"],
+      priority: 2,
+      position: "2"
+    }, {
+      template: "coreCheckoutShipping",
+      label: "Shipping Options",
+      workflow: "coreCartWorkflow",
+      container: "checkout-steps-main",
+      namespace: "getoutfitted",
+      audience: ["guest", "anonymous"],
+      priority: 3,
+      position: "3"
+    }, {
+      template: "checkoutReview",
+      label: "Review Payment",
+      workflow: "coreCartWorkflow",
+      container: "checkout-steps-side",
+      namespace: "getoutfitted",
+      audience: ["guest", "anonymous"],
+      priority: 4,
+      position: "4"
+    }, {
+      template: "checkoutPayment",
+      label: "Complete",
+      workflow: "coreCartWorkflow",
+      container: "checkout-steps-side",
+      namespace: "getoutfitted",
+      audience: ["guest", "anonymous"],
+      priority: 5,
+      position: "5"
     }
   ]
 });

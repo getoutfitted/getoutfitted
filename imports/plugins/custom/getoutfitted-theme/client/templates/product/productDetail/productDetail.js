@@ -1,10 +1,11 @@
 import { $ } from "meteor/jquery";
-import { Reaction } from "/client/api";
+import { Reaction, i18next } from "/client/api";
 import { ReactionProduct } from "/lib/api";
 import { Cart, Tags } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
+
 // import { ReactionAnalytics } from "some/analtyics/module";
 // load modules
 require("jquery-ui");
