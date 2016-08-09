@@ -51,3 +51,60 @@ Template.registerHelper("endReservationHuman", () => {
   }
   return "";
 });
+
+/*
+ * Template helpers for cart
+ *
+ */
+/**
+ * filteredVariantOption
+ * @param   {String} variantOption - option name or title from a variant
+ * @returns {String} filtered variantOption without single color, size, or option variant titles
+ */
+
+Template.registerHelper("filteredVariantOption", function (variantOption) {
+  if (variantOption) {
+    return variantOption.replace(/(?:One|No)\s+(?:Color|Size|Option)/i, "");
+  }
+  return "";
+});
+
+Template.registerHelper("filteredVariantGender", function (variantGender) {
+  if (variantGender) {
+    return variantGender.replace(/unisex/i, "");
+  }
+  return "";
+});
+
+Template.registerHelper("hasReservationDates", function (order) {
+  if (order && order.startTime && order.endTime) {
+    return true;
+  }
+  if (this && this.startTime && this.endTime) {
+    return true;
+  }
+  return false;
+});
+
+Template.registerHelper("orderStartReservationHuman", function (order) {
+  if (order && order.startTime) {
+    return moment(adjustDenverToLocalTime(moment(order.startTime))).format("ddd M/DD");
+  }
+
+  if (this && this.startTime) {
+    return moment(adjustDenverToLocalTime(moment(this.startTime))).format("ddd M/DD");
+  }
+
+  return "";
+});
+
+Template.registerHelper("orderEndReservationHuman", function (order) {
+  if (order && order.endTime) {
+    return moment(adjustDenverToLocalTime(moment(order.endTime))).format("ddd M/DD");
+  }
+  if (this && this.endTime) {
+    return moment(adjustDenverToLocalTime(moment(this.endTime))).format("ddd M/DD");
+  }
+
+  return "";
+});
