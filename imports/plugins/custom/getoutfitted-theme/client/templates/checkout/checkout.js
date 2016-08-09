@@ -1,22 +1,27 @@
+import { Reaction } from "/client/api";
+import { Cart } from "/lib/collections";
+import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
+import "./checkout.html";
+
 //
 // cartCheckout is a wrapper template
 // controlling the load order of checkout step templates
 //
 
-
 Template.goCartCheckout.helpers({
-  cart: function () {
-    if (ReactionCore.Subscriptions.Cart.ready()) {
-      return ReactionCore.Collections.Cart.findOne();
+  cart() {
+    if (Reaction.Subscriptions.Cart.ready()) {
+      return Cart.findOne();
     }
+    return {};
   }
 });
 
 
-Template.cartCheckout.onCreated(function () {
-  if (ReactionCore.Subscriptions.Cart.ready()) {
-    const cart = ReactionCore.Collections.Cart.findOne();
+Template.goCartCheckout.onCreated(function () {
+  if (Reaction.Subscriptions.Cart.ready()) {
+    const cart = Cart.findOne();
     if (cart.workflow && cart.workflow.status === "new") {
         // if user logged in as normal user, we must pass it through the first stage
       Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
@@ -30,14 +35,14 @@ Template.cartCheckout.onCreated(function () {
  * the current step, or has been processed already
  */
 Template.goCheckoutSteps.helpers({
-  isCompleted: function () {
+  isCompleted() {
     if (this.status === true) {
       return this.status;
     }
     return false;
   },
 
-  isPending: function () {
+  isPending() {
     if (this.status === this.template) {
       return this.status;
     }
@@ -51,7 +56,7 @@ Template.goCheckoutSteps.helpers({
 Template.goCheckoutStepBadge.helpers({
   checkoutStepBadgeClass: function () {
     const workflowStep = Template.instance().data;
-    // let currentStatus = ReactionCore.Collections.Cart.findOne().workflow.status;
+    // let currentStatus = Cart.findOne().workflow.status;
     if (workflowStep.status === true || workflowStep.status === this.template) {
       return "active";
     }
