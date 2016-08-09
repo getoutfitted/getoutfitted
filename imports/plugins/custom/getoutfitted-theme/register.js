@@ -61,8 +61,8 @@ Reaction.registerPackage({
       theme: "default",
       enabled: true,
       structure: {
-        template: "cartCheckout",
-        layoutHeader: "goLayoutHeader",
+        template: "goCartCheckout",
+        layoutHeader: "goNavigationHeader",
         layoutFooter: "goLayoutFooter",
         notFound: "notFound",
         dashboardHeader: "",
@@ -77,8 +77,8 @@ Reaction.registerPackage({
       container: "checkout-steps-main",
       namespace: "getoutfitted",
       audience: ["guest", "anonymous"],
-      priority: 0,
-      position: "0"
+      priority: 1,
+      position: "1"
     }, {
       template: "checkoutLogin",
       label: "Login",
@@ -86,8 +86,8 @@ Reaction.registerPackage({
       container: "checkout-steps-main",
       namespace: "getoutfitted",
       audience: ["guest", "anonymous"],
-      priority: 1,
-      position: "1"
+      priority: 2,
+      position: "2"
     }, {
       template: "checkoutAddressBook",
       label: "Shipping Billing",
@@ -95,8 +95,8 @@ Reaction.registerPackage({
       container: "checkout-steps-main",
       namespace: "getoutfitted",
       audience: ["guest", "anonymous"],
-      priority: 2,
-      position: "2"
+      priority: 3,
+      position: "3"
     }, {
       template: "coreCheckoutShipping",
       label: "Shipping Options",
@@ -104,17 +104,17 @@ Reaction.registerPackage({
       container: "checkout-steps-main",
       namespace: "getoutfitted",
       audience: ["guest", "anonymous"],
-      priority: 3,
-      position: "3"
+      priority: 4,
+      position: "4"
     }, {
-      template: "checkoutReview",
+      template: "goCheckoutReview",
       label: "Review Payment",
       workflow: "coreCartWorkflow",
       container: "checkout-steps-side",
       namespace: "getoutfitted",
       audience: ["guest", "anonymous"],
-      priority: 4,
-      position: "4"
+      priority: 5,
+      position: "5"
     }, {
       template: "checkoutPayment",
       label: "Complete",
@@ -122,8 +122,8 @@ Reaction.registerPackage({
       container: "checkout-steps-side",
       namespace: "getoutfitted",
       audience: ["guest", "anonymous"],
-      priority: 5,
-      position: "5"
+      priority: 6,
+      position: "6"
     }
   ]
 });
