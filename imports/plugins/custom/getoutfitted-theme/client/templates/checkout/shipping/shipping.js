@@ -1,9 +1,14 @@
+import _ from "lodash";
+import { Cart, Shipping } from "/lib/collections";
+import { Meteor } from "meteor/meteor";
+import { Template } from "meteor/templating";
+
 //
 // These helpers can be used in general shipping packages
 // cartShippingMethods to get current shipment methods
 // until we handle multiple methods, we just use the first
 function cartShippingMethods(currentCart) {
-  let cart = currentCart || ReactionCore.Collections.Cart.findOne();
+  let cart = currentCart || Cart.findOne();
   if (cart) {
     if (cart.shipping) {
       if (cart.shipping[0].shipmentQuotes) {
@@ -16,7 +21,7 @@ function cartShippingMethods(currentCart) {
 // getShipmentMethod to get current shipment method
 // until we handle multiple methods, we just use the first
 function getShipmentMethod(currentCart) {
-  let cart = currentCart || ReactionCore.Collections.Cart.findOne();
+  let cart = currentCart || Cart.findOne();
   if (cart) {
     if (cart.shipping) {
       if (cart.shipping[0].shipmentMethod) {
@@ -27,29 +32,29 @@ function getShipmentMethod(currentCart) {
   return undefined;
 }
 
-Template.coreCheckoutShipping.onCreated(function () {
+Template.goCheckoutShipping.onCreated(function () {
   this.autorun(() => {
     this.subscribe("Shipping");
   });
 });
 
-Template.coreCheckoutShipping.onRendered(function () {
-  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
-    "step": 3,
-    "Step Name": "Choose Shipping and Billing Address"
-  });
-
-  ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
-    "step": 4,
-    "Step Name": "Select Shipping Option"
-  });
+Template.goCheckoutShipping.onRendered(function () {
+  // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+  //   "step": 3,
+  //   "Step Name": "Choose Shipping and Billing Address"
+  // });
+  //
+  // ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
+  //   "step": 4,
+  //   "Step Name": "Select Shipping Option"
+  // });
 });
 
-Template.coreCheckoutShipping.helpers({
+Template.goCheckoutShipping.helpers({
   // retrieves current rates and updates shipping rates
   // in the users cart collection (historical, and prevents repeated rate lookup)
   shipmentQuotes: function () {
-    const cart = ReactionCore.Collections.Cart.findOne();
+    const cart = Cart.findOne();
     return cartShippingMethods(cart);
   },
 
@@ -57,7 +62,7 @@ Template.coreCheckoutShipping.helpers({
   shippingConfigured: function () {
     const instance = Template.instance();
     if (instance.subscriptionsReady()) {
-      return ReactionCore.Collections.Shipping.find({
+      return Shipping.find({
         "methods.enabled": true
       }).count();
     }
@@ -80,12 +85,12 @@ Template.coreCheckoutShipping.helpers({
 // this copies from shipmentMethods (retrieved rates)
 // to shipmentMethod (selected rate)
 //
-Template.coreCheckoutShipping.events({
+Template.goCheckoutShipping.events({
   "click .list-group-item": function (event) {
     event.preventDefault();
     event.stopPropagation();
     let self = this;
-    let cart = ReactionCore.Collections.Cart.findOne();
+    let cart = Cart.findOne();
 
     try {
       Meteor.call("cart/setShipmentMethod", cart._id, self.method);
@@ -93,8 +98,8 @@ Template.coreCheckoutShipping.events({
       throw new Meteor.Error(error,
         "Cannot change methods while processing.");
     }
-    ReactionAnalytics.trackEventWhenReady("Selected Shipping Option",
-      Object.assign({}, self.method, {carrier: self.carrier})
-    );
+    // ReactionAnalytics.trackEventWhenReady("Selected Shipping Option",
+    //   Object.assign({}, self.method, {carrier: self.carrier})
+    // );
   }
 });
