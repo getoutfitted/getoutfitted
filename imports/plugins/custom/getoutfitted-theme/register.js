@@ -62,7 +62,7 @@ Reaction.registerPackage({
       enabled: true,
       structure: {
         template: "goCartCheckout",
-        layoutHeader: "goNavigationHeader",
+        layoutHeader: "goCheckoutHeader",
         layoutFooter: "goLayoutFooter",
         notFound: "notFound",
         dashboardHeader: "",
@@ -70,60 +70,6 @@ Reaction.registerPackage({
         dashboardHeaderControls: "",
         adminControlsFooter: "adminControlsFooter"
       }
-    }, {
-      template: "checkoutItemReview",
-      label: "Review Cart",
-      workflow: "coreCartWorkflow",
-      container: "checkout-steps-main",
-      namespace: "getoutfitted",
-      audience: ["guest", "anonymous"],
-      priority: 1,
-      position: "1"
-    }, {
-      template: "checkoutLogin",
-      label: "Login",
-      workflow: "coreCartWorkflow",
-      container: "checkout-steps-main",
-      namespace: "getoutfitted",
-      audience: ["guest", "anonymous"],
-      priority: 2,
-      position: "2"
-    }, {
-      template: "checkoutAddressBook",
-      label: "Shipping Billing",
-      workflow: "coreCartWorkflow",
-      container: "checkout-steps-main",
-      namespace: "getoutfitted",
-      audience: ["guest", "anonymous"],
-      priority: 3,
-      position: "3"
-    }, {
-      template: "coreCheckoutShipping",
-      label: "Shipping Options",
-      workflow: "coreCartWorkflow",
-      container: "checkout-steps-main",
-      namespace: "getoutfitted",
-      audience: ["guest", "anonymous"],
-      priority: 4,
-      position: "4"
-    }, {
-      template: "goCheckoutReview",
-      label: "Review Payment",
-      workflow: "coreCartWorkflow",
-      container: "checkout-steps-side",
-      namespace: "getoutfitted",
-      audience: ["guest", "anonymous"],
-      priority: 5,
-      position: "5"
-    }, {
-      template: "checkoutPayment",
-      label: "Complete",
-      workflow: "coreCartWorkflow",
-      container: "checkout-steps-side",
-      namespace: "getoutfitted",
-      audience: ["guest", "anonymous"],
-      priority: 6,
-      position: "6"
     }
   ]
 });

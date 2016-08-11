@@ -1,8 +1,18 @@
-import _ from "lodash";
+import { Reaction } from "/client/api";
 import { Cart, Media, Products } from "/lib/collections";
+import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
+import _ from "lodash";
 
-Template.checkoutReviewItems.onRendered(function () {
+Template.checkoutReviewItems.onCreated(function () {
+  if (Reaction.Subscriptions.Cart.ready()) {
+    const cart = Cart.findOne();
+    if (cart.workflow && cart.workflow.status === "new") {
+      // console.log("cartworkflow");
+        // if user logged in as normal user, we must pass it through the first stage
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutItemReview", cart._id, "getoutfitted");
+    }
+  }
   // ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
   //   "step": 1,
   //   "Step Name": "Review Cart"
@@ -27,7 +37,7 @@ Template.checkoutReviewItems.helpers({
     if (defaultImage) {
       return defaultImage;
     } else if (product) {
-      _.any(product.variants, function (variant) {
+      _.some(product.variants, function (variant) {
         defaultImage = Media.findOne({
           "metadata.variantId": variant._id
         });

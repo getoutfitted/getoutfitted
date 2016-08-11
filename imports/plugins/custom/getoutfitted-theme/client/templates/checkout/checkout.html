@@ -10,8 +10,8 @@
       <div class="container container-lg">
         <div class="checkout-steps">
           <div class="checkout-steps-main">
-          {{> checkoutReviewItems}}
-            {{#each reactionTemplate workflow="coreCartWorkflow" namespace="getoutfitted"}}
+            {{> checkoutReviewItems}}
+            {{#each reactionTemplate workflow="coreCartWorkflow"}}
               {{> goCheckoutSteps}}
             {{/each}}
           </div>
