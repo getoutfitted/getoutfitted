@@ -1,3 +1,9 @@
+import { Orders, Shops, Media } from "/lib/collections";
+import { Template } from "meteor/templating";
+import _ from "underscore"; // TODO: Migrate to lodash
+import moment from "moment";
+import "moment-timezone";
+
 /**
  * checkoutCompletedOrder helpers
  *
@@ -12,7 +18,7 @@ Template.checkoutCompletedOrder.helpers({
     if (data.hash.data) {
       return data.hash.data;
     }
-    return ReactionCore.Collections.Orders.find({}, {
+    return Orders.find({}, {
       sort: {
         createdAt: -1
       },
@@ -26,7 +32,7 @@ Template.checkoutCompletedOrder.helpers({
     return this.shipping[0].shipmentMethod.tracking;
   },
   shopName: function () {
-    let shop = ReactionCore.Collections.Shops.findOne(this.shopId);
+    let shop = Shops.findOne(this.shopId);
     return shop !== null ? shop.name : void 0;
   },
   nonComponentItemCount: function () {
@@ -45,7 +51,7 @@ Template.checkoutCompletedOrder.helpers({
 Template.checkoutCompleteListItems.helpers({
   trackOrderCompleted: function (order) {
     if (order._id) {
-      ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
+      // ReactionAnalytics.trackEventWhenReady("Completed Order", ReactionAnalytics.getOrderTrackingProps(order));
     }
     return "";
   },
@@ -114,7 +120,7 @@ Template.checkoutCompleteListItems.helpers({
 
   media: function () {
     // XXX: GETOUTFITTED MOD - use variant's cart image
-    const variantImage = ReactionCore.Collections.Media.findOne({
+    const variantImage = Media.findOne({
       "metadata.productId": this.productId,
       "metadata.variantId": this.variants._id,
       "metadata.purpose": "cart"
@@ -124,7 +130,7 @@ Template.checkoutCompleteListItems.helpers({
       return variantImage;
     }
     // find a default image
-    const productImage = ReactionCore.Collections.Media.findOne({
+    const productImage = Media.findOne({
       "metadata.productId": this.productId
     });
     if (productImage) {

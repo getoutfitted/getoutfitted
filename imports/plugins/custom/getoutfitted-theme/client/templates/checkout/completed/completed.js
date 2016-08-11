@@ -1,3 +1,7 @@
+import { Orders } from "/lib/collections";
+import { Session } from "meteor/session";
+import { Reaction, i18next } from "/client/api";
+import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 
 /**
@@ -6,31 +10,36 @@ import { Template } from "meteor/templating";
  * if order status = new translate submitted message
  */
 Template.goCartCompleted.helpers({
-  order: function () {
-    const id =  ReactionRouter.getQueryParam("_id");
+  orderCompleted: function () {
+    const id =  Reaction.Router.getQueryParam("_id");
     if (id) {
       const ccoSub = Meteor.subscribe("CompletedCartOrder", Meteor.userId(), id);
       if (ccoSub.ready()) {
-        return ReactionCore.Collections.Orders.findOne({
-          userId: Meteor.userId(),
-          cartId: ReactionRouter.getQueryParam("_id")
-        });
+        return true;
       }
     }
+    return false;
+  },
+  order: function () {
+    return Orders.findOne({
+      userId: Meteor.userId(),
+      cartId: Reaction.Router.getQueryParam("_id")
+    });
   },
   orderStatus: function () {
     if (this.workflow.status === "new") {
-      return "submitted"; // Remove i18next b/c not working properly and
-    }                     // not running `this.workflow.status` through anyway.
+      return i18next.t("cartCompleted.submitted");
+    }
     return this.workflow.status;
   },
   userOrders: function () {
     if (Meteor.user()) {
-      return ReactionCore.Collections.Orders.find({
+      return Orders.find({
         userId: Meteor.userId(),
         cartId: this._id
       });
     }
+    return {};
   }
 });
 
@@ -40,10 +49,11 @@ Template.goCartCompleted.helpers({
  * adds email to order
  */
 Template.goCartCompleted.events({
-  "click #update-order": function (event, template) {
-    const email = template.find("input[name=email]").value;
+  "click #update-order": function () {
+    let templateInstance = Template.instance();
+    const email = templateInstance.find("input[name=email]").value;
     check(email, String);
-    const cartId = ReactionRouter.getQueryParam("_id");
+    const cartId = Reaction.Router.getQueryParam("_id");
     return Meteor.call("orders/addOrderEmail", cartId, email);
   }
 });
@@ -54,18 +64,18 @@ Template.goCartCompleted.events({
  * when the order is completed we need to destroy and recreate
  * the subscription to get the new cart
  */
-Template.cartCompleted.onCreated(function () {
+Template.goCartCompleted.onCreated(function () {
   let sessionId = Session.get("sessionId");
   let userId = Meteor.userId();
-  let cartSub = ReactionCore.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
+  let cartSub = Reaction.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
   cartSub.stop();
-  ReactionCore.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
+  Reaction.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
 });
 
 
-Template.cartCompleted.onRendered(function () {
-  ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
-    "step": 6,
-    "Step Name": "Payment Information"
-  });
+Template.goCartCompleted.onRendered(function () {
+  // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
+  //   "step": 6,
+  //   "Step Name": "Payment Information"
+  // });
 });
