@@ -12,3 +12,6 @@ import "./templates";
 
 // Template Helpers
 import "./helpers/template.js";
+
+// Collections & Schema
+import "../lib/termsOfService.js"

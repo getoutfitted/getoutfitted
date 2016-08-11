@@ -32,6 +32,8 @@ import "./progressBar/progressBar.html";
 import "./progressBar/progressBar.js";
 import "./review/review.html";
 import "./review/review.js";
+import "./termsOfService/termsOfService.html";
+import "./termsOfService/termsOfService.js";
 // import "./shipping/shipping.html";
 // import "./shipping/shipping.js";
 import "./checkout.html";

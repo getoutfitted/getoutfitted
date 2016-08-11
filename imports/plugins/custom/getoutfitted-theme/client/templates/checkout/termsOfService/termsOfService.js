@@ -1,5 +1,6 @@
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
+import { Cart } from "/lib/collections";
 
 Template.termsOfService.onRendered(function () {
   // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
@@ -18,5 +19,16 @@ Template.termsOfService.events({
     let customerAgreedToTermsOfService = event.target.checked;
     Meteor.call("cart/customerAgreedToTermsOfService", customerAgreedToTermsOfService);
     // ReactionAnalytics.trackEventWhenReady("Agree to Terms Of Service");
+  }
+});
+
+Template.checkoutPayment.helpers({
+  customerHasAgreedToTermsOfService: function () {
+    const cart = Cart.findOne({userId: Meteor.userId()})
+    if (cart) {
+      console.log("cart", cart);
+      return cart.customerAgreedToTermsOfService;
+    }
+    return false;
   }
 });

@@ -70,6 +70,21 @@ Reaction.registerPackage({
         dashboardHeaderControls: "",
         adminControlsFooter: "adminControlsFooter"
       }
-    }
-  ]
+    }, {
+      layout: "getoutfittedLayout",
+      workflow: "coreCartCompletedWorkflow",
+      collection: "Orders",
+      theme: "default",
+      enabled: true,
+      structure: {
+        template: "goCartCompleted",
+        layoutHeader: "goCheckoutHeader",
+        layoutFooter: "goLayoutFooter",
+        notFound: "notFound",
+        dashboardHeader: "",
+        dashboardControls: "dashboardControls",
+        dashboardHeaderControls: "",
+        adminControlsFooter: "adminControlsFooter"
+      }
+    }]
 });

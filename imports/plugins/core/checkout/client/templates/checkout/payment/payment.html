@@ -1,4 +1,6 @@
 <template name="checkoutPayment">
+  {{!-- XXX: GetOutfitted Mod: check terms of service agreement --}}
+  {{#if customerHasAgreedToTermsOfService}}
   <div class="panel panel-default">
 
     <div class="panel-heading">
@@ -14,4 +16,5 @@
     </div>
 
   </div>
+  {{/if}}
 </template>
