@@ -125,6 +125,8 @@ export function ReactionLayout(options = {}) {
           BlazeLayout.render("notFound");
         } else {
           // XXX: GETOUTFITTED MOD - re-ordered args to put newLayout.structure last.
+          // XXX: MOD Breaks use of INDEX_OPTIONS to define index template
+          // XXX: Currently using coreWorkflow to define index. I think this has other consequences.
           const layoutToRender = Object.assign({}, options, unauthorized, newLayout.structure);
           BlazeLayout.render(layout, layoutToRender);
         }

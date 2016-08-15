@@ -12,10 +12,10 @@ Reaction.registerPackage({
       theme: "default",
       enabled: true,
       structure: {
-        template: "goProducts",
+        template: "getoutfittedIndex",
         layoutHeader: "goLayoutHeader",
         layoutFooter: "goLayoutFooter",
-        notFound: "goProductNotFound",
+        notFound: "goNotFound",
         dashboardControls: "dashboardControls",
         adminControlsFooter: "adminControlsFooter"
       }
