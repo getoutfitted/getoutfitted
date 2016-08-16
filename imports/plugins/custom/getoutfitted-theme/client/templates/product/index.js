@@ -56,3 +56,7 @@ import "./productDetail/variantForm.js";
 
 import "./productSettings/productSettings.html";
 import "./productSettings/productSettings.js";
+
+// Core Templates
+import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variant.html";
+import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variant.js";
