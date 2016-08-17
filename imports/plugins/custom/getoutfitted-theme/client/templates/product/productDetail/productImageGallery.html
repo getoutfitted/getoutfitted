@@ -23,7 +23,7 @@
   <div id="galleryDropPane" class="galleryDropPane">
     <ul class="gallery">
       {{#each media}}
-        {{> imageDetail}}
+        {{> goImageDetail}}
       {{else}}
        <li>
           <img src= "/resources/placeholder.gif" class="img-responsive" id="img-upload">
@@ -38,17 +38,17 @@
       <div class="row">
         <div class="col-sm-4">
           {{#if imageWithPurpose "featured"}}
-            {{> featuredImageDetail image=(imageWithPurpose "featured")}}
+            {{> goFeaturedImageDetail image=(imageWithPurpose "featured")}}
           {{/if}}
         </div>
         <div class="col-sm-4">
           {{#if imageWithPurpose "cart"}}
-            {{> cartImageDetail image=(imageWithPurpose "cart")}}
+            {{> goCartImageDetail image=(imageWithPurpose "cart")}}
           {{/if}}
         </div>
         <div class="col-sm-4">
           {{#if imageWithPurpose "widget"}}
-            {{> widgetImageDetail image=(imageWithPurpose "widget")}}
+            {{> goWidgetImageDetail image=(imageWithPurpose "widget")}}
           {{/if}}
         </div>
       </div>
