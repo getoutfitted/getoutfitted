@@ -86,5 +86,20 @@ Reaction.registerPackage({
         dashboardHeaderControls: "",
         adminControlsFooter: "adminControlsFooter"
       }
+    }, {
+      layout: "getoutfittedLayout",
+      workflow: "coreDashboardWorkflow",
+      theme: "default",
+      enabled: true,
+      structure: {
+        template: "dashboardPackages",
+        layoutHeader: "goLayoutHeader",
+        layoutFooter: "goLayoutFooter",
+        notFound: "notFound",
+        dashboardHeader: "dashboardHeader",
+        dashboardControls: "dashboardControls",
+        dashboardHeaderControls: "dashboardHeaderControls",
+        adminControlsFooter: "adminControlsFooter"
+      }
     }]
 });
