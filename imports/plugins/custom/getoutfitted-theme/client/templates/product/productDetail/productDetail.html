@@ -25,7 +25,7 @@
         <span id="product-management-alerts">{{> inlineAlerts placement="productManagement"}}</span>
       </div>
       {{/unless}}
-      {{>tagsComponent tags=tags}}
+      {{> tagList tagListProps}}
       <h3 data-i18n="productDetail.details">Details</h3>
       {{> metaComponent }}
     </div>
@@ -172,7 +172,7 @@
 <template name="goProductDescription">
   <h4 class="description-title">About This Rental:</h4>
   <div class="description-body">
-    {{>fieldComponent field="description" value=description type="textarea"}}
+    {{description}}
   </div>
 </template>
 

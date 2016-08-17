@@ -1,10 +1,12 @@
 import { $ } from "meteor/jquery";
-import { Reaction, i18next } from "/client/api";
+import { ReactiveDict } from "meteor/reactive-dict";
+import { Reaction, i18next, Logger } from "/client/api";
 import { ReactionProduct } from "/lib/api";
 import { Cart, Tags } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
+import _ from "lodash";
 
 // import { ReactionAnalytics } from "some/analtyics/module";
 // load modules
@@ -12,16 +14,49 @@ require("jquery-ui");
 
 Template.goProductDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
+  this.state = new ReactiveDict();
+  this.state.setDefault({
+    product: {},
+    tags: []
+  });
   this.subscribe("Tags");
-
-  this.productId = () => ReactionRouter.getParam("handle");
-  this.variantId = () => ReactionRouter.getParam("variantId");
+  this.productId = () => Reaction.Router.getParam("handle");
+  this.variantId = () => Reaction.Router.getParam("variantId");
   this.autorun(() => {
     if (this.productId()) {
       this.subscribe("Product", this.productId());
     }
   });
+
+  this.autorun(() => {
+    if (this.subscriptionsReady()) {
+      // Get the product
+      const product = ReactionProduct.setProduct(this.productId(), this.variantId());
+      this.state.set("product", product);
+
+      if (Reaction.hasPermission("createProduct")) {
+        if (!Reaction.getActionView() && Reaction.isActionViewOpen() === true) {
+          Reaction.setActionView({
+            template: "productDetailForm",
+            data: product
+          });
+        }
+      }
+
+      // Get the product tags
+      if (product) {
+        if (_.isArray(product.hashtags)) {
+          const tags = _.map(product.hashtags, function (id) {
+            return Tags.findOne(id);
+          });
+
+          this.state.set("tags", tags);
+        }
+      }
+    }
+  });
 });
+
 
 /**
  * productDetail helpers
@@ -29,6 +64,86 @@ Template.goProductDetail.onCreated(function () {
  * product data source
  */
 Template.goProductDetail.helpers({
+  tagListProps() {
+    const instance = Template.instance();
+    const product = instance.state.get("product") || {};
+    const tags = instance.state.get("tags");
+    const productId = product._id;
+    const canEdit = Reaction.hasPermission("createProduct");
+
+    return {
+      tags,
+      isEditing: canEdit,
+      controls: [
+        {
+          type: "button",
+          icon: "bookmark-o",
+          onIcon: "bookmark",
+          toggle: true,
+          toggleOn(tag) {
+            const handle = product.handle;
+            if (Reaction.getSlug(handle) === tag.slug) {
+              return true;
+            }
+            return false;
+          },
+          onClick(event, tag) {
+            Meteor.call("products/setHandleTag", productId, tag._id,
+              function (error, result) {
+                if (result) {
+                  return Reaction.Router.go("product", {
+                    handle: result
+                  });
+                }
+                return null;
+              });
+          }
+        }
+      ],
+      onTagCreate(tagName) {
+        Meteor.call("products/updateProductTags", productId, tagName, null,
+          function (error) {
+            if (error) {
+              Alerts.toast("Tag already exists, duplicate add failed.", "error");
+            }
+          });
+      },
+      onTagRemove(tag) {
+        Meteor.call("products/removeProductTag", productId, tag._id,
+          function (error) {
+            if (error) {
+              Alerts.toast("Tag already exists, duplicate add failed.", "error");
+            }
+          });
+      },
+      onTagSort(tagIds) {
+        Meteor.call("products/updateProductField", productId, "hashtags", _.uniq(tagIds));
+      },
+      onTagUpdate(tagId, tagName) {
+        Meteor.call("products/updateProductTags", productId, tagName, tagId,
+          function (error) {
+            if (error) {
+              Alerts.toast("Tag already exists, duplicate add failed.", "error");
+            }
+          });
+      }
+    };
+  },
+  SocialEditButton() {
+    return {
+      component: EditButton,
+      toggleOn: Reaction.getActionView().template === "productDetailSocialForm" && Reaction.isActionViewOpen(),
+      onClick() {
+        if (Reaction.hasPermission("createProduct")) {
+          Reaction.showActionView({
+            label: "Social",
+            i18nKeyLabel: "social.socialTitle",
+            template: "productDetailSocialForm"
+          });
+        }
+      }
+    };
+  },
   product: function () {
     const instance = Template.instance();
     if (instance.subscriptionsReady()) {
@@ -345,7 +460,7 @@ Template.goProductDetail.events({
 
 Template.goProductFeatures.helpers({
   includedComponent: function () {
-    this.featureKey = 'included';
+    this.featureKey = "included";
     if (Reaction.hasPermission("createProduct")) {
       return Template.goProductIncludedFieldForm;
     }

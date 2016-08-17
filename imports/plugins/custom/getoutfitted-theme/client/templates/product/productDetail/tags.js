@@ -1,12 +1,15 @@
 import { $ } from "meteor/jquery";
+import { Reaction } from "/client/api";
 import { ReactionProduct } from "/lib/api";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 import { Tags } from "/lib/collections";
+import _ from "lodash";
 
 // load modules
-require("jquery-ui/sortable");
-require("jquery-ui/autocomplete");
+// require("jquery-ui/sortable");
+// require("jquery-ui/autocomplete");
+require("jquery-ui");
 
 Template.goProductDetailTags.helpers({
   tags: function () {
@@ -17,12 +20,11 @@ Template.goProductDetailTags.helpers({
     let product = ReactionProduct.selectedProduct();
     if (product) {
       if (product.handle) {
-        if (this.handle === product.handle.toLowerCase() || getSlug(product.handle) === this.slug) {
+        if (this.handle === product.handle.toLowerCase() || Reaction.getSlug(product.handle) === this.slug) {
           return true;
         }
       }
     }
-    return false;
   }
 });
 
@@ -31,13 +33,12 @@ Template.goProductTagInputForm.helpers({
     const product = ReactionProduct.selectedProduct();
     if (product) {
       if (product.handle) {
-        if (this.handle === product.handle.toLowerCase() || getSlug(product.handle) === this.slug) {
+        if (this.handle === product.handle.toLowerCase() || Reaction.getSlug(product.handle) === this.slug) {
           return "fa-bookmark";
         }
       }
       return "fa-bookmark-o";
     }
-    return "";
   }
 });
 
@@ -46,7 +47,7 @@ Template.goProductTagInputForm.events({
     return Meteor.call("products/setHandleTag", ReactionProduct.selectedProductId(), this._id,
       function (error, result) {
         if (result) {
-          return ReactionRouter.go("product", {
+          return Reaction.Router.go("product", {
             handle: result
           });
         }
@@ -62,7 +63,7 @@ Template.goProductTagInputForm.events({
       autoFocus: true,
       source: function (request, response) {
         let datums = [];
-        let slug = getSlug(request.term);
+        let slug = Reaction.getSlug(request.term);
         Tags.find({
           slug: new RegExp(slug, "i")
         }).forEach(function (tag) {
