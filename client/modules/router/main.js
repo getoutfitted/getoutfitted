@@ -86,7 +86,12 @@ function selectLayout(layout, setLayout, setWorkflow) {
   if (layout.layout === currentLayout && layout.workflow === currentWorkflow && layout.enabled === true) {
     return layout;
   }
-  // XXX: GETOUTFITTED MOD: fallback to coreLayout if DEFAULT_LAYOUT set does not have layout for current workflow
+  return null;
+}
+
+// XXX: GETOUTFITTED MOD: fallback to coreLayout if DEFAULT_LAYOUT set does not have layout for current workflow
+function selectDefaultLayout(layout, setLayout, setWorkflow) {
+  const currentWorkflow = setWorkflow || Session.get("DEFAULT_WORKFLOW") || "coreWorkflow";
   if (layout.layout === "coreLayout" && layout.workflow === currentWorkflow && layout.enabled === true) {
     return layout;
   }
@@ -123,7 +128,12 @@ export function ReactionLayout(options = {}) {
     if (Reaction.Subscriptions.Shops.ready()) {
       const shop = Shops.findOne(Reaction.getShopId());
       if (shop) {
-        const newLayout = shop.layout.find((x) => selectLayout(x, layout, workflow));
+        let newLayout = shop.layout.find((x) => selectLayout(x, layout, workflow));
+
+        // XXX: GETOUTFITTED MOD: Find default layout if we can't find layout for custom layout.
+        if (!newLayout) {
+          newLayout = shop.layout.find((x) => selectDefaultLayout(x, layout, workflow));
+        }
         // oops this layout wasn't found. render notFound
         if (!newLayout) {
           BlazeLayout.render("notFound");
@@ -131,6 +141,8 @@ export function ReactionLayout(options = {}) {
           // XXX: GETOUTFITTED MOD - re-ordered args to put newLayout.structure last.
           // XXX: MOD Breaks use of INDEX_OPTIONS to define index template
           // XXX: Currently using coreWorkflow to define index. I think this has other consequences.
+          console.log("Layout", layoutToRender);
+          console.log("Options", options);
           const layoutToRender = Object.assign({}, options, unauthorized, newLayout.structure);
           BlazeLayout.render(layout, layoutToRender);
         }
