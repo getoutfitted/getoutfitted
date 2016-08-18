@@ -30,7 +30,7 @@ function uploadHandler(event, metaOptions = {}) {
     });
   }
   const variantId = variant._id;
-  let shopId = ReactionProduct.selectedProduct().shopId || ReactionCore.getShopId();
+  let shopId = ReactionProduct.selectedProduct().shopId || Reaction.getShopId();
   let userId = Meteor.userId();
   let count = Media.find({
     "metadata.variantId": variantId
@@ -43,6 +43,7 @@ function uploadHandler(event, metaOptions = {}) {
 
   return FS.Utility.eachFile(event, function (file) {
     let fileObj;
+    fileObj = new FS.File(file);
     let metadata = {
       ownerId: userId,
       productId: productId,
@@ -51,7 +52,6 @@ function uploadHandler(event, metaOptions = {}) {
       priority: count,
       toGrid: +toGrid // we need number
     };
-    fileObj = new FS.File(file);
     fileObj.metadata = Object.assign(metadata, metaOptions);
     Media.insert(fileObj);
     return count++;
