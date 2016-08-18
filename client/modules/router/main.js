@@ -86,10 +86,6 @@ function selectLayout(layout, setLayout, setWorkflow) {
   if (layout.layout === currentLayout && layout.workflow === currentWorkflow && layout.enabled === true) {
     return layout;
   }
-  // XXX: GETOUTFITTED MOD: fallback to coreLayout if DEFAULT_LAYOUT set does not have layout for current workflow
-  if (layout.layout === "coreLayout" && layout.workflow === currentWorkflow && layout.enabled === true) {
-    return layout;
-  }
   return null;
 }
 
