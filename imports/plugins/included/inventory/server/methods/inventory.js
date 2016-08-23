@@ -23,18 +23,18 @@ export function registerInventory(product) {
   const variants = Catalog.getVariants(productId);
 
   // we'll check each variant to see if it has been fully registered
-  for (let variant of variants) {
-    let inventory = Inventory.find({
+  for (const variant of variants) {
+    const inventory = Inventory.find({
       productId: productId,
       variantId: variant._id,
       shopId: product.shopId
     });
     // we'll return this as well
-    let inventoryVariantCount = inventory.count();
+    const inventoryVariantCount = inventory.count();
     // if the variant exists already we're remove from the inventoryVariants
     // so that we don't process it as an insert
     if (inventoryVariantCount < variant.inventoryQuantity) {
-      let newQty = variant.inventoryQuantity || 0;
+      const newQty = variant.inventoryQuantity || 0;
       let i = inventoryVariantCount + 1;
 
       Logger.info(
@@ -45,7 +45,7 @@ export function registerInventory(product) {
       const batch = Inventory.
       _collection.rawCollection().initializeUnorderedBulkOp();
       while (i <= newQty) {
-        let id = Inventory._makeNewID();
+        const id = Inventory._makeNewID();
         batch.insert({
           _id: id,
           productId: productId,
@@ -61,9 +61,9 @@ export function registerInventory(product) {
       }
 
       // took from: http://guide.meteor.com/collections.html#bulk-data-changes
-      let execute = Meteor.wrapAsync(batch.execute, batch);
-      let inventoryItem = execute();
-      let inserted = inventoryItem.nInserted;
+      const execute = Meteor.wrapAsync(batch.execute, batch);
+      const inventoryItem = execute();
+      const inserted = inventoryItem.nInserted;
 
       if (!inserted) { // or maybe `inventory.length === 0`?
         // throw new Meteor.Error("Inventory Anomaly Detected. Abort! Abort!");
@@ -100,8 +100,9 @@ Meteor.methods({
    *
    * @param  {Object} product - Schemas.Product object
    * @return {[undefined]} returns undefined
+   * @todo  should be variant
    */
-  "inventory/adjust": function (product) { // TODO: this should be variant
+  "inventory/adjust": function (product) {
     check(product, Match.OneOf(Schemas.Product, Schemas.ProductVariant));
     let type;
     let results;
@@ -154,14 +155,12 @@ Meteor.methods({
 
           results = itemCount;
           // delete latest inventory "status:new" records
-          for (let inventoryItem of removeInventory) {
+          for (const inventoryItem of removeInventory) {
             results -= Meteor.call("inventory/remove", inventoryItem);
             // we could add handling for the case when aren't enough "new" items
           }
+          Logger.info(`adjust variant ${variant._id} from ${itemCount} to ${results}`);
         }
-        Logger.info(
-          `adjust variant ${variant._id} from ${itemCount} to ${results}`
-        );
       }
     }
   }

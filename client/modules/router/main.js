@@ -1,11 +1,12 @@
+import _ from "lodash";
+import { Session } from "meteor/session";
+import { Meteor } from "meteor/meteor";
+import { Tracker } from "meteor/tracker";
 import { FlowRouter as Router } from "meteor/kadira:flow-router-ssr";
 import { BlazeLayout } from "meteor/kadira:blaze-layout";
 import { Reaction, Logger } from "/client/api";
 import { Packages, Shops } from "/lib/collections";
 import { MetaData } from "/lib/api/router/metadata";
-import { Session } from "meteor/session";
-import { Meteor } from "meteor/meteor";
-import { Tracker } from "meteor/tracker";
 import Hooks from "./hooks";
 
 
@@ -27,6 +28,7 @@ Router.Hooks = Hooks;
  */
 function checkRouterPermissions(context) {
   const routeName = context.route.name;
+
   if (Reaction.hasPermission(routeName, Meteor.userId())) {
     if (context.unauthorized === true) {
       delete context.unauthorized;
@@ -118,7 +120,7 @@ export function ReactionLayout(options = {}) {
 
   // check if router has denied permissions
   // see: checkRouterPermissions
-  let unauthorized = {};
+  const unauthorized = {};
   if (Router.current().unauthorized) {
     unauthorized.template = "unauthorized";
   }
@@ -189,7 +191,7 @@ Router.initPackageRoutes = () => {
     //
     // index / home route
     // to overide layout, ie: home page templates
-    // set DEFAULT_LAYOUT, in config.js
+    // set INDEX_OPTIONS, in config.js
     //
     shop.route("/", {
       name: "index",
@@ -199,12 +201,12 @@ Router.initPackageRoutes = () => {
     });
 
     // get package registry route configurations
-    for (let pkg of pkgs) {
+    for (const pkg of pkgs) {
       const newRoutes = [];
       // pkg registry
       if (pkg.registry) {
         const registry = Array.from(pkg.registry);
-        for (let registryItem of registry) {
+        for (const registryItem of registry) {
           // registryItems
           if (registryItem.route) {
             const {
@@ -243,7 +245,7 @@ Router.initPackageRoutes = () => {
         // add group and routes to routing table
         //
         const uniqRoutes = new Set(newRoutes);
-        for (let route of uniqRoutes) {
+        for (const route of uniqRoutes) {
           // allow overriding of prefix in route definitions
           // define an "absolute" url by excluding "/"
           if (route.route.substring(0, 1) !== "/") {
@@ -274,7 +276,6 @@ Router.initPackageRoutes = () => {
       Router.initialize();
     } catch (e) {
       Logger.error(e);
-      Router.reload();
     }
   }
 };
@@ -288,10 +289,10 @@ Router.initPackageRoutes = () => {
  * @return {String} returns current router path
  */
 Router.pathFor = (path, options = {}) => {
-  let params = options.hash || {};
-  let query = params.query ? Router._qs.parse(params.query) : {};
+  const params = options.hash || {};
+  const query = params.query ? Router._qs.parse(params.query) : {};
   // prevent undefined param error
-  for (let i in params) {
+  for (const i in params) {
     if (params[i] === null || params[i] === undefined) {
       params[i] = "/";
     }

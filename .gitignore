@@ -28,5 +28,13 @@ custom/client/*
 custom/server/*
 !custom/server/.gitkeep
 
+public/custom/*
+!public/custom/.gitkeep
+
 private/custom/*
 !private/custom/.gitkeep
+
+imports/plugins/custom/*
+!imports/plugins/custom/.gitkeep
+
+.reaction/config.json
