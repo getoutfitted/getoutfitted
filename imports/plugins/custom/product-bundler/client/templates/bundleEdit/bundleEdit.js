@@ -16,7 +16,7 @@ Template.productBundleEdit.onCreated(function () {
 
 Template.productBundleEdit.helpers({
   bundleVariant: function () {
-    if (ReactionRouter.getParam('_id')) {
+    if (Reaction.Router.getParam('_id')) {
       const bundleVariant = Products.findOne({
         shopId: Reaction.getShopId(),
         ancestors: Reaction.Router.getParam('_id')
