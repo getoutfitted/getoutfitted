@@ -1,0 +1,130 @@
+<template name='trailGuideDashboard'>
+  <div class='container-fluid '>
+    <div class='row text-center'>
+      <h1><i class="fa fa-map-signs" aria-hidden="true"></i> Trail Guide</h1>
+    </div>
+    <div class='row text-center'>
+      <h2>Orders</h2>
+    </div>
+    <div class='row filters text-center'>
+      <a class="btn btn-default btn-sm" role="button" data-toggle="collapse" href="#orderFilters" aria-expanded="false" aria-controls="orderFilters">Filters</a>
+    </div>
+    <br/>
+    <div class="collapse" id="orderFilters">
+      <div class="well text-center">
+        <div class='row'>
+          <div class='col-xs-3'>
+            <form class='form-inline'>
+                <div class="form-group">
+                  <label for="limitFilter">Limit:</label>
+                  <input type="number" id='limitFilter' min="1" class="form-control limitFilter" value={{currentLimit}} name="limit">
+                </div>
+            </form>
+          </div>
+          <div class='col-xs-9'>
+            <div class='row'>
+            {{#each displayFields}}
+              <div class='col-xs-2'>
+                <div class="checkbox">
+                  <label>
+                    <input name='{{this}}' class='toggleDisplayField' id='{{this}}' checked="{{fields this}}" type="checkbox"> {{humanReadableField this}}
+                  </label>
+                </div>
+              </div>
+            {{/each}}
+            </div>
+          </div>
+        </div>
+        <div class='row text-center'>
+          <h4>Advanced Search Criteria:</h4>
+          <form class='advancedSearchFilters'>
+            <div class='col-xs-6'>
+              <div class="form-group">
+                <label for="billingName">Customer Name</label>
+                <input class="form-control" name='billingName' id="billingName" placeholder="Search Paul Grever, Paul or P">
+              </div>
+              <div class="form-group">
+                <label for="shippingName">Shipping Name</label>
+                <input class="form-control" name='shippingName' id="shippinName" placeholder="Search Paul Grever, Paul or P">
+              </div>
+            </div>
+            <div class='col-xs-6'>
+              <div class='form-group'>
+                <label for='orderswithProducts'>Products in Orders</label>
+                <select name='products' id='orderswithProducts' class="form-control">
+                  <option value='' disabled selected >Select a Product</option>
+                  {{#each products}}
+                    <option value='{{_id}}'>{{pageTitle}}</option>
+                  {{/each}}
+                  <option value='' >Clear Items</option>
+                </select>
+              </div>
+              <div class='row'>
+                <div class="col-xs-6 form-group">
+                  <label for="orderMin">Minimum Order #</label>
+                  <input type='number' min='0' class="form-control" name='orderMin' id="orderMin">
+                </div>
+                <div class="col-xs-6 form-group">
+                  <label for="orderMax">Maximum Order #</label>
+                  <input type='number' class="form-control" name='orderMax' id="orderMax">
+                </div>
+              </div>
+            </div>
+            <div class='col-xs-12'>
+              <button class='btn btn-default'>Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+      <table class='table table-hover table-condensed trail-guide-table'>
+        {{#each displayFields}}
+          {{> columnGroupHeader}}
+        {{/each}}
+        <thead>
+          <tr>
+          {{#each displayFields}}
+            {{> columnMainHeaders}}
+          {{/each}}
+          </tr>
+        </thead>
+        <tbody>
+          {{#each orders}}
+            <tr data-id="{{_id}}" class="trailGuideOrder">
+              {{#each displayFields}}
+                {{> columnMainRow}}
+              {{/each}}
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<template name='columnGroupHeader'>
+  {{#if enabled}}
+    <colgroup class='{{active}}'></colgroup>
+  {{/if}}
+</template>
+
+<template name='columnMainHeaders'>
+  {{#if enabled}}
+    <th data-field='{{this}}' class='sortField'>{{> Template.dynamic template=upOrDown}}{{label}}</th>
+  {{/if}}
+</template>
+
+<template name='upArrow'>
+  <i data-field={{this}} class="fa fa-caret-up change" aria-hidden="true"></i>
+</template>
+
+<template name='downArrow'>
+  <i data-field={{this}} class="fa fa-caret-down change" aria-hidden="true"></i>
+</template>
+
+<template name='columnMainRow'>
+  {{#if enabled}}
+    <td>{{orderInfo}}</td>
+  {{/if}}
+</template>
