@@ -10,7 +10,7 @@ import _ from "lodash";
 
 // import { ReactionAnalytics } from "some/analtyics/module";
 // load modules
-require("jquery-ui");
+import "jquery-ui";
 
 Template.goProductDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);

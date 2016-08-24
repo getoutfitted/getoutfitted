@@ -101,5 +101,11 @@ Reaction.registerPackage({
         dashboardHeaderControls: "dashboardHeaderControls",
         adminControlsFooter: "adminControlsFooter"
       }
+    }],
+    registry: [{
+      route: "/collections/:slug?",
+      name: "collections",
+      template: "products",
+      workflow: "goProductListWorkflow"
     }]
 });

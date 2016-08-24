@@ -18,7 +18,7 @@
           <div class="col-sm-12 text-center">
             <h1>The World's Outdoor Gear Closet</h1>
             <h2>We rent and deliver top quality ski clothing and gear directly to your resort. <br /><br/>Free Shipping and Free Returns <br> Anywhere in the US.</h2>
-            <a id="rent-now-home-hero" href="{{pathFor 'catalog'}}" class="btn radius btn-lg btn-brand-primary margin-top-small">Browse Gear</a>
+            <a id="rent-now-home-hero" href="{{pathFor 'collections'}}" class="btn radius btn-lg btn-brand-primary margin-top-small">Browse Gear</a>
           </div>
         </div>
       </div>
@@ -38,13 +38,13 @@
       <div class="row fullwidth">
         <div class="col-sm-12 col-md-6 columns tile">
           <div class="womens-outfits-tile">
-            <a href="/collections/womens" class="btn btn-lg btn-v-middle wire white radius">Women's Outfits</a>
+            <a href="{{pathFor 'collections' slug='womens'}}" class="btn btn-lg btn-v-middle wire white radius">Women's Outfits</a>
           </div>
         </div>
         
         <div class="col-sm-12 col-md-6 columns tile">
           <div class="mens-outfits-tile">
-            <a href="/collections/mens" class="btn btn-lg btn-v-middle wire white radius">Men's Outfits</a>
+            <a href="{{pathfor 'collections' slug='mens'}}" class="btn btn-lg btn-v-middle wire white radius">Men's Outfits</a>
           </div>
         </div>
       </div>

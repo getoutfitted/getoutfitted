@@ -9,7 +9,7 @@ import _ from "lodash";
 // load modules
 // require("jquery-ui/sortable");
 // require("jquery-ui/autocomplete");
-require("jquery-ui");
+import "jquery-ui";
 
 Template.goProductDetailTags.helpers({
   tags: function () {
