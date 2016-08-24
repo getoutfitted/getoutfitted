@@ -1,0 +1,49 @@
+<template name='transitTimesSettings'>
+    <div class="panel-body">
+    {{#autoForm
+        collection=Collections.Packages
+        schema=TransitTimesPackageConfig
+        doc=packageData
+        type="update"
+        id="transit-times-update-form"
+        }}
+    <p>Shipping From Location</p>
+    {{>afQuickField  name='settings.shippingAddress.address1'}}
+    {{>afQuickField  name='settings.shippingAddress.address2'}}
+    {{>afQuickField  name='settings.shippingAddress.city'}}
+    {{>afQuickField  name='settings.shippingAddress.state'}}
+    {{>afQuickField  name='settings.shippingAddress.zipcode'}}
+    {{>afQuickField  name='settings.shippingAddress.countryCode'}}
+    <br />
+
+    <p>List of postal codes that can be delivered to same-day</p>
+      {{>afQuickField  name='settings.localDeliveryPostalCodes'}}
+    <br />
+
+    <p>Choose Shipping Carrier To Calculate</p>
+    {{>afQuickField  name='settings.selectedShippingProvider' options="allowed"}}
+    <br />
+
+    <p>Choose Shipping Carrier To Calculate</p>
+    {{>afQuickField  name='settings.defaultTransitTime' type='number'}}
+    <br />
+
+
+    <p>UPS Account Setup</p>
+    {{>afQuickField  name='settings.ups.liveApi'}}
+    {{>afQuickField  name='settings.ups.accessKey'}}
+    {{>afQuickField  name='settings.ups.username'}}
+    {{>afQuickField  name='settings.ups.password' type='password' }}
+    <br />
+    <p>Fedex Account Setup</p>
+    {{>afQuickField  name='settings.fedex.liveApi'}}
+    {{>afQuickField  name='settings.fedex.password'}}
+    {{>afQuickField  name='settings.fedex.key'}}
+    {{>afQuickField  name='settings.fedex.accountNumber'}}
+    {{>afQuickField  name='settings.fedex.meterNumber'}}
+    <br />
+
+    <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+      {{/autoForm}}
+  </div>
+</template>
