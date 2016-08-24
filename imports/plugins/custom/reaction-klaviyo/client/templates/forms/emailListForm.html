@@ -1,0 +1,22 @@
+<template name="emailListForm">
+  {{#if productHasEmailListid}}
+    <div class="silver-background-no-top solid-break show-for-medium-up description">
+      <div class="container">
+        <div class="col-sm-12 col-md-7">
+          <hr>
+          <form class="form-inline subscribeToEmailList">
+            <div class="form-group">
+              <label class="sr-only">Email</label>
+              <h4 class="form-control-static description-title">Be notified of earlier availability   </h4>
+            </div>
+            <div class="form-group">
+              <input type="email" class="form-control" name="subscribeEmail" placeholder="Email Address">
+            </div>
+            <button type="submit" class="btn btn-default">Subscribe</button>
+          </form>
+          {{> inlineAlerts placement="emailSubscriptions"}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</template>

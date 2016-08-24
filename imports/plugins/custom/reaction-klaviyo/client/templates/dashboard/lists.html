@@ -1,0 +1,49 @@
+<template name='klaviyoListSetup'>
+  <h2>Klaviyo List Configuration</h2>
+  <p>This package also supports Klaviyo's <a href="https://www.klaviyo.com/docs/api/lists"><strong>List API for Adding Someone to a List</strong></a>.</p>
+  <p>To use this feature, you need to extend the <code>Product Schema</code> with String field called <code>emailListId</code> which connects a Product with a Klaviyo List.</p>
+  <p>Then simply call <code>Klaviyo.addUserToList(productId, email)</code> to add Email to that Klaviyo product list.</p>
+
+  <h2>Product and Klaviyo Set Up</h2>
+  <p>Once you have set up emailListID, you can use the tool below to add Klaviyo list Id's to a product.</p>
+  <p>Simply select the product and type in the ID, then hit Save.</p>
+  <p>You can also remove or edit List's once they have been saved.</p>
+  <hr>
+  <h2>Current Products with Klaviyo Lists</h2>
+  {{> inlineAlerts placement="klaviyoUpdates"}}
+  <br>
+  <div class='row'>
+    {{#each productsWithKlaviyoLists}}
+      <div class='col-sm-4 well'>
+        <h5><strong>{{title}}</strong></h5>
+        <h5>{{vendor}} | {{gender}}</h5>
+        <h5>Klaviyo List Id: <input id='{{_id}}' value='{{emailListId}}'> </h5>
+        <button data-id='{{_id}}' class='btn updateEmailListId btn-xs btn-default'>Update</button>   <button class='btn btn-xs removeEmailListId btn-default' data-id='{{_id}}'>Delete</button>
+      </div>
+    {{/each}}
+  </div>
+
+  <h2>Add Klaviyo List to a Product</h2>
+  <div class="row">
+    <form class="addKlaviyoToProduct form-inline">
+      <div class="col-sm-5">
+        <div class="form-group">
+          <select name="selectedKlaviyoProduct" class="form-control">
+            {{#each productsWithOutKlaviyoLists}}
+              <option value="{{_id}}">{{vendor}} - {{title}} - {{gender}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="form-group">
+          <label for="klaviyoListId">Klaviyo List Id</label>
+          <input name='klaviyoListId' class="form-control" id="klaviyoListId">
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <button type="submit" class="btn btn-block btn-default">Submit</button>
+      </div>
+    </form>
+  </div>
+</template>
