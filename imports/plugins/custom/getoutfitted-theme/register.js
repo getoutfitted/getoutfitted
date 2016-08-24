@@ -102,10 +102,11 @@ Reaction.registerPackage({
         adminControlsFooter: "adminControlsFooter"
       }
     }],
-    registry: [{
+  registry: [
+    {
       route: "/collections/:slug?",
       name: "collections",
-      template: "products",
-      workflow: "goProductListWorkflow"
+      template: "goProducts",
+      workflow: "coreProductListWorkflow"
     }]
 });
