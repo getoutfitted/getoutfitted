@@ -4,7 +4,8 @@ import { ReactionProduct } from "/lib/api";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 // load modules
-require("jquery-ui/sortable");
+import { sortable } from "jquery-ui";
+// require("jquery-ui/sortable");
 
 /**
  * goVariant helpers

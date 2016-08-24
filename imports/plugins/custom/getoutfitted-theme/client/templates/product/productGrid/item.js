@@ -10,7 +10,8 @@ import { ReactionProduct } from "/lib/api";
 import { Media } from "/lib/collections";
 
 // load modules
-require("jquery-ui/sortable"); // originally entire jquery-ui lib
+import "jquery-ui";
+// require("jquery-ui/sortable"); // originally entire jquery-ui lib
 
 /**
  * productGridItems helpers

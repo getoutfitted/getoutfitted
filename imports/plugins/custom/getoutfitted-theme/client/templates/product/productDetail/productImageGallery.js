@@ -8,7 +8,8 @@ import { Template } from "meteor/templating";
 import { Modal } from "meteor/peppelg:bootstrap-3-modal";
 
 // load modules
-require("jquery-ui/sortable"); // originally full jquery-ui lib
+import { sortable } from "jquery-ui";
+// require("jquery-ui"); // originally full jquery-ui lib
 /**
  * productImageGallery helpers
  */
