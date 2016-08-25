@@ -11,7 +11,7 @@ Orders.after.insert(function () {
     name: 'reaction-advanced-fulfillment',
     shopId: Reaction.getShopId()
   });
-  if (!afPackage.enabled) {
+  if (!afPackage || !afPackage.enabled) {
     Logger.warn(`Backpack is not enabled, so Order ${this._id} was not updated`);
     return;
   }
