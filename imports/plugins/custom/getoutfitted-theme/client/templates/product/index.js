@@ -11,16 +11,16 @@ import "./productList/productList.html";
 import "./productList/productList.js";
 
 // Product Grid
-import "./productGrid/content.html";
-import "./productGrid/content.js";
-import "./productGrid/controls.html";
-import "./productGrid/controls.js";
-import "./productGrid/item.html";
-import "./productGrid/item.js";
-import "./productGrid/notice.html";
-import "./productGrid/notice.js";
-import "./productGrid/productGrid.html";
-import "./productGrid/productGrid.js";
+// import "./productGrid/content.html";
+// import "./productGrid/content.js";
+// import "./productGrid/controls.html";
+// import "./productGrid/controls.js";
+// import "./productGrid/item.html";
+// import "./productGrid/item.js";
+// import "./productGrid/notice.html";
+// import "./productGrid/notice.js";
+// import "./productGrid/productGrid.html";
+// import "./productGrid/productGrid.js";
 
 // Product Detail
 import "./productDetail/attributes.html";
@@ -58,6 +58,18 @@ import "./productSettings/productSettings.html";
 import "./productSettings/productSettings.js";
 
 // Core Templates
+// Product Grid
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/content.html";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/content.js";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/controls.html";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/controls.js";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/item.html";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/item.js";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/notice.html";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/notice.js";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/productGrid.html";
+import "/imports/plugins/included/product-variant/client/templates/products/productGrid/productGrid.js";
+
 import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variant.html";
 import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variant.js";
 import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variantForm/variantForm.html";
