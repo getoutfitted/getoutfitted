@@ -7,6 +7,7 @@ import { getShopId } from '/lib/api';
 import { FedExApi } from './transitOptions/fedex';
 import { UPS } from './transitOptions/ups';
 import { dateHelper } from './transitOptions/dateHelpers';
+import { Logger } from "/server/api";
 
 export const TransitTimes = {
   FedExApi: FedExApi,
@@ -20,7 +21,8 @@ TransitTimes._getSettings = function () {
     shopId: getShopId()
   });
   if (!tt) {
-    throw new Meteor.Error(500, 'TransitTimes package not found');
+    Logger.warn('TransitTimes package not found');
+    return {};
   }
   return tt.settings;
 };
