@@ -3,13 +3,60 @@ import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { Cart, Products } from "/lib/collections";
-// import { InventoryVariants } from "/"
-let InventoryVariants;
-import { $ } from "meteor/jquery";
+import { InventoryVariants } from "/imports/plugins/custom/reaction-rental-products/lib/collections";
+import $ from "jquery";
 import "bootstrap-datepicker";
 import moment from "moment";
 import "twix";
 import "moment-timezone";
+// import { TransitTimes } from "/imports/plugins/custom/transit-times/lib/api";
+
+const TransitTimes = {};
+
+TransitTimes.calculateShippingDay = function (startTime, timeInTransit) {
+  if (timeInTransit === 0) {
+    return startTime;
+  }
+
+  let start = moment(startTime);
+  let weekendArrivalDays = 0;
+  if (start.isoWeekday() === 6) {
+    weekendArrivalDays = weekendArrivalDays + 1;
+  } else if (start.isoWeekday() === 7) {
+    weekendArrivalDays = weekendArrivalDays + 2;
+  }
+
+
+  let shippingDay = moment(start).subtract(timeInTransit + weekendArrivalDays, 'days');
+  if (shippingDay.isoWeekday() + timeInTransit >= 6) {
+    return shippingDay.subtract(2, 'days').toDate();
+  }
+  return shippingDay.toDate();
+};
+
+TransitTimes.calculateReturnDay = function (endTime, timeInTransit) {
+  check(endTime, Match.Optional(Date));
+  check(timeInTransit, Number);
+
+  if (timeInTransit === 0) {
+    return endTime;
+  }
+
+  let end = moment(endTime);
+  let weekendReturnDays = 0;
+  if (end.isoWeekday() === 6) {
+    weekendReturnDays = weekendReturnDays + 2;
+  } else if (end.isoWeekday() === 7) {
+    weekendReturnDays = weekendReturnDays + 1;
+  }
+
+  let dropoffDay = moment(end).add(weekendReturnDays, 'days');
+  let returnDay = moment(end).add(timeInTransit + weekendReturnDays, 'days');
+  if (dropoffDay.isoWeekday() + timeInTransit >= 6) {
+    return returnDay.add(2, 'days').toDate();
+  }
+  return returnDay.toDate();
+};
 
 
 // XXX THIS IS A BIG OL HACK - please move it to an npm package or import
@@ -587,7 +634,7 @@ Template.reservationDatepicker.onCreated(function () {
   this.autorun(() => {
     if (Session.get("selectedVariantId")) {
       this.subscribe("productReservationStatus", Session.get("selectedVariantId"));
-      $("#rental-start").datepicker("update");
+      // $("#rental-start").datepicker("update");
     }
   });
 });

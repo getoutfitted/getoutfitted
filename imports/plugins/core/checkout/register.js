@@ -18,7 +18,9 @@ Reaction.registerPackage({
     route: "/cart/completed/:_id?",
     name: "cart/completed",
     template: "cartCompleted",
-    workflow: "coreCartWorkflow"
+    // XXX: GETOUTFITTED MOD - Add new cartCompletedWorkflow for modifying cart completed template
+    // XXX: Was coreCartWorkflow
+    workflow: "coreCartCompletedWorkflow"
   }],
   layout: [{
     layout: "coreLayout",
@@ -76,5 +78,22 @@ Reaction.registerPackage({
     audience: ["guest", "anonymous"],
     priority: 5,
     position: "5"
+  }, {
+    // XXX: GETOUTFITTED MOD - Add new cartCompletedWorkflow for modifying cart completed template
+    layout: "coreLayout",
+    workflow: "coreCartCompletedWorkflow",
+    collection: "Cart",
+    theme: "default",
+    enabled: true,
+    structure: {
+      template: "cartCompleted",
+      layoutHeader: "checkoutHeader",
+      layoutFooter: "",
+      notFound: "notFound",
+      dashboardHeader: "",
+      dashboardControls: "dashboardControls",
+      dashboardHeaderControls: "",
+      adminControlsFooter: "adminControlsFooter"
+    }
   }]
 });
