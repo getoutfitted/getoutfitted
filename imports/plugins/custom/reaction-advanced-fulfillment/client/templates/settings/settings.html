@@ -1,0 +1,27 @@
+<template name='advancedFulfillmentSettings'>
+  <div class="panel-body">
+    {{#autoForm
+        collection=Collections.Packages
+        schema=AdvancedFulfillmentPackageConfig
+        doc=packageData
+        type="update"
+        id="advanced-fulfillment-update-form"
+        }}
+
+    <small>Shipping settings moved to Transit Times</small>
+    <br>
+    <p>Enable Shipstation</p>
+    {{>afQuickField  name='settings.shipstation'}}
+    <p>Aftership Settings</p>
+    {{>afQuickField  name='settings.aftership.enabled'}}
+    {{>afQuickField  name='settings.aftership.preSharedKey'}}
+    <p>Enable Klaviyo</p>
+    {{>afQuickField  name='settings.klaviyo'}}
+
+    <p>Enable Slack</p>
+    {{>afQuickField  name='settings.slack'}}
+    {{>afQuickField  name='settings.slackChannel'}}
+    <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+      {{/autoForm}}
+  </div>
+</template>

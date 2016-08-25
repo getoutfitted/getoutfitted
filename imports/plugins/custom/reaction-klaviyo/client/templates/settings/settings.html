@@ -1,0 +1,17 @@
+<template name='klaviyoSettings'>
+  <div class="panel-body">
+    {{#autoForm
+        collection=Collections.Packages
+        schema=KlaviyoPackageConfig
+        doc=packageData
+        type="update"
+        id="klaviyo-update-form"
+        }}
+
+    <h2>Klaviyo Configuration</h2>
+    {{>afQuickField  name='settings.api.publicKey'}}
+    {{>afQuickField  name='settings.api.privateKey'}}
+    <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+      {{/autoForm}}
+  </div>
+</template>

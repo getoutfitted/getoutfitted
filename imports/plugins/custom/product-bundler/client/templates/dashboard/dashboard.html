@@ -1,0 +1,138 @@
+<template name='productBundlesDashboard'>
+  <div class='container text-center'>
+    <div class='row'>
+      <h1>Product Bundle Creator</h1>
+      <p>Add multiple products in a single container which presents like a product, but when checkout occurs acts like single line items.</p>
+    </div>
+    {{#if anyExistingBundles}}
+    <div class='row'>
+      <h2>Existing Bundles</h2>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Title</th>
+            <th>Package Type</th>
+            <th>Vendor</th>
+            <th>Handle</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each existingBundles}}
+            <tr class='text-left'>
+              <td><a href="{{pathFor 'productBundleEdit' _id=_id}}" class='btn btn-default'>Edit/Add Products</a></td>
+              <td>{{title}}</td>
+              <td>{{productType}}</td>
+              <td>{{vendor}}</td>
+              <td>{{handle}}</td>
+              <td>${{price.range}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{/if}}
+    <h2>Create a New Bundle</h2>
+    <form id='createBundle'>
+      <div class='row'>
+        <div class='col-md-6'>
+          <div class='form-group'>
+            <label for='bundleTitle'>Bundle Title</label>
+            <input id='bundleTitle' name='bundleTitle' class='form-control' placeholder='Basic Reaction Product' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundlePageTitle'>Bundle PageTitle</label>
+            <input id='bundlePageTitle' name='bundlePageTitle' class='form-control' placeholder='This is a basic product. You can do a lot with it.' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundleSku'>Bundle Sku</label>
+            <input id='bundleSku' name='bundleSku' class='form-control' placeholder='Example: SKU-100-BUNDLE' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundleHandle'>Bundle Handle</label>
+            <p><em>Handles cannot contain spaces. <a target='_blank' href='http://slugify.net/'>Go here for help</a></em></p>
+            <input id='bundleHandle' name='bundleHandle' class='form-control' placeholder='Example: example-product' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundleDescription'>Bundle Description</label>
+            <p><em>Add a description about what your bundle includes, give a brief description of each product and how it makes a bundle</em></p>
+            <textarea id='bundleDescription' name='bundleDescription' placeholder='Description...' class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class='col-md-6'>
+          <div class='form-group'>
+            <label for='bundleVendor'>Bundle Vendor</label>
+            <input id='bundleVendor' name='bundleVendor' class='form-control' placeholder='Example: Vendor 1, Vendor 2, Vendor 3, etc.' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundleProductType'>Package Type</label>
+            <input id='bundleProductType' name='bundleProductType' class='form-control' placeholder='Example: Camping Package, Ski Package, etc' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundleGender'>Gender</label>
+            <input id='bundleGender' name='bundleGender' class='form-control' placeholder='Example: Womens, Mens, Unisex ' required>
+          </div>
+<!--           <div class='form-group'>
+            <label for='bundlePrice'>Bundle Price</label>
+            <input type='number' name='bundlePrice'  id='bundlePrice' class='form-control' placeholder='Example: $100.00' required>
+          </div> -->
+          <div class='form-group'>
+            <label for='bundleHashtags'>Bundle Hashtags</label>
+            <p><em>Hashtags must be separated by <code>,</code></em></p>
+            <input id='bundleHashtags' name='bundleHashtags' class='form-control' placeholder='Womens, Winter, Outfit' required>
+          </div>
+          <div class='form-group'>
+            <label for='bundleMetatags'>Bundle Metatags</label>
+            <p><em>Each metafield need to be separated by <code>|</code> and each key needs to be separated from value by <code>=</code></em></p>
+            <textarea id='bundleMetafields' name='bundleMetafields' placeholder='Example: key=value | key2=value2 | key3=value3' class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+      </div>
+      {{#if anyPriceBuckets}}
+        <hr>
+        <div class='row text-center'>
+          <h3>Existing Price Buckets</h3>
+          {{#each bundlePriceBuckets}}
+            <div class='well col-sm-3'>
+              <p>Price Bucket Details</p>
+              <p>${{price}} for {{duration}} {{timeUnit}}</p>
+              <button data-duration='{{duration}}' class='btn btn-xs btn-primary removePriceBucket'>Remove</button>
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+      <hr>
+      <h3>Add Price Buckets</h3>
+      <div class='priceBucket form-inline'>
+        <div class='form-group'>
+        <label for="timeUnit">Time Unit</label>
+          <select name='timeUnit' id='timeUnit' class="form-control">
+            <option value='years'>Years</option>
+            <option value='quarters'>Quarters</option>
+            <option value='months'>Months</option>
+            <option value='weeks'>Weeks</option>
+            <option selected value='days'>Days</option>
+            <option value='hours'>Hours</option>
+            <option value='minutes'>Minutes</option>
+            <option value="seconds">Seconds</option>
+            <option value="milliseconds">Milliseconds</option>
+          </select>
+        </div>
+        <div class='form-group'>
+          <label for="duration">Duration</label>
+          <input type="number" class="form-control" value="6" name='duration' id='duration'>
+        </div>
+        <div class='form-group'>
+          <label for="bucketPrice">Price in $</label>
+          <input type='number' min='0' step='0.01' value='0.00' placeholder='0.00' class="form-control" name='bucketPrice' id='bucketPrice'>
+        </div>
+        <button class='addBundlePriceBucket btn btn-default'>Add Price Bucket</button>
+      </div>
+      <br>
+      <div class='row'>
+        <button  class='btn btn-block btn-default'>Submit</button>
+      </div>
+    </form>
+  </div>
+</template>

@@ -1,0 +1,16 @@
+<template name='slackSettings'>
+  <div class="panel-body">
+    {{#autoForm
+        collection=Collections.Packages
+        schema=SlackPackageConfig
+        doc=packageData
+        type="update"
+        id="slack-update-form"
+        }}
+
+    <h2>Slack Configuration</h2>
+    {{>afQuickField  name='settings.api.token'}}
+    <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+      {{/autoForm}}
+  </div>
+</template>

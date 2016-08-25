@@ -106,7 +106,10 @@ export default function () {
       }];
     },
     requiresShipping: true,
-    shipping: [], // Shipping Schema
+    shipping: [{
+      _id: Random.id(),
+      address: getAddress()
+    }], // Shipping Schema
     billing: [], // Payment Schema
     state: "new",
     createdAt: new Date,
