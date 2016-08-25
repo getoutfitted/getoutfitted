@@ -7,7 +7,7 @@ import { getShopId } from '/lib/api';
 import { FedExApi } from './transitOptions/fedex';
 import { UPS } from './transitOptions/ups';
 import { dateHelper } from './transitOptions/dateHelpers';
-import { Logger } from "/server/api";
+import { Logger } from '/server/api';
 
 export const TransitTimes = {
   FedExApi: FedExApi,
