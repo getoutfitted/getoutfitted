@@ -54,7 +54,7 @@ describe("cart methods", function () {
       return done();
     });
 
-    xit("when called with a quantity, should decrease the quantity", function () {
+    it("when called with a quantity, should decrease the quantity", function () {
       sandbox.stub(Meteor.server.method_handlers, "cart/resetShipmentMethod", function () {
         check(arguments, [Match.Any]);
       });
