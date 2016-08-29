@@ -1,3 +1,6 @@
+// COMMENTED OUT FILES GENERALLY MEANS WE ARE USING
+// THE REACTION CORE VERSION OF THOSE TEMPLATES/HELPERS AS IS
+
 // import "./helpers/cart";
 // import "./methods/cart";
 

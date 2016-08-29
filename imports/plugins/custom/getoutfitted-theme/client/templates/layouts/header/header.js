@@ -1,7 +1,7 @@
 /**
  * layoutHeader events
  */
-Template.goLayoutHeader.events({
+Template.layoutHeader.events({
   "click .navbar-accounts .dropdown-toggle": function () {
     return setTimeout(function () {
       return $("#login-email").focus();
@@ -12,7 +12,7 @@ Template.goLayoutHeader.events({
   }
 });
 
-Template.goLayoutHeader.helpers({
+Template.layoutHeader.helpers({
   TagNav() {
     return ReactionUI.TagNav.Components.TagNav;
   },
