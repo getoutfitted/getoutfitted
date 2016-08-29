@@ -9,7 +9,7 @@ import "./checkout.html";
 // controlling the load order of checkout step templates
 //
 
-Template.goCartCheckout.helpers({
+Template.cartCheckout.helpers({
   cart() {
     if (Reaction.Subscriptions.Cart.ready()) {
       return Cart.findOne();
@@ -19,7 +19,7 @@ Template.goCartCheckout.helpers({
 });
 
 
-Template.goCartCheckout.onCreated(function () {
+Template.cartCheckout.onCreated(function () {
   if (Reaction.Subscriptions.Cart.ready()) {
     const cart = Cart.findOne();
     if (cart.workflow && cart.workflow.status === "new") {
@@ -34,7 +34,7 @@ Template.goCartCheckout.onCreated(function () {
  * helper isPending evaluates that this is
  * the current step, or has been processed already
  */
-Template.goCheckoutSteps.helpers({
+Template.checkoutSteps.helpers({
   isCompleted() {
     if (this.status === true) {
       return this.status;
@@ -53,7 +53,7 @@ Template.goCheckoutSteps.helpers({
 /**
  * checkoutStepBadge Helpers
  */
-Template.goCheckoutStepBadge.helpers({
+Template.checkoutStepBadge.helpers({
   checkoutStepBadgeClass: function () {
     const workflowStep = Template.instance().data;
     // let currentStatus = Cart.findOne().workflow.status;

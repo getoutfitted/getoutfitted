@@ -20,7 +20,8 @@ Reaction.registerPackage({
     template: "cartCompleted",
     // XXX: GETOUTFITTED MOD - Add new cartCompletedWorkflow for modifying cart completed template
     // XXX: Was coreCartWorkflow
-    workflow: "coreCartCompletedWorkflow"
+    // workflow: "coreCartCompletedWorkflow"
+    workflow: "coreCartWorkflow"
   }],
   layout: [{
     layout: "coreLayout",
@@ -78,22 +79,23 @@ Reaction.registerPackage({
     audience: ["guest", "anonymous"],
     priority: 5,
     position: "5"
-  }, {
-    // XXX: GETOUTFITTED MOD - Add new cartCompletedWorkflow for modifying cart completed template
-    layout: "coreLayout",
-    workflow: "coreCartCompletedWorkflow",
-    collection: "Cart",
-    theme: "default",
-    enabled: true,
-    structure: {
-      template: "cartCompleted",
-      layoutHeader: "checkoutHeader",
-      layoutFooter: "",
-      notFound: "notFound",
-      dashboardHeader: "",
-      dashboardControls: "dashboardControls",
-      dashboardHeaderControls: "",
-      adminControlsFooter: "adminControlsFooter"
-    }
   }]
+  // {
+    // XXX: GETOUTFITTED MOD - Add new cartCompletedWorkflow for modifying cart completed template
+    // layout: "coreLayout",
+    // workflow: "coreCartCompletedWorkflow",
+    // collection: "Cart",
+    // theme: "default",
+    // enabled: true,
+    // structure: {
+    //   template: "cartCompleted",
+    //   layoutHeader: "checkoutHeader",
+    //   layoutFooter: "",
+    //   notFound: "notFound",
+    //   dashboardHeader: "",
+    //   dashboardControls: "dashboardControls",
+    //   dashboardHeaderControls: "",
+    //   adminControlsFooter: "adminControlsFooter"
+    // }
+  // }
 });
