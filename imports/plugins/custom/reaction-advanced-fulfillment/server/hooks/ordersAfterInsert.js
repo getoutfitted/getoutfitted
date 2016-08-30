@@ -7,10 +7,10 @@ import  AdvancedFulfillment from '../api';
 import { Ambassador } from '/imports/plugins/custom/reaction-ambassador/server/api';
 
 Orders.after.insert(function () {
-  if (Meteor.isAppTest) {
-    Logger.warn("Skipped Hook because isAppTest is true");
-    return;
-  }
+  // if (Meteor.isAppTest) {
+  //   Logger.warn("Skipped Hook because isAppTest is true");
+  //   return;
+  // }
   const order = this.transform();
   const afPackage = Packages.findOne({
     name: 'reaction-advanced-fulfillment',
