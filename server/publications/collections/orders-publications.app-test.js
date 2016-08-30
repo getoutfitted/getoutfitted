@@ -9,6 +9,7 @@ import { getShop } from "/server/imports/fixtures/shops";
 import { Reaction } from "/server/api";
 import * as Collections from "/lib/collections";
 import Fixtures from "/server/imports/fixtures";
+import { TransitTimes } from '/imports/plugins/custom/transit-times/server';
 
 Fixtures();
 
