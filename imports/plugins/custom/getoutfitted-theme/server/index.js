@@ -5,4 +5,4 @@ import "./methods/checkout.js";
 import "./security/browserPolicy.js";
 
 // Collections & Schema
-import "../lib/termsOfService.js"
+import "../lib/termsOfService.js";
