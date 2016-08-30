@@ -1,5 +1,4 @@
 // GetOutfitted Layout
-import "./layouts/layout.html";
 import "./layouts/index.html";
 import "./layouts/notFound.html";
 import "./product";

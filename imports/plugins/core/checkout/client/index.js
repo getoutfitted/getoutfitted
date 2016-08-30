@@ -15,9 +15,9 @@ import "./templates/cartPanel/cartPanel.html";
 import "./templates/cartPanel/cartPanel.js";
 
 import "./templates/checkout/addressBook/addressBook.html";
-import "./templates/checkout/completed/completed.html";
-import "./templates/checkout/completed/completed.js";
-import "./templates/checkout/header/header.html";
+// import "./templates/checkout/completed/completed.html";
+// import "./templates/checkout/completed/completed.js";
+// import "./templates/checkout/header/header.html";
 import "./templates/checkout/login/login.html";
 import "./templates/checkout/login/login.js";
 import "./templates/checkout/payment/methods/cards.html";
@@ -25,9 +25,16 @@ import "./templates/checkout/payment/methods/cards.js";
 import "./templates/checkout/payment/payment.html";
 import "./templates/checkout/progressBar/progressBar.html";
 import "./templates/checkout/progressBar/progressBar.js";
-import "./templates/checkout/review/review.html";
-import "./templates/checkout/review/review.js";
+// import "./templates/checkout/review/review.html";
+// import "./templates/checkout/review/review.js";
 import "./templates/checkout/shipping/shipping.html";
 import "./templates/checkout/shipping/shipping.js";
-import "./templates/checkout/checkout.html";
-import "./templates/checkout/checkout.js";
+// import "./templates/checkout/checkout.html";
+// import "./templates/checkout/checkout.js";
+
+// GETOUTFITTED MOD: Replacing the following templates with versions in
+// the getoutfitted-theme module
+// * completed.html/js
+// * header.html
+// * review.html/js
+// * checkout.html/js

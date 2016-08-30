@@ -1,0 +1,70 @@
+<template name="goCartCheckout">
+  {{#if cart.items}}
+    <div class="checkout-progress">
+      <div class="container">
+        {{> goCheckoutProgressBar}}
+      </div>
+    </div>
+
+    <div class="checkout">
+      <div class="container container-lg">
+        <div class="checkout-steps">
+          <div class="checkout-steps-main">
+            {{> checkoutReviewItems}}
+            {{#each reactionTemplate workflow="coreCartWorkflow"}}
+              {{> goCheckoutSteps}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{else}}
+    {{> goEmptyCheckoutCart}}
+  {{/if}}
+</template>
+
+<template name="goCheckoutSteps">
+  {{#if isPending }}
+
+    <div class="checkout-step">
+      {{> Template.dynamic template=template}}
+    </div>
+
+  {{else}}
+
+    {{#if isCompleted}}
+      <div class="checkout-step-completed">
+        {{> Template.dynamic template=template}}
+      </div>
+    {{else}}
+      <div class="checkout-step-pending">
+        {{> goCheckoutStepPending}}
+      </div>
+    {{/if}}
+
+  {{/if}}
+</template>
+
+
+<template name="goCheckoutStepPending">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      {{> goCheckoutStepBadge}}
+    </div>
+  </div>
+</template>
+
+<template name="goEmptyCheckoutCart">
+  <div class="container-fluid-sm">
+    <div class="empty-view-message">
+      <i class="fa fa-barcode"></i>
+      <p data-i18n="cartCheckout.surprise">Woah!</p>
+      <p data-i18n="cartCheckout.emptyCheckoutCart">Your cart is empty.</p>
+    </div>
+  </div>
+</template>
+
+
+<template name="goCheckoutStepBadge">
+  <i class="checkout-step-badge {{checkoutStepBadgeClass}}">{{position}}</i>
+</template>

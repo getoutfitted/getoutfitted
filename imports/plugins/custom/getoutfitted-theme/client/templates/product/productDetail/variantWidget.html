@@ -24,7 +24,7 @@
           <div class="row options-add-to-cart">
             {{#if hasPermission "createProduct"}}
               <div class="col-xs-12">
-                {{>goVariantList}}
+                {{> variantList}}
               </div>
             {{else}}
               {{#if rentalProduct}}
@@ -32,11 +32,11 @@
                   {{>rentalLengthOptions}}
                 </div>
                 <div class="col-xs-12">
-                  {{>goVariantList}}
+                  {{> variantList}}
                 </div>
               {{else}}
                 <div class="col-xs-12">
-                  {{>goVariantList}}
+                  {{> variantList}}
                 </div>
               {{/if}}
             {{/if}}

@@ -1,0 +1,25 @@
+<template name="rentalLengthOptions">
+  <div class="col-xs-12 form-horizontal reservation-length-options">
+    {{#if twoOptions}}
+      {{#each rentalPriceBuckets}}
+        <div class="radio">
+          <label>
+            <input type="radio" name="reservationLength" id="reservationLength{{duration}}" value="{{adjustedDuration duration}}" {{isChecked index duration}}>{{duration}} {{displayTimeUnit timeUnit}} Rental
+          </label>
+        </div>
+      {{/each}}
+    {{else}}
+      {{#if moreThanTwoOptions}}
+        <div class="form-group">
+          {{#each rentalPriceBuckets}}
+            <div class="radio">
+              <label>
+                <input type="radio" name="reservationLength" id="reservationLength{{duration}}" value="{{adjustedDuration duration}}" {{isChecked @index}}>{{duration}} {{displayTimeUnit timeUnit}} Rental
+              </label>
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+    {{/if}}
+  </div>
+</template>

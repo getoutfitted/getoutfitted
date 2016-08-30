@@ -1,4 +1,4 @@
-<template name="goProductDetail">
+<template name="productDetail">
   {{#with product}}
   {{#if hasPermission "createProduct"}}
     <div class="row floating-admin-panel {{productManagementPanelVisibility}}">
@@ -94,7 +94,7 @@
       {{> largeDeviceDetails}}
     {{/with}}
     <!-- end product-container -->
-    {{! goProductSocialContainer}}
+    {{! productSocialContainer}}
     {{#if productHasEmailList}}
       {{> emailListForm}}
     {{/if}}
@@ -283,24 +283,121 @@
   <hr>
 </template>
 
-<template name="goProductSocialContainer">
+<template name="productSocialContainer">
   <div class="col-xs-10 col-xs-offset-1">
     {{!-- Social Commentary --}}
+    {{> productSocial }}
     {{#if hasPermission "createProduct"}}
-    <div class="social-media">
-      <a href="#"><i class="fa fa-facebook fa-lg"></i></a>
-      <a href="#"><i class="fa fa-twitter fa-lg"></i></a>
-      <a href="#"><i class="fa fa-pinterest fa-lg"> </i></a>
-      <a href="#"><i class="fa fa-google-plus fa-lg"></i></a>
-      <div class="social-media-inputs">
-        {{>fieldComponent field="facebookMsg" value=facebookMsg}}
-        {{>fieldComponent field="twitterMsg" value=twitterMsg}}
-        {{>fieldComponent field="pinterestMsg" value=pinterestMsg}}
-        {{>fieldComponent field="googleplusMsg" value=googleplusMsg}}
-      </div>
-    </div>
-    {{else}}
-      {{> goProductSocial }}
+      <div>{{> React SocialEditButton}}</div>
     {{/if}}
   </div>
+</template>
+
+<template name="productDetailForm">
+  <div id="product-edit-form-{{product._id}}" class="panel-group variant-edit-form">
+    <div class="panel panel-default variant-form">
+      <div class="panel-heading panel-heading-flex">
+        <span class="panel-title">{{productTitle}}</span>
+      </div>
+      <div class="panel-body">
+        {{> button
+          className="btn btn-default"
+          tooltip="Publish"
+          i18nKeyTooltip="productDetailEdit.publish"
+          toggle=true
+          toggleOn=product.isVisible
+          icon="eye-slash"
+          onIcon="eye"
+          data-event-action="publishProduct"
+        }}
+
+        {{> button
+          icon="files-o"
+          className="btn btn-default"
+          tooltip="Duplicate Product"
+          i18nKeyTooltip="productDetailEdit.duplicateProduct"
+          data-original-title=(i18n "productDetailEdit.duplicateProduct" "Duplicate Product")
+          data-event-action="cloneProduct"
+        }}
+
+        {{#if hasAdminAccess}}
+          {{> button
+            icon="trash-o"
+            className="btn btn-danger"
+            tooltip="Delete Product"
+            i18nKeyTooltip="productDetailEdit.deleteProduct"
+            data-original-title=(i18n "productDetailEdit.deleteProduct" "Delete Product")
+            data-event-action="deleteProduct"
+          }}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="productDetailSocialForm">
+  <div id="product-edit-form-{{product._id}}" class="panel-group variant-edit-form">
+    <div class="panel panel-default variant-form">
+      <div class="panel-heading panel-heading-flex">
+        <label class="panel-title">
+          <i class="fa fa-facebook"></i>
+          {{i18n "productDetailEdit.facebookMsg" "Facebook Message"}}
+        </label>
+      </div>
+      <div class="panel-body">
+        {{> productDetailEdit field="facebookMsg" value=product.facebookMsg type="textarea"}}
+      </div>
+    </div>
+
+    <div class="panel panel-default variant-form">
+      <div class="panel-heading panel-heading-flex">
+        <label class="panel-title">
+          <i class="fa fa-twitter"></i>
+          {{i18n "productDetailEdit.twitterMsg" "Twitter Message"}}
+        </label>
+      </div>
+      <div class="panel-body">
+        {{> productDetailEdit field="twitterMsg" value=product.twitterMsg type="textarea"}}
+      </div>
+    </div>
+
+    <div class="panel panel-default variant-form">
+      <div class="panel-heading panel-heading-flex">
+        <label class="panel-title">
+          <i class="fa fa-pinterest"></i>
+          {{i18n "productDetailEdit.pinterestMsg" "Pinterest Message"}}
+        </label>
+      </div>
+      <div class="panel-body">
+        {{> productDetailEdit field="pinterestMsg" value=product.pinterestMsg type="textarea"}}
+      </div>
+    </div>
+
+    <div class="panel panel-default variant-form">
+      <div class="panel-heading panel-heading-flex">
+        <label class="panel-title">
+          <i class="fa fa-google-plus"></i>
+          {{i18n "productDetailEdit.googleplusMsg" "Google Plus Message"}}
+        </label>
+      </div>
+      <div class="panel-body">
+        {{> productDetailEdit field="googleplusMsg" value=product.googleplusMsg type="textarea"}}
+      </div>
+    </div>
+  </div>
+
+</template>
+
+<template name="productDetailDashboardControls">
+  {{> button
+    className="btn btn-default"
+    tooltip="Publish"
+    tooltipPosition="left middle"
+    i18nKeyTooltip="productDetailEdit.publish"
+    toggle=true
+    toggleOn=product.isVisible
+    icon="eye-slash"
+    onIcon="eye"
+    data-event-action="publishProduct"
+  }}
 </template>

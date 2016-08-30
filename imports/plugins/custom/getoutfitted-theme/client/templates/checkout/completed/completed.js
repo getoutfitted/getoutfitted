@@ -9,7 +9,7 @@ import { Template } from "meteor/templating";
  *
  * if order status = new translate submitted message
  */
-Template.goCartCompleted.helpers({
+Template.cartCompleted.helpers({
   orderCompleted: function () {
     const id =  Reaction.Router.getQueryParam("_id");
     if (id) {
@@ -48,7 +48,7 @@ Template.goCartCompleted.helpers({
  *
  * adds email to order
  */
-Template.goCartCompleted.events({
+Template.cartCompleted.events({
   "click #update-order": function () {
     let templateInstance = Template.instance();
     const email = templateInstance.find("input[name=email]").value;
@@ -64,7 +64,7 @@ Template.goCartCompleted.events({
  * when the order is completed we need to destroy and recreate
  * the subscription to get the new cart
  */
-Template.goCartCompleted.onCreated(function () {
+Template.cartCompleted.onCreated(function () {
   let sessionId = Session.get("sessionId");
   let userId = Meteor.userId();
   let cartSub = Reaction.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
@@ -73,7 +73,7 @@ Template.goCartCompleted.onCreated(function () {
 });
 
 
-Template.goCartCompleted.onRendered(function () {
+Template.cartCompleted.onRendered(function () {
   // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
   //   "step": 6,
   //   "Step Name": "Payment Information"

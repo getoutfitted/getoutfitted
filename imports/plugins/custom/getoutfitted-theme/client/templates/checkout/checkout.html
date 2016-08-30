@@ -1,8 +1,8 @@
-<template name="goCartCheckout">
+<template name="cartCheckout">
   {{#if cart.items}}
     <div class="checkout-progress">
       <div class="container">
-        {{> goCheckoutProgressBar}}
+        {{> checkoutProgressBar}}
       </div>
     </div>
 
@@ -12,18 +12,18 @@
           <div class="checkout-steps-main">
             {{> checkoutReviewItems}}
             {{#each reactionTemplate workflow="coreCartWorkflow"}}
-              {{> goCheckoutSteps}}
+              {{> checkoutSteps}}
             {{/each}}
           </div>
         </div>
       </div>
     </div>
   {{else}}
-    {{> goEmptyCheckoutCart}}
+    {{> emptyCheckoutCart}}
   {{/if}}
 </template>
 
-<template name="goCheckoutSteps">
+<template name="checkoutSteps">
   {{#if isPending }}
 
     <div class="checkout-step">
@@ -38,7 +38,7 @@
       </div>
     {{else}}
       <div class="checkout-step-pending">
-        {{> goCheckoutStepPending}}
+        {{> checkoutStepPending}}
       </div>
     {{/if}}
 
@@ -46,15 +46,15 @@
 </template>
 
 
-<template name="goCheckoutStepPending">
+<template name="checkoutStepPending">
   <div class="panel panel-default">
     <div class="panel-heading">
-      {{> goCheckoutStepBadge}}
+      {{> checkoutStepBadge}}
     </div>
   </div>
 </template>
 
-<template name="goEmptyCheckoutCart">
+<template name="emptyCheckoutCart">
   <div class="container-fluid-sm">
     <div class="empty-view-message">
       <i class="fa fa-barcode"></i>
@@ -65,6 +65,6 @@
 </template>
 
 
-<template name="goCheckoutStepBadge">
+<template name="checkoutStepBadge">
   <i class="checkout-step-badge {{checkoutStepBadgeClass}}">{{position}}</i>
 </template>

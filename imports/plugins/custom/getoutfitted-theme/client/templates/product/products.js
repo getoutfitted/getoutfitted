@@ -38,7 +38,7 @@ function loadMoreProducts() {
 }
 
 
-Template.goProducts.onCreated(function () {
+Template.products.onCreated(function () {
   this.products = ReactiveVar();
   this.state = new ReactiveDict();
   this.state.setDefault({
@@ -99,13 +99,13 @@ Template.goProducts.onCreated(function () {
   });
 });
 
-Template.goProducts.onRendered(() => {
+Template.products.onRendered(() => {
   // run the above func every time the user scrolls
   $("#reactionAppContainer").on("scroll", loadMoreProducts);
   $(window).on("scroll", loadMoreProducts);
 });
 
-Template.goProducts.helpers({
+Template.products.helpers({
   tag: function () {
     const id = Reaction.Router.getParam("_tag");
     return {
@@ -147,7 +147,7 @@ Template.goProducts.helpers({
  * products events
  */
 
-Template.goProducts.events({
+Template.products.events({
   "click #productListView": function () {
     $(".product-grid").hide();
     return $(".product-list").show();
