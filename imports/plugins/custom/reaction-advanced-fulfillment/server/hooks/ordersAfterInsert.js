@@ -4,8 +4,13 @@ import { Orders, Packages } from '/lib/collections';
 import { Logger, Reaction } from '/server/api';
 import { TransitTimes } from '/imports/plugins/custom/transit-times/server';
 import  AdvancedFulfillment from '../api';
+import { Ambassador } from '/imports/plugins/custom/reaction-ambassador/server/api';
 
 Orders.after.insert(function () {
+  // if (Meteor.isAppTest) {
+  //   Logger.warn("Skipped Hook because isAppTest is true");
+  //   return;
+  // }
   const order = this.transform();
   const afPackage = Packages.findOne({
     name: 'reaction-advanced-fulfillment',
@@ -40,6 +45,17 @@ Orders.after.insert(function () {
       // Log CS Issue and Report to Dev Team
     }
   }
+  if (!order.email) {
+    // If no email, try to find past orders with emails
+    const pastOrder = Orders.findOne({
+      userId: order.userId,
+      email: {$exists: true}
+    });
+    if (pastOrder) {
+      Logger.warn('No Email was passed, so found email on past order from UserId');
+      af.email = pastOrder.email;
+    }
+  }
   // TODO Check this is now on cart!, So shouldn't need start and end time
   advancedFulfillment.arriveBy = order.startTime || new Date();
   advancedFulfillment.shipReturnBy = order.endTime || new Date();
@@ -63,5 +79,8 @@ Orders.after.insert(function () {
 
   if (afPackage.settings.slack && afPackage.settings.slackChannel) {
     Meteor.call('advancedFulfullment/slackMessage', this._id, afPackage.settings.slackChannel);
+  }
+  if (afPackage.settings.ambassador) {
+    Ambassador(this._id);
   }
 });
