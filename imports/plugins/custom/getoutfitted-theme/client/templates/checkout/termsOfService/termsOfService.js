@@ -26,7 +26,6 @@ Template.checkoutPayment.helpers({
   customerHasAgreedToTermsOfService: function () {
     const cart = Cart.findOne({userId: Meteor.userId()})
     if (cart) {
-      console.log("cart", cart);
       return cart.customerAgreedToTermsOfService;
     }
     return false;

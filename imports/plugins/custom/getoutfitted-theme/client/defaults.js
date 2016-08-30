@@ -1,14 +1,10 @@
 import { Session } from "meteor/session";
 
-// DEFAULT_WORKFLOW = "coreWorkflow";
-
-Session.set("DEFAULT_LAYOUT", "getoutfittedLayout");
-
 Session.set("INDEX_OPTIONS", {
   template: "getoutfittedIndex",
-  layoutHeader: "goLayoutHeader",
-  layoutFooter: "goLayoutFooter",
-  notFound: "goNotFound",
+  layoutHeader: "layoutHeader",
+  layoutFooter: "layoutFooter",
+  notFound: "notFound",
   dashboardControls: "dashboardControls",
   adminControlsFooter: "adminControlsFooter"
 });

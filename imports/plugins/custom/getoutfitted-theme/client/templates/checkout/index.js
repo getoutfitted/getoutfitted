@@ -1,3 +1,6 @@
+// COMMENTED OUT FILES GENERALLY MEANS WE ARE USING
+// THE REACTION CORE VERSION OF THOSE TEMPLATES/HELPERS AS IS
+
 // import "./helpers/cart";
 // import "./methods/cart";
 
@@ -14,7 +17,7 @@
 // import "./templates/cartPanel/cartPanel.html";
 // import "./templates/cartPanel/cartPanel.js";
 
-import "./addressBook/addressBook.html";
+// import "./addressBook/addressBook.html";
 import "./addressBook/addressBook.js";
 import "./checkoutReviewItems/checkoutReviewItems.html";
 import "./checkoutReviewItems/checkoutReviewItems.js";
@@ -28,8 +31,8 @@ import "./login/login.js";
 // import "./payment/methods/cards.html";
 // import "./payment/methods/cards.js";
 // import "./payment/payment.html";
-import "./progressBar/progressBar.html";
-import "./progressBar/progressBar.js";
+// import "./progressBar/progressBar.html";
+// import "./progressBar/progressBar.js";
 import "./review/review.html";
 import "./review/review.js";
 import "./termsOfService/termsOfService.html";

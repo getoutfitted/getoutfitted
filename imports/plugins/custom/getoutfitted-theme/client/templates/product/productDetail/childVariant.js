@@ -6,7 +6,7 @@ import { Icon } from "/imports/plugins/core/ui/client/components";
 /**
  * goChildVariantForm onRendered
  */
-Template.onRendered(function () {
+Template.goChildVariantForm.onRendered(function () {
   this.autorun(() => {
     const selectedVariantId = Reaction.Router.getParam("variantId");
 

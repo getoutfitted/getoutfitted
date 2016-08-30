@@ -1,0 +1,14 @@
+<template name="gridContent">
+  <div class="grid-content">
+    {{!-- data-event-category="grid"
+        data-event-action="product-click"
+        data-event-label="grid product click"
+        data-event-value="{{_id}}" --}}
+    <a href="{{pathFor 'product' handle=handle}}">
+      <div class="overlay">
+        <div class="overlay-title">{{vendor}} {{title}}</div>
+        <div class="currency-symbol">{{formatPrice displayPrice}}</div>
+      </div>
+    </a>
+  </div>
+</template>

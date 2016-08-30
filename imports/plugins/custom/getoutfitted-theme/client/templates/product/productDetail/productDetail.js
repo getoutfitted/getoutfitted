@@ -1,18 +1,15 @@
-import { $ } from "meteor/jquery";
+import _ from "lodash";
 import { ReactiveDict } from "meteor/reactive-dict";
+import { $ } from "meteor/jquery";
 import { Reaction, i18next, Logger } from "/client/api";
 import { ReactionProduct } from "/lib/api";
 import { Cart, Tags } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
-import _ from "lodash";
+import { EditButton } from "/imports/plugins/core/ui/client/components";
 
-// import { ReactionAnalytics } from "some/analtyics/module";
-// load modules
-import "jquery-ui";
-
-Template.goProductDetail.onCreated(function () {
+Template.productDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
   this.state = new ReactiveDict();
   this.state.setDefault({
@@ -63,7 +60,7 @@ Template.goProductDetail.onCreated(function () {
  * see helper/product.js for
  * product data source
  */
-Template.goProductDetail.helpers({
+Template.productDetail.helpers({
   tagListProps() {
     const instance = Template.instance();
     const product = instance.state.get("product") || {};
@@ -144,15 +141,47 @@ Template.goProductDetail.helpers({
       }
     };
   },
+
+  showTagTitle() {
+    const instance = Template.instance();
+    const product = instance.state.get("product") || {};
+
+    if (Reaction.hasPermission("createProduct")) {
+      return true;
+    }
+
+    if (_.isArray(product.hashtags) && product.hashtags.length) {
+      return true;
+    }
+
+    return false;
+  },
+
+  showDetailTitle() {
+    const instance = Template.instance();
+    const product = instance.state.get("product") || {};
+
+    if (Reaction.hasPermission("createProduct")) {
+      return true;
+    }
+
+    if (_.isArray(product.metafields) && product.metafields.length) {
+      return true;
+    }
+
+    return false;
+  },
   product: function () {
     const instance = Template.instance();
     if (instance.subscriptionsReady()) {
       return ReactionProduct.setProduct(instance.productId(),
         instance.variantId());
     }
+
+    return null;
   },
   tags: function () {
-    let product = ReactionProduct.selectedProduct();
+    const product = ReactionProduct.selectedProduct();
     if (product) {
       if (product.hashtags) {
         return _.map(product.hashtags, function (id) {
@@ -160,18 +189,14 @@ Template.goProductDetail.helpers({
         });
       }
     }
+
+    return null;
   },
   tagsComponent: function () {
     if (Reaction.hasPermission("createProduct")) {
-      return Template.goProductTagInputForm;
+      return Template.productTagInputForm;
     }
-    return Template.goProductDetailTags;
-  },
-  metaComponent: function () {
-    if (Reaction.hasPermission("createProduct")) {
-      return Template.productMetaFieldForm;
-    }
-    return Template.productMetaField;
+    return Template.productDetailTags;
   },
   actualPrice: function () {
     const current = ReactionProduct.selectedVariant();
@@ -184,12 +209,20 @@ Template.goProductDetail.helpers({
       // otherwise we want to show child variants price range
       return ReactionProduct.getVariantPriceRange();
     }
+
+    return null;
   },
   fieldComponent: function () {
     if (Reaction.hasPermission("createProduct")) {
-      return Template.goProductDetailEdit;
+      return Template.productDetailEdit;
     }
-    return Template.goProductDetailField;
+    return Template.productDetailField;
+  },
+  metaComponent: function () {
+    if (Reaction.hasPermission("createProduct")) {
+      return Template.productMetaFieldForm;
+    }
+    return Template.productMetaField;
   },
   goFeatureComponent: function () {
     this.featureKey = "feature";
@@ -235,17 +268,11 @@ Template.goProductDetail.helpers({
  * productDetail events
  */
 
-Template.goProductDetail.events({
-  "click #toggleAdminPanelVisibilityOff": function () {
-    Session.set("productManagementPanelVisibility", false);
-  },
-  "click #toggleAdminPanelVisibilityOn": function () {
-    Session.set("productManagementPanelVisibility", true);
-  },
+Template.productDetail.events({
   "click #price": function () {
     let formName;
     if (Reaction.hasPermission("createProduct")) {
-      let variant = ReactionProduct.selectedVariant();
+      const variant = ReactionProduct.selectedVariant();
       if (!variant) {
         return;
       }
@@ -266,12 +293,11 @@ Template.goProductDetail.events({
     return event.stopPropagation();
   },
   "change #add-to-cart-quantity": function (event, template) {
-    let currentVariant;
-    let qtyField;
-    let quantity;
     event.preventDefault();
     event.stopPropagation();
-    currentVariant = ReactionProduct.selectedVariant();
+    let qtyField;
+    let quantity;
+    const currentVariant = ReactionProduct.selectedVariant();
     if (currentVariant) {
       qtyField = template.$('input[name="addToCartQty"]');
       quantity = qtyField.val();
@@ -342,9 +368,11 @@ Template.goProductDetail.events({
           Meteor.call("cart/addToCart", productId, currentVariant._id, quantity,
             function (error) {
               if (error) {
-                ReactionCore.Log.error("Failed to add to cart.", error);
+                Logger.error("Failed to add to cart.", error);
                 return error;
               }
+
+              return true;
               // TODO: Re-add analytics tracking
               // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
               // trackReadyProduct.quantity = quantity;
@@ -358,25 +386,43 @@ Template.goProductDetail.events({
 
         template.$(".variant-select-option").removeClass("active");
         // XXX: GETOUTFITTED MOD - Remove set current variant to null
+        // ReactionProduct.setCurrentVariant(null);
         qtyField.val(1);
         // scroll to top on cart add
         $("html,body").animate({
           scrollTop: 0
         }, 0);
         // slide out label
-        let addToCartText = i18next.t("productDetail.addedToCart");
-        let addToCartTitle = currentProduct.title || "";
-        if (currentVariant && currentVariant.size && currentVariant.color) {
-          addToCartTitle = addToCartTitle + ` ${currentVariant.size} ${currentVariant.color}`;
-        }
-
+        const addToCartText = i18next.t("productDetail.addedToCart");
+        const addToCartTitle = currentVariant.title || "";
         $(".cart-alert-text").text(`${quantity} ${addToCartTitle} ${addToCartText}`);
-        return $(".cart-alert").toggle("slide", {
-          direction: i18next.t("languageDirection") === "rtl" ? "left" : "right",
-          width: currentVariant.title.length + 50 + "px"
-        }, 600).delay(4000).toggle("slide", {
-          direction: i18next.t("languageDirection") === "rtl" ? "left" : "right"
-        });
+
+        // Grab and cache the width of the alert to be used in animation
+        const alertWidth = $(".cart-alert").width();
+        const direction = i18next.t("languageDirection") === "rtl" ? "left" : "right";
+        const oppositeDirection = i18next.t("languageDirection") === "rtl" ? "right" : "left";
+
+        // Animate
+        return $(".cart-alert")
+          .show()
+          .css({
+            [oppositeDirection]: "auto",
+            [direction]: -alertWidth
+          })
+          .animate({
+            [oppositeDirection]: "auto",
+            [direction]: 0
+          }, 600)
+          .delay(4000)
+          .animate({
+            [oppositeDirection]: "auto",
+            [direction]: -alertWidth
+          }, {
+            duration: 600,
+            complete() {
+              $(".cart-alert").hide();
+            }
+          });
       }
     } else {
       Alerts.inline("Select an option before adding to cart", "warning", {
@@ -385,6 +431,8 @@ Template.goProductDetail.events({
         autoHide: 8000
       });
     }
+
+    return null;
   },
   "click .toggle-product-isVisible-link": function (event, template) {
     let errorMsg = "";
@@ -422,39 +470,22 @@ Template.goProductDetail.events({
             i18nKey: "productDetail.errorMsg"
           });
         }
+
+        return true;
       });
     }
+  },
+  "click [data-event-action=cloneProduct]": function () {
+    ReactionProduct.cloneProduct(this);
   },
   "click .delete-product-link": function () {
     ReactionProduct.maybeDeleteProduct(this);
   },
-  "click .fa-facebook": function () {
-    if (ReactionCore.hasPermission("createProduct")) {
-      $(".facebookMsg-edit").fadeIn();
-      return $(".facebookMsg-edit-input").focus();
-    }
+  "click #toggleAdminPanelVisibilityOff": function () {
+    Session.set("productManagementPanelVisibility", false);
   },
-  "click .fa-twitter": function () {
-    if (ReactionCore.hasPermission("createProduct")) {
-      $(".twitterMsg-edit").fadeIn();
-      return $(".twitterMsg-edit-input").focus();
-    }
-  },
-  "click .fa-pinterest": function () {
-    if (ReactionCore.hasPermission("createProduct")) {
-      $(".pinterestMsg-edit").fadeIn();
-      return $(".pinterestMsg-edit-input").focus();
-    }
-  },
-  "click .fa-google-plus": function () {
-    if (ReactionCore.hasPermission("createProduct")) {
-      $(".googleplusMsg-edit").fadeIn();
-      return $(".googleplusMsg-edit-input").focus();
-    }
-  },
-  "focusout .facebookMsg-edit-input,.twitterMsg-edit-input,.pinterestMsg-edit-input,.googleplusMsg-edit": function () {
-    Session.set("editing-" + this.field, false);
-    return $(".social-media-inputs > *").hide();
+  "click #toggleAdminPanelVisibilityOn": function () {
+    Session.set("productManagementPanelVisibility", true);
   }
 });
 
@@ -468,30 +499,174 @@ Template.goProductFeatures.helpers({
   }
 });
 
-// Template.emailListForm.events({
-//   "submit .subscribeToEmailList": function (event) {
-//     event.preventDefault();
-//     const email = event.target.subscribeEmail.value;
-//     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-//     if (emailRegex.test(email)) {
-//       const productId = ReactionProduct.selectedProductId();
-//       Klaviyo.addUserToList(productId, email);
-//       event.target.subscribeEmail.value = "";
-//       Alerts.removeSeen();
-//       Alerts.inline(`${email} was successfully subscribed.`,
-//         "success",
-//         {
-//           autoHide: 3000,
-//           placement: "emailSubscriptions"
-//         });
-//     } else {
-//       Alerts.removeSeen();
-//       Alerts.inline(`${email} is not a valid email. Please enter a valid email to subscribe.`,
-//         "danger",
-//         {
-//           autoHide: 3000,
-//           placement: "emailSubscriptions"
-//       });
-//     }
-//   }
-// });
+Template.productDetailForm.onCreated(function () {
+  this.state = new ReactiveDict();
+
+  this.autorun(() => {
+    this.state.set({
+      product: ReactionProduct.selectedProduct()
+    });
+
+    const handle = Reaction.Router.getParam("handle");
+
+    if (!handle) {
+      Reaction.clearActionView();
+    }
+  });
+});
+
+Template.productDetailForm.helpers({
+  product() {
+    return Template.instance().state.get("product");
+  },
+  productTitle() {
+    const product = Template.instance().state.get("product") || {};
+    return product.title || i18next.t("productDetailEdit.untitledProduct", "Untitled Product");
+  }
+});
+
+Template.productDetailForm.events({
+  "click [data-event-action=publishProduct]": function (event, instance) {
+    let errorMsg = "";
+    const self = instance.state.get("product");
+    if (!self.title) {
+      errorMsg += `${i18next.t("error.isRequired", { field: i18next.t("productDetailEdit.title") })} `;
+      instance.$(".title-edit-input").focus();
+    }
+    const variants = ReactionProduct.getVariants(self._id);
+    variants.forEach((variant, index) => {
+      if (!variant.title) {
+        errorMsg +=
+          `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.title"), number: index + 1 })} `;
+      }
+      // if top variant has children, it is not necessary to check its price
+      if (variant.ancestors.length === 1 && !ReactionProduct.checkChildVariants(variant._id) ||
+        variant.ancestors.length !== 1) {
+        if (!variant.price) {
+          errorMsg +=
+            `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.price"), number: index + 1 })} `;
+        }
+      }
+    });
+    if (errorMsg.length > 0) {
+      Alerts.inline(errorMsg, "warning", {
+        placement: "productManagement",
+        i18nKey: "productDetail.errorMsg"
+      });
+    } else {
+      Meteor.call("products/publishProduct", self._id, function (error) {
+        if (error) {
+          return Alerts.inline(error.reason, "error", {
+            placement: "productManagement",
+            id: self._id,
+            i18nKey: "productDetail.errorMsg"
+          });
+        }
+
+        return true;
+      });
+    }
+  },
+  "click [data-event-action=deleteProduct]": function (event, instance) {
+    const product = instance.state.get("product");
+    ReactionProduct.maybeDeleteProduct(product);
+  },
+  "click [data-event-action=cloneProduct]": function (event, instance) {
+    const product = instance.state.get("product");
+    ReactionProduct.cloneProduct(product);
+  }
+});
+
+Template.productDetailSocialForm.onCreated(function () {
+  this.state = new ReactiveDict();
+
+  this.autorun(() => {
+    this.state.set({
+      product: ReactionProduct.selectedProduct()
+    });
+  });
+});
+
+Template.productDetailSocialForm.helpers({
+  product() {
+    return Template.instance().state.get("product");
+  }
+});
+
+Template.productDetailSocialForm.events({
+  "blur [name=twitterMsg]"(event) {
+    const rawMessage = event.currentTarget.value || "";
+    const message = rawMessage.trim();
+
+    if (message.length > 140) {
+      Alerts.toast("Message is over 140 characters", "warning");
+    }
+  }
+});
+
+Template.productDetailDashboardControls.onCreated(function () {
+  this.state = new ReactiveDict();
+
+  this.autorun(() => {
+    this.state.set({
+      product: ReactionProduct.selectedProduct()
+    });
+  });
+});
+
+/**
+ * productDetailDashboardControls helpers
+ */
+Template.productDetailDashboardControls.helpers({
+  product() {
+    return Template.instance().state.get("product");
+  }
+});
+
+/**
+ * productDetailDashboardControls events
+ */
+Template.productDetailDashboardControls.events({
+  "click [data-event-action=publishProduct]": function (event, template) {
+    let errorMsg = "";
+    const instance = Template.instance();
+    const self = instance.state.get("product") || {};
+    if (!self.title) {
+      errorMsg += `${i18next.t("error.isRequired", { field: i18next.t("productDetailEdit.title") })} `;
+      template.$(".title-edit-input").focus();
+    }
+    const variants = ReactionProduct.getVariants(self._id);
+    variants.forEach((variant, index) => {
+      if (!variant.title) {
+        errorMsg +=
+          `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.title"), number: index + 1 })} `;
+      }
+      // if top variant has children, it is not necessary to check its price
+      if (variant.ancestors.length === 1 && !ReactionProduct.checkChildVariants(variant._id) ||
+        variant.ancestors.length !== 1) {
+        if (!variant.price) {
+          errorMsg +=
+            `${i18next.t("error.variantFieldIsRequired", { field: i18next.t("productVariant.price"), number: index + 1 })} `;
+        }
+      }
+    });
+    if (errorMsg.length > 0) {
+      Alerts.inline(errorMsg, "warning", {
+        placement: "productManagement",
+        i18nKey: "productDetail.errorMsg"
+      });
+    } else {
+      Meteor.call("products/publishProduct", self._id, function (error) {
+        if (error) {
+          return Alerts.inline(error.reason, "error", {
+            placement: "productManagement",
+            id: self._id,
+            i18nKey: "productDetail.errorMsg"
+          });
+        }
+
+        return true;
+      });
+    }
+  }
+});

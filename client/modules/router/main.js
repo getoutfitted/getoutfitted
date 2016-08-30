@@ -130,12 +130,12 @@ export function ReactionLayout(options = {}) {
     if (Reaction.Subscriptions.Shops.ready()) {
       const shop = Shops.findOne(Reaction.getShopId());
       if (shop) {
-        let newLayout = shop.layout.find((x) => selectLayout(x, layout, workflow));
+        const newLayout = shop.layout.find((x) => selectLayout(x, layout, workflow));
 
         // XXX: GETOUTFITTED MOD: Find default layout if we can't find layout for custom layout.
-        if (!newLayout) {
-          newLayout = shop.layout.find((x) => selectDefaultLayout(x, layout, workflow));
-        }
+        // if (!newLayout) {
+        //   newLayout = shop.layout.find((x) => selectDefaultLayout(x, layout, workflow));
+        // }
         // oops this layout wasn't found. render notFound
         if (!newLayout) {
           BlazeLayout.render("notFound");
@@ -144,7 +144,8 @@ export function ReactionLayout(options = {}) {
           // XXX: MOD Breaks use of INDEX_OPTIONS to define index template
           // XXX: Currently using coreWorkflow to define index. This has other consequences including
           // XXX: breaking error pages by rendering the index page.
-          const layoutToRender = Object.assign({}, options, unauthorized, newLayout.structure);
+          // const layoutToRender = Object.assign({}, options, unauthorized, newLayout.structure);
+          const layoutToRender = Object.assign({}, newLayout.structure, options, unauthorized);
           BlazeLayout.render(layout, layoutToRender);
         }
       }

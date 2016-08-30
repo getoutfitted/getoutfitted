@@ -334,8 +334,10 @@ Meteor.methods({
     Logger.info(`orders/sendNotification status: ${order.workflow.status}`);
 
     // handle missing root shop email
-    if (!shop.emails[0].address) {
-      shop.emails[0].address = "no-reply@reactioncommerce.com";
+    // XXX: GETOUTFITTED MOD: check to make sure shop.emails exists
+    // and change default email to orders@getoutfitted.com
+    if (!shop.emails || !shop.emails[0].address) {
+      shop.emails[0].address = "orders@getoutfitted.com";
       Logger.warn("No shop email configured. Using no-reply to send mail");
     }
 
