@@ -1,0 +1,105 @@
+<template name='productBundleEdit'>
+  {{#if Template.subscriptionsReady}}
+    <h3><a href="{{pathFor 'productBundles'}}"><i class="fa fa-chevron-left" aria-hidden="true"></i>Back</a></h3>
+    <div class='container text-center'>
+      <h1>Bundled Products Edit/Add Products to Bundle</h1>
+      {{#with bundleVariant}}
+        <div class='row'>
+          <h2>{{title}}</h2>
+          <p>${{price}}</p>
+        </div>
+        {{#if productsAddedToBundle}}
+          <div class='row'>
+            <h2>Products In this Bundle</h2>
+          </div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Product</th>
+                <th>Variants</th>
+                <th>Variant Label</th>
+                <th>Product Label</th>
+              </tr>
+            </thead>
+            <tbody class='text-left'>
+            {{#each productsInBundle}}
+              <tr>
+                <td>
+                  <button data-product-id='{{productId}}' data-index={{@index}} class='deleteProduct btn btn-default'>Delete Product</button>
+                </td>
+                <td>{{details productId 'title'}}</td>
+                <td>
+                  {{#each variant in variantIds}}
+                    <p>{{details variant.variantId 'size'}} - {{details variant.variantId 'title'}}</p>
+                  {{/each}}
+                </td>
+                <td>
+                  {{#each variant in variantIds}}
+                    <p>{{variant.label}}</p>
+                  {{/each}}
+                </td>
+                <td>{{label}}</td>
+              </tr>
+            {{/each}}
+
+            </tbody>
+          </table>
+        {{/if}}
+        <div class='row'>
+          {{> addProductsToBundle}}
+        </div>
+        <br>
+        <br>
+        <h3>Remove This Bundle Permanently</h3>
+        <div class='row'>
+          <button  class='btn btn-block btn-danger deleteBundle'>Delete This Bundle</button>
+        </div>
+      {{/with}}
+    </div>
+  {{/if}}
+</template>
+
+<template name='addProductsToBundle'>
+  <h2>Add Products to be part of Bundle {{title}}</h2>
+    <div class='row'>
+      <form id='addProductToBundleForm' data-bundle-id={{_id}}>
+        <div class='row'>
+          <label for='selectProduct'>Select a Product</label>
+          <select name='selectedProduct' id='selectProduct' class="form-control">
+            <option disabled>Select A Product</option>
+            {{#each allTopProducts}}
+              <option value='{{_id}}'>{{gender}} - {{vendor}} - {{title}} - {{productType}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class='row'>
+          {{#if productSelected}}
+            <h4>Check Variants that you want enabled in Bundle</h4>
+            <div class='row'>
+            {{#each allVariantsForSelectedProduct}}
+              <div class='col-sm-2 well'>
+                <div class="checkbox">
+                  <label>
+                    <input value='{{_id}}' type="checkbox">{{size}}-{{color}}-{{sku}}
+                  </label>
+                </div>
+                <label for='optionLabel'>Select Option Label</label>
+                <input  name='{{_id}}' value='{{size}}-{{color}}' type="text" class="form-control" id="optionLabel" placeholder="Ex: {{size}}-{{color}}">
+              </div>
+            {{/each}}
+            </div>
+            <div class='row'>
+              <div class="form-group">
+                <label for="label">Human Readable Label for Product *Optional</label>
+                <input name='itemLabel' type="text" class="form-control" id="label" placeholder="Ex: Example Product">
+              </div>
+            </div>
+            <div class='row'>
+              <button class='btn btn-default'>Add Product with Variants to Bundle</button>
+            </div>
+          {{/if}}
+        </div>
+      </form>
+    </div>
+</template>

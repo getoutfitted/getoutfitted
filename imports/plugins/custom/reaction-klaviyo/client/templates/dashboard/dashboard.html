@@ -1,0 +1,123 @@
+<template name='klaviyoDashboard'>
+  <div class='container text-center'>
+    <div class='row '>
+      <h1>Klaviyo Usage</h1>
+    </div>
+    <div class='row'>
+      <h2>Setup</h2>
+      <h4 class='lead'>Login to Klaviyo and copy your API keys. Enter your Public and Private API key for Klaviyo in the settings.</h4>
+      <div class='row'>
+        <div class='col-sm-6 col-sm-offset-3'>
+          {{> klaviyoSettings}}
+        </div>
+      </div>
+      <p>Don't have Klaviyo? <a href='https://www.klaviyo.com/' target='_blank'>Sign up here</a></p>
+    </div>
+    <div class='row'>
+      <h4><a href="https://www.klaviyo.com/docs">Check out the Klaviyo API Docs</a></h4>
+      <p>This package has built in functionality for Klayivo's <strong>Tracking API</strong>, <strong>Identiy API</strong> and <strong>List API</strong>.</p>
+      <p>This package creates an exported Klaviyo Object which you can pass your customized information required to create a Klaviyo Event or Person.</p>
+    </div>
+    <div class='row'>
+      <h4>Required Fields</h4>
+      <p>Klaviyo requires that each object that gets passed must have <strong><em>$email</em></strong> or <strong><em>$id</em></strong>. For Events API, these fields must be on <strong><em>customer_properties</em></strong> for People API it must be <strong><em>properties</em></strong></p>
+    </div>
+    <div  class='row'>
+      <h2>Usage</h2>
+      <h4 class='lead'>The Reaction Klaviyo package exports a Klaviyo Module which has two methods <strong>Klaviyo.trackEvent</strong> and <strong>Klaviyo.trackPerson</strong>, these methods accect an object that then hits the Klaviyo's Events or People API.</h4>
+      <h4>Klaviyo.trackEvent()</h4>
+      <p>Example JSON from Docs (minus the API Key) but you can pass whatever information you want with a few stipulations.</p>
+      <div class='well'>
+        <code>let data = {
+            "event" : "Purchased Items",
+            "customer_properties" : {
+              "$email" : "george.washington@example.com"
+            },
+            "properties" : {
+              "Total Price": 24.99,
+              "Items Purchased": ["Cheerios", "Milk", "Cereal Bowls"]
+            },
+            "time" : 1459956503
+            }</code>
+      </div>
+      <p>Line of Code you need to insert:</p>
+      <div class='well'>
+        <h4><code>Klaviyo.trackEvent(data);</code></h4>
+      </div>
+    </div>
+    <div  class='row'>
+      <h2>Implement</h2>
+      <h4 class='lead'>Say you wanted to create an action every time a user checked out, that started an email flow.</h4>
+      <p>Create a custom Object with the fields you want</p>
+      <div class='well'>
+        <code>let data = {
+            "event" : "User Checked Out",
+            "customer_properties" : {
+              "$email" : order.email
+            },
+            "properties" : {
+              "Total Price": order.price,
+              "Items Purchased": order.items
+            },
+            "time" : new Date()
+            }</code>
+      </div>
+      <p>Two ways to implement - add <code>Klaviyo.trackEvent(data)</code> to either:</p>
+        <p>1) Use a <a href='https://docs.reactioncommerce.com/reaction-docs/master/method-hooks'>Reaction Method Hook</a> to call Klaviyo Methods</p>
+        <p>2) Insert directly into your copy of the code.</p>
+    </div>
+    <div class='row'>
+      <h2>Creating Flows</h2>
+      <p>Once you have your Klaviyo set up, you will need to run that flow. Once it's been run, you will be able to create a new Klaviyo flow that can use that Action as a trigger point. <em>Note: The action will not be choosable, until you run the process a single time.</em></p>
+      <img class='img-responsive' src="/packages/getoutfitted_reaction-klaviyo/images/klaviyo_flow.png">
+    </div>
+    <div class='row'>
+      <div class="row">
+        <h3>Special Event Properties</h3>
+        <p>There are a few special properties you can optionally include when tracking an event. All of these belong in the "properties" dictionary. They are:</p>
+
+        <dl class="argument_list">
+          <dt>$event_id</dt>
+          <dd><span>an unique identifier for an event</span></dd>
+          <dt>$value</dt>
+          <dd><span>a numeric value to associate with this event (e.g. the dollar value of a purcahse)</span></dd>
+        </dl>
+
+        <p>If you don't specify <code>$event_id</code>, it will default to the timestamp of the event. In practice, you should send an $event_id if you have an unique identifier for each event, for example an order ID.</p>
+        <p>You should also set the <code>$event_id</code> if you expect certain events to occur at the same point in time. This can happen when someone takes one action which you will split into multiple events. For example, if someone purchases multiple items and you want to record one event for each item purchased.</p>
+      </div>
+      <div class='row'>
+        <h3>Special People Properties</h3>
+        <p>There are a few special properties when you identify someone that are used when displaying individual profiles so Klaviyo be used as a CRM. They are:</p>
+
+        <dl class="argument_list">
+          <dt>$id</dt>
+          <dd><span>your unique identifier for a person</span></dd>
+          <dt>$email</dt>
+          <dd><span>email address</span></dd>
+          <dt>$first_name</dt>
+          <dd><span>first name</span></dd>
+          <dt>$last_name</dt>
+          <dd><span>last name</span></dd>
+          <dt>$phone_number</dt>
+          <dd><span>phone number</span></dd>
+          <dt>$title</dt>
+          <dd><span>title at their business or organization</span></dd>
+          <dt>$organization</dt>
+          <dd><span>business or organization they belong to</span></dd>
+          <dt>$city</dt>
+          <dd><span>city they live in</span></dd>
+          <dt>$region</dt>
+          <dd><span>region or state they live in</span></dd>
+          <dt>$country</dt>
+          <dd><span>country they live in</span></dd>
+          <dt>$zip</dt>
+          <dd><span>postal code where they live</span></dd>
+        </dl>
+      </div>
+    </div>
+    <div class='row'>
+      {{> klaviyoListSetup}}
+    </div>
+  </div>
+</template>
