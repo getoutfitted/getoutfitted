@@ -55,7 +55,12 @@ export const Ambassador = function (orderId) {
         if (err) {
           Logger.error(`Ambassador encountered an Error with order ${order.orderNumber}`, err)
         } else {
-          Logger.info(`Ambassador successfully sent information for ${order.orderNumber}`);
+          if (res.response.errors) {
+            Logger.warn(`Ambassador Hit API for ${order.orderNumber} but returned Error:`, res.response.errors);
+          } else {
+            Logger.info(`Ambassador ${account.ambassador.mbsy} successfully referred for ${order.orderNumber}`);
+
+          }
         }
       });
   } else {

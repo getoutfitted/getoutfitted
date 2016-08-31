@@ -18,13 +18,12 @@ Router.Hooks.onEnter(function () {
   if (location.search) {
     const queryParams = getQueryParams(location.search);
     const keys = Object.keys(queryParams);
-    const ambassdorKeys = ['campaignid', 'mbsy', 'mbsy_source'];
-    const hasAllKeys = _.intersection(keys, ambassdorKeys).length === 3;
+    const ambassdorKeys = ['campaignid', 'mbsy'];
+    const hasAllKeys = _.intersection(keys, ambassdorKeys).length === 2;
     if (hasAllKeys) {
       const ambassdor = {
         campaignId: queryParams.campaignid,
-        mbsy: queryParams.mbsy,
-        mbsySource: queryParams.mbsy_source
+        mbsy: queryParams.mbsy
       }
       Meteor.call('ambassador/addRefererToAccounts', ambassdor);
     }
