@@ -34,8 +34,7 @@ Meteor.methods({
   'ambassador/addRefererToAccounts': function (ambassador) {
     check(ambassador, {
       campaignId: String,
-      mbsy: String,
-      mbsySource: String
+      mbsy: String
     })
     let expireTime = new Date();
     let time = expireTime.getTime();

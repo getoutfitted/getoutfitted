@@ -67,6 +67,21 @@ Orders.after.insert(function () {
   }, {
     $set: af
   });
+
+  try {
+    Orders.update({
+      _id: this._id
+    }, {
+      $set: af
+    });
+  } catch (error) {
+    af.orderNumber = AdvancedFulfillment.findHighestOrderNumber();
+    Orders.update({
+      _id: this._id
+    }, {
+      $set: af
+    });
+  }
   Logger.info(`Backpack information added to ${this._id}`);
     // Shipstation Utilization
   if (afPackage.settings.shipstation) {

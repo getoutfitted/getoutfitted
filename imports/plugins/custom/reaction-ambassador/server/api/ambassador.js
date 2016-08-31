@@ -50,12 +50,17 @@ export const Ambassador = function (orderId) {
         short_code: account.ambassador.mbsy,
         revenue: ambassadorReportableRevenue,
         auto_create: 0,
-        transaction_uid: order.orderNumber,
+        transaction_uid: order._id,
       }, function (err, res) {
         if (err) {
-          Logger.error(`Ambassador encountered an Error with order ${order.orderNumber}`, err)
+          Logger.error(`Ambassador encountered an Error with order ${order._id}`, err)
         } else {
-          Logger.info(`Ambassador successfully sent information for ${order.orderNumber}`);
+          if (res.response.errors) {
+            Logger.warn(`Ambassador Hit API for ${order._id} but returned Error:`, res.response.errors);
+          } else {
+            Logger.info(`Ambassador ${account.ambassador.mbsy} successfully referred for ${order._id}`);
+
+          }
         }
       });
   } else {
