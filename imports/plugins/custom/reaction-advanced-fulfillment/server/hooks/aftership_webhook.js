@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import JsonRoutes from 'meteor/simple:json-routes';
+import { JsonRoutes }  from 'meteor/simple:json-routes';
 import { Packages } from '/lib/collections';
 import { getShopId } from '/lib/api';
 import { Logger } from '/server/api';
