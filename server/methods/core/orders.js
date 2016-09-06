@@ -336,7 +336,10 @@ Meteor.methods({
     // handle missing root shop email
     // XXX: GETOUTFITTED MOD: check to make sure shop.emails exists
     // and change default email to orders@getoutfitted.com
-    if (!shop.emails || !shop.emails[0].address) {
+    if (!shop.emails) {
+      shop.emails = [{address: "orders@getoutfitted.com"}];
+      Logger.warn("No shop email configured. Using no-reply to send mail");
+    } else if (!shop.emails[0] || !shop.emails[0].address) {
       shop.emails[0].address = "orders@getoutfitted.com";
       Logger.warn("No shop email configured. Using no-reply to send mail");
     }
