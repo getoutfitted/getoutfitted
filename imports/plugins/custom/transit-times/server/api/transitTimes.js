@@ -42,16 +42,18 @@ formatAddress = function (address) {
 
 export class Transit {
   constructor(order) {
-    this.startTime = order.startTime || new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-    this.endTime = order.endTime || new Date();
+    this.startTime = order.startTime;
+    this.endTime = order.endTime;
     this.shipping = formatAddress(order.shipping[0].address);
     this.postal = order.shipping[0].address.postal;
     this.settings = getSettings();
     this.transitTime = this.calculateTransitTime();
     this.arriveBy = dateHelper.determineArrivalDate(this.startTime);
-    this.shipReturnBy = dateHelper.determineShipReturnByDate(this.endTime);
     this.shipmentDate = this.calculateShippingDay();
-    this.returnDate = this.calculateReturnDay();
+    if (order.endTime){
+      this.shipReturnBy = dateHelper.determineShipReturnByDate(this.endTime);
+      this.returnDate = this.calculateReturnDay();
+    }
   }
 
   getSelectedProvider() {

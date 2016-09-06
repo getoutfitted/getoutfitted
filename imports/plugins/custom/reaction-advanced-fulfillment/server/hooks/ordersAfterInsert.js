@@ -16,15 +16,20 @@ Orders.after.insert(function () {
     Logger.warn(`Backpack is not enabled, so Order ${this._id} was not updated`);
     return;
   }
-  let af = {};
+  const af = {};
   advancedFulfillment = af.advancedFulfillment = {};
   advancedFulfillment.workflow = {
     status: 'orderCreated',
     workflow: []
   };
-  let orderHasNoRentals = _.every(order.items, function (item) {
+  const orderHasNoRentals = _.every(order.items, function (item) {
     return item.variants.functionalType === 'variant';
   });
+  if (orderHasNoRentals) {
+    af.startTime = order.startTime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+  }
+
+  // Transit SetUp
   const transit = new Transit(order);
   advancedFulfillment.localDelivery = transit.isLocalDelivery();
   advancedFulfillment.transitTime = transit.transitTime;
@@ -32,6 +37,9 @@ Orders.after.insert(function () {
   advancedFulfillment.shipReturnBy = transit.shipReturnBy;
   advancedFulfillment.shipmentDate = transit.shipmentDate;
   advancedFulfillment.returnDate = transit.returnDate;
+
+  // Item Set up
+  advancedFulfillment.items = AdvancedFulfillment.itemsToAFItems(order.items);
 
   if (!order.email) {
     // If no email, try to find past orders with emails
