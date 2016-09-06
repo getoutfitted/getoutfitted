@@ -14,7 +14,7 @@
         </h1>
       </div>
       <div class="row">
-        <a href="#" class="btn btn-warning btn-lg btn-block" id="btn-keep-shopping" data-i18n="cartDrawer.keepShopping">
+        <a href="#" class="btn btn-warning btn-lg btn-block" id="btn-keep-shopping" data-i18n="cartDrawer.keepShopping" data-event-category="cart" data-event-action="close-cart-drawer" data-event-label="cart drawer keep shopping click" data-event-value="{{_id}}">
         Keep Shopping
         </a>
       </div>
@@ -40,7 +40,7 @@
   </div>
   <div class="cart-drawer-pagination"></div>
   <div class="row">
-    <span class="btn btn-success btn-lg btn-block" id="btn-checkout" data-i18n="cartDrawer.checkout" data-event-category="cart" data-event-action="checkout-click" data-event-label="checkout button click" data-event-value="{{_id}}">
+    <span class="btn btn-success btn-lg btn-block" id="btn-checkout" data-i18n="cartDrawer.checkout" data-event-category="cart" data-event-action="initiate-checkout" data-event-label="cart drawer checkout click" data-event-value="{{_id}}">
     Checkout now
     </span>
   </div>

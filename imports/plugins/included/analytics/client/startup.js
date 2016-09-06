@@ -3,6 +3,7 @@ import { Meteor } from "meteor/meteor";
 import { Tracker } from "meteor/tracker";
 import { AnalyticsEvents, Packages } from "/lib/collections";
 import { Reaction, i18next, Logger } from "/client/api";
+import { AnalyticsHelpers } from "./helpers.js";
 
 // Create a queue, but don't obliterate an existing one!
 analytics = window.analytics = window.analytics || [];
@@ -91,12 +92,11 @@ analytics.SNIPPET_VERSION = "3.1.0";
 // segment page tracking
 function notifySegment(context) {
   if (typeof analytics !== "undefined") {
-    analytics.page({
+    analytics.page(context.route.name, {
+      path: context.path,
+      url: window.location.origin + context.path,
       userId: Meteor.userId(),
-      properties: {
-        url: context.path,
-        shopId: Reaction.getShopId()
-      }
+      shopId: Reaction.getShopId()
     });
   }
 }
@@ -207,6 +207,33 @@ Meteor.startup(function () {
     $targets = $targets.parents("*[data-event-action]").add($targets);
     return $targets.each(function (index, element) {
       const $element = $(element);
+
+      let event = AnalyticsHelpers.capitalizeEventString($element.data("event-action"));
+
+      const data = $element.data();
+
+      // Setup properties object from all data-event-* properties
+      // e.g. data-event-category ->  category: "value"
+      // data-event-label -> label: "value"
+      // data-event-custom-thing -> customThing: "value"
+      const properties = Object.keys(data).reduce(
+        function (props, attr) {
+          // if the data value is defined and starts with "event"
+          if (data[attr] && attr.indexOf("event") === 0) {
+            // don't save the event action, we'll pass that separately
+            if (attr !== "eventAction") {
+              let propValue = data[attr];
+              // create a new property that is the `data-event`
+              // strip "event" and lowercase the result;
+              let prop = attr.replace("event", "");
+              prop = prop.substr(0, 1).toLowerCase() + prop.substr(1);
+              // add new property to props object.
+              props[prop] = propValue;
+            }
+          }
+          return props;
+        }, {});
+
       const analyticsEvent = {
         eventType: "event",
         category: $element.data("event-category"),
@@ -227,15 +254,16 @@ Meteor.startup(function () {
       }
 
       if (typeof analytics === "object") {
-        analytics.track(analyticsEvent.action, {
-          Category: analyticsEvent.category,
-          Label: analyticsEvent.label,
-          Value: analyticsEvent.value
-        });
+        // analytics.track(analyticsEvent.action, {
+        //   Category: analyticsEvent.category,
+        //   Label: analyticsEvent.label,
+        //   Value: analyticsEvent.value
+        // });
+        analytics.track(event, properties);
       }
       // we could add a hook here, but not needed as
       // you can trigger using the collection hooks
-      return AnalyticsEvents.insert(analyticsEvent);
+      // return AnalyticsEvents.insert(analyticsEvent);
     });
   });
 });

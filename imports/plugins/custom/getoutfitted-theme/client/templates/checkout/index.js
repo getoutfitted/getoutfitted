@@ -18,7 +18,7 @@
 // import "./templates/cartPanel/cartPanel.js";
 
 // import "./addressBook/addressBook.html";
-import "./addressBook/addressBook.js";
+// import "./addressBook/addressBook.js";
 import "./checkoutReviewItems/checkoutReviewItems.html";
 import "./checkoutReviewItems/checkoutReviewItems.js";
 import "./completed/completed.html";
