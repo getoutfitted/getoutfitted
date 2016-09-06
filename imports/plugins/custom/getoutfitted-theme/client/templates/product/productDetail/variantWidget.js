@@ -1,8 +1,10 @@
 import { $ } from "meteor/jquery";
 import { ReactionProduct } from "/lib/api";
+import { Cart, Products } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
+import { Logger } from "/client/api";
 // load modules
 // require("jquery-ui");
 import "jquery-ui";
@@ -74,7 +76,7 @@ Template.variantWidget.helpers({
   reservation: () => {
     const current = ReactionProduct.selectedVariant();
     const reservationLength = Session.get("reservationLength");
-    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId()});
+    const cart = Cart.findOne({userId: Meteor.userId()});
     let defaultReservationLength;
     if (typeof current === "object") {
       const childVariants = ReactionProduct.getVariants(current._id);
@@ -124,7 +126,7 @@ Template.variantWidget.helpers({
     return {};
   },
   availableToBook: function () {
-    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId()});
+    const cart = Cart.findOne({userId: Meteor.userId()});
     const compatibleReservationAvailable = Session.get("compatibleReservationAvailable");
     if (compatibleReservationAvailable) {
       return compatibleReservationAvailable.available || !cart.items || cart.items && cart.items.length === 0;
@@ -166,7 +168,7 @@ Template.bundleVariantWidget.helpers({
     return undefined;
   },
   bundleVariant: function () {
-    const variants = ReactionCore.getVariants(this._id);
+    const variants = ReactionProduct.getVariants(this._id);
     if (variants) {
       return variants[0];
     }
@@ -175,7 +177,7 @@ Template.bundleVariantWidget.helpers({
   reservation: () => {
     const current = ReactionProduct.selectedVariant();
     const reservationLength = Session.get("reservationLength");
-    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId()});
+    const cart = Cart.findOne({userId: Meteor.userId()});
 
     if (typeof current === "object" && reservationLength) {
       const childVariants = ReactionProduct.getVariants(current._id);
@@ -225,7 +227,7 @@ Template.bundleVariantWidget.helpers({
     return {};
   },
   availableToBook: function () {
-    const cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId()});
+    const cart = Cart.findOne({userId: Meteor.userId()});
     const compatibleReservationAvailable = Session.get("compatibleReservationAvailable");
     if (compatibleReservationAvailable) {
       return compatibleReservationAvailable.available || !cart.items || cart.items && cart.items.length === 0;
@@ -248,7 +250,7 @@ Template.bundleVariantWidget.events({
     let quantity;
     let currentVariant = ReactionProduct.selectedVariant();
     let currentProduct = ReactionProduct.selectedProduct();
-    let cart = ReactionCore.Collections.Cart.findOne({userId: Meteor.userId() });
+    let cart = Cart.findOne({userId: Meteor.userId() });
     if (!cart.startTime) {
       Alerts.inline("Please select an arrival date before booking", "error", {
         placement: "datepicker",
@@ -298,7 +300,7 @@ Template.bundleVariantWidget.events({
           Meteor.call("cart/addToCart", productId, currentVariant._id, quantity,
             function (error) {
               if (error) {
-                ReactionCore.Log.error("Failed to add to cart.", error);
+                Logger.error("Failed to add to cart.", error);
                 return error;
               }
               Meteor.call("productBundler/updateCartItems",
@@ -366,7 +368,7 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    let product = ReactionCore.Collections.Products.findOne(this.productId);
+    let product = Products.findOne(this.productId);
     if (product) {
       return product.productType || product.title;
     }
@@ -376,7 +378,7 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    let variantProduct = ReactionCore.Collections.Products.findOne(this.variantId);
+    let variantProduct = Products.findOne(this.variantId);
     if (variantProduct) {
       return variantProduct.size + "-" + variantProductvariant.color;
     }
