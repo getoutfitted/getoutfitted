@@ -137,6 +137,20 @@ Template.variantWidget.helpers({
       return compatibleReservationAvailable.reason;
     }
     return "";
+  },
+  filteredProductVariantTitle() {
+    const current = ReactionProduct.selectedVariant();
+    const productTitle = this.productTitle || Template.parentData().productTitle || this.title;
+    const vendor = this.vendor || Template.parentData().vendor;
+    const title = `${vendor}
+                 ${productTitle}
+                 ${current.gender}
+                 ${current.color}
+                 ${current.size}`;
+    return title.replace(/(?:One|No)\s+(?:Color|Size|Option)/ig, "")
+      .replace(/undefined/ig, "")
+      .replace(/unisex/ig, "")
+      .replace(/\s+/g, " ");
   }
 });
 
