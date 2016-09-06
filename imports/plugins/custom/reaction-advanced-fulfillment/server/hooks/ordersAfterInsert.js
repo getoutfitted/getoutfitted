@@ -11,6 +11,7 @@ Orders.after.insert(function () {
   //   Logger.warn("Skipped Hook because isAppTest is true");
   //   return;
   // }
+  console.log('we got into hook');
   const order = this.transform();
   const afPackage = Packages.findOne({
     name: 'reaction-advanced-fulfillment',
@@ -57,8 +58,8 @@ Orders.after.insert(function () {
     }
   }
   // TODO Check this is now on cart!, So shouldn't need start and end time
-  advancedFulfillment.arriveBy = order.startTime || new Date();
-  advancedFulfillment.shipReturnBy = order.endTime || new Date();
+  advancedFulfillment.arriveBy = TransitTimes.date.determineArrivalDate(order.startTime);
+  advancedFulfillment.shipReturnBy = TransitTimes.date.determineShipReturnByDate(order.endTime);
   advancedFulfillment.shipmentDate = TransitTimes.calculateShippingDayByOrder(order);
   advancedFulfillment.returnDate = TransitTimes.calculateReturnDayByOrder(order);
   af.orderNumber = AdvancedFulfillment.findAndUpdateNextOrderNumber();

@@ -23,6 +23,7 @@ dateHelper.isSaturday = function (date) {
 // This feels a bit misleading as it returns the current day unless it's a weekend.
 dateHelper.previousBusinessDay = function (date) {
   check(date, Date);
+  date.setDate(date.getDate() - 1);
   if (this.isSunday(date)) {
     return moment(date).subtract(2, 'days');
   } else if (this.isSaturday(date)) {

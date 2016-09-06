@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Reaction } from '/server/api';
-import { Package } from '/lib/collections';
+import { Packages } from '/lib/collections';
 
 const _getSettings = function () {
   const tt = Packages.findOne({
@@ -16,7 +16,7 @@ const _getSettings = function () {
 };
 
 export const getAPIAuth = function (provider) {
-  const settings = TransitTimes._getSettings();
+  const settings = _getSettings();
   if (provider === 'ups') {
     return settings.ups;
   }
