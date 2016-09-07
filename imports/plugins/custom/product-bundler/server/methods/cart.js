@@ -28,7 +28,7 @@ Meteor.methods({
 
     let items = cart.items;
     let bundleItem = _.find(items, function (item) {
-      const correctProductId  = item.productId === productId;
+      const correctProductId = item.productId === productId;
       const correctVariantId = item.variants._id === variantId;
       const isBundle = item.variants.functionalType === 'bundleVariant';
       if (correctProductId && correctVariantId && isBundle) {
@@ -92,10 +92,14 @@ Meteor.methods({
     }
     let product;
     let variant;
-    Products.find({ _id: { $in: [
-      productId,
-      variantId
-    ]}}).forEach(doc => {
+    Products.find({
+      _id: {
+        $in: [
+          productId,
+          variantId
+        ]
+      }
+    }).forEach(doc => {
       if (doc.type === 'simple') {
         product = doc;
       } else {
@@ -127,7 +131,8 @@ Meteor.methods({
           type: product.type,
           customerViewType: 'bundleComponent',
           bundleProductId: bundleId,
-          bundleIndex: bundleIndex
+          bundleIndex: bundleIndex,
+          title: product.title || 'fakeTitle'
         }
       }
     }, function (error, result) {
