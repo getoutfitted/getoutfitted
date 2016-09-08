@@ -604,6 +604,15 @@ Meteor.methods({
     if (orderId) {
       // TODO: check for successful orders/inventoryAdjust
       // Meteor.call("orders/inventoryAdjust", orderId);
+
+      // XXX: GETOUTFITTED MOD: adjust rental inventory
+      const hasRentalProduct = _.find(order.items, function (item) {
+        return item.variants.functionalType !== "variant";
+      });
+      if (hasRentalProduct) {
+        Meteor.call("rentalProducts/inventoryAdjust", orderId);
+      }
+
       Collections.Cart.remove({
         _id: order.cartId
       });
