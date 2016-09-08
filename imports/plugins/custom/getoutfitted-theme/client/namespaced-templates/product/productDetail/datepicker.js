@@ -812,7 +812,7 @@ Template.reservationDatepicker.helpers({
 
 const calendarHtml = "<div class='calendar-header'>" +
                      "<h4>Please select a delivery date</h4>" +
-                     "<a class='thursday-modal-link'>Read about why we deliver on Thursdays</a>" +
+                     "<a class='thursday-modal-link'>How it works</a>" +
                      "</div>";
 
 const calendarLegendHtml = "<div class='calendar-footer'>" +

@@ -234,7 +234,8 @@ Template.reservationDatepicker.onRendered(function () {
       let $nextWeeks = $(this).parent().nextAll().find(".day");
       let $remainingDaysThisWeek = $(this).nextAll();
       let numDaysToHighlight = Session.get("reservationLength");
-
+      let $arrivalDay = $(this).prev();
+      $arrivalDay.addClass("shipping");
       if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
         $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
         return $remainingDaysThisWeek.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
@@ -245,7 +246,7 @@ Template.reservationDatepicker.onRendered(function () {
       return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
     },
     mouseleave: function () {
-      $(".day").removeClass("highlight");
+      $(".day").removeClass("highlight").removeClass("shipping");
     }
   }, ".day:not(.disabled)");
 
@@ -298,7 +299,7 @@ Template.reservationDatepicker.helpers({
 
 const calendarHtml = "<div class='calendar-header'>" +
                      "<h4>Please select a delivery date</h4>" +
-                     "<a class='thursday-modal-link'>Read about why we deliver on Thursdays</a>" +
+                     "<a class='thursday-modal-link'>How it works</a>" +
                      "</div>";
 
 const calendarLegendHtml = "<div class='calendar-footer'>" +
