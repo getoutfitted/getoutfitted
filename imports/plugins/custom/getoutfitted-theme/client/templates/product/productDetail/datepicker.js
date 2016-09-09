@@ -131,6 +131,25 @@ Template.reservationDatepicker.onRendered(function () {
   const firstChild = variants.find(function (variant) {
     return variant.ancestors.length === 2;
   });
+  const cart = Cart.findOne();
+  let startDate = cart.startTime || "+4d";
+  let endDate = cart.endTime ||  "+540d";
+    $('#startTime').datepicker({
+      startDate: startDate,
+      endDate: endDate,
+      maxViewMode: 0
+    }).on('changeDate', function (e) {
+      Cart.update({_id: cart._id}, {
+        $set: { startTime: e.date }
+      });
+      $('#endTime').datepicker("setStartDate", Cart.findOne().startTime);
+    });
+
+    $('#endTime').datepicker({
+      startDate: startDate,
+      endDate: endDate,
+      maxViewMode: 0
+    });
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
   // So duration is default to 5 for a 6 day rental.
@@ -253,7 +272,7 @@ Template.reservationDatepicker.onRendered(function () {
   $("#rental-start").on({
     changeDate: function (event) {
       $(".tooltip").remove();
-      const cart = Cart.findOne();
+
       const reservationLength = Session.get("reservationLength");
 
       // Sets cart dates to Denver time - need to set as local time on display.
@@ -330,7 +349,8 @@ Template.reservationDatepicker.events({
     $(".datepicker-days .calendar-header").on("click", ".thursday-modal-link", function () {
       Modal.show("thursdayDeliveryExplanation");
     });
-  }
+  },
+
 });
 
 Template.bundleReservationDatepicker.onCreated(function () {
