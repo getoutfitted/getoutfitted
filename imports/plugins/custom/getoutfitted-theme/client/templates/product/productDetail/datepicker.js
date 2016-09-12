@@ -132,24 +132,24 @@ Template.reservationDatepicker.onRendered(function () {
     return variant.ancestors.length === 2;
   });
   const cart = Cart.findOne();
-  let startDate = cart.startTime || "+4d";
-  let endDate = cart.endTime ||  "+540d";
-    $('#startTime').datepicker({
-      startDate: startDate,
-      endDate: endDate,
-      maxViewMode: 0
-    }).on('changeDate', function (e) {
-      Cart.update({_id: cart._id}, {
-        $set: { startTime: e.date }
-      });
-      $('#endTime').datepicker("setStartDate", Cart.findOne().startTime);
-    });
+  // let startDate = cart.startTime || "+4d";
+  // let endDate = cart.endTime ||  "+540d";
+  //   $('#startTime').datepicker({
+  //     startDate: startDate,
+  //     endDate: endDate,
+  //     maxViewMode: 0
+  //   }).on('changeDate', function (e) {
+  //     Cart.update({_id: cart._id}, {
+  //       $set: { startTime: e.date }
+  //     });
+  //     $('#endTime').datepicker("setStartDate", Cart.findOne().startTime);
+  //   });
 
-    $('#endTime').datepicker({
-      startDate: startDate,
-      endDate: endDate,
-      maxViewMode: 0
-    });
+  //   $('#endTime').datepicker({
+  //     startDate: startDate,
+  //     endDate: endDate,
+  //     maxViewMode: 0
+  //   });
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
   // So duration is default to 5 for a 6 day rental.
@@ -349,7 +349,7 @@ Template.reservationDatepicker.events({
     $(".datepicker-days .calendar-header").on("click", ".thursday-modal-link", function () {
       Modal.show("thursdayDeliveryExplanation");
     });
-  },
+  }
 
 });
 

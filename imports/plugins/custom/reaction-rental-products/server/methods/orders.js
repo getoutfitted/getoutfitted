@@ -7,7 +7,7 @@ import { Orders } from '/lib/collections';
 import moment from 'moment';
 import 'moment-timezone';
 import 'twix';
-import { TransitTimes } from '/imports/plugins/custom/transit-times/server/api';
+import { Transit } from '/imports/plugins/custom/transit-times/server/api';
 
 function adjustLocalToDenverTime(time) {
   let here = moment(time);
@@ -30,19 +30,20 @@ Meteor.methods({
     const order = Orders.findOne(orderId);
     if (!order) { return false; } // If we can't find an order, exit.
     // TODO: Add store buffer days into dates to reserve;
+    const transit = new Transit(order);
     let datesToReserve = [];
     let detailsToReserve = [];
     const turnaroundTime = RentalProducts.getTurnaroundTime(); // Turnaround Time is defaulted to 1d
-    let shippingTime = TransitTimes.calculateTotalShippingDaysByOrder(order); // Total days not business days
-    let returnTime = TransitTimes.calculateTotalReturnDaysByOrder(order);
-    let firstDayToReserve = TransitTimes.calculateShippingDayByOrder(order);
-    let lastDayToReserve = moment(TransitTimes.calculateReturnDayByOrder(order)).add(turnaroundTime, "days").toDate();
+    let shippingTime = transit.calculateTotalShippingDays(); //TransitTimes.calculateTotalShippingDaysByOrder(order); // Total days not business days
+    let returnTime = transit.calculateTotalReturnDays();
+    let firstDayToReserve = transit.shipmentDate;
+    let lastDayToReserve = moment(transit.returnDate).add(turnaroundTime, "days").toDate();
     let counter = 0;
 
     let reservation = moment(
-      TransitTimes.calculateShippingDayByOrder(order)
+      transit.shipmentDate
     ).twix(
-      moment(TransitTimes.calculateReturnDayByOrder(order)).add(turnaroundTime, "days"), { allDay: true });
+      moment(transit.returnDate).add(turnaroundTime, "days"), { allDay: true });
     let reservationLength = reservation.count("days");
     let iter = reservation.iterate("days"); // Momentjs iterator
     while (iter.hasNext()) {

@@ -146,4 +146,46 @@ export class Transit {
     }
     return returnDay.toDate();
   }
+
+  calculateTotalShippingDays() {
+    if (this.transitTime === 0) {
+      return 0;
+    }
+
+    const start = moment(this.startTime);
+    let days = 0;
+    if (start.isoWeekday() === 6) {
+      days = days + 1;
+    } else if (start.isoWeekday() === 7) {
+      days = days + 2;
+    }
+
+    days = days + this.transitTime;
+    const shippingDay = moment(start).subtract(days, 'days');
+    if (shippingDay.isoWeekday() + this.transitTime >= 6) {
+      days = days + 2;
+    }
+    return days;
+  }
+
+  calculateTotalReturnDays() {
+    if (this.transitTime === 0) {
+      return 0;
+    }
+
+    const end = moment(this.endTime);
+    let days = 0;
+    if (end.isoWeekday() === 6) {
+      days = days + 2;
+    } else if (end.isoWeekday() === 7) {
+      days = days + 1;
+    }
+
+    const dropoffDay = moment(end).add(days, 'days');
+    days = days + this.transitTime;
+    if (dropoffDay.isoWeekday() + this.transitTime >= 6) {
+      days = days + 2;
+    }
+    return days;
+  }
 }
