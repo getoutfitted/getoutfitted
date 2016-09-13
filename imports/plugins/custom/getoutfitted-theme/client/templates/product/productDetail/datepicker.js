@@ -268,15 +268,25 @@ Template.reservationDatepicker.onRendered(function () {
       let $remainingDaysThisWeek = $(this).nextAll();
       let numDaysToHighlight = Session.get("reservationLength");
       let $arrivalDay = $(this).prev();
+      let $returnDay;
+      if ($arrivalDay.length === 0) {
+        $arrivalDay = $(this).parent().prev().children().last();
+      }
       $arrivalDay.addClass("shipping");
       if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
         $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
+        $returnDay = $remainingDaysThisWeek.slice(numDaysToHighlight, numDaysToHighlight + 1);
+        if ($returnDay.length === 0) {
+          $returnDay = $(this).parent().next().children().first();
+        }
+        $returnDay.addClass("shipping");
         return $remainingDaysThisWeek.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
       }
       $remainingDaysThisWeek.addClass("highlight");
       numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
       $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
-      $nextWeeks.slice(numDaysToHighlight, numDaysToHighlight + 1).addClass('shipping');
+      $returnDay = $nextWeeks.slice(numDaysToHighlight, numDaysToHighlight + 1);
+      $returnDay.addClass("shipping");
       return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
     },
     mouseleave: function () {
