@@ -9,7 +9,7 @@ import "bootstrap-datepicker";
 import moment from "moment";
 import "twix";
 import "moment-timezone";
-// import { TransitTimes } from "/imports/plugins/custom/transit-times/lib/api";
+import RentalProducts  from '/imports/plugins/custom/reaction-rental-products/lib/api';
 
 const TransitTimes = {};
 
@@ -116,9 +116,18 @@ function calcShippingDay(startDay, timeInTransit) {
 }
 
 Template.reservationDatepicker.onCreated(function () {
-  Session.setDefault("selectedVariantId", ReactionProduct.selectedVariantId());
+  const variants = ReactionProduct.getVariants(this.data._id);
+  const firstChild = variants.find(function (variant) {
+    return variant.ancestors.length === 2;
+  });
+  if (firstChild) {
+    ReactionProduct.setCurrentVariant(firstChild._id);
+    Session.setDefault("selectedVariantId", firstChild._id);
+  }
+  // Session.setDefault("selectedVariantId", ReactionProduct.selectedVariantId());
   this.autorun(() => {
     if (Session.get("selectedVariantId")) {
+
       this.subscribe("productReservationStatus", Session.get("selectedVariantId"));
       // $("#rental-start").datepicker("update");
     }
@@ -132,6 +141,7 @@ Template.reservationDatepicker.onRendered(function () {
     return variant.ancestors.length === 2;
   });
   const cart = Cart.findOne();
+  // Two calender playground
   // let startDate = cart.startTime || "+4d";
   // let endDate = cart.endTime ||  "+540d";
   //   $('#startTime').datepicker({
@@ -153,7 +163,7 @@ Template.reservationDatepicker.onRendered(function () {
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
   // So duration is default to 5 for a 6 day rental.
-  let defaultReservationLength = 5;
+  // let defaultReservationLength = 5;
   if (firstChild) {
     ReactionProduct.setCurrentVariant(firstChild._id);
     Session.set("selectedVariantId", firstChild._id);
@@ -163,7 +173,6 @@ Template.reservationDatepicker.onRendered(function () {
     }
     // TODO: If we can't find a price bucket, exit gracefully.
   }
-
   Session.setDefault("reservationLength", defaultReservationLength); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
   $("#rental-start").datepicker({
@@ -191,6 +200,7 @@ Template.reservationDatepicker.onRendered(function () {
           Session.get("selectedVariantId"),
           {startTime: shippingDay, endTime: returnDay}
         );
+
         available = inventoryVariantsAvailable.length > 0;
         if (available) {
           if (+s > +today) {
@@ -202,8 +212,12 @@ Template.reservationDatepicker.onRendered(function () {
           tooltip = "Fully Booked";
         }
       // }
+
       let selectedDate = $("#rental-start").val();
       if (!selectedDate) {
+        // console.log('date', date);
+        // console.log('enabled', available);
+        // console.log('variant', Session.get("selectedVariantId"));
         return {enabled: available, classes: classes, tooltip: tooltip};
       }
       selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
@@ -225,7 +239,7 @@ Template.reservationDatepicker.onRendered(function () {
           $("#unavailable-note").remove();
         }
         inRange = true; // to highlight a range of dates
-        return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, gear delivered today!"};
+        return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, your adventure begins!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
         return {enabled: available, classes: "selected selected-end", tooltip: "Drop gear off at UPS by 3pm to be returned"};
@@ -262,10 +276,11 @@ Template.reservationDatepicker.onRendered(function () {
       $remainingDaysThisWeek.addClass("highlight");
       numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
       $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
+      $nextWeeks.slice(numDaysToHighlight, numDaysToHighlight + 1).addClass('shipping');
       return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
     },
     mouseleave: function () {
-      $(".day").removeClass("highlight").removeClass("shipping");
+      $(".day").removeClass("highlight").removeClass("shipping").removeClass("last-day");
     }
   }, ".day:not(.disabled)");
 
@@ -295,6 +310,10 @@ Template.reservationDatepicker.helpers({
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
     }
     return "";
+  },
+
+  test: function () {
+    return ReactionProduct.selectedVariantId();
   },
 
   startDateHuman: function () {
@@ -463,7 +482,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
           $("#unavailable-note").remove();
         }
         inRange = true; // to highlight a range of dates
-        return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, gear delivered today!"};
+        return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, your adventure begins!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
         return {enabled: available, classes: "selected selected-end", tooltip: "Drop gear off at UPS by 3pm to be returned"};
