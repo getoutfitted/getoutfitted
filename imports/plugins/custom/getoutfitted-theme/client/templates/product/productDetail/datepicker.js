@@ -215,14 +215,10 @@ Template.reservationDatepicker.onRendered(function () {
 
       let selectedDate = $("#rental-start").val();
       if (!selectedDate) {
-        // console.log('date', date);
-        // console.log('enabled', available);
-        // console.log('variant', Session.get("selectedVariantId"));
         return {enabled: available, classes: classes, tooltip: tooltip};
       }
       selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
       reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
-
       let compareDate = moment(date).startOf("day");
       if (+compareDate === +selectedDate) {
         if (!available) {
@@ -240,9 +236,13 @@ Template.reservationDatepicker.onRendered(function () {
         }
         inRange = true; // to highlight a range of dates
         return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, your adventure begins!"};
+      } else if (+compareDate === +selectedDate.subtract(1, "days")) {
+        return {enabled: available, classes: "arrivalSet", tooltip: "Your gear arrives!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
-        return {enabled: available, classes: "selected selected-end", tooltip: "Drop gear off at UPS by 3pm to be returned"};
+        return {enabled: available, classes: "selected selected-end", tooltip: "Rental day, have fun!"};
+      }  else if (+compareDate === +reservationEndDate.add(1, "days")) {
+        return {enabled: available, classes: "returnSet", tooltip: "Drop gear off at UPS by 3pm to be returned"};
       } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
         inRange = true;
       } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
@@ -255,6 +255,7 @@ Template.reservationDatepicker.onRendered(function () {
       return {enabled: available, classes: classes, tooltip: tooltip};
     }
   });
+
   let inventoryVariants = InventoryVariants.find();
   this.autorun(() => {
     if (inventoryVariants.fetch().length > 0) {
@@ -272,25 +273,25 @@ Template.reservationDatepicker.onRendered(function () {
       if ($arrivalDay.length === 0) {
         $arrivalDay = $(this).parent().prev().children().last();
       }
-      $arrivalDay.addClass("shipping");
+      $arrivalDay.addClass("arrive-by");
       if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
         $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
         $returnDay = $remainingDaysThisWeek.slice(numDaysToHighlight, numDaysToHighlight + 1);
         if ($returnDay.length === 0) {
           $returnDay = $(this).parent().next().children().first();
         }
-        $returnDay.addClass("shipping");
+        $returnDay.addClass("return-by");
         return $remainingDaysThisWeek.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
       }
       $remainingDaysThisWeek.addClass("highlight");
       numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
       $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
       $returnDay = $nextWeeks.slice(numDaysToHighlight, numDaysToHighlight + 1);
-      $returnDay.addClass("shipping");
+      $returnDay.addClass("return-by");
       return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
     },
     mouseleave: function () {
-      $(".day").removeClass("highlight").removeClass("shipping").removeClass("last-day");
+      $(".day").removeClass("highlight").removeClass("arrive-by").removeClass("last-day").removeClass("return-by");
     }
   }, ".day:not(.disabled)");
 
@@ -322,10 +323,6 @@ Template.reservationDatepicker.helpers({
     return "";
   },
 
-  test: function () {
-    return ReactionProduct.selectedVariantId();
-  },
-
   startDateHuman: function () {
     const cart = Cart.findOne();
     const resLength = Session.get("reservationLength");
@@ -350,16 +347,27 @@ const calendarHtml = "<div class='calendar-header'>" +
                      "<a class='thursday-modal-link'>How it works</a>" +
                      "</div>";
 
-const calendarLegendHtml = "<div class='calendar-footer'>" +
-            "<div class='arrival-day-legend'>" +
-            "<div class='cal-square'></div>" +
-            "<label>We'll deliver your gear<br>before 8:00pm</label>" +
-            "</div>" +
-            "<div class='return-day-legend'>" +
-            "<div class='cal-square'></div>" +
-            "<label>Return to a UPS<br>location by 5:00pm</label>" +
-            "</div>" +
-            "</div>";
+const calendarLegendHtml = `
+  <div class='row calendar-footer'>
+    <div class='arrival-day-legend'>
+      <div class='cal-square'></div>
+      <label>Your first ski day!</label>
+    </div>
+    <div class='return-day-legend'>
+      <div class='cal-square'></div>
+      <label>Your last ski day</label>
+    </div>
+  </div>
+  <div class='row shipping'>
+    <div class='arrival-day-legend'>
+      <div class='cal-square'></div>
+      <label>We'll deliver your gear<br>before 8:00pm</label>
+    </div>
+    <div class='return-day-legend'>
+      <div class='cal-square'></div>
+      <label>Return to a UPS<br>location by 5:00pm</label>
+    </div>
+  </div>`;
 
 Template.reservationDatepicker.events({
   "click .show-start": function () {

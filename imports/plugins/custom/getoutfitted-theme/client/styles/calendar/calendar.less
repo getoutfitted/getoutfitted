@@ -58,9 +58,13 @@
     color: white;
   }
 
-  .shipping.day {
-    // background: #c5dddb;
-    background: #aecfcd;
+  .arrive-by.day, .arrivalSet{
+    background: #bbb88c;
+    color: white;
+  }
+
+  .return-by.day, .returnSet{
+    background: #b88cbb;
     color: white;
   }
 
@@ -123,6 +127,29 @@
 
 .return-day-legend .cal-square {
   float: right;
+}
+
+.shipping .cal-square {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background: #bbb88c;
+  float: left;
+  overflow: hidden;
+  position: relative;
+}
+
+.shipping .return-day-legend .cal-square {
+  float: right;
+  background: #b88cbb;
+}
+
+.shipping .cal-square:before {
+  content: '';
+}
+
+.shipping.day:not(.disabled):hover:before {
+  content: '';
 }
 
 .arrival-day-legend label {

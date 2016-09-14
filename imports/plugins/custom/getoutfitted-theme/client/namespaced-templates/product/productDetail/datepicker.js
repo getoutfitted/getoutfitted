@@ -297,7 +297,7 @@ Template.reservationDatepicker.helpers({
 });
 
 const calendarHtml = "<div class='calendar-header'>" +
-                     "<h4>Please select your first ski day</h4>" +
+                     "<h4>Please select your first ski date</h4>" +
                      "<a class='thursday-modal-link'>How it works</a>" +
                      "</div>";
 
