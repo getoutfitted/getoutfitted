@@ -391,23 +391,23 @@ Template.reservationDatepicker.events({
 });
 
 Template.bundleReservationDatepicker.onCreated(function () {
-  let bundleVariants = Products.findOne({
+  const bundleVariants = Products.findOne({
     ancestors: {
       $size: 1
     }
   });
   // if (bundleVariants && bundleVariants.bundleProducts) {
-  let defaultSelectedVariants = [];
+  const defaultSelectedVariants = [];
   _.each(bundleVariants.bundleProducts, function (bundleOptions) {
     defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
   });
   Session.setDefault("selectedBundleOptions", defaultSelectedVariants);
   this.autorun(() => {
-    if (Session.get('selectedBundleOptions')) {
-      let selectedOptions = Session.get('selectedBundleOptions');
+    if (Session.get("selectedBundleOptions")) {
+      const selectedOptions = Session.get("selectedBundleOptions");
       if (selectedOptions) {
-        this.subscribe('bundleReservationStatus', selectedOptions);
-        $('#rental-start').datepicker('update');
+        this.subscribe("bundleReservationStatus", selectedOptions);
+        $("#rental-start").datepicker("update");
       }
     }
   });
@@ -415,6 +415,7 @@ Template.bundleReservationDatepicker.onCreated(function () {
 
 
 Template.bundleReservationDatepicker.onRendered(function () {
+  console.log('we are rendering')
   const variants = ReactionProduct.getVariants();
   const firstChild = variants.find(function (variant) {
     return variant.ancestors.length === 1;
@@ -434,10 +435,11 @@ Template.bundleReservationDatepicker.onRendered(function () {
 
   Session.setDefault("reservationLength", defaultReservationLength); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
+
   $("#rental-start").datepicker({
     startDate: "+4d",
     autoclose: true,
-    daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
+    // daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
     endDate: "+540d",
     maxViewMode: 0,
     beforeShowDay: function (date) {
@@ -446,37 +448,37 @@ Template.bundleReservationDatepicker.onRendered(function () {
       let classes = "";
       let tooltip = "";
       // if disabled day, skip this
-      if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
-        available = false;
-        tooltip = "Please pick an available Thursday to take delivery.";
-      } else {
+      // if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
+      //   available = false;
+      //   tooltip = "Please pick an available Thursday to take delivery.";
+      // } else {
         // Change date checkers to check against Denver time
-        const s = adjustLocalToDenverTime(moment(date).startOf("day"));
-        const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
-        const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
-        const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4
-        let selectedVariantIds = Session.get("selectedBundleOptions");
-        let selectedVariantsCount = _.countBy(selectedVariantIds);
+      const s = adjustLocalToDenverTime(moment(date).startOf("day"));
+      const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
+      const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
+      const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4
+      let selectedVariantIds = Session.get("selectedBundleOptions");
+      let selectedVariantsCount = _.countBy(selectedVariantIds);
         // Should give us {variantId: 1, variantId2: 1}
-        let keys = Object.keys(selectedVariantsCount);
-        available = _.every(keys, function (variantId) {
-          let inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
-            variantId,
-            {startTime: shippingDay, endTime: returnDay},
-            selectedVariantsCount[variantId]
-          );
-          return inventoryVariantsAvailable.length > 0;
-        });
-        if (available) {
-          if (+s > +today) {
-            tooltip = "Available!";
-          } else {
-            tooltip = "Pick a date in the future";
-          }
+      let keys = Object.keys(selectedVariantsCount);
+      available = _.every(keys, function (variantId) {
+        let inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
+          variantId,
+          {startTime: shippingDay, endTime: returnDay},
+          selectedVariantsCount[variantId]
+        );
+        return inventoryVariantsAvailable.length > 0;
+      });
+      if (available) {
+        if (+s > +today) {
+          tooltip = "Available!";
         } else {
-          tooltip = "Fully Booked";
+          tooltip = "Pick a date in the future";
         }
+      } else {
+        tooltip = "Fully Booked";
       }
+      // }
       let selectedDate = $("#rental-start").val();
       if (!selectedDate) {
         return {enabled: available, classes: classes, tooltip: tooltip};
@@ -485,25 +487,30 @@ Template.bundleReservationDatepicker.onRendered(function () {
       reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
 
       let compareDate = moment(date).startOf("day");
+
       if (+compareDate === +selectedDate) {
         if (!available) {
            // if dates are unavailable, reset dates;
-          $("#add-to-cart").prop("disabled", true);
+          $("#bundle-add-to-cart").prop("disabled", true);
           if ($("#unavailable-note").length === 0) {
-            $("#add-to-cart").parent().prepend(
+            $("#bundle-add-to-cart").parent().prepend(
               "<div class='small text-center' id='unavailable-note'>"
               + "<em>This product is unavailable for the selected dates</em></div>"
             );
           }
         } else {
-          $("#add-to-cart").prop("disabled", false);
+          $("#bundle-add-to-cart").prop("disabled", false);
           $("#unavailable-note").remove();
         }
         inRange = true; // to highlight a range of dates
         return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, your adventure begins!"};
+      } else if (+compareDate === +selectedDate.subtract(1, "days")) {
+        return {enabled: available, classes: "arrivalSet", tooltip: "Your gear arrives!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
-        return {enabled: available, classes: "selected selected-end", tooltip: "Drop gear off at UPS by 3pm to be returned"};
+        return {enabled: available, classes: "selected selected-end", tooltip: "Rental day, have fun!"};
+      }  else if (+compareDate === +reservationEndDate.add(1, "days")) {
+        return {enabled: available, classes: "returnSet", tooltip: "Drop gear off at UPS by 3pm to be returned"};
       } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
         inRange = true;
       } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
@@ -522,24 +529,41 @@ Template.bundleReservationDatepicker.onRendered(function () {
       $("#rental-start").datepicker("update");
     }
   });
+  // Update calendar each time bundleOptions change
+  this.autorun(() => {
+    Session.get("selectedBundleOptions");
+    $("#rental-start").datepicker("update");
+  });
 
   $(document).on({
     mouseenter: function () {
       let $nextWeeks = $(this).parent().nextAll().find(".day");
       let $remainingDaysThisWeek = $(this).nextAll();
       let numDaysToHighlight = Session.get("reservationLength");
-
+      let $arrivalDay = $(this).prev();
+      let $returnDay;
+      if ($arrivalDay.length === 0) {
+        $arrivalDay = $(this).parent().prev().children().last();
+      }
+      $arrivalDay.addClass("arrive-by");
       if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
         $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
+        $returnDay = $remainingDaysThisWeek.slice(numDaysToHighlight, numDaysToHighlight + 1);
+        if ($returnDay.length === 0) {
+          $returnDay = $(this).parent().next().children().first();
+        }
+        $returnDay.addClass("return-by");
         return $remainingDaysThisWeek.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
       }
       $remainingDaysThisWeek.addClass("highlight");
       numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
       $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
+      $returnDay = $nextWeeks.slice(numDaysToHighlight, numDaysToHighlight + 1);
+      $returnDay.addClass("return-by");
       return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
     },
     mouseleave: function () {
-      $(".day").removeClass("highlight");
+      $(".day").removeClass("highlight").removeClass("arrive-by").removeClass("last-day").removeClass("return-by");
     }
   }, ".day:not(.disabled)");
 
@@ -589,8 +613,6 @@ Template.bundleReservationDatepicker.helpers({
     return cart.rentalDays;
   }
 });
-
-
 
 Template.bundleReservationDatepicker.events({
   "click .show-start": function () {
