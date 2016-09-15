@@ -2,6 +2,7 @@ import { $ } from "meteor/jquery";
 import { ReactionProduct } from "/lib/api";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
+import { _  } from 'meteor/underscore';
 import "bootstrap-datepicker";
 
 Template.rentalLengthOptions.helpers({
@@ -24,7 +25,7 @@ Template.rentalLengthOptions.helpers({
   rentalPriceBuckets: () => {
     const current = ReactionProduct.selectedVariant();
     if (current && current.rentalPriceBuckets) {
-      return current.rentalPriceBuckets;
+      return _.sortBy(current.rentalPriceBuckets, "duration");
     }
     return [];
   },
@@ -59,11 +60,27 @@ Template.rentalLengthOptions.helpers({
       return "checked";
     }
     return "";
+  },
+  isSelected: function () {
+    if (Session.get("reservationLength") === this.duration - 1) {
+      return "selected";
+    }
   }
+  // noMatchingRentalBucket: () => {
+  //   const currentResLength = Session.get("reservationLength");
+  //   const current = ReactionProduct.selectedVariant();
+  //   const currentBucket = current.rentalPriceBuckets.find(function (bucket) {
+  //     return bucket.duration - 1 === currentResLength;
+  //   });
+  //   if (!currentBucket) {
+  //     return `<option disabled selected>${currentResLength} Day Rental</option>`
+  //   }
+  //   return;
+  // }
 });
 
 Template.rentalLengthOptions.events({
-  "change input[name='reservationLength']:radio": function (event) {
+  "change input[name='reservationLength']:radio, change .rentalLengthSelect ": function (event) {
     Session.set("reservationLength", parseInt(event.currentTarget.value, 10));
     $("#rental-start").datepicker("update");
   }
