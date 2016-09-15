@@ -415,7 +415,6 @@ Template.bundleReservationDatepicker.onCreated(function () {
 
 
 Template.bundleReservationDatepicker.onRendered(function () {
-  console.log('we are rendering')
   const variants = ReactionProduct.getVariants();
   const firstChild = variants.find(function (variant) {
     return variant.ancestors.length === 1;
@@ -523,7 +522,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
       return {enabled: available, classes: classes, tooltip: tooltip};
     }
   });
-  let inventoryVariants = InventoryVariants.find();
+  const inventoryVariants = InventoryVariants.find();
   this.autorun(() => {
     if (inventoryVariants.fetch().length > 0) {
       $("#rental-start").datepicker("update");
@@ -537,8 +536,8 @@ Template.bundleReservationDatepicker.onRendered(function () {
 
   $(document).on({
     mouseenter: function () {
-      let $nextWeeks = $(this).parent().nextAll().find(".day");
-      let $remainingDaysThisWeek = $(this).nextAll();
+      const $nextWeeks = $(this).parent().nextAll().find(".day");
+      const $remainingDaysThisWeek = $(this).nextAll();
       let numDaysToHighlight = Session.get("reservationLength");
       let $arrivalDay = $(this).prev();
       let $returnDay;
