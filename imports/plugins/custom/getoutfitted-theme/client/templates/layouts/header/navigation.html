@@ -38,19 +38,21 @@
       <!-- Collapses -->
   <div class='row hidden-lg hidden-md hidden-sm text-center lead'>
     <div class="collapse navbar-collapse" id="hamburger-navbar">
-    <hr>
+      <hr>
       <div class="menu">
-      <ul class="nav navbar-nav">
-        {{> phoneNumberLink}}
-        {{! winterProductNavDropdown}}
-        {{> demoProductNavDropdown}}
-        {{> rentalProductNavDropdown}}
-        {{! aboutNavDropdown}}
-        <div class="languages hide">{{> i18nChooser}}</div>
-        <hr>
-        <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
-      </ul>
-    </div>
+        <ul class="nav navbar-nav">
+          {{> phoneNumberLink}}
+          {{> rentWomensLink}}
+          {{> rentMensLink}}
+          {{! winterProductNavDropdown}}
+          {{! demoProductNavDropdown}}
+          {{! rentalProductNavDropdown}}
+          {{! aboutNavDropdown}}
+          <div class="languages hide">{{> i18nChooser}}</div>
+          <hr>
+          <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
