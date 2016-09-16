@@ -34,8 +34,37 @@ formatAddress = function (address) {
   return shippingAddress;
 };
 
+// Note begin Transit for shipping will be shipping day end will be arrival day
+// On returning begin should be return ship date and end should be returndate
+function holidayCount(beginTransit, endTransit) {
+  // check(shippingOrReturning, String);
+  // check(useDate, Date);
+  // check(shipDate, Date);
+  const transitPack = Packages.findOne({
+    name: 'transit-times',
+    shopId: getShopId()
+  });
+  const beginDate = +beginTransit;
+  const endDate = + endTransit;
+  let holidays;
+  let numberOfHolidaysWhileInTransit = 0;
+  if (transitPack && transitPack.settings && transitPack.settings.shippingHolidays) {
+    holidays = transitPack.settings.shippingHolidays.map(function (date) {
+      return +date;
+    });
+    const holidaysDuringTransit = holidays.filter(function(holiday) {
+      if (holiday >= beginTransit && holiday <= endTransit) {
+        return holiday;
+      }
+    });
+    numberOfHolidaysWhileInTransit = holidaysDuringTransit.length;
+  }
+  return numberOfHolidaysWhileInTransit;
+}
+
 export class Transit {
   constructor(order) {
+    this.orderNumber = order.orderNumber;
     this.startTime = order.startTime;
     this.endTime = order.endTime;
     this.shipping = formatAddress(order.shipping[0].address);
@@ -120,9 +149,15 @@ export class Transit {
     }
 
 
-    const shippingDay = moment(start).subtract(this.transitTime  + weekendArrivalDays, 'days');
+    let shippingDay = moment(start).subtract(this.transitTime  + weekendArrivalDays, 'days');
     if (shippingDay.isoWeekday() + this.transitTime  >= 6) {
-      return shippingDay.subtract(2, 'days').toDate();
+      shippingDay.subtract(2, 'days');
+    }
+    const countOfHolidays = holidayCount(shippingDay.toDate(), this.startTime);
+    if (countOfHolidays > 0) {
+      Logger.info(`Order ${this.orderNumber} subtracted ${countOfHolidays} for holiday shipping`);
+      shippingDay.subtract(countOfHolidays, 'days');
+      shippingDay = moment(dateHelper.ifWeekendSetPreviousBizDay(shippingDay.toDate()));
     }
     return shippingDay.toDate();
   }
@@ -140,9 +175,15 @@ export class Transit {
     }
 
     const dropoffDay = moment(end).add(weekendReturnDays, 'days');
-    const returnDay = moment(end).add(this.transitTime + weekendReturnDays, 'days');
+    let returnDay = moment(end).add(this.transitTime + weekendReturnDays, 'days');
     if (dropoffDay.isoWeekday() + this.transitTime >= 6) {
-      return returnDay.add(2, 'days').toDate();
+      returnDay.add(2, 'days');
+    }
+    const countOfHolidays = holidayCount(this.endTime, returnDay.toDate());
+    if (countOfHolidays > 0) {
+      Logger.info(`Order ${this.orderNumber} added ${countOfHolidays} for holiday returning`);
+      returnDay.add(countOfHolidays, 'days');
+      returnDay = moment(dateHelper.ifWeekendSetNextBizDay(returnDay.toDate()));
     }
     return returnDay.toDate();
   }
