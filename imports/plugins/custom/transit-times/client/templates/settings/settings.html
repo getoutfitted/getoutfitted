@@ -16,12 +16,21 @@
     {{>afQuickField  name='settings.shippingAddress.countryCode'}}
     <br />
 
-    <p>List of postal codes that can be delivered to same-day</p>
+    <p><strong>List of postal codes that can be delivered to same-day</strong></p>
       {{>afQuickField  name='settings.localDeliveryPostalCodes'}}
     <br />
 
-    <p>List of Shipping Holidays</p>
+    <p><strong>List of Shipping Holidays:</strong></p>
+    {{#if denverLocal}}
       {{>afQuickField  name='settings.shippingHolidays' placeholder='YYYY-MM-DD'}}
+    {{else}}
+      <div class='row'>
+        {{#each sortedHolidays }}
+          <p>{{displayDate}}</p>
+        {{/each}}
+      </div>
+
+    {{/if}}
     <br />
 
     <p>Choose Shipping Carrier To Calculate</p>
