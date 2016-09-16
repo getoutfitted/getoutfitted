@@ -40,7 +40,7 @@ import "./productDetail/social.js";
 // import "./productDetail/variant.html";
 // import "./productDetail/variant.js";
 import "./productDetail/variantList.html"; // Forked to override optionTitle
-// import "./productDetail/variantList.js";
+import "./productDetail/variantList.js";
 import "./productDetail/variantWidget.html";
 import "./productDetail/variantWidget.js";
 import "./productDetail/rentalLengthOptions.html";
@@ -79,4 +79,4 @@ import "/imports/plugins/included/product-variant/client/templates/products/prod
 import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variantForm/childVariant.js";
 // Forked to override optionTitle
 // import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variantList/variantList.html";
-import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variantList/variantList.js";
+// import "/imports/plugins/included/product-variant/client/templates/products/productDetail/variants/variantList/variantList.js";

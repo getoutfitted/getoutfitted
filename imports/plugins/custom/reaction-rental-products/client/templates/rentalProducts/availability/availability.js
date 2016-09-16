@@ -91,7 +91,7 @@ Template.dashboardVariantAvailability.helpers({
     if (!unavailableDetails || unavailableDetails.length === 0) {
       return "hide";
     }
-    let denverDay = adjustLocalToDenverTime(day.start);
+    let denverDay = adjustLocalToDenverTime(day.start());
     let pos =  _.sortedIndex(unavailableDetails, {date: denverDay}, "date");
     if (unavailableDetails[pos]
       && +denverDay === +unavailableDetails[pos].date) {

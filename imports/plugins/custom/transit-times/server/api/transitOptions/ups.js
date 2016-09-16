@@ -4,9 +4,8 @@ import { Logger } from '/server/api';
 import { Meteor } from 'meteor/meteor';
 import { getAPIAuth } from './helpers';
 
-export const UPS = {};
 
-UPS.getUPSTransitTime = function (address) {
+export const UPSAPI = function (address) {
   check(address, {
     address1: String,
     address2: Match.Optional(String),
@@ -58,6 +57,7 @@ UPS.getUPSTransitTime = function (address) {
       }
     });
     let bizDays = groundInfo.EstimatedArrival.BusinessTransitDays;
+    Logger.info('UPS returned TransitTime');
     return parseInt(bizDays, 10);
   }
 

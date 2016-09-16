@@ -1,13 +1,19 @@
+import { Meteor } from 'meteor/meteor';
+import { JsonRoutes }  from 'meteor/simple:json-routes';
+import { Packages } from '/lib/collections';
+import { getShopId } from '/lib/api';
+import { Logger } from '/server/api';
+
 function verifyPreSharedKey(key, service) {
-  const af = ReactionCore.Collections.Packages.findOne({
+  const af = Packages.findOne({
     name: 'reaction-advanced-fulfillment',
-    shopId: ReactionCore.getShopId()
+    shopId: getShopId()
   });
   if (af && af.settings && af.settings[service].enabled) {
     return key === af.settings[service].preSharedKey;
   }
 
-  ReactionCore.Log.error('Error verifying preSharedKey because AfterShip preshared key not found. ');
+  Logger.error('Error verifying preSharedKey because AfterShip preshared key not found. ');
   return false;
 }
 
@@ -15,7 +21,7 @@ JsonRoutes.add("post", "/dashboard/advanced-fullfillment/webhooks/aftership/post
 
   let keyMatches =  verifyPreSharedKey(req.query.key, 'aftership');
   if (keyMatches) {
-    ReactionCore.Log.info('Successfully Authenticated Aftership Key.');
+    Logger.info('Successfully Authenticated Aftership Key.');
     Meteor.call('aftership/processHook', req.body);
     return JsonRoutes.sendResult(res, {code: 200});
   }
