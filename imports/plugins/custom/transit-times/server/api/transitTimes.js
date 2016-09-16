@@ -108,7 +108,7 @@ export class Transit {
       Logger.info('TransitTimeCache found transitTime');
       return transitTime[provider + 'TransitTime'];
     } else {
-      Logger.warn(`Transit Time for ${this.postal} is not in transtimescache` );
+      Logger.warn(`Transit Time for ${this.postal} is not in transtimescache`);
       return false;
     }
   }

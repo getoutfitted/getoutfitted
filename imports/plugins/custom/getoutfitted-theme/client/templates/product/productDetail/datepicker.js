@@ -9,7 +9,7 @@ import "bootstrap-datepicker";
 import moment from "moment";
 import "twix";
 import "moment-timezone";
-import RentalProducts  from '/imports/plugins/custom/reaction-rental-products/lib/api';
+import RentalProducts  from "/imports/plugins/custom/reaction-rental-products/lib/api";
 
 const TransitTimes = {};
 
@@ -18,7 +18,7 @@ TransitTimes.calculateShippingDay = function (startTime, timeInTransit) {
     return startTime;
   }
 
-  let start = moment(startTime);
+  const start = moment(startTime);
   let weekendArrivalDays = 0;
   if (start.isoWeekday() === 6) {
     weekendArrivalDays = weekendArrivalDays + 1;
@@ -27,9 +27,9 @@ TransitTimes.calculateShippingDay = function (startTime, timeInTransit) {
   }
 
 
-  let shippingDay = moment(start).subtract(timeInTransit + weekendArrivalDays, 'days');
+  const shippingDay = moment(start).subtract(timeInTransit + weekendArrivalDays, "days");
   if (shippingDay.isoWeekday() + timeInTransit >= 6) {
-    return shippingDay.subtract(2, 'days').toDate();
+    return shippingDay.subtract(2, "days").toDate();
   }
   return shippingDay.toDate();
 };
@@ -42,7 +42,7 @@ TransitTimes.calculateReturnDay = function (endTime, timeInTransit) {
     return endTime;
   }
 
-  let end = moment(endTime);
+  const end = moment(endTime);
   let weekendReturnDays = 0;
   if (end.isoWeekday() === 6) {
     weekendReturnDays = weekendReturnDays + 2;
@@ -50,70 +50,68 @@ TransitTimes.calculateReturnDay = function (endTime, timeInTransit) {
     weekendReturnDays = weekendReturnDays + 1;
   }
 
-  let dropoffDay = moment(end).add(weekendReturnDays, 'days');
-  let returnDay = moment(end).add(timeInTransit + weekendReturnDays, 'days');
+  const dropoffDay = moment(end).add(weekendReturnDays, "days");
+  const returnDay = moment(end).add(timeInTransit + weekendReturnDays, "days");
   if (dropoffDay.isoWeekday() + timeInTransit >= 6) {
-    return returnDay.add(2, 'days').toDate();
+    return returnDay.add(2, "days").toDate();
   }
   return returnDay.toDate();
 };
 
 // TODO: Move these to getoutfitted client API
 function adjustLocalToDenverTime(time) {
-  let here = moment(time);
-  let denver = here.clone().tz("America/Denver");
+  const here = moment(time);
+  const denver = here.clone().tz("America/Denver");
   denver.add(here.utcOffset() - denver.utcOffset(), "minutes");
   return denver.toDate();
 }
 
 function adjustDenverToLocalTime(time) {
-  let denver = moment(time).tz("America/Denver");
-  let here = moment(time);
+  const denver = moment(time).tz("America/Denver");
+  const here = moment(time);
   here.add(denver.utcOffset() - here.utcOffset(), "minutes");
   return here.toDate();
 }
 
 const today = adjustLocalToDenverTime(moment().startOf("day"));
 
-function includedWeekendDays(startDay, endDay) {
-  const dayRange = moment(startDay).endOf("day").twix(moment(endDay).endOf("day"), {allDay: true});
-  const days = dayRange.count("days");
-  const weeks = Math.floor(days / 7);
-  const remainingDays = days % 7;
-  let skipDays = 0;
+// function includedWeekendDays(startDay, endDay) {
+//   const dayRange = moment(startDay).endOf("day").twix(moment(endDay).endOf("day"), {allDay: true});
+//   const days = dayRange.count("days");
+//   const weeks = Math.floor(days / 7);
+//   const remainingDays = days % 7;
+//   let skipDays = 0;
+//   skipDays = 2 * weeks;
+//   if (remainingDays === 0) {
+//     return skipDays;
+//   }
+//   const leftovers = moment(startDay).twix(moment(startDay).add(remainingDays - 1, "days"));
+//   const iter = leftovers.iterate("days");
+//   while (iter.hasNext()) {
+//     let next = iter.next();
+//     if (next.isoWeekday() >= 6) {
+//       skipDays++;
+//     }
+//   }
+//   return skipDays;
+// }
+// // TODO: Add holiday calculations
+// function calcShippingDay(startDay, timeInTransit) {
+//   let start = moment(startDay);
+//   let bonusTransitDays = 0;
+//   if (start.isoWeekday() === 6) {
+//     bonusTransitDays = bonusTransitDays + 1;
+//   } else if (start.isoWeekday() === 7) {
+//     bonusTransitDays = bonusTransitDays + 2;
+//   }
 
-  skipDays = 2 * weeks;
-  if (remainingDays === 0) {
-    return skipDays;
-  }
-  const leftovers = moment(startDay).twix(moment(startDay).add(remainingDays - 1, "days"));
-  const iter = leftovers.iterate("days");
-  while (iter.hasNext()) {
-    let next = iter.next();
-    if (next.isoWeekday() >= 6) {
-      skipDays++;
-    }
-  }
-  return skipDays;
-}
-
-// TODO: Add holiday calculations
-function calcShippingDay(startDay, timeInTransit) {
-  let start = moment(startDay);
-  let bonusTransitDays = 0;
-  if (start.isoWeekday() === 6) {
-    bonusTransitDays = bonusTransitDays + 1;
-  } else if (start.isoWeekday() === 7) {
-    bonusTransitDays = bonusTransitDays + 2;
-  }
-
-  shippingDays = timeInTransit;
-  let shippingDay = moment(start).subtract(timeInTransit + bonusTransitDays, "days");
-  if (shippingDay.isoWeekday() >= 6 || shippingDay.isoWeekday() + shippingDays >= 6) {
-    return shippingDay.subtract(2, "days");
-  }
-  return shippingDay;
-}
+//   shippingDays = timeInTransit;
+//   let shippingDay = moment(start).subtract(timeInTransit + bonusTransitDays, "days");
+//   if (shippingDay.isoWeekday() >= 6 || shippingDay.isoWeekday() + shippingDays >= 6) {
+//     return shippingDay.subtract(2, "days");
+//   }
+//   return shippingDay;
+// }
 
 Template.reservationDatepicker.onCreated(function () {
   const variants = ReactionProduct.getVariants(this.data._id);
@@ -124,12 +122,10 @@ Template.reservationDatepicker.onCreated(function () {
     ReactionProduct.setCurrentVariant(firstChild._id);
     Session.setDefault("selectedVariantId", firstChild._id);
   }
-  // Session.setDefault("selectedVariantId", ReactionProduct.selectedVariantId());
   this.autorun(() => {
     if (Session.get("selectedVariantId")) {
-
       this.subscribe("productReservationStatus", Session.get("selectedVariantId"));
-      // $("#rental-start").datepicker("update");
+      $("#rental-start").datepicker("update");
     }
   });
 });
@@ -141,25 +137,6 @@ Template.reservationDatepicker.onRendered(function () {
     return variant.ancestors.length === 2;
   });
   const cart = Cart.findOne();
-  // Two calender playground
-  // let startDate = cart.startTime || "+4d";
-  // let endDate = cart.endTime ||  "+540d";
-  //   $('#startTime').datepicker({
-  //     startDate: startDate,
-  //     endDate: endDate,
-  //     maxViewMode: 0
-  //   }).on('changeDate', function (e) {
-  //     Cart.update({_id: cart._id}, {
-  //       $set: { startTime: e.date }
-  //     });
-  //     $('#endTime').datepicker("setStartDate", Cart.findOne().startTime);
-  //   });
-
-  //   $('#endTime').datepicker({
-  //     startDate: startDate,
-  //     endDate: endDate,
-  //     maxViewMode: 0
-  //   });
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
   // So duration is default to 5 for a 6 day rental.
@@ -178,40 +155,34 @@ Template.reservationDatepicker.onRendered(function () {
   $("#rental-start").datepicker({
     startDate: "+4d",
     autoclose: true,
-    // daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
     endDate: "+540d",
     maxViewMode: 0,
     beforeShowDay: function (date) {
-      let reservationLength = Session.get("reservationLength");
+      const reservationLength = Session.get("reservationLength");
       let available;
       let classes = "";
       let tooltip = "";
-      // if disabled day, skip this
-      // if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
-      //   available = false;
-      //   tooltip = "Please pick an available Thursday to take delivery."
-      // } else {
-        // Change date checkers to check against Denver time
-        const s = adjustLocalToDenverTime(moment(date).startOf("day"));
-        const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
-        const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
-        const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4 ^^
-        const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
-          Session.get("selectedVariantId"),
-          {startTime: shippingDay, endTime: returnDay}
-        );
+      // Change date checkers to check against Denver time
+      const s = adjustLocalToDenverTime(moment(date).startOf("day"));
+      const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
+      const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
+      const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4 ^^
+      const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
+        Session.get("selectedVariantId"),
+        {startTime: shippingDay, endTime: returnDay}
+      );
 
-        available = inventoryVariantsAvailable.length > 0;
-        if (available) {
-          if (+s > +today) {
-            tooltip = "Available!";
-          } else {
-            tooltip = "Pick a date in the future";
-          }
+      available = inventoryVariantsAvailable.length > 0;
+      if (available) {
+        if (+s > +today) {
+          tooltip = "Available!";
         } else {
-          tooltip = "Fully Booked";
+          tooltip = "Pick a date in the future";
         }
-      // }
+      } else {
+        tooltip = "Fully Booked";
+      }
+
 
       let selectedDate = $("#rental-start").val();
       if (!selectedDate) {
@@ -219,7 +190,7 @@ Template.reservationDatepicker.onRendered(function () {
       }
       selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
       reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
-      let compareDate = moment(date).startOf("day");
+      const compareDate = moment(date).startOf("day");
       if (+compareDate === +selectedDate) {
         if (!available) {
           // if dates are unavailable, reset dates;
@@ -256,7 +227,7 @@ Template.reservationDatepicker.onRendered(function () {
     }
   });
 
-  let inventoryVariants = InventoryVariants.find();
+  const inventoryVariants = InventoryVariants.find();
   this.autorun(() => {
     if (inventoryVariants.fetch().length > 0) {
       $("#rental-start").datepicker("update");
@@ -265,8 +236,8 @@ Template.reservationDatepicker.onRendered(function () {
 
   $(document).on({
     mouseenter: function () {
-      let $nextWeeks = $(this).parent().nextAll().find(".day");
-      let $remainingDaysThisWeek = $(this).nextAll();
+      const $nextWeeks = $(this).parent().nextAll().find(".day");
+      const $remainingDaysThisWeek = $(this).nextAll();
       let numDaysToHighlight = Session.get("reservationLength");
       let $arrivalDay = $(this).prev();
       let $returnDay;
@@ -316,7 +287,7 @@ Template.reservationDatepicker.onRendered(function () {
 
 Template.reservationDatepicker.helpers({
   startDate: function () {
-    let cart = Cart.findOne();
+    const cart = Cart.findOne();
     if (cart && cart.startTime) {
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
     }
@@ -337,7 +308,7 @@ Template.reservationDatepicker.helpers({
     if (Session.get("cartRentalLength")) {
       return Session.get("cartRentalLength");
     }
-    let cart = Cart.findOne();
+    const cart = Cart.findOne();
     return cart.rentalDays;
   }
 });
@@ -396,7 +367,6 @@ Template.bundleReservationDatepicker.onCreated(function () {
       $size: 1
     }
   });
-  // if (bundleVariants && bundleVariants.bundleProducts) {
   const defaultSelectedVariants = [];
   _.each(bundleVariants.bundleProducts, function (bundleOptions) {
     defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
@@ -438,30 +408,24 @@ Template.bundleReservationDatepicker.onRendered(function () {
   $("#rental-start").datepicker({
     startDate: "+4d",
     autoclose: true,
-    // daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
     endDate: "+540d",
     maxViewMode: 0,
     beforeShowDay: function (date) {
-      let reservationLength = Session.get("reservationLength");
+      const reservationLength = Session.get("reservationLength");
       let available;
       let classes = "";
       let tooltip = "";
-      // if disabled day, skip this
-      // if (_.contains([1, 2, 3, 5, 6, 7], moment(date).isoWeekday())) {
-      //   available = false;
-      //   tooltip = "Please pick an available Thursday to take delivery.";
-      // } else {
         // Change date checkers to check against Denver time
       const s = adjustLocalToDenverTime(moment(date).startOf("day"));
       const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
       const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
       const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4
-      let selectedVariantIds = Session.get("selectedBundleOptions");
-      let selectedVariantsCount = _.countBy(selectedVariantIds);
+      const selectedVariantIds = Session.get("selectedBundleOptions");
+      const selectedVariantsCount = _.countBy(selectedVariantIds);
         // Should give us {variantId: 1, variantId2: 1}
-      let keys = Object.keys(selectedVariantsCount);
+      const keys = Object.keys(selectedVariantsCount);
       available = _.every(keys, function (variantId) {
-        let inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
+        const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
           variantId,
           {startTime: shippingDay, endTime: returnDay},
           selectedVariantsCount[variantId]
@@ -485,7 +449,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
       selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
       reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
 
-      let compareDate = moment(date).startOf("day");
+      const compareDate = moment(date).startOf("day");
 
       if (+compareDate === +selectedDate) {
         if (!available) {
@@ -587,7 +551,7 @@ Template.bundleReservationDatepicker.onRendered(function () {
 
 Template.bundleReservationDatepicker.helpers({
   startDate: function () {
-    let cart = Cart.findOne();
+    const cart = Cart.findOne();
     if (cart && cart.startTime) {
       return moment(adjustDenverToLocalTime(moment(cart.startTime))).format("MM/DD/YYYY");
     }
@@ -608,7 +572,7 @@ Template.bundleReservationDatepicker.helpers({
     if (Session.get("cartRentalLength")) {
       return Session.get("cartRentalLength");
     }
-    let cart = Cart.findOne();
+    const cart = Cart.findOne();
     return cart.rentalDays;
   }
 });
