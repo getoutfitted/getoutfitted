@@ -107,7 +107,30 @@
   }
 }
 
-@media (max-width: @screen-xs-max) and (max-width: @screen-sm-max) {
+@media (max-width: @screen-xs-max) {
+  .hero:after { padding-top: 72.5%; } // 5:3 ratio
+  .hero-container h1 {
+    margin-top: 35px;
+    padding: 0 15%;
+    font-size: 28px;
+  }
+  .hero-container h2 {
+    padding: 0 18%;
+    font-size: 15px;
+  }
+  .hero-container.hero-press {
+    background-image: url('/packages/getoutfitted_static-pages/public/images/press-lead.jpg');
+    background-position: center;
+
+    h1 {
+      color: @white;
+      margin-top: 20%;
+    }
+  }
+}
+
+
+@media (min-width: @screen-xs-max) and (max-width: @screen-sm-max) {
   .hero:after { padding-top: 65%; } // 5:3 ratio
   .hero-container h1 {
     margin-top: 30px;
