@@ -100,40 +100,6 @@ Template.goVariantList.helpers({
       return this.title;
     }
     return "Option";
-    // const variants = ReactionProduct.getVariants();
-    // let optVariant;
-    // if (variants.length > 0) {
-    //   const current = ReactionProduct.selectedVariant();
-    //   if (!current) {
-    //     return "Option";
-    //   }
-    //   if (current.ancestors.length === 1) {
-    //     optVariant = _.find(variants, function (variant) {
-    //       if (typeof variant.ancestors[1] === "string" &&
-    //         variant.optionTitle &&
-    //         variant.type !== "inventory"
-    //       ) {
-    //         return variant;
-    //       }
-    //       return undefined;
-    //     });
-    //   } else {
-    //     optVariant = _.find(variants, function (variant) {
-    //       if (typeof variant.ancestors[1] === "string" &&
-    //         variant.ancestors.length === current.ancestors.length &&
-    //         variant.ancestors[1] === current.ancestors[1] &&
-    //         variant.optionTitle
-    //       ) {
-    //         return variant.optionTitle;
-    //       }
-    //       return undefined;
-    //     });
-    //   }
-    // }
-    // if (optVariant) {
-    //   return optVariant.optionTitle;
-    // }
-    // return "Option";
   },
   isAvailable: function () {
     const inventoryManaged = this.inventoryManagement;

@@ -34,7 +34,7 @@ Meteor.methods({
     let datesToReserve = [];
     let detailsToReserve = [];
     const turnaroundTime = RentalProducts.getTurnaroundTime(); // Turnaround Time is defaulted to 1d
-    let shippingTime = transit.calculateTotalShippingDays(); //TransitTimes.calculateTotalShippingDaysByOrder(order); // Total days not business days
+    let shippingTime = transit.calculateTotalShippingDays(); // Total days not business days
     let returnTime = transit.calculateTotalReturnDays();
     let firstDayToReserve = transit.shipmentDate;
     let lastDayToReserve = moment(transit.returnDate).add(turnaroundTime, "days").toDate();

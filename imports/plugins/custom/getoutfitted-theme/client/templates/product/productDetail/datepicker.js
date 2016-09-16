@@ -155,7 +155,6 @@ Template.reservationDatepicker.onRendered(function () {
   $("#rental-start").datepicker({
     startDate: "+4d",
     autoclose: true,
-    // daysOfWeekDisabled: [0, 1, 2, 3, 5, 6],
     endDate: "+540d",
     maxViewMode: 0,
     beforeShowDay: function (date) {
