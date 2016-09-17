@@ -100,6 +100,11 @@ export const TransitTimesPackageConfig = new SimpleSchema([
     'settings.localDeliveryPostalCodes': {
       type: [String],
       optional: true
+    },
+    'settings.shippingHolidays': {
+      type: [Date],
+      optional: true,
+      label: 'Designated Holidays by shipping provider'
     }
   }
 ]);
