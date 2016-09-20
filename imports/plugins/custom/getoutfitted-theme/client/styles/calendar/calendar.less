@@ -31,7 +31,7 @@
   }
 
   .day {
-    padding: 14px;
+    padding: 13px;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -209,5 +209,12 @@
     background: transparent;
     text-transform: none;
     margin-bottom: 30px;
+  }
+}
+
+// Mobile styles
+@media (max-width: @screen-xs-max) {
+  .datepicker-days .day {
+    padding: 10px;
   }
 }

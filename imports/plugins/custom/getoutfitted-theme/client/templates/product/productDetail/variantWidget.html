@@ -133,8 +133,9 @@
     <div class="row">
       <form class="form-horizontal bundle-options">
         <div class="form-group">
-          <label class="control-label col-sm-6" for="{{productId}}">{{displayLabel}}</label>
-          <div class="col-sm-6">
+          <!-- <label class="control-label col-xs-4 text-right" for="{{productId}}">{{displayLabel}}</label> -->
+          <div class="input-group col-xs-10">
+            <span class="input-group-addon"><label class="control-label" for="{{productId}}">{{displayLabel}}</label></span>
             <select data-index="{{@index}}" id="{{productId}}" class="form-control selectedProduct">
               {{#each variantIds}}
                 <option value='{{variantId}}'>{{variantDisplay}}</option>
