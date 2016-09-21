@@ -6,18 +6,7 @@ if [ "${INSTALL_PHANTOMJS}" = "true" ]; then
 
   printf "\n[-] Installing Phantom.js...\n\n"
 
-  # Script from: https://gist.github.com/julionc/7476620
-  # This script install PhantomJS in your Debian/Ubuntu System
-  #
-  # This script must be run as root:
-  # sudo sh install_phantomjs.sh
-  #
-
-  if [[ $EUID -ne 0 ]]; then
-      echo "This script must be run as root" 1>&2
-      exit 1
-  fi
-
+  # Script based off of phantom installation script found here: https://gist.github.com/julionc/7476620
   PHANTOM_VERSION="phantomjs-2.1.1"
   ARCH=$(uname -m)
 
@@ -39,4 +28,5 @@ if [ "${INSTALL_PHANTOMJS}" = "true" ]; then
   ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin/phantomjs
   ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/bin/phantomjs
 
+  phantomjs --version
 fi
