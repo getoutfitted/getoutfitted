@@ -313,11 +313,11 @@ Template.productDetail.events({
     let productId;
     let qtyField;
     let quantity;
-    let currentVariant = ReactionProduct.selectedVariant();
-    let currentProduct = ReactionProduct.selectedProduct();
+    const currentVariant = ReactionProduct.selectedVariant();
+    const currentProduct = ReactionProduct.selectedProduct();
 
-    let cart = Cart.findOne({userId: Meteor.userId() });
-    if (!cart.startTime && this.functionalType === "rental") {
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    if (!cart.startTime && (this.functionalType === "rental" || this.functionalType === "bundleVariant")) {
       Alerts.inline("Please select an arrival date before booking", "error", {
         placement: "datepicker",
         autoHide: 10000
@@ -371,7 +371,13 @@ Template.productDetail.events({
                 Logger.error("Failed to add to cart.", error);
                 return error;
               }
-
+              if (currentVariant.functionalType === "bundleVariant") {
+                Meteor.call("productBundler/updateCartItems",
+                  productId,
+                  currentVariant._id,
+                  Session.get("selectedBundleOptions")
+                );
+              }
               return true;
               // TODO: Re-add analytics tracking
               // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
