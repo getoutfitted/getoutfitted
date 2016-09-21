@@ -4,7 +4,7 @@ import { Cart, Products } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
-import { Logger } from "/client/api";
+import { i18next, Logger } from "/client/api";
 // load modules
 // require("jquery-ui");
 import "jquery-ui";
