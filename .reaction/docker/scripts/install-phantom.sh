@@ -28,9 +28,7 @@ if [ "${INSTALL_PHANTOMJS}" = "true" ]; then
   PHANTOM_JS="$PHANTOM_VERSION-linux-$ARCH"
 
   apt-get update
-  apt-get install build-essential chrpath libssl-dev libxft-dev -y
-  apt-get install libfreetype6 libfreetype6-dev -y
-  apt-get install libfontconfig1 libfontconfig1-dev -y
+  apt-get install build-essential wget chrpath libssl-dev libxft-dev -y
 
   cd ~
   wget https://github.com/Medium/phantomjs/releases/download/v2.1.1/$PHANTOM_JS.tar.bz2
