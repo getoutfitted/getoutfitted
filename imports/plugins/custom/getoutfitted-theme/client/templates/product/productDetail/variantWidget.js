@@ -99,9 +99,8 @@ Template.variantWidget.helpers({
             Session.set("compatibleReservationAvailable", {
               available: false,
               reason: `<strong>Oh no!</strong><br />
-                      We apologize for the inconvinience! Currently we can't rent camping products and demo products at the same time right now.
-                      <br /><br />Please either finish checking out with your current reservation and come back and book your demo
-                      equipment separately or remove any items currently in your cart to book this item now.`
+                      It appears that the product you are browsing is not available for your selected rental dates.
+                      <br /><br />Please <a href="/catalog">try another product</a>.`
             });
             return {};
           }
@@ -215,9 +214,8 @@ Template.bundleVariantWidget.helpers({
             Session.set("compatibleReservationAvailable", {
               available: false,
               reason: `<strong>Oh no!</strong><br />
-                      We apologize for the inconvinience! Currently we can't rent camping products and demo products at the same time right now.
-                      <br /><br />Please either finish checking out with your current reservation and come back and book your camping
-                      equipment separately or remove any items currently in your cart to book this item now.`
+                      It appears that the product you are browsing is not available for your selected rental dates.
+                      <br /><br />Please <a href="/catalog">try another product</a>.`
             });
             return {};
           }
