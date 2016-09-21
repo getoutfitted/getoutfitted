@@ -15,7 +15,7 @@ if [ "${INSTALL_PHANTOMJS}" = "true" ]; then
 
   cd ~
   #wget https://github.com/Medium/phantomjs/releases/download/v2.1.1/$PHANTOM_JS.tar.bz2
-  https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
+  wget https://bitbucket.org/ariya/phantomjs/downloads/$PHANTOM_JS.tar.bz2
   tar xvjf $PHANTOM_JS.tar.bz2
 
   mv $PHANTOM_JS.tar.bz2 /usr/local/share/
