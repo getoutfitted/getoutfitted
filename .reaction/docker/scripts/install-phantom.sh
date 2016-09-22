@@ -20,4 +20,6 @@ if [ "${INSTALL_PHANTOMJS}" = "true" ]; then
   ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/share/phantomjs
   ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin/phantomjs
   ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/bin/phantomjs
+  
+  phantomjs -v
 fi
