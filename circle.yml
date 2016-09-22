@@ -25,7 +25,7 @@ test:
     - SERVER_TEST_REPORTER="dot" meteor test --once --full-app --headless --driver-package dispatch:mocha
     - docker-compose -f .getoutfitted/docker/docker-compose.test.yml up -d; sleep 30
     - curl --retry 10 --retry-delay 10 -v http://localhost
-    - if [ "${INSTALL_PHANTOMJS}" = "true" ]; then phantomjs -v; fi
+    - if hash phantomjs 2>/dev/null; then phantomjs -v; else echo "PhantomJS not installed"; fi
 
 deployment:
   development:
