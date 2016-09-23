@@ -5,9 +5,6 @@ import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { i18next, Logger } from "/client/api";
-// load modules
-// require("jquery-ui");
-import "jquery-ui";
 
 function stickyWidget() {
   const bubbleTop = 75; // This must be set identically to the CSS bubble;
@@ -99,9 +96,8 @@ Template.variantWidget.helpers({
             Session.set("compatibleReservationAvailable", {
               available: false,
               reason: `<strong>Oh no!</strong><br />
-                      We apologize for the inconvinience! Currently we can't rent camping products and demo products at the same time right now.
-                      <br /><br />Please either finish checking out with your current reservation and come back and book your demo
-                      equipment separately or remove any items currently in your cart to book this item now.`
+                      It appears that the product you are browsing is not available for your selected rental dates.
+                      <br /><br />Please <a href="/catalog">try another product</a>.`
             });
             return {};
           }
@@ -215,9 +211,8 @@ Template.bundleVariantWidget.helpers({
             Session.set("compatibleReservationAvailable", {
               available: false,
               reason: `<strong>Oh no!</strong><br />
-                      We apologize for the inconvinience! Currently we can't rent camping products and demo products at the same time right now.
-                      <br /><br />Please either finish checking out with your current reservation and come back and book your camping
-                      equipment separately or remove any items currently in your cart to book this item now.`
+                      It appears that the product you are browsing is not available for your selected rental dates.
+                      <br /><br />Please <a href="/catalog">try another product</a>.`
             });
             return {};
           }
@@ -254,113 +249,6 @@ Template.bundleVariantWidget.helpers({
       return compatibleReservationAvailable.reason;
     }
     return "";
-  }
-});
-
-Template.bundleVariantWidget.events({
-  "click #bundle-add-to-cart": function (event, template) {
-    let productId;
-    let qtyField;
-    let quantity;
-    let currentVariant = ReactionProduct.selectedVariant();
-    let currentProduct = ReactionProduct.selectedProduct();
-    let cart = Cart.findOne({userId: Meteor.userId() });
-    if (!cart.startTime) {
-      Alerts.inline("Please select an arrival date before booking", "error", {
-        placement: "datepicker",
-        autoHide: 10000
-      });
-      return [];
-    }
-    if (currentVariant) {
-      if (currentVariant.ancestors.length === 1) {
-        const options = ReactionProduct.getVariants(currentVariant._id);
-
-        if (options.length > 0) {
-          Alerts.inline("Please choose options before adding to cart", "warning", {
-            placement: "productDetail",
-            i18nKey: "productDetail.chooseOptions",
-            autoHide: 10000
-          });
-          return [];
-        }
-      }
-
-      if (currentVariant.inventoryPolicy && currentVariant.inventoryQuantity < 1) {
-        Alerts.inline("Sorry, this item is out of stock!", "warning", {
-          placement: "productDetail",
-          i18nKey: "productDetail.outOfStock",
-          autoHide: 10000
-        });
-        return [];
-      }
-      qtyField = template.$('input[name="addToCartQty"]');
-      quantity = parseInt(qtyField.val(), 10);
-
-      if (quantity < 1) {
-        quantity = 1;
-      }
-
-      if (!this.isVisible) {
-        Alerts.inline("Publish product before adding to cart.", "error", {
-          placement: "productDetail",
-          i18nKey: "productDetail.publishFirst",
-          autoHide: 10000
-        });
-      } else {
-        productId = currentProduct._id;
-
-        if (productId) {
-          Meteor.call("cart/addToCart", productId, currentVariant._id, quantity,
-            function (error) {
-              if (error) {
-                Logger.error("Failed to add to cart.", error);
-                return error;
-              }
-              Meteor.call("productBundler/updateCartItems",
-                productId,
-                currentVariant._id,
-                Session.get("selectedBundleOptions")
-              );
-              // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
-              // trackReadyProduct.quantity = quantity;
-              // trackReadyProduct["Reservation Start"] = cart.startTime;
-              // trackReadyProduct["Reservation End"] = cart.endTime;
-              // trackReadyProduct["Reservation Length"] = cart.rentalDays;
-              // return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
-            }
-          );
-        }
-
-        template.$(".variant-select-option").removeClass("active");
-        // XXX: GETOUTFITTED MOD - Remove set current variant to null
-        qtyField.val(1);
-        // scroll to top on cart add
-        $("html,body").animate({
-          scrollTop: 0
-        }, 0);
-        // slide out label
-        let addToCartText = i18next.t("productDetail.addedToCart");
-        let addToCartTitle = currentProduct.title || "";
-        if (currentVariant && currentVariant.size && currentVariant.color) {
-          addToCartTitle = addToCartTitle + ` ${currentVariant.size} ${currentVariant.color}`;
-        }
-
-        $(".cart-alert-text").text(`${quantity} ${addToCartTitle} ${addToCartText}`);
-        return $(".cart-alert").toggle("slide", {
-          direction: i18next.t("languageDirection") === "rtl" ? "left" : "right",
-          width: currentVariant.title.length + 50 + "px"
-        }, 600).delay(4000).toggle("slide", {
-          direction: i18next.t("languageDirection") === "rtl" ? "left" : "right"
-        });
-      }
-    } else {
-      Alerts.inline("Select an option before adding to cart", "warning", {
-        placement: "productDetail",
-        i18nKey: "productDetail.selectOption",
-        autoHide: 8000
-      });
-    }
   }
 });
 
