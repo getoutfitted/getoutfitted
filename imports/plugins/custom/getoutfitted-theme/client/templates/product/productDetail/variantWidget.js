@@ -4,7 +4,9 @@ import { Cart, Products } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
-import { i18next, Logger } from "/client/api";
+import { InventoryVariants } from "/imports/plugins/custom/reaction-rental-products/lib/collections";
+import _ from "lodash";
+// import { Logger } from "/client/api";
 
 function stickyWidget() {
   const bubbleTop = 75; // This must be set identically to the CSS bubble;
@@ -252,14 +254,60 @@ Template.bundleVariantWidget.helpers({
   }
 });
 
-Template.bundleVariantOptions.onCreated(function () {
-  Tracker.autorun(() => {
-    let selectedOptions = Session.get("selectedBundleOptions");
-    if (selectedOptions) {
-      this.subscribe("bundleReservationStatus", selectedOptions);
+// Template.bundleVariantOptions.onCreated(function () {
+//   Tracker.autorun(() => {
+//     const selectedOptions = Session.get("selectedBundleOptions");
+//     if (selectedOptions) {
+//       this.subscribe("bundleReservationStatus", selectedOptions);
+//     }
+//   });
+//   this.subscribe("productTypeAndTitle");
+// });
+
+Template.bundleVariantOptions.onRendered(function () {
+  const cart = Cart.findOne({userId: Meteor.userId()});
+  let start;
+  let end;
+  if (cart.startTime) {
+    if (cart.startTime.getDate() <= 7) {
+      start = moment(cart.startTime).startOf("month").subtract(10, "days").toDate();
+    } else {
+      start = moment(cart.startTime).startOf("month").subtract(6, "days").toDate();
     }
-  });
+  } else {
+    // start with today + 5
+    start = moment().add(5, "days").toDate();
+  }
+  if (cart.endTime) {
+    if (cart.endTime.getDate() >= 24) {
+      end = moment(cart.endTime).endOf("month").add(10, "days").toDate();
+    } else {
+      end = moment(cart.endTime).endOf("month").add(6, "days").toDate();
+    }
+  } else {
+    end = moment().add(1, "month").add(5, "days").toDate();
+  }
+
+  const selectedOptions = Session.get("selectedBundleOptions");
+  const instance = this;
+  if (selectedOptions) {
+    // Subscribes to variantReservationStatus for each variant that is currently
+    // a selected option. This returns
+    selectedOptions.forEach(function (variantId) {
+      const subExists = InventoryVariants.findOne({productId: variantId});
+      if (!subExists) {
+        console.log(`subscribing to: ${variantId}`);
+        instance.subscribe("variantReservationStatus", {start: start, end: end}, variantId);
+      }
+    });
+  }
+  // this.subscribe("bundleReservationStatus", selectedOptions);
   this.subscribe("productTypeAndTitle");
+
+  Tracker.autorun(function () {
+    console.log("selectedOptions", selectedOptions);
+    console.log("inventoryVariants", _.countBy(_.map(InventoryVariants.find().fetch(), 'productId')));
+  });
 });
 
 Template.bundleVariantOptions.helpers({

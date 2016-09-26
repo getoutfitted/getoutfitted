@@ -375,8 +375,15 @@ Template.bundleReservationDatepicker.onCreated(function () {
   this.autorun(() => {
     if (Session.get("selectedBundleOptions")) {
       const selectedOptions = Session.get("selectedBundleOptions");
+      const instance = this;
       if (selectedOptions) {
-        this.subscribe("bundleReservationStatus", selectedOptions);
+        // this.subscribe("bundleReservationStatus", selectedOptions);
+        selectedOptions.forEach(function (variantId) {
+          instance.subscribe("variantReservationStatus",
+            {start: new Date(), end: moment().add(1, "month").toDate()},
+            variantId
+          );
+        });
         $("#rental-start").datepicker("update");
       }
     }
