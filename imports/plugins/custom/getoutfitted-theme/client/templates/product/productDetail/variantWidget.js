@@ -296,7 +296,7 @@ Template.bundleVariantOptions.onRendered(function () {
     selectedOptions.forEach(function (variantId) {
       const subExists = InventoryVariants.findOne({productId: variantId});
       if (!subExists) {
-        console.log(`subscribing to: ${variantId}`);
+        // console.log(`subscribing to: ${variantId}`);
         instance.subscribe("variantReservationStatus", {start: start, end: end}, variantId);
       }
     });
@@ -304,10 +304,10 @@ Template.bundleVariantOptions.onRendered(function () {
   // this.subscribe("bundleReservationStatus", selectedOptions);
   this.subscribe("productTypeAndTitle");
 
-  Tracker.autorun(function () {
-    console.log("selectedOptions", selectedOptions);
-    console.log("inventoryVariants", _.countBy(_.map(InventoryVariants.find().fetch(), 'productId')));
-  });
+  // Tracker.autorun(function () {
+  //   console.log("selectedOptions", selectedOptions);
+  //   console.log("inventoryVariants", _.countBy(_.map(InventoryVariants.find().fetch(), 'productId')));
+  // });
 });
 
 Template.bundleVariantOptions.helpers({

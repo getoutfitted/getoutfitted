@@ -51,7 +51,7 @@ Meteor.publish('variantReservationStatus', function (dates, productId, limit=5) 
     limit: limit
   });
 
-  console.log("run publication with pid", productId, reservationAvailability.fetch());
+  // console.log("run publication with pid", productId, reservationAvailability.fetch());
   // return this.ready();
   return reservationAvailability;
 });
@@ -71,7 +71,7 @@ Meteor.publish('bundleReservationStatus', function (productIds) {
     sort: {unavailableDates: 1}
   });
 
-  console.log("run publication with pids", productIds, _.countBy(_.map(reservationAvailability.fetch(), "productId")));
+  // console.log("run publication with pids", productIds, _.countBy(_.map(reservationAvailability.fetch(), "productId")));
   // return this.ready();
   return reservationAvailability;
 });
