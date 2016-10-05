@@ -287,12 +287,15 @@ Meteor.methods({
    *  @param {String} productId - productId to add to Cart
    *  @param {String} variantId - product variant _id
    *  @param {Number} [itemQty] - qty to add to cart
+   *  @param {[String]} [selectedBundleOptions] - ids of bundle options selected
    *  @return {Number|Object} Mongo insert response
    */
-  "cart/addToCart": function (productId, variantId, itemQty) {
+  "cart/addToCart": function (productId, variantId, itemQty, selectedBundleOptions) {
     check(productId, String);
     check(variantId, String);
     check(itemQty, Match.Optional(Number));
+    // XXX: GETOUTFITTED MOD: add selectedBundleOptions to addToCart function.
+    check(selectedBundleOptions, Match.Maybe([String]));
 
     const cart = Collections.Cart.findOne({ userId: this.userId });
     if (!cart) {
@@ -336,11 +339,51 @@ Meteor.methods({
     const cartVariantExists = cart.items && cart.items
       .some(item => item.variants._id === variantId);
 
+    // XXX: GETOUTFITTED MOD: check to ensure that all options are selected if bundle product.
+    const bundleVariants = [];
+    if (selectedBundleOptions) {
+      if (variant.bundleProducts.length !== selectedBundleOptions.length) {
+        throw new Meteor.Error(500, `Not all options were selected for item ${variant._id} in Cart ${cart._id}`);
+      }
+      let existingCartQuantity;
+      if (cart.items) {
+        const specificCartItem = cart.items.find(item => item.variants._id === variantId);
+        if (specificCartItem) {
+          existingCartQuantity = specificCartItem.quantity || 0;
+        } else {
+          existingCartQuantity = 0;
+        }
+      }
+
+      // XXX: GETOUTFITTED MOD - determine what bundle products were selected.
+      variant.bundleProducts.forEach(function (bundleProduct, index) {
+        const selectedVariant = bundleProduct.variantIds.find(vid => vid.variantId === selectedBundleOptions[index]);
+        const selectedOptions = {
+          selectionForQtyNumber: existingCartQuantity + 1 || 1,
+          productId: bundleProduct.productId,
+          // Assumes that internal `bundleProducts` index align with selectedBundleOptions
+          variantId: selectedVariant.variantId,
+          cartLabel: ((bundleProduct.label || "") + " " + (selectedVariant.label || "")).trim()
+        };
+        if (selectedOptions.cartLabel === "") {
+          selectedOptions.cartLabel = `${selectedVariant.color} ${selectedVariant.size}`;
+        }
+        bundleVariants.push(selectedOptions);
+      });
+    }
+
+    // if variant exists, $inc instead of adding
     if (cartVariantExists) {
       return Collections.Cart.update({
         "_id": cart._id,
         "items.variants._id": variantId
       }, {
+        // XXX: GETOUTFITTED MOD: add selected Bundle Options to set
+        $addToSet: {
+          "items.$.variants.selectedBundleOptions": {
+            $each: bundleVariants
+          }
+        },
         $inc: {
           "items.$.quantity": quantity
         }
@@ -363,6 +406,11 @@ Meteor.methods({
 
         return result;
       });
+    }
+
+    // XXX: GETOUTFITTED MOD - add bundleVariants to variant before adding to cart
+    if (selectedBundleOptions) {
+      variant.selectedBundleOptions = bundleVariants;
     }
 
     // cart variant doesn't exist

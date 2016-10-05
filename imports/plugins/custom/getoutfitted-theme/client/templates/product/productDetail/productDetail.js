@@ -363,20 +363,17 @@ Template.productDetail.events({
         });
       } else {
         productId = currentProduct._id;
+        let selectedBundleOptions;
+        if (currentVariant.functionalType === "bundleVariant") {
+          selectedBundleOptions = Session.get("selectedBundleOptions");
+        }
 
         if (productId) {
-          Meteor.call("cart/addToCart", productId, currentVariant._id, quantity,
+          Meteor.call("cart/addToCart", productId, currentVariant._id, quantity, selectedBundleOptions,
             function (error) {
               if (error) {
                 Logger.error("Failed to add to cart.", error);
                 return error;
-              }
-              if (currentVariant.functionalType === "bundleVariant") {
-                Meteor.call("productBundler/updateCartItems",
-                  productId,
-                  currentVariant._id,
-                  Session.get("selectedBundleOptions")
-                );
               }
               return true;
               // TODO: Re-add analytics tracking
