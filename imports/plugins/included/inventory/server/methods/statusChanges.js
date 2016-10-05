@@ -64,80 +64,84 @@ Meteor.methods({
 
     // update inventory status for cartItems
     for (const item of cartItems) {
-      // check of existing reserved inventory for this cart
-      const existingReservations = Inventory.find({
-        productId: item.productId,
-        variantId: item.variants._id,
-        shopId: item.shopId,
-        orderItemId: item._id
-      });
-
-      // define a new reservation
-      const availableInventory = Inventory.find({
-        "productId": item.productId,
-        "variantId": item.variants._id,
-        "shopId": item.shopId,
-        "workflow.status": defaultStatus
-      });
-
-      const totalRequiredQty = item.quantity;
-      const availableInventoryQty = availableInventory.count();
-      let existingReservationQty = existingReservations.count();
-
-      Logger.info("totalRequiredQty", totalRequiredQty);
-      Logger.info("availableInventoryQty", availableInventoryQty);
-
-      // if we don't have existing inventory we create backorders
-      if (totalRequiredQty > availableInventoryQty) {
-        // TODO put in a dashboard setting to allow backorder or altenate handler to be used
-        const backOrderQty = Number(totalRequiredQty - availableInventoryQty - existingReservationQty);
-        Logger.info(`no inventory found, create ${backOrderQty} ${backorderStatus}`);
-        // define a new reservation
-        const reservation = {
+      if (item.variants.functionalType === "bundleVariant") {
+        // Consider placeholdering reservation
+      } else {
+        // check of existing reserved inventory for this cart
+        const existingReservations = Inventory.find({
           productId: item.productId,
           variantId: item.variants._id,
           shopId: item.shopId,
-          orderItemId: item._id,
-          workflow: {
-            status: backorderStatus
-          }
-        };
+          orderItemId: item._id
+        });
 
-        Meteor.call("inventory/backorder", reservation, backOrderQty);
-        existingReservationQty = backOrderQty;
-      }
-      // if we have inventory available, only create additional required reservations
-      Logger.debug("existingReservationQty", existingReservationQty);
-      reservationCount = existingReservationQty;
-      let newReservedQty;
-      if (reservationStatus === "reserved" && defaultStatus === "new") {
-        newReservedQty = totalRequiredQty - existingReservationQty + 1;
-      } else {
-        // when moving from one "reserved" type status, we don't need to deal with existingReservationQty
-        newReservedQty = totalRequiredQty + 1;
-      }
-
-      let i = 1;
-      while (i < newReservedQty) {
-        // updated existing new inventory to be reserved
-        Logger.info(
-          `updating reservation status ${i} of ${newReservedQty - 1}/${totalRequiredQty} items.`);
-        // we should be updating existing inventory here.
-        // backorder process created additional backorder inventory if there
-        // wasn't enough.
-        Inventory.update({
+        // define a new reservation
+        const availableInventory = Inventory.find({
           "productId": item.productId,
           "variantId": item.variants._id,
           "shopId": item.shopId,
           "workflow.status": defaultStatus
-        }, {
-          $set: {
-            "orderItemId": item._id,
-            "workflow.status": reservationStatus
-          }
         });
-        reservationCount++;
-        i++;
+
+        const totalRequiredQty = item.quantity;
+        const availableInventoryQty = availableInventory.count();
+        let existingReservationQty = existingReservations.count();
+
+        Logger.info("totalRequiredQty", totalRequiredQty);
+        Logger.info("availableInventoryQty", availableInventoryQty);
+
+        // if we don't have existing inventory we create backorders
+        if (totalRequiredQty > availableInventoryQty) {
+          // TODO put in a dashboard setting to allow backorder or altenate handler to be used
+          const backOrderQty = Number(totalRequiredQty - availableInventoryQty - existingReservationQty);
+          Logger.info(`no inventory found, create ${backOrderQty} ${backorderStatus}`);
+          // define a new reservation
+          const reservation = {
+            productId: item.productId,
+            variantId: item.variants._id,
+            shopId: item.shopId,
+            orderItemId: item._id,
+            workflow: {
+              status: backorderStatus
+            }
+          };
+
+          Meteor.call("inventory/backorder", reservation, backOrderQty);
+          existingReservationQty = backOrderQty;
+        }
+        // if we have inventory available, only create additional required reservations
+        Logger.debug("existingReservationQty", existingReservationQty);
+        reservationCount = existingReservationQty;
+        let newReservedQty;
+        if (reservationStatus === "reserved" && defaultStatus === "new") {
+          newReservedQty = totalRequiredQty - existingReservationQty + 1;
+        } else {
+          // when moving from one "reserved" type status, we don't need to deal with existingReservationQty
+          newReservedQty = totalRequiredQty + 1;
+        }
+
+        let i = 1;
+        while (i < newReservedQty) {
+          // updated existing new inventory to be reserved
+          Logger.info(
+            `updating reservation status ${i} of ${newReservedQty - 1}/${totalRequiredQty} items.`);
+          // we should be updating existing inventory here.
+          // backorder process created additional backorder inventory if there
+          // wasn't enough.
+          Inventory.update({
+            "productId": item.productId,
+            "variantId": item.variants._id,
+            "shopId": item.shopId,
+            "workflow.status": defaultStatus
+          }, {
+            $set: {
+              "orderItemId": item._id,
+              "workflow.status": reservationStatus
+            }
+          });
+          reservationCount++;
+          i++;
+        }
       }
     }
     Logger.info(
