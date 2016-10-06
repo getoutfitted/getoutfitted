@@ -105,10 +105,7 @@ Template.cartCompleted.helpers({
         // XXX: GETOUTFITTED MOD - add checkout completed event tracking
         if (typeof analytics === "object") {
           order = Orders.findOne({userId: Meteor.userId(), cartId: id});
-          if (order.tracked) {
-            console.log("Order previously tracked");
-          } else {
-            console.log("order", order);
+          if (!order.tracked) {
             analytics.track("Completed Order", getOrderTrackingProps(order));
           }
         }

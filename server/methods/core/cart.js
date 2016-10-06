@@ -411,6 +411,7 @@ Meteor.methods({
     // XXX: GETOUTFITTED MOD - add bundleVariants to variant before adding to cart
     if (selectedBundleOptions) {
       variant.selectedBundleOptions = bundleVariants;
+      Logger.info(`cart: adding item with bundleVariants: ${bundleVariants.map(bv => bv.variantId)} to cart`);
     }
 
     // cart variant doesn't exist
@@ -444,6 +445,8 @@ Meteor.methods({
       Meteor.call("cart/resetShipmentMethod", cart._id);
 
       Logger.info(`cart: add variant ${variantId} to cartId ${cart._id}`);
+      // XXX: GETOUTFITTED MOD - Additional logging
+      Logger.info(`cart: cartId ${cart._id} result - `, result);
 
       return result;
     });
