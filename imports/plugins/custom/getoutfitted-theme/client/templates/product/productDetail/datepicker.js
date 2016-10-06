@@ -371,7 +371,7 @@ Template.bundleReservationDatepicker.onCreated(function () {
   _.each(bundleVariants.bundleProducts, function (bundleOptions) {
     defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
   });
-  Session.setDefault("selectedBundleOptions", defaultSelectedVariants);
+  Session.set("selectedBundleOptions", defaultSelectedVariants);
   this.autorun(() => {
     if (Session.get("selectedBundleOptions")) {
       const selectedOptions = Session.get("selectedBundleOptions");
