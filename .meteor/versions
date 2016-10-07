@@ -72,6 +72,7 @@ facebook@1.2.9
 fastclick@1.0.12
 geojson-utils@1.0.9
 google@1.1.14
+harrison:papa-parse@1.1.1
 hot-code-push@1.0.4
 html-tools@1.0.11
 htmljs@1.0.11
@@ -101,6 +102,9 @@ meteor@1.2.17_1
 meteor-base@1.0.4
 meteorhacks:fast-render@2.16.0
 meteorhacks:inject-data@2.0.0
+meteorhacks:kadira@2.30.0
+meteorhacks:kadira-binary-deps@1.5.0
+meteorhacks:kadira-profiler@1.3.0
 meteorhacks:meteorx@1.4.1
 meteorhacks:picker@1.0.3
 meteorhacks:ssr@2.2.0
@@ -125,7 +129,9 @@ oauth1@1.1.10
 oauth2@1.1.10
 observe-sequence@1.0.12
 ongoworks:security@2.0.1
+ongoworks:spiderable@1.0.7
 ordered-dict@1.0.8
+peppelg:bootstrap-3-modal@1.0.4
 practicalmeteor:chai@2.1.0_1
 practicalmeteor:mocha-core@1.0.1
 practicalmeteor:sinon@1.14.1_2
@@ -145,6 +151,7 @@ service-configuration@1.0.10
 session@1.1.6
 sha@1.0.8
 shell-server@0.2.1
+simple:json-routes@2.1.0
 spacebars@1.0.13
 spacebars-compiler@1.0.13
 srp@1.0.9
