@@ -302,7 +302,11 @@ Template.bundleVariantOptions.onRendered(function () {
     });
   }
   // this.subscribe("bundleReservationStatus", selectedOptions);
-  this.subscribe("productTypeAndTitle");
+
+  // XXX: Removed subscription to all products type and title as we now use this.label
+  // Builds a flat array of all variantIds associated with this bundle
+  // const componentVariantIds = this.data.bundleProducts.map(p => p.variantIds.map(v => v.variantId)).reduce((a, b) => a.concat(b), []);
+  // this.subscribe("productTypeAndTitle", componentVariantIds);
 
   // Tracker.autorun(function () {
   //   console.log("selectedOptions", selectedOptions);
@@ -318,10 +322,12 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    let product = Products.findOne(this.productId);
-    if (product) {
-      return product.productType || product.title;
-    }
+    // XXX: Removed in favor of always using this.label
+    // Perhaps we can eliminate that publication now as well?
+    // let product = Products.findOne(this.productId);
+    // if (product) {
+    //   return product.productType || product.title;
+    // }
     return "Option";
   },
   variantDisplay: function () {

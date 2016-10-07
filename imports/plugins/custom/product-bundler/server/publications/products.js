@@ -76,12 +76,19 @@ Meteor.publish('bundleReservationStatus', function (productIds) {
   return reservationAvailability;
 });
 
-Meteor.publish('productTypeAndTitle', function () {
+Meteor.publish('productTypeAndTitle', function (componentVariantIds) {
+  check(componentVariantIds, [String]);
   return Products.find(
-    {},
-    {fields: {
-      productType: 1,
-      title: 1
-    }}
+    {
+      _id: {
+        $in: componentVariantIds
+      }
+    },
+    {
+      fields: {
+        productType: 1,
+        title: 1
+      }
+    }
   );
 });
