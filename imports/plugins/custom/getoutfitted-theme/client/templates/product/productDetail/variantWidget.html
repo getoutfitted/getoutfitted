@@ -1,5 +1,5 @@
 <template name="variantWidget">
-  <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
+  <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-4 col-lg-4">
     {{> goProductWidgetImage}}
     {{#if availableToBook reservation}}
       <div class="row">
@@ -70,7 +70,7 @@
 </template>
 
 <template name='bundleVariantWidget'>
-  <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-5 col-lg-4">
+  <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-4 col-lg-4">
     {{> goProductWidgetImage}}
     {{#if availableToBook reservation}}
       <div class='row'>
@@ -130,11 +130,10 @@
 <template name="bundleVariantOptions">
   {{#each bundleOptions}}
     {{#if hasOptions}}
-    <div class="row">
       <form class="form-horizontal bundle-options">
         <div class="form-group">
           <!-- <label class="control-label col-xs-4 text-right" for="{{productId}}">{{displayLabel}}</label> -->
-          <div class="input-group col-xs-10">
+          <div class="input-group">
             <span class="input-group-addon"><label class="control-label" for="{{productId}}">{{displayLabel}}</label></span>
             <select data-index="{{@index}}" id="{{productId}}" class="form-control selectedProduct">
               {{#each variantIds}}
@@ -144,17 +143,16 @@
           </div>
         </div>
       </form>
-    </div>
     {{/if}}
   {{/each}}
 </template>
 
 <template name="bundleVariantDefaults">
   {{#each defaultOptions}}
-    <div class="row bundle-variant-default">
+    <div class="bundle-variant-default">
       <form class="form-horizontal bundle-options">
         <div class="form-group">
-          <div class="input-group col-xs-10">
+          <div class="input-group">
             <span class="input-group-addon">
               <label class="control-label">{{title}}</label>
             </span>

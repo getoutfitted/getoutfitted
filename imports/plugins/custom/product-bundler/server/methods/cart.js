@@ -26,8 +26,8 @@ Meteor.methods({
         'Cart not found for user with such id');
     }
 
-    let items = cart.items;
-    let bundleItem = _.find(items, function (item) {
+    const items = cart.items;
+    const bundleItem = _.find(items, function (item) {
       const correctProductId = item.productId === productId;
       const correctVariantId = item.variants._id === variantId;
       const isBundle = item.variants.functionalType === 'bundleVariant';
@@ -36,7 +36,12 @@ Meteor.methods({
       }
     });
     // We are adding QTY as in the cart items are added as Quantity, but in order they get listed as item, so we need to associate selections together.
+    // bundleItem is the specific item of type bundle that we just added
+
+    // Doesn't permit adding multiple of same qty to cart at once
     const itemNumber = bundleItem.quantity;
+
+    // Check to make sure that an option was added for all possible options.
     const numberOfBundleOptions = bundleItem.variants.bundleProducts.length;
     if (numberOfBundleOptions !== selectedVariants.length) {
       Logger.error(`Not all options were selected for item ${bundleItem._id} in Cart ${cart._id} `);

@@ -13,16 +13,16 @@
       {{#if moreThanTwoOptions}}
       <div class='col-xs-12'>
         <form class="form-horizontal">
-          <div class='row'>
-            <label class="col-xs-6 control-label">Rental Length</label>
-            <div class="col-xs-6">
+            <div class="input-group reservation-length">
+              <span class="input-group-addon">
+                <label class="control-label">Reservation length</label>
+              </span>
               <select class="form-control rentalLengthSelect">
                 {{#each rentalPriceBuckets}}
-                  <option {{isSelected}} id="reservationLength{{duration}}" value="{{adjustedDuration duration}}">{{duration}} {{displayTimeUnit timeUnit}} Rental</option>
+                  <option {{isSelected}} id="reservationLength{{duration}}" value="{{adjustedDuration duration}}">{{duration}} {{displayTimeUnit timeUnit}}s</option>
                 {{/each}}
               </select>
             </div>
-          </div>
         </form>
       </div>
 <!--         <div class="form-group">
