@@ -148,18 +148,20 @@
     {{/if}}
   {{/each}}
 </template>
+
 <template name="bundleVariantDefaults">
   {{#each defaultOptions}}
-    <div class="row text-right bundle-variant-default">
-      <div class="col-xs-6">
-        <strong>{{title}}</strong>
-      </div>
-      <div class="col-xs-6 text-left variant-default-option">
-        {{option}}
-        {{#if moreThanOne quantity}}
-          <small>x{{quantity}}</small>
-        {{/if}}
-      </div>
+    <div class="row bundle-variant-default">
+      <form class="form-horizontal bundle-options">
+        <div class="form-group">
+          <div class="input-group col-xs-10">
+            <span class="input-group-addon">
+              <label class="control-label">{{title}}</label>
+            </span>
+            <input class="form-control default-option" type="text" disabled value="{{option}} {{#if moreThanOne quantity}} x{{quantity}}{{/if}}" />
+          </div>
+        </div>
+      </form>
     </div>
   {{/each}}
 </template>
