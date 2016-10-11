@@ -1,13 +1,16 @@
 {
-  "parser": "babel-eslint",
+  "parser": "babel-eslint", // now for the support of allowImportExportEverywhere
   "env": {
     "browser": true,
     "node": true,
-    "meteor": true
+    "es6": true
   },
-  "plugins": [
-    "react"
-  ],
+  "parserOptions": {
+     "ecmaVersion": 6,
+     "sourceType": "module",
+     "allowImportExportEverywhere": true
+  },
+  "plugins": ["react"],
   "ecmaFeatures": {
     "arrowFunctions": true,
     "blockBindings": true,
@@ -16,7 +19,7 @@
     "destructuring": true,
     "forOf": true,
     "generators": false,
-    "modules": false,
+    "modules": true,
     "objectLiteralComputedProperties": true,
     "objectLiteralDuplicateProperties": false,
     "objectLiteralShorthandMethods": true,
@@ -26,13 +29,14 @@
     "templateStrings": true,
     "jsx": true
   },
+  // NOTE: We're now using eslint-3
   "rules": {
     /**
      * Strict mode
+     * babel inserts "use strict"; for us
+     * http://eslint.org/docs/rules/strict
      */
-    // babel inserts "use strict"; for us
-    // http://eslint.org/docs/rules/strict
-    "strict": [2, "never"],
+    "strict": 0,
 
     /**
      * ES6
@@ -56,7 +60,7 @@
      */
     "comma-dangle": [2, "never"], // http://eslint.org/docs/rules/comma-dangle
     "no-cond-assign": [2, "always"], // http://eslint.org/docs/rules/no-cond-assign
-    "no-console": 1, // http://eslint.org/docs/rules/no-console
+    "no-console": 2, // http://eslint.org/docs/rules/no-console
     "no-debugger": 1, // http://eslint.org/docs/rules/no-debugger
     "no-alert": 1, // http://eslint.org/docs/rules/no-alert
     "no-constant-condition": 1, // http://eslint.org/docs/rules/no-constant-condition
@@ -80,7 +84,7 @@
      * JSX / React
      */
     "jsx-quotes": [2, "prefer-double"], // http://eslint.org/docs/rules/jsx-quotes
-    /*"react/no-deprecated": 1,*/
+    "react/no-deprecated": 1,
     "react/display-name": 1,
     "react/forbid-prop-types": 1,
     "react/jsx-boolean-value": [1, "always"],
@@ -90,11 +94,11 @@
     "react/jsx-max-props-per-line": [1, {
       "maximum": 4
     }],
-    /*"react/jsx-no-bind": 1,*/
+    "react/jsx-no-bind": 1,
     "react/jsx-no-duplicate-props": 1,
     "react/jsx-no-literals": 1,
     "react/jsx-no-undef": 1,
-    "react/jsx-sort-prop-types": 1,
+    "react/sort-prop-types": 1,
     "react/jsx-sort-props": 1,
     "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,
@@ -108,15 +112,16 @@
     "react/prefer-es6-class": 1,
     "react/prop-types": 1,
     "react/react-in-jsx-scope": 0,
-    "react/require-extension": 1,
+    "react/require-extension": "off",
     "react/self-closing-comp": 1,
     "react/sort-comp": 1,
-    "react/wrap-multilines": 1,
 
     /**
      * Best practices
      */
-    "consistent-return": 2, // http://eslint.org/docs/rules/consistent-return
+    "consistent-return": [1, { // http://eslint.org/docs/rules/consistent-return
+      "treatUndefinedAsUnspecified": false
+    }],
     "curly": [2, "multi-line"], // http://eslint.org/docs/rules/curly
     "default-case": 2, // http://eslint.org/docs/rules/default-case
     "dot-notation": [2, { // http://eslint.org/docs/rules/dot-notation
@@ -124,6 +129,10 @@
     }],
     "eqeqeq": 2, // http://eslint.org/docs/rules/eqeqeq
     "guard-for-in": 2, // http://eslint.org/docs/rules/guard-for-in
+    "prefer-const": [1, {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+    }],
     "no-caller": 2, // http://eslint.org/docs/rules/no-caller
     "no-else-return": 2, // http://eslint.org/docs/rules/no-else-return
     "no-eq-null": 2, // http://eslint.org/docs/rules/no-eq-null
@@ -155,16 +164,16 @@
     "vars-on-top": 2, // http://eslint.org/docs/rules/vars-on-top
     "wrap-iife": [2, "any"], // http://eslint.org/docs/rules/wrap-iife
     "yoda": 2, // http://eslint.org/docs/rules/yoda
-    "max-len": [2, 160, 2, {
+    "max-len": [1, 160, 2, {
       "ignoreComments": true,
       "ignoreUrls": true
     }], // http://eslint.org/docs/rules/max-len
-    "valid-jsdoc": 2, // http://eslint.org/docs/rules/valid-jsdoc
+    "valid-jsdoc": 1, // http://eslint.org/docs/rules/valid-jsdoc
     "quote-props": [2, "consistent-as-needed"], // http://eslint.org/docs/rules/quote-props
     /**
      * Style
      */
-    "indent": [2, 2], // http://eslint.org/docs/rules/indent
+    "indent": [2, 2, {"SwitchCase": 1}], // http://eslint.org/docs/rules/indent
     "brace-style": [2, // http://eslint.org/docs/rules/brace-style
       "1tbs", {
         "allowSingleLine": true
@@ -190,7 +199,7 @@
     }],
     "new-cap": [0, { // http://eslint.org/docs/rules/new-cap  (turned off for now, as it complains on all Match)
       "newIsCap": true,
-      "capIsNewExceptions": ["Match", "OneOf", "Optional"],
+      "capIsNewExceptions": ["Match", "OneOf", "Optional"]
     }],
     "no-multiple-empty-lines": [2, { // http://eslint.org/docs/rules/no-multiple-empty-lines
       "max": 2
@@ -200,7 +209,7 @@
     "no-array-constructor": 2, // http://eslint.org/docs/rules/no-array-constructor
     "no-spaced-func": 2, // http://eslint.org/docs/rules/no-spaced-func
     "no-trailing-spaces": 2, // http://eslint.org/docs/rules/no-trailing-spaces
-    "no-extra-parens": 2, // http://eslint.org/docs/rules/no-extra-parens
+    "no-extra-parens": [2, "functions"], // http://eslint.org/docs/rules/no-extra-parens
     "no-underscore-dangle": 0, // http://eslint.org/docs/rules/no-underscore-dangle
     "one-var": [2, "never"], // http://eslint.org/docs/rules/one-var
     "padded-blocks": [2, "never"], // http://eslint.org/docs/rules/padded-blocks
@@ -217,6 +226,6 @@
     }], // http://eslint.org/docs/rules/space-before-function-paren
     "space-infix-ops": 2, // http://eslint.org/docs/rules/space-infix-ops
     "space-in-parens": [2, "never"], // http://eslint.org/docs/rules/space-in-parens
-    "spaced-comment": [2, "always"], // http://eslint.org/docs/rules/spaced-comment
+    "spaced-comment": [2, "always"] // http://eslint.org/docs/rules/spaced-comment
   }
 }

@@ -1,23 +1,38 @@
 machine:
+  node:
+    version: 4.4.7
   services:
     - docker
+  pre:
+    - meteor update || curl https://install.meteor.com | /bin/sh
 
 dependencies:
+  cache_directories:
+    - "~/.meteor"
+    - "~/docker"
   override:
-    - bash .getoutfitted/clone-packages.sh
-    - docker build -f .getoutfitted/docker/prod.dockerfile -t getoutfitted/getoutfitted:latest .
+    - cd $HOME/getoutfitted
+    - .reaction/scripts/clone-packages.sh
+    - .reaction/docker/scripts/plugin-loader.sh
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+    - docker build -t getoutfitted/getoutfitted:latest .
+    - mkdir -p ~/docker; docker save getoutfitted/getoutfitted:latest > ~/docker/image.tar
 
 test:
   override:
-    - docker-compose -f .getoutfitted/docker/docker-compose.test.yml up -d; sleep 15
-    - curl --retry 10 --retry-delay 5 -v http://localhost
+    - cd $HOME/getoutfitted
+    - meteor npm install
+    - SERVER_TEST_REPORTER="dot" meteor test --once --full-app --headless --driver-package dispatch:mocha
+    - docker-compose -f .getoutfitted/docker/docker-compose.test.yml up -d; sleep 30
+    - curl --retry 10 --retry-delay 10 -v http://localhost
+    - if hash phantomjs 2>/dev/null; then phantomjs -v; else echo "PhantomJS not installed"; fi
 
 deployment:
   development:
     branch: development
     commands:
-      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging
+      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker push getoutfitted/getoutfitted:staging

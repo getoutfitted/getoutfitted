@@ -1,0 +1,22 @@
+<template name="ambassadorSettings">
+  <div class="panel-body">
+    {{#autoForm
+        collection=Collections.Packages
+        schema=AmbassadorPackageConfig
+        doc=packageData
+        type="update"
+        id="ambassador-update-form"
+        }}
+
+    <div class="form-group">
+      Don't have a Ambassador account? <a href="https://getambassador.com/signup/" target="_blank">Get one here.</a>
+    </div>
+    <p>Ambassador Account Setup</p>
+    {{>afQuickField  name='settings.api.account'}}
+    {{>afQuickField  name='settings.api.key'}}
+    {{>afQuickField  name='settings.public.domain'}}
+
+    <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+      {{/autoForm}}
+    </div>
+</template>

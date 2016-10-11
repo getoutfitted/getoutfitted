@@ -1,0 +1,32 @@
+.site-title {
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.wordmark {
+  max-height: 20px;
+  max-width: 170px;
+}
+
+.rui.navbar .brand .logo img {
+  height: 20px;
+}
+
+.cart-icon {
+  &:hover {
+    background-color: darken(@cart-icon-bg, 3%);
+    color: @cart-icon-color-hover;
+    
+    a i {
+      color: @cart-icon-color-hover;
+    }
+    
+    .badge {
+      background-color: @cart-icon-badge-hover;
+    }
+    .badge-warning {
+      background-color: @cart-icon-badge-warning-hover;
+    }
+  }
+}
