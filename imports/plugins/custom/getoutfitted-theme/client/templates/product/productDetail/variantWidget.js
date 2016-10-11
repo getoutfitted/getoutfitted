@@ -10,19 +10,20 @@ import _ from "lodash";
 
 function stickyWidget() {
   const bubbleTop = 75; // This must be set identically to the CSS bubble;
-  let $variantWidget = $("#variantWidget");
-  let $pricingAnchor = $("#description");
-  let width = parseInt($variantWidget.outerWidth(), 10) + "px";
-  let left = parseInt($variantWidget.offset().left, 10) + "px";
+  const titleRibbonHeight = 200; // This is the desired height of the section that includes the title and vendor image.
+  const $variantWidget = $("#variantWidget");
+  const $pricingAnchor = $("#description");
+  const width = parseInt($variantWidget.outerWidth(), 10) + "px";
+  const left = parseInt($variantWidget.offset().left, 10) + "px";
 
-  let verticalOffset = $variantWidget.outerHeight() - 250;
+  const verticalOffset = $variantWidget.outerHeight() - titleRibbonHeight + 141;
   if (verticalOffset > 115) {
     $variantWidget.css("margin-bottom", `-${verticalOffset}px`);
   }
 
   function adjustPosition() {
-    let anchorTop = $pricingAnchor.offset().top - bubbleTop;
-    let scrollTop = $(window).scrollTop();
+    const anchorTop = $pricingAnchor.offset().top - bubbleTop;
+    const scrollTop = $(window).scrollTop();
     if (anchorTop === -20) {
       // Catch image not loaded yet.
     } else if (scrollTop > anchorTop && $variantWidget.css("position") !== "fixed" ||
@@ -302,7 +303,11 @@ Template.bundleVariantOptions.onRendered(function () {
     });
   }
   // this.subscribe("bundleReservationStatus", selectedOptions);
-  this.subscribe("productTypeAndTitle");
+
+  // XXX: Removed subscription to all products type and title as we now use this.label
+  // Builds a flat array of all variantIds associated with this bundle
+  // const componentVariantIds = this.data.bundleProducts.map(p => p.variantIds.map(v => v.variantId)).reduce((a, b) => a.concat(b), []);
+  // this.subscribe("productTypeAndTitle", componentVariantIds);
 
   // Tracker.autorun(function () {
   //   console.log("selectedOptions", selectedOptions);
@@ -318,10 +323,12 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    let product = Products.findOne(this.productId);
-    if (product) {
-      return product.productType || product.title;
-    }
+    // XXX: Removed in favor of always using this.label
+    // Perhaps we can eliminate that publication now as well?
+    // let product = Products.findOne(this.productId);
+    // if (product) {
+    //   return product.productType || product.title;
+    // }
     return "Option";
   },
   variantDisplay: function () {

@@ -41,29 +41,20 @@
     <div id="description" class="container">
       <!-- START NON IMAGE CONTENT ALL DEVICE SIZES -->
       <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-8 description">
+        <div class="col-xs-12 col-sm-7 col-md-8 col-lg-8 description">
           <div class="row">
-            <div class="col-xs-12 col-sm-3 text-center">
+            <div class="col-xs-12 col-sm-3 col-md-2 text-center">
               <img src="https://d2wpxyz1up89r3.cloudfront.net/logos/{{handleize vendor}}-square.jpg" alt="{{vendor}}" class="brand-logo hidden-xs">
-            </div>
-            <div class="col-xs-12 col-sm-9">
-              <h1 class="product-title">{{>fieldComponent field="title" value=title}}</h1>
-                <h2 class="product-subtitle text-center-xs">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
-              <div class="row hidden-xs text-center margin-top-small">
-                {{> productIconComponent}}
-              </div>
-            </div>
-          </div>
-          <div class="row hidden-xs text-center product-description-header">
-            <div class="col-xs-12 col-sm-3 product-vendor-component">
               {{>fieldComponent field="vendor" value=vendor}}
             </div>
-            <div class="col-xs-12 col-sm-9">
-              <div class="row">
-                {{> goFeatureComponent}}
-              </div>
+            <div class="col-xs-12 col-sm-9 col-md-10">
+              <h1 class="product-title">{{>fieldComponent field="title" value=title}}</h1>
+              <h2 class="product-subtitle text-center-xs">{{>fieldComponent field="pageTitle" value=pageTitle}}</h2>
+              <!-- <div class="row hidden-xs text-center margin-top-small">
+                {{> productIconComponent}}
+              </div> -->
             </div>
-          </div> <!-- end product icon descriptions -->
+          </div>
         </div>
         <!-- START DEVICE SPECIFIC LAYOUT -->
 
@@ -119,6 +110,7 @@
           {{/with}}
           <hr>
           {{> goProductImageGallery}}
+          <hr>
           {{> goProductTrailer}}
         </div>
 
@@ -133,7 +125,6 @@
       {{> getoutfittedTrailer}}
     </div>
   </div>
-  <hr>
 </template>
 
 <template name="goProductFeatures">
