@@ -1,12 +1,12 @@
 import "./helpers/cart";
 import "./methods/cart";
 
-import "./templates/cartDrawer/cartItems/cartItems.html";
-import "./templates/cartDrawer/cartItems/cartItems.js";
-import "./templates/cartDrawer/cartSubTotals/cartSubTotals.html";
-import "./templates/cartDrawer/cartSubTotals/cartSubTotals.js";
-import "./templates/cartDrawer/cartDrawer.html";
-import "./templates/cartDrawer/cartDrawer.js";
+// import "./templates/cartDrawer/cartItems/cartItems.html";
+// import "./templates/cartDrawer/cartItems/cartItems.js";
+// import "./templates/cartDrawer/cartSubTotals/cartSubTotals.html";
+// import "./templates/cartDrawer/cartSubTotals/cartSubTotals.js";
+// import "./templates/cartDrawer/cartDrawer.html";
+// import "./templates/cartDrawer/cartDrawer.js";
 
 import "./templates/cartIcon/cartIcon.html";
 import "./templates/cartIcon/cartIcon.js";
@@ -34,6 +34,7 @@ import "./templates/checkout/shipping/shipping.js";
 
 // GETOUTFITTED MOD: Replacing the following templates with versions in
 // the getoutfitted-theme module
+// * cartDrawer/*
 // * completed.html/js
 // * header.html
 // * review.html/js
