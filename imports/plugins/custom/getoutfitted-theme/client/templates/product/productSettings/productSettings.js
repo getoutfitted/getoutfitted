@@ -1,4 +1,7 @@
-let weightDependency = new Tracker.Dependency;
+import { ReactionProduct } from "/lib/api";
+import { Media } from "/lib/collections";
+
+const weightDependency = new Tracker.Dependency;
 
 Template.productSettings.helpers({
   hasSelectedProducts() {
@@ -7,9 +10,9 @@ Template.productSettings.helpers({
   itemWeightActive: function (weight) {
     weightDependency.depend();
     const tag = ReactionProduct.getTag();
-    for (let product of this.products) {
-      let positions = product.positions && product.positions[tag] || {};
-      let currentWeight = positions.weight || 0;
+    for (const product of this.products) {
+      const positions = product.positions && product.positions[tag] || {};
+      const currentWeight = positions.weight || 0;
       if (currentWeight === weight) {
         return "active";
       }
@@ -23,10 +26,11 @@ Template.productSettingsGridItem.helpers({
     if (this._id) {
       return ReactionProduct.getProductPriceRange(this._id).range;
     }
+    return "";
   },
 
   media: function () {
-    const media = ReactionCore.Collections.Media.findOne({
+    const media = Media.findOne({
       "metadata.productId": this._id,
       "metadata.priority": 0,
       "metadata.toGrid": 1
@@ -35,7 +39,7 @@ Template.productSettingsGridItem.helpers({
     return media instanceof FS.File ? media : false;
   },
   additionalMedia: function () {
-    const mediaArray = ReactionCore.Collections.Media.find({
+    const mediaArray = Media.find({
       "metadata.productId": this._id,
       "metadata.priority": {
         $gt: 0
@@ -54,12 +58,12 @@ Template.productSettingsGridItem.helpers({
     const positions = this.positions && this.positions[tag] || {};
     const weight = positions.weight || 0;
     switch (weight) {
-    case 1:
-      return "product-medium";
-    case 2:
-      return "product-large";
-    default:
-      return "product-small";
+      case 1:
+        return "product-medium";
+      case 2:
+        return "product-large";
+      default:
+        return "product-small";
     }
   },
 
@@ -106,16 +110,16 @@ Template.productSettings.events({
   "click [data-event-action=changeProductWeight]": function (event) {
     event.preventDefault();
     const tag = ReactionProduct.getTag();
-    for (let product of this.products) {
-      let weight = $(event.currentTarget).data("event-data") || 0;
-      let positions = {
+    for (const product of this.products) {
+      const weight = $(event.currentTarget).data("event-data") || 0;
+      const positions = {
         weight: weight,
         updatedAt: new Date()
       };
       Meteor.call("products/updateProductPosition", product._id, positions, tag,
         (error, result) => {
           if (error) {
-            ReactionCore.Log.warn(error);
+            Loggger.warn(error);
             throw new Meteor.Error(403, error);
           }
           if (result) {
