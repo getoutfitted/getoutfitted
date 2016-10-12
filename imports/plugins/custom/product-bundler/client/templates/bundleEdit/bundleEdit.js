@@ -85,7 +85,7 @@ Template.addProductsToBundle.helpers({
       size: {$exists: true},
       ancestors: productId,
       functionalType: { $ne: 'bundleVariant'}
-    }).fetch();
+    }, {sort: {numberSize: 1}}).fetch();
   },
   productSelected: function () {
     return Session.get('productSelected');
