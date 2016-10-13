@@ -4,12 +4,12 @@
 // import "./helpers/cart";
 // import "./methods/cart";
 
-// import "./templates/cartDrawer/cartItems/cartItems.html";
-// import "./templates/cartDrawer/cartItems/cartItems.js";
-// import "./templates/cartDrawer/cartSubTotals/cartSubTotals.html";
-// import "./templates/cartDrawer/cartSubTotals/cartSubTotals.js";
-// import "./templates/cartDrawer/cartDrawer.html";
-// import "./templates/cartDrawer/cartDrawer.js";
+import "./cartDrawer/cartItems/cartItems.html";
+import "./cartDrawer/cartItems/cartItems.js";
+import "./cartDrawer/cartSubTotals/cartSubTotals.html";
+import "./cartDrawer/cartSubTotals/cartSubTotals.js";
+import "./cartDrawer/cartDrawer.html";
+import "./cartDrawer/cartDrawer.js";
 
 // import "./templates/cartIcon/cartIcon.html";
 // import "./templates/cartIcon/cartIcon.js";

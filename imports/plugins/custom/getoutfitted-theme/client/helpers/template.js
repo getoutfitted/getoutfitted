@@ -100,3 +100,8 @@ Template.registerHelper("orderEndReservationHuman", function (order) {
 
   return "";
 });
+
+// Returns bool whether or not display price is zero
+Template.registerHelper("isZero", function (price) {
+  return price === 0 || price === "0.00";
+});
