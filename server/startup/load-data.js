@@ -1,4 +1,4 @@
-import { Shops } from "/lib/collections";
+import { Shops, Products, Shipping, Tags } from "/lib/collections";
 import { Hooks, Logger, Reaction } from "/server/api";
 
 export default function () {
@@ -20,19 +20,31 @@ export default function () {
     }
 
     try {
-      Reaction.Import.process(Assets.getText("data/Shipping.json"), ["name"], Reaction.Import.shipping);
+      if (!Shipping.findOne()) {
+        Reaction.Import.process(Assets.getText("data/Shipping.json"), ["name"], Reaction.Import.shipping);
+      } else {
+        Logger.info("Shipping exists, Skipping shipping data import.");
+      }
     } catch (error) {
       Logger.info("Bypassing loading Shipping default data.");
     }
 
     try {
-      Reaction.Import.fixture().process(Assets.getText("data/Products.json"), ["title"], Reaction.Import.load);
+      if (!Products.findOne()) {
+        Reaction.Import.fixture().process(Assets.getText("data/Products.json"), ["title"], Reaction.Import.load);
+      } else {
+        Logger.info("Product exists, Skipping product data import.");
+      }
     } catch (error) {
       Logger.info("Bypassing loading Products default data.");
     }
 
     try {
-      Reaction.Import.fixture().process(Assets.getText("data/Tags.json"), ["name"], Reaction.Import.load);
+      if (!Tags.findOne()) {
+        Reaction.Import.fixture().process(Assets.getText("data/Tags.json"), ["name"], Reaction.Import.load);
+      } else {
+        Logger.info("Tag exists, Skipping tag data import.");
+      }
     } catch (error) {
       Logger.info("Bypassing loading Tags default data.");
     }
