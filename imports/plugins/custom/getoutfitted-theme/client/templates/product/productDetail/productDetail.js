@@ -317,7 +317,11 @@ Template.productDetail.events({
     const currentProduct = ReactionProduct.selectedProduct();
 
     const cart = Cart.findOne({userId: Meteor.userId()});
-    if (!cart.startTime && (this.functionalType === "rental" || this.functionalType === "bundleVariant")) {
+    if (!cart.startTime &&
+       (this.functionalType === "rental" ||
+        this.functionalType === "bundleVariant" ||
+        this.functionalType === "bundle")
+      ) {
       Alerts.inline("Please select an arrival date before booking", "error", {
         placement: "datepicker",
         autoHide: 10000
