@@ -1,10 +1,10 @@
 machine:
   node:
-    version: 4.4.7
+    version: 4.6.0
   services:
     - docker
   pre:
-    - meteor update || curl https://install.meteor.com | /bin/sh
+    - hash meteor 2>/dev/null || curl https://install.meteor.com | /bin/sh
 
 dependencies:
   cache_directories:
@@ -14,32 +14,32 @@ dependencies:
     - cd $HOME/getoutfitted
     - .reaction/scripts/clone-packages.sh
     - .reaction/docker/scripts/plugin-loader.sh
-    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
-    - docker build -t getoutfitted/getoutfitted:latest .
-    - mkdir -p ~/docker; docker save getoutfitted/getoutfitted:latest > ~/docker/image.tar
 
 test:
   override:
     - cd $HOME/getoutfitted
     - meteor npm install
     - SERVER_TEST_REPORTER="dot" meteor test --once --full-app --headless --driver-package dispatch:mocha
-    - docker-compose -f .getoutfitted/docker/docker-compose.test.yml up -d; sleep 30
-    - curl --retry 10 --retry-delay 10 -v http://localhost
-    - if hash phantomjs 2>/dev/null; then phantomjs -v; else echo "PhantomJS not installed"; fi
+    - .getoutfitted/docker/scripts/ci-build.sh
 
 deployment:
   development:
     branch: development
     commands:
+      - docker tag getoutfitted/base:latest getoutfitted/base:staging
       - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging
       - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push getoutfitted/base:staging
       - docker push getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
       - docker push getoutfitted/getoutfitted:staging
   release:
     branch: master
     commands:
+      - docker tag getoutfitted/base:latest getoutfitted/base:$CIRCLE_BUILD_NUM
       - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:$CIRCLE_BUILD_NUM
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push getoutfitted/base:$CIRCLE_BUILD_NUM
+      - docker push getoutfitted/base:latest
       - docker push getoutfitted/getoutfitted:$CIRCLE_BUILD_NUM
       - docker push getoutfitted/getoutfitted:latest
