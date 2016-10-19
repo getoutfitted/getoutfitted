@@ -27,17 +27,18 @@ Meteor.publish("Accounts", function (userId) {
   }).fetch(), "_id");
 
   // global admin can get all accounts
-  if (Roles.userIsInRole(this.userId, ["owner"], Roles.GLOBAL_GROUP)) {
-    return Collections.Accounts.find({
-      _id: { $in: nonAnonUsers }
-    });
-  // shop admin gets accounts for just this shop
-  } else if (Roles.userIsInRole(this.userId, ["admin", "owner"], shopId)) {
-    return Collections.Accounts.find({
-      _id: { $in: nonAnonUsers },
-      shopId: shopId
-    });
-  }
+// XXX: DON'T PUBLISH ALL ACCOUNTS EVER. WTF.
+//  if (Roles.userIsInRole(this.userId, ["owner"], Roles.GLOBAL_GROUP)) {
+//    return Collections.Accounts.find({
+//      _id: { $in: nonAnonUsers }
+//    });
+//  // shop admin gets accounts for just this shop
+//  } else if (Roles.userIsInRole(this.userId, ["admin", "owner"], shopId)) {
+//    return Collections.Accounts.find({
+//      _id: { $in: nonAnonUsers },
+//      shopId: shopId
+//    });
+//  }
   // regular users should get just their account
   return Collections.Accounts.find({
     userId: this.userId
