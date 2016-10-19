@@ -2,8 +2,19 @@ import { $ } from "meteor/jquery";
 import { ReactionProduct } from "/lib/api";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
+import { Cart } from "/lib/collections";
 import { _  } from "meteor/underscore";
 import "bootstrap-datepicker";
+import moment from "moment";
+
+Template.rentalLengthOptions.onCreated(function () {
+  const cart = Cart.findOne({userId: Meteor.userId()});
+  let defaultReservationLength = 1; // 1 + day selected, so actually 2. Yes it's confusing. TODO: Make it less confusing
+  if (cart && typeof cart.rentalDays === "number") {
+    defaultReservationLength = cart.rentalDays;
+  }
+  Session.setDefault("reservationLength", defaultReservationLength);
+});
 
 Template.rentalLengthOptions.helpers({
   twoOptions: () => {
@@ -70,7 +81,17 @@ Template.rentalLengthOptions.helpers({
 
 Template.rentalLengthOptions.events({
   "change input[name='reservationLength']:radio, change .rentalLengthSelect ": function (event) {
-    Session.set("reservationLength", parseInt(event.currentTarget.value, 10));
+    // rentalLength is reservation length - 1 because we are calculating days in addition to customer selected date.
+    const rentalLength = parseInt(event.currentTarget.value, 10);
+    Session.set("reservationLength", rentalLength);
     $("#rental-start").datepicker("update");
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    if (cart) {
+      Meteor.call("rentalProducts/setRentalPeriod",
+        cart._id,
+        cart.startTime,
+        moment(cart.startTime).add(rentalLength, "days").toDate()
+      );
+    }
   }
 });
