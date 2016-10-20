@@ -47,21 +47,25 @@ Meteor.methods({
         if ((item.variants.functionalType === "rentalVariant"
           || item.variants.functionalType === "bundleVariant")
           && cart.rentalDays) {
-            // TODO: update qty to verified rental qty available
+          // TODO: update qty to verified rental qty available
           // Set price to calculated rental price;
           // if qty not available available, remove from cart
           if (true) { // TODO: Check to ensure that qty is available for new dates before pushing back into cart
-            let priceBucket = _.find(item.variants.rentalPriceBuckets, (bucket) => {
-              return bucket.duration === cart.rentalDays;
+            const priceBucket = _.find(item.variants.rentalPriceBuckets, (bucket) => {
+              return bucket.duration === rental.count("days");
             });
             if (priceBucket) {
-              // ensure price is correct and re-add to cart.
+              // assign correct price and push to cart.
               item.variants.price = priceBucket.price;
               newCart.push(item);
             } else {
               // remove from cart (don't push)
               Logger.error(`Price bucket not found: ${item.variants._id} for ${cart.rentalDays} rental days`);
+              // TODO: Warn client that item was removed from cart.
             }
+          } else {
+            Logger.warn(`Item ${item._id} in cart not available for selected dates.`);
+            // TODO: Warn client that item is unavailable.
           }
         } else {
           // item is not a rental - push it back to the cart
@@ -69,8 +73,9 @@ Meteor.methods({
         }
         return newCart;
       }, []);
-
     } else {
+      // cart.items either doesn't exist or length is 0.
+      // Assign empty array so that we don't break anything when updating Cart collection
       cart.items = [];
     }
 
@@ -91,6 +96,7 @@ Meteor.methods({
   },
 
   // Deprecate this function? Or figure out what it's for.
+  // XXX: Not certain this is used any more.
   "rentalProducts/setRentalLength": function (cartId, rentalLength, units) {
     check(cartId, String);
     check(rentalLength, Number);

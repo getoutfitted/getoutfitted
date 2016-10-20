@@ -15,7 +15,10 @@
         <form class="form-horizontal">
             <div class="input-group reservation-length">
               <span class="input-group-addon">
-                <label class="control-label">Reservation length</label>
+                <label class="control-label">
+                  <span class="hidden-sm hidden-md">Reservation length</span>
+                  <span class="hidden-xs hidden-lg">Rental Length</span>
+                </label>
               </span>
               <select class="form-control rentalLengthSelect">
                 {{#each rentalPriceBuckets}}
