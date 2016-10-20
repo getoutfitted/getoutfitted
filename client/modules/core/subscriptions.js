@@ -10,6 +10,7 @@ export const Subscriptions = {};
 // See: https://github.com/kadirahq/subs-manager
 Subscriptions.Manager = new SubsManager();
 
+// TODO: Update accounts subscription
 Subscriptions.Account = Subscriptions.Manager.subscribe("Accounts", Meteor.userId());
 
 /*
@@ -38,7 +39,7 @@ Subscriptions.Media = Subscriptions.Manager.subscribe("Media");
 
 // admin only
 // todo should we put this inside autorun and detect user changes
-Subscriptions.Inventory = Subscriptions.Manager.subscribe("Inventory");
+// Subscriptions.Inventory = Subscriptions.Manager.subscribe("Inventory");
 
 /**
  * Subscriptions that need to reload on new sessions

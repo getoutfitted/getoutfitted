@@ -1,14 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { _ } from 'meteor/underscore';
-import { MethodHooks } from "/server/api";
-import { Cart, Products } from '/lib/collections';
+import { Meteor } from "meteor/meteor";
+import { check } from "meteor/check";
+import { _ } from "meteor/underscore";
+import { Logger, MethodHooks } from "/server/api";
+import { Cart, Products } from "/lib/collections";
 
 MethodHooks.beforeMethods({
   "orders/inventoryAdjust": function (options) {
     check(options.arguments, [Match.Any]);
     const orderId = options.arguments[0];
-    if (!orderId) { return true; }
+    if (!orderId) {
+      Logger.warn("Rental Product inventory not adjusted - orderId not found");
+      return true;
+    }
 
     Meteor.call("rentalProducts/inventoryAdjust", orderId);
 
@@ -25,29 +28,31 @@ MethodHooks.afterMethods({
     const variantId = options.arguments[1];
     const cart = Cart.findOne({ userId: Meteor.userId() });
     if (!cart) {
+      Logger.warn(`Aborting cart/addToCart after hook. Cart not found for user ${Meteor.userId()}.`);
       return options;
     }
     if (cart.items && cart.items.length > 0) {
       _.map(cart.items, function (item) {
         if (item.variants._id === variantId
           && (item.variants.functionalType === "rentalVariant"
-            || item.variants.functionalType === "bundleVariant") // TODO: future if item.type === rental
+            || item.variants.functionalType === "bundleVariant")
           && cart.rentalDays) {
             // TODO: update qty to verified rental qty available
           // Set price to calculated rental price;
-          let priceBucket = _.find(item.variants.rentalPriceBuckets, (bucket) => {
+          const priceBucket = _.find(item.variants.rentalPriceBuckets, (bucket) => {
             return bucket.duration === cart.rentalDays;
           });
           if (priceBucket) {
             item.variants.price = priceBucket.price;
           } else {
-            // remove from cart
-            // Throw error
+            Logger.error(`Error updating price for item ${item._id} to cart beacuse no priceBucket could be found.`);
+            // TODO: Remove from cart, log error, warn client.
           }
         }
         return item;
       });
     } else {
+      Logger.info(`Skipped updating cart items for cartId ${cart._id} because cart is empty`);
       cart.items = [];
     }
 
