@@ -98,4 +98,3 @@ ongoworks:spiderable                        # adds phantomjs SEO rendering, use 
 # Custom Packages
 harrison:papa-parse
 simple:json-routes
-johanbrook:publication-collector@1.0.2
