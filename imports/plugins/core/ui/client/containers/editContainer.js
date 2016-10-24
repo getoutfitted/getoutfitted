@@ -44,10 +44,8 @@ class EditContainer extends Component {
     if (this.props.showsVisibilityButton) {
       return (
         <VisibilityButton
-          i18nKeyTooltip="revisions.unpublishedChanges"
           onClick={this.handleVisibilityButtonClick}
           toggleOn={this.props.data.isVisible}
-          tooltip="Unpublised Changes"
         />
       );
     }
@@ -80,7 +78,7 @@ class EditContainer extends Component {
 
             tooltip = (
               <span>
-                <Translation defaultValue="Unpublised Changes" i18nKey="revisions.unpublishedChanges" />
+                <Translation defaultValue="Unpublished Changes" i18nKey="revisions.unpublishedChanges" />
               </span>
             );
 
@@ -93,7 +91,7 @@ class EditContainer extends Component {
 
       tooltip = (
         <span>
-          <Translation defaultValue="Unpublised Changes" i18nKey="revisions.unpublishedChanges" />
+          <Translation defaultValue="Unpublished Changes" i18nKey="revisions.unpublishedChanges" />
         </span>
       );
     }
@@ -158,8 +156,17 @@ EditContainer.propTypes = {
 };
 
 function composer(props, onData) {
+  let hasPermission;
+  const viewAs = Reaction.Router.getQueryParam("as");
+
+  if (props.disabled === true || viewAs === "customer") {
+    hasPermission = false;
+  } else {
+    hasPermission = Reaction.hasPermission(props.premissions);
+  }
+
   onData(null, {
-    hasPermission: Reaction.hasPermission(props.premissions)
+    hasPermission
   });
 }
 
