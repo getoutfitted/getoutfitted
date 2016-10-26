@@ -6,17 +6,6 @@ Reaction.registerPackage({
   icon: "fa fa-cubes",
   autoEnable: true,
   registry: [{
-    route: "/product/:handle/:variantId?",
-    name: "product",
-    template: "productDetail",
-    workflow: "coreProductWorkflow"
-  }, {
-    label: "Product Settings",
-    provides: "settings",
-    route: "/product/:handle/:variantId?",
-    container: "product",
-    template: "productDetailForm"
-  }, {
     route: "/tag/:slug?",
     name: "tag",
     template: "products",
@@ -52,21 +41,4 @@ Reaction.registerPackage({
       adminControlsFooter: "adminControlsFooter"
     }
   }]
-  // }, {
-  //   layout: "coreLayout",
-  //   workflow: "coreProductListWorkflow",
-  //   collection: "Products",
-  //   theme: "default",
-  //   enabled: true,
-  //   structure: {
-  //     template: "products",
-  //     layoutHeader: "layoutHeader",
-  //     layoutFooter: "layoutFooter",
-  //     notFound: "notFound",
-  //     dashboardHeader: "",
-  //     dashboardControls: "productDetailDashboardControls",
-  //     dashboardHeaderControls: "",
-  //     adminControlsFooter: "adminControlsFooter"
-  //   }
-  // }]
 });
