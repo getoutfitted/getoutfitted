@@ -3,6 +3,10 @@
 
 // import "./helpers/cart";
 // import "./methods/cart";
+import "./cart/cart.html";
+import "./cart/cart.js";
+import "./cart/cartLineItems/cartLineItems.html";
+import "./cart/cartLineItems/cartLineItems.js";
 
 import "./cartDrawer/cartItems/cartItems.html";
 import "./cartDrawer/cartItems/cartItems.js";

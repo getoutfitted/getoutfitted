@@ -3081,6 +3081,7 @@
     "product",
     "tag",
     "index",
+    "cart",
     "cart/checkout",
     "cart/completed",
     "collections"
@@ -3091,6 +3092,7 @@
     "product",
     "tag",
     "index",
+    "cart",
     "cart/checkout",
     "cart/completed",
     "collections"
