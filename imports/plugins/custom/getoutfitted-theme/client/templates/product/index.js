@@ -11,6 +11,7 @@ import "./productList/productList.html";
 import "./productList/productList.js";
 
 // Product Grid
+// Using core.
 // import "./productGrid/content.html";
 // import "./productGrid/content.js";
 // import "./productGrid/controls.html";
@@ -33,8 +34,8 @@ import "./productDetail/productDetail.html";
 import "./productDetail/productDetail.js";
 import "./productDetail/productImageGallery.html";
 import "./productDetail/productImageGallery.js";
-import "./productDetail/tags.html";
-import "./productDetail/tags.js";
+// import "./productDetail/tags.html";
+// import "./productDetail/tags.js";
 import "./productDetail/social.html";
 import "./productDetail/social.js";
 // import "./productDetail/variant.html";
