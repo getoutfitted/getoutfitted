@@ -30,8 +30,8 @@ Template.cartLineItemBundle.helpers({
     }
     return false;
   },
-  ifMoreThanOneOutfit() {
-    return this.length > 1;
+  moreThanOneOutfit(context) {
+    return context.quantity > 1;
   },
   groupedOutfitComponentSelections() {
     return _.toPairs(

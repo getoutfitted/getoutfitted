@@ -15,11 +15,11 @@
           <br>
           {{#each groupedOutfitComponentSelections}}
             <div class="row">
-              {{#unless moreThanOneOutfit}}
+              {{#if moreThanOneOutfit ..}}
                 <div class="col-xs-12">
                   <h4 class="outfit-number">Outfit #{{outfitNumber}}</h4>
                 </div>
-              {{/unless}}
+              {{/if}}
               {{#each perOutfitComponentSelections}}
                 <div class="col-xs-12 col-sm-6 col-md-3"><strong>{{componentLabel}}</strong> {{componentSelection}}</div>
               {{/each}}

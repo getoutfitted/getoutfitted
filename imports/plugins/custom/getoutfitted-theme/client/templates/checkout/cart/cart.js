@@ -13,7 +13,6 @@ Template.cart.helpers({
     return Cart.findOne();
   },
   cartHasItems() {
-    console.log(this);
     return this.items && this.items.length > 0;
   },
   displayCartDrawer: function () {

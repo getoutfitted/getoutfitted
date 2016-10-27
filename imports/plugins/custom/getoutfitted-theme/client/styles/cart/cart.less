@@ -8,6 +8,18 @@
   color: @brand-dark-color;
 }
 
+.cart-item.row {
+  padding: 10px;
+}
+
+.cart-item.row:not(:last-child) {
+  border-bottom: 1px solid @silver;
+}
+
+.cart-item:nth-child(2n + 1) {
+  background: #F9F9F9;
+}
+
 .cart-item-image {
   height: 225px;
 }
@@ -56,5 +68,5 @@
 
 // Outfit Section
 .outfit-number {
-  margin-bottom: 0;
+  margin-bottom: 4px;
 }
