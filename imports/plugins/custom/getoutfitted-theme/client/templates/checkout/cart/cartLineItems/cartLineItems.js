@@ -10,37 +10,10 @@ import "moment-timezone";
  */
 Template.cartLineItems.helpers({
   cartHasItems() {
-    console.log(this);
     return this.items && this.items.length > 0;
-  },
-  orderStatus: function () {
-    if (this.workflow.status === "coreOrderCompleted") {
-      return true;
-    }
-  },
-  orders: function (data) {
-    if (data.hash.data) {
-      return data.hash.data;
-    }
-    return Orders.find({}, {
-      sort: {
-        createdAt: -1
-      },
-      limit: 1 // Modified from Reaction Default of 25
-    });
   },
   pluralize(items) {
     return items.length > 1 ? "s" : "";
-  },
-  orderAge: function () {
-    return moment(this.createdAt).fromNow();
-  },
-  shipmentTracking: function () {
-    return this.shipping[0].shipmentMethod.tracking;
-  },
-  shopName: function () {
-    let shop = Shops.findOne(this.shopId);
-    return shop !== null ? shop.name : void 0;
   },
   nonComponentItemCount: function () {
     let items = _.filter(this.items, function (item) {
@@ -131,12 +104,4 @@ Template.cartLineItems.helpers({
     }
     return false;
   }
-});
-
-
-/**
- * checkoutCompleteListItems helpers
- *
- */
-Template.cartLineItem.helpers({
 });

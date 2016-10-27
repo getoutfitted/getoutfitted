@@ -1,37 +1,14 @@
 <template name="cart">
   <div class="container" id="cart">
+    <h1>Cart</h1>
     {{#with cart}}
       {{#if cartHasItems}}
         {{> cartLineItems}}
-        {{#if hasReservationDates}}
-          <div class="row">
-            <div class="col-xs-12 col-sm-6">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Your Reservation</h3>
-                </div>
-                <div class="panel-body">
-                  <div class="col-xs-6 col-sm-5 col-md-4">
-                    <strong>
-                      <span data-i18n="cartCompleted.status">Dates</span>
-                    </strong>
-                  </div>
-                  <div class="col-xs-6 col-sm-7 col-md-8">
-                    <span>{{orderStartReservationHuman}}</span> - <span>{{orderEndReservationHuman}}</span><br />
-                  </div>
-                  <div class="col-xs-6 col-sm-5 col-md-4">
-                    <strong>
-                      <span data-i18n="cartCompleted.status">Gear Arrives</span>
-                    </strong>
-                  </div>
-                  <div class="col-xs-6 col-sm-7 col-md-8">
-                    <em>Arrives on: {{orderStartReservationHuman}}</em>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        {{/if}}
+        <div class="row">
+          {{#if hasReservationDates}}
+            {{> reservationDatePanel}}
+          {{/if}}
+        </div>
       {{else}}
       {{/if}}
       {{> displayCartDrawer}}

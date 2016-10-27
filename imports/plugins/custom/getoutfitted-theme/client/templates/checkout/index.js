@@ -7,6 +7,9 @@ import "./cart/cart.html";
 import "./cart/cart.js";
 import "./cart/cartLineItems/cartLineItems.html";
 import "./cart/cartLineItems/cartLineItems.js";
+import "./cart/cartLineItems/cartLineItem.html";
+import "./cart/cartLineItems/cartLineItem.js";
+import "./cart/reservationDatePanel.html";
 
 import "./cartDrawer/cartItems/cartItems.html";
 import "./cartDrawer/cartItems/cartItems.js";
