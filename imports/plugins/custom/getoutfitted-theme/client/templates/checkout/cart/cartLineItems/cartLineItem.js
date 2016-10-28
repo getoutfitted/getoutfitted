@@ -53,5 +53,15 @@ Template.cartLineItemBundle.helpers({
     const splitLabel = this.cartLabel.split(sizeRegex);
     return splitLabel[1];
   }
+});
 
+Template.cartLineItemBundle.events({
+  "click .remove-cart-item": function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    const currentCartItemId = this._id;
+    return $(event.currentTarget).fadeOut(300, function () {
+      return Meteor.call("cart/removeFromCart", currentCartItemId);
+    });
+  }
 });
