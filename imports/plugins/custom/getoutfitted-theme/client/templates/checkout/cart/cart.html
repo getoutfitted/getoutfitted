@@ -5,13 +5,15 @@
       {{#if cartHasItems}}
         {{> cartLineItems}}
         <div class="row">
+          {{> faqPanel}}
           {{#if hasReservationDates}}
             {{> reservationDatePanel}}
           {{/if}}
+          {{> cartSummaryPanel}}
         </div>
       {{else}}
+        <p>Your cart is empty.</p>
       {{/if}}
-      {{> displayCartDrawer}}
     {{/with}}
   </div>
 </template>

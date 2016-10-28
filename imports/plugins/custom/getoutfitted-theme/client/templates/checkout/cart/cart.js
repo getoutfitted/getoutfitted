@@ -29,8 +29,5 @@ Template.cart.helpers({
       return Template.emptyCartDrawer;
     }
     return Template.openCartDrawer;
-  },
-  thisHelper() {
-    console.log(this);
   }
 });

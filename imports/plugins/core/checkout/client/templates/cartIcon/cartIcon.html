@@ -1,7 +1,7 @@
 <template name="cartIcon">
 {{#with cart}}
   <div class="cart-icon">
-    <span data-event-category="cart" data-event-action="cart-click" data-event-label="cart toggle click" data-event-value="{{_id}}">
+    <span data-event-category="cart" data-event-action="view-cart" data-event-label="cart click navbar" data-event-value="{{_id}}">
       <i class="fa fa-shopping-cart fa-2x"></i>
     </span>
     {{#if showCartIconWarning}}

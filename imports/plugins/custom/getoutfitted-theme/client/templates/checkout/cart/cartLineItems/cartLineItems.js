@@ -13,7 +13,7 @@ Template.cartLineItems.helpers({
     return this.items && this.items.length > 0;
   },
   pluralize(items) {
-    return items.length > 1 ? "s" : "";
+    return items > 1 ? "s" : "";
   },
   nonComponentItemCount: function () {
     let items = _.filter(this.items, function (item) {
