@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { ReactiveDict } from "meteor/reactive-dict";
 import { $ } from "meteor/jquery";
-import { Reaction, i18next, Logger } from "/client/api";
+import { Reaction, i18next, Logger, Router } from "/client/api";
 import { ReactionProduct } from "/lib/api";
 import { Cart, Tags } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
@@ -379,6 +379,23 @@ Template.productDetail.events({
                 Logger.error("Failed to add to cart.", error);
                 return error;
               }
+
+              const addToCartTitle = currentVariant.title || "";
+              Alerts.alert({
+                title: "Nice!",
+                text: `${addToCartTitle} was added to your cart successfully!`,
+                type: "success",
+                timer: 7500,
+                showCancelButton: true,
+                cancelButtonText: "<i class='fa fa-shopping-bag'></i> Keep Shopping",
+                cancelButtonColor: "#3FA5BC",
+                confirmButtonText: "<i class='fa fa-shopping-cart'></i> View Cart",
+                confirmButtonColor: "#43AC6A",
+                reverseButtons: true
+              }, function () {
+                Router.go("cart");
+              });
+
               return true;
               // TODO: Re-add analytics tracking
               // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
@@ -391,45 +408,10 @@ Template.productDetail.events({
           );
         }
 
-        template.$(".variant-select-option").removeClass("active");
         // XXX: GETOUTFITTED MOD - Remove set current variant to null
         // ReactionProduct.setCurrentVariant(null);
+        // template.$(".variant-select-option").removeClass("active");
         qtyField.val(1);
-        // scroll to top on cart add
-        $("html,body").animate({
-          scrollTop: 0
-        }, 0);
-        // slide out label
-        const addToCartText = i18next.t("productDetail.addedToCart");
-        const addToCartTitle = currentVariant.title || "";
-        $(".cart-alert-text").text(`${quantity} ${addToCartTitle} ${addToCartText}`);
-
-        // Grab and cache the width of the alert to be used in animation
-        const alertWidth = $(".cart-alert").width();
-        const direction = i18next.t("languageDirection") === "rtl" ? "left" : "right";
-        const oppositeDirection = i18next.t("languageDirection") === "rtl" ? "right" : "left";
-
-        // Animate
-        return $(".cart-alert")
-          .show()
-          .css({
-            [oppositeDirection]: "auto",
-            [direction]: -alertWidth
-          })
-          .animate({
-            [oppositeDirection]: "auto",
-            [direction]: 0
-          }, 600)
-          .delay(4000)
-          .animate({
-            [oppositeDirection]: "auto",
-            [direction]: -alertWidth
-          }, {
-            duration: 600,
-            complete() {
-              $(".cart-alert").hide();
-            }
-          });
       }
     } else {
       Alerts.inline("Select an option before adding to cart", "warning", {
