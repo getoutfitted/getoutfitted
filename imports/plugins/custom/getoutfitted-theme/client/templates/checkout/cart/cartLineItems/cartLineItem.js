@@ -60,8 +60,17 @@ Template.cartLineItemBundle.events({
     event.stopPropagation();
     event.preventDefault();
     const currentCartItemId = this._id;
+    const removedCartItem = this;
     return $(event.currentTarget).fadeOut(300, function () {
-      return Meteor.call("cart/removeFromCart", currentCartItemId);
+      Meteor.call("cart/removeFromCart", currentCartItemId);
+      if (typeof analytics === "object") {
+        analytics.track("Product Removed", {
+          "product_id": removedCartItem.variants._id,
+          "name": removedCartItem.title,
+          "price": removedCartItem.variants.price,
+          "quantity": removedCartItem.quantity
+        });
+      }
     });
   }
 });

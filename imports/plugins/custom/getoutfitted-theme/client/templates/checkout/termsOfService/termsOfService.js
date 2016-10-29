@@ -7,7 +7,7 @@ Template.termsOfService.events({
     const customerAgreedToTermsOfService = event.target.checked;
     Meteor.call("cart/customerAgreedToTermsOfService", customerAgreedToTermsOfService);
     if (typeof analytics === "object") {
-      analytics.track("Completed Checkout Step", {
+      analytics.track("Checkout Step Completed", {
         "step": 3,
         "Step Name": "Agree to Terms of Service"
       });

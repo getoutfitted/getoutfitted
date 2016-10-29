@@ -9,6 +9,51 @@ import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { EditButton } from "/imports/plugins/core/ui/client/components";
 
+function filteredProductVariantTitle(variant) {
+  const title = `${variant.vendor}
+               ${variant.productTitle}
+               ${variant.gender}
+               ${variant.color}
+               ${variant.size}`;
+  return title.replace(/(?:One|No)\s+(?:Color|Size|Option)/ig, "")
+    .replace(/undefined/ig, "")
+    .replace(/unisex/ig, "")
+    .replace(/\s+/g, " ");
+}
+
+function getProductTrackingProps(product, variant) {
+  if (!product || !variant) {
+    return {};
+  }
+  const props = {
+    "product_id": variant._id,
+    "sku": variant.sku,
+    "Product Sku": variant.sku,
+    "Product Title": variant.productTitle,
+    "Product Vendor": product.vendor,
+    "Product Gender": variant.gender,
+    "Product Color": variant.color,
+    "Product Size": variant.size,
+    "Product Type": product.productType,
+    "category": product.productType,
+    "Variant Title": filteredProductVariantTitle(variant),
+    "name": filteredProductVariantTitle(variant),
+    "Product Price": variant.price,
+    "price": variant.price, // TODO: This should check selected dates/reservation length
+    "Product Weight": variant.weight,
+    "Variant Total Inventory": variant.inventoryQuantity,
+    "Variant Ancestors": variant.ancestors
+  };
+
+  props[variant.optionTitle] = variant.title;
+  props["Available Rental Lengths"] = _.pluck(variant.rentalPriceBuckets, "duration");
+  props["Available Prices"] = _.pluck(variant.rentalPriceBuckets, "price");
+  props["Price Buckets"] = variant.rentalPriceBuckets;
+  props["Is Bundle Component"] = product.customerViewType === "bundleComponent";
+  return props;
+}
+
+
 Template.productDetail.onCreated(function () {
   Session.setDefault("productManagementPanelVisibility", true);
   this.state = new ReactiveDict();
@@ -396,14 +441,15 @@ Template.productDetail.events({
                 Router.go("cart");
               });
 
+              if (typeof analytics === "object") {
+                const trackReadyProduct = getProductTrackingProps(currentProduct, currentVariant);
+                trackReadyProduct.quantity = quantity;
+                trackReadyProduct["Reservation Start"] = cart.startTime;
+                trackReadyProduct["Reservation End"] = cart.endTime;
+                trackReadyProduct["Reservation Length"] = cart.rentalDays;
+                analytics.track("Product Added", trackReadyProduct);
+              }
               return true;
-              // TODO: Re-add analytics tracking
-              // let trackReadyProduct = ReactionAnalytics.getProductTrackingProps(currentProduct, currentVariant);
-              // trackReadyProduct.quantity = quantity;
-              // trackReadyProduct["Reservation Start"] = cart.startTime;
-              // trackReadyProduct["Reservation End"] = cart.endTime;
-              // trackReadyProduct["Reservation Length"] = cart.rentalDays;
-              // return ReactionAnalytics.trackEventWhenReady("Added Product", trackReadyProduct);
             }
           );
         }
