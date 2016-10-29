@@ -12,6 +12,11 @@ Reaction.registerPackage({
       name: "collections",
       template: "products",
       workflow: "coreProductWorkflow"
+    }, {
+      route: "/cart",
+      name: "cart",
+      template: "cart",
+      workflow: "coreWorkflow"
     }]
 });
 

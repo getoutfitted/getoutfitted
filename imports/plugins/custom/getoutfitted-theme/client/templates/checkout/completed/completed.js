@@ -106,7 +106,7 @@ Template.cartCompleted.helpers({
         if (typeof analytics === "object") {
           order = Orders.findOne({userId: Meteor.userId(), cartId: id});
           if (!order.tracked) {
-            analytics.track("Completed Order", getOrderTrackingProps(order));
+            analytics.track("Order Completed", getOrderTrackingProps(order));
           }
         }
         return true;
