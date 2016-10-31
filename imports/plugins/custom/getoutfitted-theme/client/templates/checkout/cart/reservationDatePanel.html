@@ -1,0 +1,45 @@
+<template name="faqPanel">
+  <div class="col-xs-12 col-sm-4 col-lg-5 hidden-xs">
+    <div class="panel panel-default panel-cart">
+      <div class="panel-heading">
+        <h3 class="panel-title">Questions<span class="hidden-sm"> about this order</span>?</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row cart-faq">
+          <i class="fa fa-question-circle-o"></i> <a href="https://getoutfitted.zendesk.com/hc/en-us">Visit our Help Center</a><br />
+          <i class="fa fa-comments"></i> <a class="liveChatShow">Live Chat with Customer Service</a><br />
+          <i class="fa fa-phone"></i> <a href="tel:18886180305">Call Us 888-618-0305</a><br />
+          <i class="fa fa-envelope"></i> <a href="mailto:orders@getoutfitted.com">Email Customer Service</a>
+          
+          <div class="panel-heading">
+            <h3 class="panel-title subtitle">Security</h3>
+          </div>
+          Your connection to GetOutfitted.com is protected using TLS (Transport Layer Security). We're proud to have received an <a href="https://www.ssllabs.com/ssltest/analyze.html?d=getoutfitted.com">A+ rating from Qualys SSL Labs</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<template name="reservationDatePanel">
+  <div class="col-xs-12 col-sm-4 col-lg-4">
+    <div class="panel panel-default panel-cart">
+      <div class="panel-heading">
+        <h3 class="panel-title">Your Reservation</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed hidden-sm">
+          <tr><td>Reservation Dates</td><td><span>{{orderStartReservationHuman}}</span> - <span>{{orderEndReservationHuman}}</span></td></tr>
+          <tr><td>Gear Arrives By</td><td><span>{{orderArrivalHuman}}</span></td></tr>
+        </table>
+        <div class="row">
+          <div class="col-xs-12 visible-sm">
+            <strong>Reservation Dates</strong>
+            <p>{{orderStartReservationHuman}} - {{orderEndReservationHuman}}</p>
+            <strong>Gear Arrives By</strong>
+            <p>{{orderArrivalHuman}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

@@ -101,6 +101,17 @@ Template.registerHelper("orderEndReservationHuman", function (order) {
   return "";
 });
 
+Template.registerHelper("orderArrivalHuman", function (order) {
+  if (order && order.endTime) {
+    return moment(adjustDenverToLocalTime(moment(order.startTime))).subtract(1, "day").format("ddd M/DD");
+  }
+  if (this && this.endTime) {
+    return moment(adjustDenverToLocalTime(moment(this.startTime))).subtract(1, "day").format("ddd M/DD");
+  }
+
+  return "";
+});
+
 // Returns bool whether or not display price is zero
 Template.registerHelper("isZero", function (price) {
   return price === 0 || price === "0.00";

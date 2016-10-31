@@ -1,4 +1,4 @@
-import { Reaction } from "/client/api";
+import { Router } from "/client/api";
 import { Cart } from "/lib/collections";
 import { Template } from "meteor/templating";
 
@@ -13,9 +13,8 @@ Template.cartIcon.helpers({
 });
 
 Template.cartIcon.events({
+  // XXX: GetOutfitted MOD - use cart page instead of drawer
   "click .cart-icon"() {
-    return $("#cart-drawer-container").fadeOut(300, function () {
-      return Reaction.toggleSession("displayCart");
-    });
+    return Router.go("cart");
   }
 });

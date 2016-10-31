@@ -67,10 +67,10 @@ Object.assign(Alerts, {
         type: "info",
         ...titleOrOptions
       }).then((isConfirm) => {
-        if (isConfirm === true) {
+        if (isConfirm === true && typeof messageOrCallback === "function") {
           messageOrCallback(isConfirm);
         }
-      });
+      }).catch(_.noop);
     }
 
     const title = titleOrOptions;
@@ -82,12 +82,10 @@ Object.assign(Alerts, {
       type: "info",
       ...options
     }).then((isConfirm) => {
-      if (isConfirm === true) {
-        if (callback) {
-          callback(isConfirm);
-        }
+      if (isConfirm === true && typeof callback === "function") {
+        callback(isConfirm);
       }
-    });
+    }).catch(_.noop);
   },
 
   toast(message, type, options) {
