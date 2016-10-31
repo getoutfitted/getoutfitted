@@ -103,10 +103,10 @@ Template.registerHelper("orderEndReservationHuman", function (order) {
 
 Template.registerHelper("orderArrivalHuman", function (order) {
   if (order && order.endTime) {
-    return moment(adjustDenverToLocalTime(moment(order.endTime).subtract(1, "day"))).format("ddd M/DD");
+    return moment(adjustDenverToLocalTime(moment(order.startTime))).subtract(1, "day").format("ddd M/DD");
   }
   if (this && this.endTime) {
-    return moment(adjustDenverToLocalTime(moment(this.endTime).subtract(1, "day"))).format("ddd M/DD");
+    return moment(adjustDenverToLocalTime(moment(this.startTime))).subtract(1, "day").format("ddd M/DD");
   }
 
   return "";
