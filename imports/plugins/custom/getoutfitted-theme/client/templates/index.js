@@ -1,8 +1,10 @@
 // GetOutfitted Layout
 import "./layouts/index.html";
 import "./layouts/notFound.html";
+import "./account";
 import "./product";
 import "./checkout";
+
 
 // GetOutfitted Header
 import "./layouts/header/header.html";

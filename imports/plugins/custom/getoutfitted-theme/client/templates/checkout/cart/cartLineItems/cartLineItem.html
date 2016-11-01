@@ -10,8 +10,8 @@
 
     <div class="grid-order-item-details col-xs-10 col-md-10">
       <div class="row">
-        <div class="grid-order-detail-title col-xs-8 col-md-9">
-          {{cartProductTitle}}
+        <div class="grid-order-detail-title text-left {{#if viewingCart}}col-xs-8 col-md-9{{else}}col-xs-9 col-md-10{{/if}}">
+          <h3 class="cart-product-title">{{cartProductTitle}}</h3>
           <br>
           {{#each groupedOutfitComponentSelections}}
             <div class="row">
@@ -21,7 +21,7 @@
                 </div>
               {{/if}}
               {{#each perOutfitComponentSelections}}
-                <div class="col-xs-12 col-sm-6 col-md-3"><strong>{{componentLabel}}</strong> {{componentSelection}}</div>
+                <div class="col-xs-12 col-sm-6 col-md-3 cart-outfit-item-size"><strong>{{componentLabel}}</strong> {{componentSelection}}</div>
               {{/each}}
             </div>
           {{/each}}
@@ -34,9 +34,11 @@
             <span>{{formatPrice variants.price}}</span>
           </span>
         </div>
-        <div class="col-xs-1 text-center">
-          <i class="remove-cart-item fa fa-trash fa-lg" data-target="{{productId}}{{variants._id}}"></i>
-        </div>
+        {{#if viewingCart}}
+          <div class="col-xs-1 text-center">
+            <i class="remove-cart-item fa fa-trash fa-lg" data-target="{{productId}}{{variants._id}}"></i>
+          </div>
+        {{/if}}
       </div>
     </div>
   </div>

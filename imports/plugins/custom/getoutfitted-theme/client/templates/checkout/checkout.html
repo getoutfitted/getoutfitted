@@ -5,15 +5,18 @@
         {{> checkoutProgressBar}}
       </div>
     </div>
-
-    <div class="checkout">
-      <div class="container container-lg">
-        <div class="checkout-steps">
-          <div class="checkout-steps-main">
-            {{> checkoutReviewItems}}
-            {{#each reactionTemplate workflow="coreCartWorkflow"}}
-              {{> checkoutSteps}}
-            {{/each}}
+    <div class="checkout container container-lg">
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-7">
+          {{> checkoutReviewItems}}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-5">
+          <div class="checkout-steps">
+            <div class="checkout-steps-main">
+              {{#each reactionTemplate workflow="goCartWorkflow"}}
+                {{> checkoutSteps}}
+              {{/each}}
+            </div>
           </div>
         </div>
       </div>

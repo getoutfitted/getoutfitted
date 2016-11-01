@@ -24,6 +24,9 @@ Template.checkoutReviewItems.onCreated(function () {
 });
 
 Template.checkoutReviewItems.helpers({
+  cart() {
+    return Cart.findOne({userId: Meteor.userId()});
+  },
   cartItems: function () {
     return Cart.findOne().items;
   },

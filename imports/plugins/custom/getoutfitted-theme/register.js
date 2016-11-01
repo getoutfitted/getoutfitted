@@ -5,7 +5,6 @@ Reaction.registerPackage({
   name: "getoutfitted-theme",
   icon: "fa fa-television",
   autoEnable: true,
-  layout: [],
   registry: [
     {
       route: "/collections/:slug?",
@@ -17,111 +16,47 @@ Reaction.registerPackage({
       name: "cart",
       template: "cart",
       workflow: "coreWorkflow"
-    }]
+    }
+  ],
+  layout: [{
+    template: "goCheckoutShippingAddress",
+    label: "Shipping Address",
+    workflow: "goCartWorkflow",
+    container: "checkout-steps-main",
+    audience: ["guest", "anonymous"],
+    priority: 1,
+    position: "1"
+  }, {
+    template: "goCheckoutBillingAddress",
+    label: "Billing Address",
+    workflow: "goCartWorkflow",
+    container: "checkout-steps-main",
+    audience: ["guest", "anonymous"],
+    priority: 2,
+    position: "2"
+  }, {
+    template: "goCheckoutShippingOptions",
+    label: "Shipping Options",
+    workflow: "goCartWorkflow",
+    container: "checkout-steps-main",
+    audience: ["guest", "anonymous"],
+    priority: 3,
+    position: "3"
+  }, {
+    template: "goCheckoutReview",
+    label: "Review and Agree",
+    workflow: "goCartWorkflow",
+    container: "checkout-steps-side",
+    audience: ["guest", "anonymous"],
+    priority: 4,
+    position: "3"
+  }, {
+    template: "goCheckoutPayment",
+    label: "Payment",
+    workflow: "goCartWorkflow",
+    container: "checkout-steps-side",
+    audience: ["guest", "anonymous"],
+    priority: 5,
+    position: "4"
+  }]
 });
-
-// namespaced templates workflows, layout, and template assignments.
-// layout: [
-//   {
-//     layout: "getoutfittedLayout",
-//     workflow: "coreWorkflow",
-//     theme: "default",
-//     enabled: true,
-//     structure: {
-//       template: "getoutfittedIndex",
-//       layoutHeader: "goLayoutHeader",
-//       layoutFooter: "goLayoutFooter",
-//       notFound: "goNotFound",
-//       dashboardControls: "dashboardControls",
-//       adminControlsFooter: "adminControlsFooter"
-//     }
-//   },
-//   {
-//     layout: "getoutfittedLayout",
-//     workflow: "coreProductWorkflow",
-//     collection: "Products",
-//     theme: "default",
-//     enabled: true,
-//     structure: {
-//       template: "goProductDetail",
-//       layoutHeader: "goLayoutHeader",
-//       layoutFooter: "goLayoutFooter",
-//       notFound: "goProductNotFound",
-//       dashboardHeader: "",
-//       dashboardControls: "productDetailDashboardControls",
-//       dashboardHeaderControls: "",
-//       adminControlsFooter: "adminControlsFooter"
-//     }
-//   },
-//   {
-//     layout: "getoutfittedLayout",
-//     workflow: "coreProductListWorkflow",
-//     collection: "Products",
-//     theme: "default",
-//     enabled: true,
-//     structure: {
-//       template: "goProducts",
-//       layoutHeader: "goLayoutHeader",
-//       layoutFooter: "goLayoutFooter",
-//       notFound: "goProductNotFound",
-//       dashboardHeader: "",
-//       dashboardControls: "dashboardControls",
-//       dashboardHeaderControls: "",
-//       adminControlsFooter: "adminControlsFooter"
-//     }
-//     // Checkout
-//   }, {
-//     layout: "getoutfittedLayout",
-//     workflow: "coreCartWorkflow",
-//     collection: "Cart",
-//     theme: "default",
-//     enabled: true,
-//     structure: {
-//       template: "goCartCheckout",
-//       layoutHeader: "goCheckoutHeader",
-//       layoutFooter: "goLayoutFooter",
-//       notFound: "notFound",
-//       dashboardHeader: "",
-//       dashboardControls: "dashboardControls",
-//       dashboardHeaderControls: "",
-//       adminControlsFooter: "adminControlsFooter"
-//     }
-//   }, {
-//     layout: "getoutfittedLayout",
-//     workflow: "coreCartCompletedWorkflow",
-//     collection: "Orders",
-//     theme: "default",
-//     enabled: true,
-//     structure: {
-//       template: "goCartCompleted",
-//       layoutHeader: "goCheckoutHeader",
-//       layoutFooter: "goLayoutFooter",
-//       notFound: "notFound",
-//       dashboardHeader: "",
-//       dashboardControls: "dashboardControls",
-//       dashboardHeaderControls: "",
-//       adminControlsFooter: "adminControlsFooter"
-//     }
-//   }, {
-//     layout: "getoutfittedLayout",
-//     workflow: "coreDashboardWorkflow",
-//     theme: "default",
-//     enabled: true,
-//     structure: {
-//       template: "dashboardPackages",
-//       layoutHeader: "goLayoutHeader",
-//       layoutFooter: "goLayoutFooter",
-//       notFound: "notFound",
-//       dashboardHeader: "dashboardHeader",
-//       dashboardControls: "dashboardControls",
-//       dashboardHeaderControls: "dashboardHeaderControls",
-//       adminControlsFooter: "adminControlsFooter"
-//     }
-//   }],
-// registry: [
-//   {
-//     route: "/collections/:slug?",
-//     name: "collections",
-//     template: "goProducts",
-//     workflow: "coreProductListWorkflow"
-//   }]

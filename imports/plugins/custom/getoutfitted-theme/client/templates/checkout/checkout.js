@@ -24,7 +24,9 @@ Template.cartCheckout.onCreated(function () {
     const cart = Cart.findOne();
     if (cart.workflow && cart.workflow.status === "new") {
         // if user logged in as normal user, we must pass it through the first stage
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
+      // XXX: GetOutfitted MOD: use custom cart workflow
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingAddress", cart._id);
     }
   }
 });

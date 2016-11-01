@@ -26,8 +26,13 @@ import "./cartDrawer/cartDrawer.js";
 // import "./templates/cartPanel/cartPanel.html";
 // import "./templates/cartPanel/cartPanel.js";
 
-// import "./addressBook/addressBook.html";
-// import "./addressBook/addressBook.js";
+import "./addressBook/addressBook.html";
+import "./addressBook/addressBook.js";
+import "./addressBook/add/add.html";
+import "./addressBook/add/add.js";
+import "./addressBook/form/form.html";
+import "./addressBook/form/form.js";
+
 import "./checkoutReviewItems/checkoutReviewItems.html";
 import "./checkoutReviewItems/checkoutReviewItems.js";
 import "./completed/completed.html";

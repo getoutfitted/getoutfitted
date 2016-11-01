@@ -1,6 +1,6 @@
 import { Template } from "meteor/templating";
 
-Template.checkoutAddressBook.onRendered(function () {
+Template.goCheckoutShippingAddress.onRendered(function () {
   // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
   //   "step": 2,
   //   "Step Name": "Sign In or Checkout As Guest"

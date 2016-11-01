@@ -1,5 +1,6 @@
 import { Media } from "/lib/collections";
 import { Template } from "meteor/templating";
+import { Router } from "/client/api";
 import _ from "lodash";
 const sizeRegex = /(Extra Small|Small|Medium|Large|Extra Large|XXL|Standard|Premium|Over Glasses)/;
 
