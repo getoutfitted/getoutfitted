@@ -5,29 +5,7 @@ import { Template } from "meteor/templating";
 /*
  * handles display of addressBook grid
  */
-Template.addressBookGrid.helpers({
-  selectedBilling: function () {
-    const cart = Collections.Cart.findOne({
-      userId: Meteor.userId()
-    });
-
-    if (cart) {
-      if (cart.billing) {
-        if (cart.billing[0].address) {
-          if (this._id === cart.billing[0].address._id) {
-            return "active";
-          }
-        }
-      } else { // if this is a first checkout review, we need to push default
-        // billing address to cart
-        if (this.isBillingDefault) {
-          Meteor.call("cart/setPaymentAddress", cart._id, this);
-          // return "active";
-        }
-      }
-    }
-  },
-
+Template.shippingAddressBook.helpers({
   selectedShipping: function () {
     const cart = Collections.Cart.findOne({
       userId: Meteor.userId()
@@ -60,7 +38,7 @@ Template.addressBookGrid.helpers({
  * events
  */
 
-Template.addressBookGrid.events({
+Template.shippingAddressBook.events({
   "click [data-event-action=selectShippingAddress]": function () {
     return Meteor.call("accounts/addressBookUpdate", this, null,
       "isShippingDefault");
@@ -70,3 +48,27 @@ Template.addressBookGrid.events({
       "isBillingDefault");
   }
 });
+
+// Template.billingAddressBook.helpers({
+//   selectedBilling: function () {
+//     const cart = Collections.Cart.findOne({
+//       userId: Meteor.userId()
+//     });
+//
+//     if (cart) {
+//       if (cart.billing) {
+//         if (cart.billing[0].address) {
+//           if (this._id === cart.billing[0].address._id) {
+//             return "active";
+//           }
+//         }
+//       } else { // if this is a first checkout review, we need to push default
+//         // billing address to cart
+//         if (this.isBillingDefault) {
+//           Meteor.call("cart/setPaymentAddress", cart._id, this);
+//           // return "active";
+//         }
+//       }
+//     }
+//   }
+// })

@@ -12,11 +12,9 @@
         </div>
         <div class="col-xs-12 col-sm-6 col-md-5">
           <div class="checkout-steps">
-            <div class="checkout-steps-main">
-              {{#each reactionTemplate workflow="goCartWorkflow"}}
-                {{> checkoutSteps}}
-              {{/each}}
-            </div>
+            {{#each reactionTemplate workflow="goCartWorkflow"}}
+              {{> checkoutSteps}}
+            {{/each}}
           </div>
         </div>
       </div>

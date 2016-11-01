@@ -1,51 +1,58 @@
 <template name="usAddressBookForm">
   <div class="row">
-    <div class="col-xs-12 form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
-        <label class="control-label">{{afFieldLabelText name='fullName'}}</label>
-        {{>afFieldInput name="fullName" value=fullName autofocus=''}}
-        {{#if afFieldIsInvalid name="fullName"}}
-        <span class="help-block">{{afFieldMessage name="fullName"}}</span>
-        {{/if}}
+    {{>afFieldInput class="form-control" type="hidden" name="country" value="US"}}
+    <div class="form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
+        <label class="control-label col-xs-4 col-md-3">{{afFieldLabelText name='fullName'}}</label>
+        <div class="col-xs-8 col-md-9">
+          {{>afFieldInput class="form-control" name="fullName" value=fullName autofocus=''}}
+          {{#if afFieldIsInvalid name="fullName"}}
+            <span class="help-block">{{afFieldMessage name="fullName"}}</span>
+          {{/if}}
+        </div>
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12 form-group{{#if afFieldIsInvalid name='address1'}} has-error{{/if}}">
-        <label class="control-label">{{afFieldLabelText name='address1'}}</label>
-        {{>afFieldInput name="address1"}}
-        {{#if afFieldIsInvalid name="address1"}}
-        <span class="help-block">{{afFieldMessage name="address1"}}</span>
-        {{/if}}
+    <div class="form-group{{#if afFieldIsInvalid name='address1'}} has-error{{/if}}">
+        <label class="control-label col-xs-4 col-md-3">{{afFieldLabelText name='address1'}}</label>
+        <div class="col-xs-8 col-sm-8 col-md-9">
+          {{>afFieldInput class="form-control" name="address1"}}
+          {{#if afFieldIsInvalid name="address1"}}
+          <span class="help-block">{{afFieldMessage name="address1"}}</span>
+          {{/if}}
+        </div>
     </div>
-    <div class="col-xs-12 form-group{{#if afFieldIsInvalid name='address2'}} has-error{{/if}}">
-        <label class="control-label">{{afFieldLabelText name='address2'}}</label>
-        {{>afFieldInput name="address2"}}
-        {{#if afFieldIsInvalid name="address2"}}
-        <span class="help-block">{{afFieldMessage name="address2"}}</span>
-        {{/if}}
+    <div class="form-group{{#if afFieldIsInvalid name='address2'}} has-error{{/if}}">
+        <label class="control-label col-xs-4 col-md-3">{{afFieldLabelText name='address2'}}</label>
+        <div class="col-xs-8 col-md-9">
+          {{>afFieldInput class="form-control" name="address2"}}
+          {{#if afFieldIsInvalid name="address2"}}
+          <span class="help-block">{{afFieldMessage name="address2"}}</span>
+          {{/if}}
+        </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-4 form-group{{#if afFieldIsInvalid name='city'}} has-error{{/if}}">
+  <div class="row keep-col-margin">
+    <div class="col-xs-4 form-group{{#if afFieldIsInvalid name='city'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='city'}}</label>
-        {{>afFieldInput name="city" value=city}}
+        {{>afFieldInput class="form-control" name="city" value=city}}
         {{#if afFieldIsInvalid name="city"}}
         <span class="help-block">{{afFieldMessage name="city"}}</span>
         {{/if}}
     </div>
-    <div class="col-md-4 form-group{{#if afFieldIsInvalid name='region'}} has-error{{/if}}">
+    <div class="col-xs-4 form-group{{#if afFieldIsInvalid name='region'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='region'}}</label>
-        {{>afFieldInput name="region" value=region options=states}}
+        {{>afFieldInput class="form-control" name="region" value=region options=states}}
     </div>
-    <div class="col-md-4 form-group{{#if afFieldIsInvalid name='postal'}} has-error{{/if}}">
-      <label class="control-label">{{afFieldLabelText name='postal'}}</label>
-      {{>afFieldInput name="postal" value=postal}}
+    <div class="col-xs-4 form-group{{#if afFieldIsInvalid name='postal'}} has-error{{/if}}">
+      <label class="control-label">Zip Code</label>
+      {{>afFieldInput class="form-control" name="postal" value=postal maxlength="5"}}
       {{#if afFieldIsInvalid name="postal"}}
       <span class="help-block">{{afFieldMessage name="postal"}}</span>
       {{/if}}
     </div>
-    <div class="col-md-4 form-group{{#if afFieldIsInvalid name='phone'}} has-error{{/if}}">
+    <div class="col-xs-4 form-group{{#if afFieldIsInvalid name='phone'}} has-error{{/if}}">
       <label class="control-label">{{afFieldLabelText name='phone'}}</label>
-      {{>afFieldInput name="phone"}}
+      {{>afFieldInput class="form-control" name="phone"}}
       {{#if afFieldIsInvalid name="phone"}}
       <span class="help-block">{{afFieldMessage name="phone"}}</span>
       {{/if}}
@@ -55,40 +62,37 @@
     {{#if hasAddressBookEntries}}
     <div class="form-group{{#if afFieldIsInvalid name='isShippingDefault'}} has-error{{/if}}">
       <label class="control-label"></label>
-      {{>afFieldInput name="isShippingDefault" value=isShippingDefault}}
+      {{>afFieldInput class="form-control" name="isShippingDefault" value=isShippingDefault}}
       {{#if afFieldIsInvalid name="isShippingDefault"}}
       <span class="help-block">{{afFieldMessage name="isShippingDefault"}}</span>
       {{/if}}
     </div>
     {{else}}
-      {{>afFieldInput name="isShippingDefault" value=isShippingDefault type="hidden"}}
+      {{>afFieldInput class="form-control" name="isShippingDefault" value=isShippingDefault type="hidden"}}
     {{/if}}
     {{#if hasAddressBookEntries}}
     <div class="form-group{{#if afFieldIsInvalid name='isBillingDefault'}} has-error{{/if}}">
       <label class="control-label"></label>
-      {{>afFieldInput name="isBillingDefault" value=isBillingDefault}}
+      {{>afFieldInput class="form-control" name="isBillingDefault" value=isBillingDefault}}
       {{#if afFieldIsInvalid name="isBillingDefault"}}
       <span class="help-block">{{afFieldMessage name="isBillingDefault"}}</span>
       {{/if}}
     </div>
     {{else}}
-      {{>afFieldInput name="isBillingDefault" value=isBillingDefault type="hidden"}}
+      {{>afFieldInput class="form-control" name="isBillingDefault" value=isBillingDefault type="hidden"}}
     {{/if}}
-    <div class="form-group{{#if afFieldIsInvalid name='isCommercial'}} has-error{{/if}}">
-      <label class="control-label"></label>
-      {{>afFieldInput name="isCommercial" value=isCommercial}}
-      {{#if afFieldIsInvalid name="isCommercial"}}
-      <span class="help-block">{{afFieldMessage name="isCommercial"}}</span>
-      {{/if}}
-    </div>
+    {{>afFieldInput class="form-control" type="hidden" name="isCommercial" value="false"}}
   </div>
 </template>
+
+
+
 
 <template name="internationalAddressBookForm">
   <div class="row">
     <div class="col-md-6 form-group{{#if afFieldIsInvalid name='country'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='country'}}</label>
-        {{>afFieldInput name="country" options=countryOptions value=country}}
+        {{>afFieldInput class="form-control" name="country" options=countryOptions value=country}}
         {{#if afFieldIsInvalid name="country"}}
         <span class="help-block">{{afFieldMessage name="country"}}</span>
         {{/if}}
@@ -97,7 +101,7 @@
   <div class="row">
     <div class="col-md-6 form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='fullName'}}</label>
-        {{>afFieldInput name="fullName" value=fullName autofocus=''}}
+        {{>afFieldInput class="form-control" name="fullName" value=fullName autofocus=''}}
         {{#if afFieldIsInvalid name="fullName"}}
         <span class="help-block">{{afFieldMessage name="fullName"}}</span>
         {{/if}}
@@ -106,14 +110,14 @@
   <div class="row">
     <div class="col-md-6 form-group{{#if afFieldIsInvalid name='address1'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='address1'}}</label>
-        {{>afFieldInput name="address1"}}
+        {{>afFieldInput class="form-control" name="address1"}}
         {{#if afFieldIsInvalid name="address1"}}
         <span class="help-block">{{afFieldMessage name="address1"}}</span>
         {{/if}}
     </div>
     <div class="col-md-6 form-group{{#if afFieldIsInvalid name='address2'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='address2'}}</label>
-        {{>afFieldInput name="address2"}}
+        {{>afFieldInput class="form-control" name="address2"}}
         {{#if afFieldIsInvalid name="address2"}}
         <span class="help-block">{{afFieldMessage name="address2"}}</span>
         {{/if}}
@@ -122,14 +126,14 @@
   <div class="row">
     <div class="col-md-4 form-group{{#if afFieldIsInvalid name='postal'}} has-error{{/if}}">
       <label class="control-label">{{afFieldLabelText name='postal'}}</label>
-      {{>afFieldInput name="postal" value=postal}}
+      {{>afFieldInput class="form-control" name="postal" value=postal}}
       {{#if afFieldIsInvalid name="postal"}}
       <span class="help-block">{{afFieldMessage name="postal"}}</span>
       {{/if}}
     </div>
     <div class="col-md-4 form-group{{#if afFieldIsInvalid name='city'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='city'}}</label>
-        {{>afFieldInput name="city" value=city}}
+        {{>afFieldInput class="form-control" name="city" value=city}}
         {{#if afFieldIsInvalid name="city"}}
         <span class="help-block">{{afFieldMessage name="city"}}</span>
         {{/if}}
@@ -137,9 +141,9 @@
     <div class="col-md-4 form-group{{#if afFieldIsInvalid name='region'}} has-error{{/if}}">
         <label class="control-label">{{afFieldLabelText name='region'}}</label>
         {{#if statesForCountry}}
-          {{>afFieldInput name="region" value=region options=statesForCountry}}
+          {{>afFieldInput class="form-control" name="region" value=region options=statesForCountry}}
         {{else}}
-          {{>afFieldInput name="region" value=region }}
+          {{>afFieldInput class="form-control" name="region" value=region }}
         {{/if}}
         {{#if afFieldIsInvalid name="region"}}
         <span class="help-block">{{afFieldMessage name="region"}}</span>
@@ -147,7 +151,7 @@
     </div>
     <div class="col-md-4 form-group{{#if afFieldIsInvalid name='phone'}} has-error{{/if}}">
       <label class="control-label">{{afFieldLabelText name='phone'}}</label>
-      {{>afFieldInput name="phone"}}
+      {{>afFieldInput class="form-control" name="phone"}}
       {{#if afFieldIsInvalid name="phone"}}
       <span class="help-block">{{afFieldMessage name="phone"}}</span>
       {{/if}}
@@ -157,28 +161,28 @@
     {{#if hasAddressBookEntries}}
     <div class="form-group{{#if afFieldIsInvalid name='isShippingDefault'}} has-error{{/if}}">
       <label class="control-label"></label>
-      {{>afFieldInput name="isShippingDefault" value=isShippingDefault}}
+      {{>afFieldInput class="form-control" name="isShippingDefault" value=isShippingDefault}}
       {{#if afFieldIsInvalid name="isShippingDefault"}}
       <span class="help-block">{{afFieldMessage name="isShippingDefault"}}</span>
       {{/if}}
     </div>
     {{else}}
-      {{>afFieldInput name="isShippingDefault" value=isShippingDefault type="hidden"}}
+      {{>afFieldInput class="form-control" name="isShippingDefault" value=isShippingDefault type="hidden"}}
     {{/if}}
     {{#if hasAddressBookEntries}}
     <div class="form-group{{#if afFieldIsInvalid name='isBillingDefault'}} has-error{{/if}}">
       <label class="control-label"></label>
-      {{>afFieldInput name="isBillingDefault" value=isBillingDefault}}
+      {{>afFieldInput class="form-control" name="isBillingDefault" value=isBillingDefault}}
       {{#if afFieldIsInvalid name="isBillingDefault"}}
       <span class="help-block">{{afFieldMessage name="isBillingDefault"}}</span>
       {{/if}}
     </div>
     {{else}}
-      {{>afFieldInput name="isBillingDefault" value=isBillingDefault type="hidden"}}
+      {{>afFieldInput class="form-control" name="isBillingDefault" value=isBillingDefault type="hidden"}}
     {{/if}}
     <div class="form-group{{#if afFieldIsInvalid name='isCommercial'}} has-error{{/if}}">
       <label class="control-label"></label>
-      {{>afFieldInput name="isCommercial" value=isCommercial}}
+      {{>afFieldInput class="form-control" name="isCommercial" value=isCommercial}}
       {{#if afFieldIsInvalid name="isCommercial"}}
       <span class="help-block">{{afFieldMessage name="isCommercial"}}</span>
       {{/if}}

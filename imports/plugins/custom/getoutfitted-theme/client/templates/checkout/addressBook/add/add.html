@@ -1,10 +1,10 @@
 <template name="goAddressBookAdd">
   <div class="panel-body panel-content">
-    {{#autoForm schema=Schemas.Address id="addressBookAddForm" doc=thisAddress type="normal"}}
+    {{#autoForm schema=Schemas.Address id="addressBookAddForm" doc=thisAddress type="normal" class="form-horizontal"}}
       <fieldset>
           {{> usAddressBookForm}}
           <div class="row text-right">
-            <button type="submit" class="btn btn-primary" data-i18n="app.saveAndContinue" data-event-action="saveAddress">Save and continue</button>
+            <button type="submit" class="btn btn-info" data-i18n="app.saveAndContinue" data-event-action="saveAddress">Save and continue</button>
               {{#if ../hasAddressBookEntries}}
                 <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
               {{/if}}
@@ -18,13 +18,17 @@
   <div class="panel-control-bar">
     <h3 class="panel-title">
       {{#if hasAddressBookEntries}}
-        <span>Add Shipping Address</span>
+        <span>Choose Shipping Address</span>
       {{else}}
         <span>Shipping Address</span>
       {{/if}}
     </h3>
   </div>
-  {{> goAddressBookAdd}}
+  {{#if hasAddressBookEntries}}
+    
+  {{else}}
+    {{> goAddressBookAdd}}
+  {{/if}}
 </template>
 
 <template name="billingAddressAdd">

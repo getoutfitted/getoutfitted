@@ -1,4 +1,37 @@
+import { Meteor } from "meteor/meteor";
+import { ReactiveVar } from "meteor/reactive-var";
 import { Template } from "meteor/templating";
+import { Accounts } from "/lib/collections";
+
+Template.goCheckoutShippingAddress.onCreated(function () {
+  this.currentAddressTemplate = ReactiveVar("shippingAddressAdd");
+  this.templateData = ReactiveVar({});
+
+  this.autorun(() => {
+    this.subscribe("Accounts", Meteor.userId());
+
+    const account = Accounts.findOne({
+      userId: Meteor.userId()
+    });
+
+    if (account && account.profile && account.profile.addressBook) {
+      if (account.profile.addressBook.length === 0) {
+        this.currentAddressTemplate.set("shippingAddressAdd");
+      } else {
+        this.currentAddressTemplate.set("shippingAddressBook");
+      }
+    }
+  });
+});
+
+Template.goCheckoutShippingAddress.helpers({
+  currentView() {
+    return Template.instance().currentAddressTemplate.get();
+  },
+  data() {
+    return Template.instance().templateData.get();
+  }
+});
 
 Template.goCheckoutShippingAddress.onRendered(function () {
   // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
@@ -10,4 +43,57 @@ Template.goCheckoutShippingAddress.onRendered(function () {
   //   "step": 3,
   //   "Step Name": "Choose Shipping and Billing Address"
   // });
+});
+
+Template.goCheckoutShippingAddress.events({
+  "click [data-event-action=addNewAddress]": function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    Template.instance().currentAddressTemplate.set("addressBookAdd");
+  },
+
+  // **************************************************************************
+  // Edit an address
+  //
+  "click [data-event-action=editAddress]": function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    Template.instance().templateData.set({
+      address: this
+    });
+
+    Template.instance().currentAddressTemplate.set("addressBookEdit");
+  },
+
+  "click [data-event-action=removeAddress]": function (event, template) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    Meteor.call("accounts/addressBookRemove", this._id, (error, result) => {
+      if (error) {
+        Alerts.toast(i18next.t("addressBookGrid.cantRemoveThisAddress", { err: error.message }), "error");
+      }
+      if (result) {
+        const account = Accounts.findOne({
+          userId: Meteor.userId()
+        });
+        if (account) {
+          if (account.profile) {
+            if (account.profile.addressBook.length === 0) {
+              template.currentAddressTemplate.set("addressBookAdd");
+            }
+          }
+        }
+      }
+    });
+  },
+
+  "click [data-event-action=cancelAddressEdit], form submit, showMainView": function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    Template.instance().currentAddressTemplate.set("addressBookGrid");
+  }
 });

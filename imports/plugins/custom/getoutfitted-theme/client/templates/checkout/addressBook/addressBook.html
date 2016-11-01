@@ -1,17 +1,11 @@
 <template name="goCheckoutShippingAddress">
   <div class="panel panel-default panel-shipping-address">
-    {{> shippingAddressAdd}}
+    {{> Template.dynamic template=currentView data=data}}
   </div>
 </template>
 
 <template name="goCheckoutBillingAddress">
   <div class="panel panel-default panel-address-book">
-    <div class="panel-heading">
-      {{> checkoutStepBadge}}
-      <h3 class="panel-title">
-      <span id="address-selection-help">Shipping Address</span>
-    </h3>
-    </div>
-    {{> addressBookAdd}}
+    {{> billingAddressAdd}}
   </div>
 </template>

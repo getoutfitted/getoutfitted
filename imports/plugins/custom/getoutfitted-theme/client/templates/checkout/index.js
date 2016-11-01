@@ -32,6 +32,8 @@ import "./addressBook/add/add.html";
 import "./addressBook/add/add.js";
 import "./addressBook/form/form.html";
 import "./addressBook/form/form.js";
+import "./addressBook/list/list.html";
+import "./addressBook/list/list.js";
 
 import "./checkoutReviewItems/checkoutReviewItems.html";
 import "./checkoutReviewItems/checkoutReviewItems.js";
