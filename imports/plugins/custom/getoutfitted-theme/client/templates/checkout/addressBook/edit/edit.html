@@ -1,15 +1,15 @@
-<template name="addressBookEdit">
+<template name="shippingAddressEdit">
   <div class="panel-heading">
     <h3 class="panel-control-bar">
-      <span  data-i18n="addressBookEdit.editAddress">Editing this address entry</span>
+      <span data-i18n="addressBookEdit.editAddress">Edit Address</span>
     </h3>
   </div>
   <div class="panel-body">
-  {{#autoForm schema=Schemas.Address id="addressBookEditForm" doc=address type="normal"}}
+  {{#autoForm schema=Schemas.Address id="shippingAddressEditForm" doc=address type="normal"}}
     <fieldset>
-      {{>addressBookForm}}
+      {{> usAddressBookForm}}
       <div class="row text-right">
-        <button type="submit" class="btn btn-primary" data-i18n="app.saveAndContinue" data-event-action="saveAddress">Save and continue</button>
+        <button type="submit" class="btn btn-primary" data-i18n="app.save" data-event-action="saveAddress">Save</button>
         <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
       </div>
       {{>afFieldInput name="_id" value=thisAddress._id type="hidden"}}

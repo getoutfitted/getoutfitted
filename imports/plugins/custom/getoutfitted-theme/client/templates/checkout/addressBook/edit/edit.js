@@ -7,7 +7,7 @@ import { Meteor } from "meteor/meteor";
  */
 
 AutoForm.hooks({
-  addressBookEditForm: {
+  shippingAddressEditForm: {
     onSubmit: function (insertDoc) {
       this.event.preventDefault();
 

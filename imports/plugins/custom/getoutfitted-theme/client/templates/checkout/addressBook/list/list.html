@@ -1,23 +1,22 @@
 <template name="shippingAddressBook">
   {{#with account.profile}}
-    <div class="panel-control-bar">
-      <div class="panel-controls">
-        <button class="btn btn-default" type="button" data-event-action="addNewAddress">
-          <i class="fa fa-plus fa-lg address-icons"></i>
-          <span>Add Address</span>
-        </button>
-      </div>
-
-    </div>
+  <div class="panel-control-bar">
+    <h3 class="panel-title">
+      <span>Shipping Address</span>
+    </h3>
+  </div>
     <div class="panel-body">
-
-      <div class="address-list">
+      <div class="address-list text-center">
         <div class="address-list-heading">
-          <h4 data-i18n="addressBookGrid.selectShippingAddress">Select a shipping address</h4>
+          {{#if multipleAddressBookEntries}}
+            <h4 data-i18n="addressBookGrid.selectShippingAddress">Select a shipping address</h4>
+          {{else}}
+            <h4>Use existing shipping address</h4>
+          {{/if}}
         </div>
         <div class="address-list-heading-blank"></div>
         {{#each addressBook}}
-          <div class="address-list-item">
+          <div class="address-list-item text-left">
             <div class="address {{selectedShipping}}" data-event-action="selectShippingAddress">
               <strong>{{fullName}}</strong>
               <address>
@@ -37,8 +36,14 @@
             </div>
           </div>
         {{/each}}
+        <div class="section-line-header">
+          <h4>or</h4>
+        </div>
+        <button class="btn btn-default btn-lg btn-block" type="button" data-event-action="addNewAddress">
+          <i class="fa fa-plus fa-lg address-icons"></i>
+          <span>Add New Address</span>
+        </button>
       </div>
-
     </div>
   {{/with}}
 </template>

@@ -1,4 +1,4 @@
-import * as Collections from "/lib/collections";
+import { Cart, Accounts } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 
@@ -6,8 +6,13 @@ import { Template } from "meteor/templating";
  * handles display of addressBook grid
  */
 Template.shippingAddressBook.helpers({
+  account: function () {
+    return Accounts.findOne({
+      userId: Meteor.userId()
+    });
+  },
   selectedShipping: function () {
-    const cart = Collections.Cart.findOne({
+    const cart = Cart.findOne({
       userId: Meteor.userId()
     });
 
@@ -27,11 +32,17 @@ Template.shippingAddressBook.helpers({
       }
     }
   },
-  account: function () {
-    return Collections.Accounts.findOne({
+  multipleAddressBookEntries: function () {
+    const account = Accounts.findOne({
       userId: Meteor.userId()
     });
+    if (account && account.profile && account.profile.addressBook) {
+      return account.profile.addressBook.length > 1;
+    }
+
+    return false;
   }
+
 });
 
 /*

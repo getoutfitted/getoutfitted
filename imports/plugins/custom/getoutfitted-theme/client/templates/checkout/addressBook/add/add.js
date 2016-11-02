@@ -1,5 +1,5 @@
 import { i18next } from "/client/api";
-import * as Collections from "/lib/collections";
+import { Accounts, Cart } from "/lib/collections";
 import { Session } from "meteor/session";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
@@ -8,7 +8,7 @@ Template.goAddressBookAdd.helpers({
   thisAddress: function () {
     const thisAddress = {};
     // admin should receive his account
-    const account = Collections.Accounts.findOne({
+    const account = Accounts.findOne({
       userId: Meteor.userId()
     });
     if (account) {
@@ -57,8 +57,8 @@ AutoForm.hooks({
   addressBookAddForm: {
     onSubmit: function (insertDoc) {
       this.event.preventDefault();
+      const cart = Cart.findOne({userId: Meteor.userId()});
       const addressBook = $(this.template.firstNode).closest(".address-book");
-
       Meteor.call("accounts/addressBookAdd", insertDoc, (error, result) => {
         if (error) {
           Alerts.toast(i18next.t("addressBookAdd.failedToAddAddress", { err: error.message }), "error");
@@ -68,32 +68,16 @@ AutoForm.hooks({
         if (result) {
           this.done();
           addressBook.trigger($.Event("showMainView"));
+          Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress", cart._id);
         }
       });
     }
   }
 });
 
-Template.shippingAddressAdd.helpers({
+Template.goAddressBookAdd.helpers({
   hasAddressBookEntries: function () {
-    const account = Collections.Accounts.findOne({
-      userId: Meteor.userId()
-    });
-    if (account) {
-      if (account.profile) {
-        if (account.profile.addressBook) {
-          return account.profile.addressBook.length > 0;
-        }
-      }
-    }
-
-    return false;
-  }
-});
-
-Template.billingAddressAdd.helpers({
-  hasAddressBookEntries: function () {
-    const account = Collections.Accounts.findOne({
+    const account = Accounts.findOne({
       userId: Meteor.userId()
     });
     if (account) {

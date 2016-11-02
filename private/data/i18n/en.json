@@ -515,7 +515,7 @@
         "failedToAddAddress": "Failed to add address: {{err}}"
       },
       "addressBookEdit": {
-        "editAddress": "Editing this address entry",
+        "editAddress": "Edit Address",
         "somethingWentWrong": "Something went wrong: {{err}}"
       },
       "corePackageConfig": {

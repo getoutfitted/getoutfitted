@@ -4,10 +4,10 @@
       <fieldset>
           {{> usAddressBookForm}}
           <div class="row text-right">
-            <button type="submit" class="btn btn-info" data-i18n="app.saveAndContinue" data-event-action="saveAddress">Save and continue</button>
-              {{#if ../hasAddressBookEntries}}
-                <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
-              {{/if}}
+            {{#if hasAddressBookEntries}}
+              <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
+            {{/if}}
+            <button type="submit" class="btn btn-info" data-i18n="app.saveAndContinue" data-event-action="saveAddress">Save Address</button>
           </div>
       </fieldset>
     {{/autoForm}}
@@ -17,18 +17,10 @@
 <template name="shippingAddressAdd">
   <div class="panel-control-bar">
     <h3 class="panel-title">
-      {{#if hasAddressBookEntries}}
-        <span>Choose Shipping Address</span>
-      {{else}}
-        <span>Shipping Address</span>
-      {{/if}}
+      <span>Shipping Address</span>
     </h3>
   </div>
-  {{#if hasAddressBookEntries}}
-    
-  {{else}}
     {{> goAddressBookAdd}}
-  {{/if}}
 </template>
 
 <template name="billingAddressAdd">

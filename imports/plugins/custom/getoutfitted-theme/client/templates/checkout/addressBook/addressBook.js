@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { ReactiveVar } from "meteor/reactive-var";
 import { Template } from "meteor/templating";
-import { Accounts } from "/lib/collections";
+import { Accounts, Cart } from "/lib/collections";
 
 Template.goCheckoutShippingAddress.onCreated(function () {
   this.currentAddressTemplate = ReactiveVar("shippingAddressAdd");
@@ -10,15 +10,15 @@ Template.goCheckoutShippingAddress.onCreated(function () {
   this.autorun(() => {
     this.subscribe("Accounts", Meteor.userId());
 
-    const account = Accounts.findOne({
-      userId: Meteor.userId()
-    });
+    const account = Accounts.findOne({ userId: Meteor.userId() });
+    const cart = Cart.findOne({ userId: Meteor.userId() });
 
     if (account && account.profile && account.profile.addressBook) {
       if (account.profile.addressBook.length === 0) {
         this.currentAddressTemplate.set("shippingAddressAdd");
       } else {
         this.currentAddressTemplate.set("shippingAddressBook");
+        Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress", cart._id);
       }
     }
   });
@@ -50,7 +50,7 @@ Template.goCheckoutShippingAddress.events({
     event.preventDefault();
     event.stopPropagation();
 
-    Template.instance().currentAddressTemplate.set("addressBookAdd");
+    Template.instance().currentAddressTemplate.set("shippingAddressAdd");
   },
 
   // **************************************************************************
@@ -64,7 +64,7 @@ Template.goCheckoutShippingAddress.events({
       address: this
     });
 
-    Template.instance().currentAddressTemplate.set("addressBookEdit");
+    Template.instance().currentAddressTemplate.set("shippingAddressEdit");
   },
 
   "click [data-event-action=removeAddress]": function (event, template) {
@@ -82,7 +82,7 @@ Template.goCheckoutShippingAddress.events({
         if (account) {
           if (account.profile) {
             if (account.profile.addressBook.length === 0) {
-              template.currentAddressTemplate.set("addressBookAdd");
+              template.currentAddressTemplate.set("shippingAddressAdd");
             }
           }
         }
@@ -94,6 +94,13 @@ Template.goCheckoutShippingAddress.events({
     event.preventDefault();
     event.stopPropagation();
 
-    Template.instance().currentAddressTemplate.set("addressBookGrid");
+    Template.instance().currentAddressTemplate.set("shippingAddressBook");
   }
+});
+
+Template.goCheckoutBillingAddress.onCreated(function () {
+  this.autorun(() => {
+    const cart = Cart.findOne({ userId: Meteor.userId() });
+    Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingOptions", cart._id);
+  });
 });
