@@ -14,6 +14,22 @@
   </div>
 </template>
 
+<template name="goIntlAddressBookAdd">
+  <div class="panel-body panel-content">
+    {{#autoForm schema=Schemas.Address id="addressBookAddForm" doc=thisAddress type="normal" class="form-horizontal"}}
+      <fieldset>
+          {{> usAddressBookForm}}
+          <div class="row text-right">
+            {{#if hasAddressBookEntries}}
+              <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
+            {{/if}}
+            <button type="submit" class="btn btn-primary" data-i18n="app.save" data-event-action="saveAddress">Save</button>
+          </div>
+      </fieldset>
+    {{/autoForm}}
+  </div>
+</template>
+
 <template name="shippingAddressAdd">
   <div class="panel-control-bar">
     <h3 class="panel-title">
@@ -24,14 +40,5 @@
 </template>
 
 <template name="billingAddressAdd">
-  <div class="panel-control-bar">
-    <h3 class="panel-title">
-      {{#if hasAddressBookEntries}}
-        <span data-i18n="addressBookAdd.addAddress">Add address</span>
-      {{else}}
-        <span data-i18n="addressBookAdd.createAddress">Create your default address</span>
-      {{/if}}
-    </h3>
-  </div>
-  {{> goAddressBookAdd}}
+  {{> goIntlAddressBookAdd}}
 </template>

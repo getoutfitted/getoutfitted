@@ -26,8 +26,10 @@ import "./cartDrawer/cartDrawer.js";
 // import "./templates/cartPanel/cartPanel.html";
 // import "./templates/cartPanel/cartPanel.js";
 
-import "./addressBook/addressBook.html";
-import "./addressBook/addressBook.js";
+import "./addressBook/checkoutShippingAddress.html";
+import "./addressBook/checkoutShippingAddress.js";
+import "./addressBook/checkoutBillingAddress.html";
+import "./addressBook/checkoutBillingAddress.js";
 import "./addressBook/add/add.html";
 import "./addressBook/add/add.js";
 import "./addressBook/edit/edit.html";

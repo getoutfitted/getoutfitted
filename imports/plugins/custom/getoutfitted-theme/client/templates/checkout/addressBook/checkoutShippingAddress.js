@@ -97,10 +97,3 @@ Template.goCheckoutShippingAddress.events({
     Template.instance().currentAddressTemplate.set("shippingAddressBook");
   }
 });
-
-Template.goCheckoutBillingAddress.onCreated(function () {
-  this.autorun(() => {
-    const cart = Cart.findOne({ userId: Meteor.userId() });
-    Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingOptions", cart._id);
-  });
-});

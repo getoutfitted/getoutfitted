@@ -7,43 +7,75 @@
   </div>
     <div class="panel-body">
       <div class="address-list text-center">
-        <div class="address-list-heading">
-          {{#if multipleAddressBookEntries}}
-            <h4 data-i18n="addressBookGrid.selectShippingAddress">Select a shipping address</h4>
-          {{else}}
-            <h4>Use existing shipping address</h4>
-          {{/if}}
-        </div>
-        <div class="address-list-heading-blank"></div>
         {{#each addressBook}}
           <div class="address-list-item text-left">
             <div class="address {{selectedShipping}}" data-event-action="selectShippingAddress">
-              <strong>{{fullName}}</strong>
+              <strong>{{fullName}}</strong> <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
               <address>
                 {{address1}}
                 {{address2}},<br>
-                {{city}}, {{region}} {{postal}} {{country}}<br>
-                {{phone}}
+                {{city}}, {{region}} {{postal}}<br>
               </address>
             </div>
             <div class="controls">
               <button type="button" class="btn btn-default" data-id="{{_id}}" data-event-action="editAddress" title="{{i18n 'addressBookGrid.edit' 'Edit'}}">
-                <i class="fa fa-pencil"></i>
-              </button>
-              <button type="button" class="btn btn-default danger-action" data-id="{{_id}}" data-event-action="removeAddress" title="{{i18n 'addressBookGrid.removeAddress' 'Remove Address'}}">
-                <i class="fa fa-trash-o"></i>
+                <i class="fa fa-pencil"></i><br/>Edit
               </button>
             </div>
           </div>
         {{/each}}
-        <div class="section-line-header">
-          <h4>or</h4>
-        </div>
-        <button class="btn btn-default btn-lg btn-block" type="button" data-event-action="addNewAddress">
-          <i class="fa fa-plus fa-lg address-icons"></i>
-          <span>Add New Address</span>
-        </button>
       </div>
     </div>
   {{/with}}
 </template>
+
+
+
+<template name="billingAddressBook">
+  {{#with account.profile}}
+  <div class="panel-control-bar">
+    <h3 class="panel-title">
+      <span>Billing Address</span>
+    </h3>
+  </div>
+  <div class="panel-body">
+    {{#if shippingAddressExists}}
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" id="billingAddressAndShippingAddressAreSame" name="billingAddressAndShippingAddressAreSame" value="false" />
+          Same as shipping address.
+        </label>
+      </div>
+    {{else}}
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" id="billingAddressAndShippingAddressAreSame" name="billingAddressAndShippingAddressAreSame" value="false" />
+          Same as shipping address.
+        </label>
+      </div>
+    {{/if}}
+    {{> billingAddressAdd}}
+  </div>
+  {{/with}}
+</template>
+
+<!-- {{#each addressBook}}
+  <div class="address-list-item text-left">
+    <div class="address {{selectedBilling}}" data-event-action="selectShippingAddress">
+      <strong>{{fullName}}</strong> <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
+      <address>
+        {{address1}}
+        {{address2}},<br>
+        {{city}}, {{region}} {{postal}} {{country}}<br>
+      </address>
+    </div>
+    <div class="controls">
+      <button type="button" class="btn btn-default" data-id="{{_id}}" data-event-action="editAddress" title="{{i18n 'addressBookGrid.edit' 'Edit'}}">
+        <i class="fa fa-pencil"></i>
+      </button>
+      <button type="button" class="btn btn-default danger-action" data-id="{{_id}}" data-event-action="removeAddress" title="{{i18n 'addressBookGrid.removeAddress' 'Remove Address'}}">
+        <i class="fa fa-trash-o"></i>
+      </button>
+    </div>
+  </div>
+{{/each}} -->

@@ -1,55 +1,117 @@
-.checkout-progress-bar li.visited:before,
-.checkout-progress-bar li.visited:after,
-.checkout-progress-bar li.visited .progress-step-badge {
-  background-color: @primary-color;
+.form-control::placeholder {
+  color: @silver;
+}
+.form-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: @silver;
+}
+.form-control::-moz-placeholder { /* Firefox 19+ */
+  color: @silver;
+}
+.form-control:-ms-input-placeholder { /* IE 10+ */
+  color: @silver;
+}
+.form-control:-moz-placeholder { /* Firefox 18- */
+  color: @silver;
 }
 
-.checkout-step-badge {
-  background: @primary-color-shadow;
+// Panels
+.checkout .panel {
+  border: none;
 }
 
-.checkout-step-badge.active {
-  background: @primary-color;
+.checkout .panel-body {
+  margin: 15px 0 0 0;
+  padding: 0;
 }
+
+.checkout-step > .panel-default {
+  margin-bottom: 20px;
+}
+
+// Address
+.checkout-steps address {
+  margin: 0;
+}
+
+.checkout .address-list .address-list-item {
+  margin-bottom: 10px;
+}
+
+.checkout-steps .address .phone {
+  display: inline-block;
+  float: right;
+}
+
+.checkout-steps .address-list-item .address {
+  padding: 8px;
+}
+
+.address-list-item .address.active:after {
+  font-size: 2rem;
+  color: @success-color;
+  left: -3rem;
+  bottom: 2rem;
+  right: auto;
+}
+
 
 // Checkout Forms
 .checkout-steps {
   display: block;
 }
 
-.checkout-step .form-group {
+.checkout .form-group {
   margin-bottom: 8px;
 }
-.checkout-step label.control-label {
+.checkout label.control-label {
   font-weight: @font-weight-normal;
   color: #777;
 }
 
-.checkout-step input[type="text"] {
+.checkout input[type="text"] {
   background: transparent;
   border: 0;
   border: 1px solid #ddd;
   font-size: 18px;
   color: #777;
   font-weight: 300;
+  
 }
-.checkout-step input:-webkit-autofill {
+.checkout input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 50px white inset;
   -webkit-text-fill-color: #777;
   -webkit-text-stroke-width: normal;
 }
 
-.checkout-step input:-webkit-autofill {
+.checkout input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 50px white inset;
   -webkit-text-fill-color: #777;
   -webkit-text-stroke-width: normal;
 }
 
-.checkout-step .form-horizontal .keep-col-margin .form-group {
+.checkout .form-horizontal .keep-col-margin .form-group {
   margin-left: 0;
   margin-right: 0;
 }
 
-.checkout-step .form-horizontal .keep-col-margin .control-label {
-  padding-top: 0;
+.checkout .form-horizontal .keep-col-margin .control-label {
+}
+
+@media screen and (max-width: @screen-xs-max) {
+  html:not(.rtl) .rui.navbar .brand {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .address-list-item .address.active:after {
+    left: auto;
+    bottom: 0;
+    right: 1rem;
+  }
+  
+  .checkout .form-horizontal .keep-col-margin .control-label {
+    padding-top: 0;
+    text-align: left;
+  }
+
 }
