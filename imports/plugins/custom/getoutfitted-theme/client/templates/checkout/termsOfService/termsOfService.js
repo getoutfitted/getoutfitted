@@ -2,7 +2,7 @@ import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 import { Cart } from "/lib/collections";
 
-Template.termsOfService.events({
+Template.goCheckoutReview.events({
   "click #termsOfService": function (event) {
     const customerAgreedToTermsOfService = event.target.checked;
     Meteor.call("cart/customerAgreedToTermsOfService", customerAgreedToTermsOfService);
