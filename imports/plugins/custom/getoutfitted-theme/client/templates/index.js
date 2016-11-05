@@ -4,6 +4,7 @@ import "./layouts/notFound.html";
 import "./account";
 import "./product";
 import "./checkout";
+import "./components";
 
 
 // GetOutfitted Header

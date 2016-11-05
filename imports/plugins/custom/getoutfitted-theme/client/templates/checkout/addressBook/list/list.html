@@ -5,57 +5,58 @@
       <span>Shipping Address</span>
     </h3>
   </div>
-    <div class="panel-body">
-      <div class="address-list text-center">
-        {{#each addressBook}}
-          <div class="address-list-item text-left">
-            <div class="address {{selectedShipping}}" data-event-action="selectShippingAddress">
-              <strong>{{fullName}}</strong> <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
-              <address>
-                {{address1}}
-                {{address2}},<br>
-                {{city}}, {{region}} {{postal}}<br>
-              </address>
-            </div>
-            <div class="controls">
-              <button type="button" class="btn btn-default" data-id="{{_id}}" data-event-action="editAddress" title="{{i18n 'addressBookGrid.edit' 'Edit'}}">
-                <i class="fa fa-pencil"></i><br/>Edit
-              </button>
-            </div>
+    <div class="panel-body address-book">
+      {{#each shippingAddresses addressBook}}
+        {{#if selectedShipping}}
+          <div class="step-success">
+            {{> miniSuccessAnimation}}
           </div>
-        {{/each}}
-      </div>
+        {{/if}}
+        <div class="address">
+          {{fullName}} <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
+          <address>
+            {{#if company}}{{company}}<br>{{/if}}
+            {{address1}}
+            {{address2}},<br>
+            {{city}}, {{region}} {{postal}}<br>
+          </address>
+        </div>
+        <div class="controls">
+          <button type="button" class="btn btn-default" data-id="{{_id}}" data-event-action="editAddress" title="{{i18n 'addressBookGrid.edit' 'Edit'}}">
+            <i class="fa fa-pencil"></i> Edit
+          </button>
+        </div>
+      {{/each}}
     </div>
   {{/with}}
 </template>
 
 
-
 <template name="billingAddressBook">
   {{#with account.profile}}
-  <div class="panel-control-bar">
-    <h3 class="panel-title">
-      <span>Billing Address</span>
-    </h3>
-  </div>
-  <div class="panel-body">
-    {{#if shippingAddressExists}}
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" id="billingAddressAndShippingAddressAreSame" name="billingAddressAndShippingAddressAreSame" value="false" />
-          Same as shipping address.
-        </label>
-      </div>
-    {{else}}
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" id="billingAddressAndShippingAddressAreSame" name="billingAddressAndShippingAddressAreSame" value="false" />
-          Same as shipping address.
-        </label>
-      </div>
-    {{/if}}
-    {{> billingAddressAdd}}
-  </div>
+    <div class="panel-body address-book">
+      {{#each billingAddresses addressBook}}
+        {{#if selectedBilling}}
+          <div class="step-success">
+            {{> miniSuccessAnimation}}
+          </div>
+        {{/if}}
+          <div class="address">
+            {{fullName}} <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
+            <address>
+              {{#if company}}{{company}}<br>{{/if}}
+              {{address1}}
+              {{address2}},<br>
+              {{city}}, {{region}} {{postal}}<br>
+            </address>
+          </div>
+          <div class="controls">
+            <button type="button" class="btn btn-default" data-id="{{_id}}" data-event-action="editAddress" title="{{i18n 'addressBookGrid.edit' 'Edit'}}">
+              <i class="fa fa-pencil"></i> Edit
+            </button>
+          </div>
+      {{/each}}
+    </div>
   {{/with}}
 </template>
 

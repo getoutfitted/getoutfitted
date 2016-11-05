@@ -38,15 +38,24 @@ Template.goAddressBookAdd.helpers({
   }
 });
 
-Template.addressBookAdd.events({
-  // "click #cancel-new, form submit": function(event, template) {
-  //   console.log(event, template, Template.instance())
-  //   return Session.set("addressBookView", "addressBookGrid");
-  // },
-  // "submit form": function() {
-  //   return Session.set("addressBookView", "addressBookGrid");
-  // }
+
+Template.goAddressBookAdd.helpers({
+  hasAddressBookEntries: function () {
+    const account = Accounts.findOne({
+      userId: Meteor.userId()
+    });
+    if (account) {
+      if (account.profile) {
+        if (account.profile.addressBook) {
+          return account.profile.addressBook.length > 0;
+        }
+      }
+    }
+
+    return false;
+  }
 });
+
 
 /**
  * addressBookAddForm form handling
@@ -75,19 +84,29 @@ AutoForm.hooks({
   }
 });
 
-Template.goAddressBookAdd.helpers({
-  hasAddressBookEntries: function () {
-    const account = Accounts.findOne({
-      userId: Meteor.userId()
-    });
-    if (account) {
-      if (account.profile) {
-        if (account.profile.addressBook) {
-          return account.profile.addressBook.length > 0;
+/**
+ * billingAddressAddForm form handling
+ * @description gets accountId and calls addressBookAdd method
+ * @fires "accounts/addressBookAdd" method
+ */
+AutoForm.hooks({
+  billingAddressAddForm: {
+    onSubmit: function (insertDoc) {
+      this.event.preventDefault();
+      const cart = Cart.findOne({userId: Meteor.userId()});
+      const addressBook = $(this.template.firstNode).closest(".address-book");
+      Meteor.call("accounts/addressBookAdd", insertDoc, (error, result) => {
+        if (error) {
+          Alerts.toast(i18next.t("addressBookAdd.failedToAddAddress", { err: error.message }), "error");
+          this.done(new Error("Failed to add address: ", error));
+          return false;
         }
-      }
+        if (result) {
+          this.done();
+          addressBook.trigger($.Event("showMainView"));
+          Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutReview", cart._id);
+        }
+      });
     }
-
-    return false;
   }
 });

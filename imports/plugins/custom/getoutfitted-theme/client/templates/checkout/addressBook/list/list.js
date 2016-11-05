@@ -11,6 +11,13 @@ Template.shippingAddressBook.helpers({
       userId: Meteor.userId()
     });
   },
+  shippingAddresses(addressBook) {
+    const account = Accounts.findOne({ userId: Meteor.userId() });
+    if (Array.isArray(addressBook)) {
+      return account.profile.addressBook.filter((address) => address.isShippingDefault === true);
+    }
+    return [];
+  },
   selectedShipping: function () {
     const cart = Cart.findOne({
       userId: Meteor.userId()
@@ -71,6 +78,13 @@ Template.billingAddressBook.helpers({
     return Accounts.findOne({
       userId: Meteor.userId()
     });
+  },
+  billingAddresses(addressBook) {
+    const account = Accounts.findOne({ userId: Meteor.userId() });
+    if (Array.isArray(addressBook)) {
+      return account.profile.addressBook.filter((address) => address.isBillingDefault === true);
+    }
+    return [];
   },
   selectedBilling: function () {
     const cart = Cart.findOne({

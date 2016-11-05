@@ -1,6 +1,15 @@
 <template name="usAddressBookForm">
   <div class="row">
     {{>afFieldInput class="form-control" type="hidden" name="country" value="US"}}
+    <div class="form-group{{#if afFieldIsInvalid name='company'}} has-error{{/if}}">
+        <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='company'}}</label>
+        <div class="col-xs-9 col-md-9">
+          {{>afFieldInput class="form-control" name="company" value=company autofocus='' placeholder="Hotel Name - Room 203"}}
+          {{#if afFieldIsInvalid name="company"}}
+            <span class="help-block">{{afFieldMessage name="company"}}</span>
+          {{/if}}
+        </div>
+    </div>
     <div class="form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
         <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='fullName'}}</label>
         <div class="col-xs-9 col-md-9">
@@ -75,6 +84,15 @@
 <template name="billingAddressForm">
   <div class="row">
     {{>afFieldInput class="form-control" type="hidden" name="country" value="US"}}
+    <div class="form-group{{#if afFieldIsInvalid name='company'}} has-error{{/if}}">
+        <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='company'}}</label>
+        <div class="col-xs-9 col-md-9">
+          {{>afFieldInput class="form-control" name="company" value=company autofocus='' placeholder="Optional - Hotel / Resort Name"}}
+          {{#if afFieldIsInvalid name="company"}}
+            <span class="help-block">{{afFieldMessage name="company"}}</span>
+          {{/if}}
+        </div>
+    </div>
     <div class="form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
         <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='fullName'}}</label>
         <div class="col-xs-9 col-md-9">
@@ -134,13 +152,13 @@
   <div class="form-group{{#if afFieldIsInvalid name='phone'}} has-error{{/if}}">
     <label class="control-label col-xs-3">{{afFieldLabelText name='phone'}}</label>
     <div class="col-xs-9">
-      {{>afFieldInput class="form-control" name="phone" placeholder="888-618-0305"}}
+      {{>afFieldInput class="form-control" name="phone" placeholder="555-555-1234"}}
       {{#if afFieldIsInvalid name="phone"}}
       <span class="help-block">{{afFieldMessage name="phone"}}</span>
       {{/if}}
     </div>
   </div>
-  {{>afFieldInput class="form-control" name="isShippingDefault" value="true" type="hidden"}}
-  {{>afFieldInput class="form-control" name="isBillingDefault" value="false" type="hidden"}}
+  {{>afFieldInput class="form-control" name="isShippingDefault" value="false" type="hidden"}}
+  {{>afFieldInput class="form-control" name="isBillingDefault" value="true" type="hidden"}}
   {{>afFieldInput class="form-control" name="isCommercial" value="false" type="hidden"}}
 </template>

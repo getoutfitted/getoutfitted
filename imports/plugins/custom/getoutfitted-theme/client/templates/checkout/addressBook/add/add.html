@@ -16,13 +16,10 @@
 
 <template name="goIntlAddressBookAdd">
   <div class="panel-body panel-content">
-    {{#autoForm schema=Schemas.Address id="addressBookAddForm" doc=thisAddress type="normal" class="form-horizontal"}}
+    {{#autoForm schema=Schemas.Address id="billingAddressAddForm" doc=thisAddress type="normal" class="form-horizontal"}}
       <fieldset>
-          {{> usAddressBookForm}}
+          {{> billingAddressForm}}
           <div class="row text-right">
-            {{#if hasAddressBookEntries}}
-              <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
-            {{/if}}
             <button type="submit" class="btn btn-primary" data-i18n="app.save" data-event-action="saveAddress">Save</button>
           </div>
       </fieldset>

@@ -1,3 +1,11 @@
+.swal2-icon.swal2-mini.swal2-success {
+  border-color: @success-color;
+}
+.swal2-icon.swal2-mini {
+  transform: scale(0.4);
+  margin: 0;
+}
+
 .form-control::placeholder {
   color: @silver;
 }
@@ -15,12 +23,23 @@
 }
 
 // Panels
+
+.checkout .panel-title {
+  font-size: 18px;
+}
+
 .checkout .panel {
   border: none;
 }
 
+.checkout .checkout-option {
+  position: relative;
+  margin: 0;
+  padding: 20px;
+}
+
 .checkout .panel-body {
-  margin: 15px 0 0 0;
+  margin: 10px 0 0 0;
   padding: 0;
 }
 
@@ -28,13 +47,16 @@
   margin-bottom: 20px;
 }
 
+.step-success {
+  position: absolute;
+  margin: 0;
+  top: -15px;
+  left: -50px;
+}
+
 // Address
 .checkout-steps address {
   margin: 0;
-}
-
-.checkout .address-list .address-list-item {
-  margin-bottom: 10px;
 }
 
 .checkout-steps .address .phone {
@@ -42,18 +64,34 @@
   float: right;
 }
 
-.checkout-steps .address-list-item .address {
-  padding: 8px;
+.address-book {
+  position: relative;
 }
 
-.address-list-item .address.active:after {
+.address {
+  position: relative;
+  padding: 0 0 0 20px;
+  background: transparent;
+  border: none;
+}
+
+.address.active:after {
+  content: "\f058";
+  font-family: "FontAwesome", "FontAwesomeFallback";
   font-size: 2rem;
   color: @success-color;
-  left: -3rem;
-  bottom: 2rem;
-  right: auto;
+  display: block;
+  position: absolute;
+  left: -1rem;
+  top: 50%;
+  line-height: 0;
 }
 
+.address-book .controls {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
 
 // Checkout Forms
 .checkout-steps {
@@ -103,10 +141,13 @@
     margin-right: auto;
   }
 
-  .address-list-item .address.active:after {
-    left: auto;
-    bottom: 0;
-    right: 1rem;
+  .address {
+    padding: 0 0 0 30px;
+  }
+
+  .address.active:after {
+    left: 0;
+    line-height: 0;
   }
   
   .checkout .form-horizontal .keep-col-margin .control-label {
