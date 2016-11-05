@@ -14,13 +14,3 @@ Template.goCheckoutReview.events({
     }
   }
 });
-
-Template.checkoutPayment.helpers({
-  customerHasAgreedToTermsOfService: function () {
-    const cart = Cart.findOne({userId: Meteor.userId()});
-    if (cart) {
-      return cart.customerAgreedToTermsOfService;
-    }
-    return false;
-  }
-});

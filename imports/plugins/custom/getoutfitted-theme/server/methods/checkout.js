@@ -24,6 +24,7 @@ Meteor.methods({
         dateCustomerAgreedToTermsOfService: new Date()
       }
     });
+    Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutPayment");
   },
   "cart/useShippingForBilling": function (useShippingForBilling) {
     check(useShippingForBilling, Boolean);
