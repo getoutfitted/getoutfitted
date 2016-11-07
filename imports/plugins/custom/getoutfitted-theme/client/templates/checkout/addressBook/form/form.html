@@ -75,6 +75,15 @@
       {{/if}}
     </div>
   </div>
+  <div class="form-group{{#if afFieldIsInvalid name='email'}} has-error{{/if}}">
+    <label class="control-label col-xs-3">{{afFieldLabelText name='email'}}</label>
+    <div class="col-xs-9">
+      {{>afFieldInput class="form-control" name="email" placeholder="jerry@example.com"}}
+      {{#if afFieldIsInvalid name="email"}}
+      <span class="help-block">{{afFieldMessage name="email"}}</span>
+      {{/if}}
+    </div>
+  </div>
   {{>afFieldInput class="form-control" name="isShippingDefault" value="true" type="hidden"}}
   {{>afFieldInput class="form-control" name="isBillingDefault" value="false" type="hidden"}}
   {{>afFieldInput class="form-control" name="isCommercial" value="false" type="hidden"}}

@@ -80,6 +80,9 @@ AutoForm.hooks({
           Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress", cart._id);
         }
       });
+      if (insertDoc.email) {
+        Meteor.call("checkout/addEmailToCart", insertDoc.email);
+      }
     }
   }
 });

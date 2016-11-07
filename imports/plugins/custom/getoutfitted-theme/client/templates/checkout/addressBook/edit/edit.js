@@ -10,7 +10,6 @@ AutoForm.hooks({
   shippingAddressEditForm: {
     onSubmit: function (insertDoc) {
       this.event.preventDefault();
-
       const addressBook = $(this.template.firstNode).closest(".address-book");
       Meteor.call("accounts/addressBookUpdate", insertDoc, (error, result) => {
         if (error) {
@@ -25,6 +24,9 @@ AutoForm.hooks({
           addressBook.trigger($.Event("showMainView"));
         }
       });
+      if (insertDoc.email) {
+        Meteor.call("checkout/addEmailToCart", insertDoc.email);
+      }
     }
   }
 });

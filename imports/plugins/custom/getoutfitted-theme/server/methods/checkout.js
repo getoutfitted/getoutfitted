@@ -2,11 +2,10 @@ import { Cart, Accounts } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 
 Meteor.methods({
-  "checkout/addEmailToCart": function (cartId, email) {
-    check(cartId, String);
+  "checkout/addEmailToCart": function (email) {
     check(email, String);
     Cart.update({
-      _id: cartId
+      userId: Meteor.userId()
     }, {
       $set: {
         email: email

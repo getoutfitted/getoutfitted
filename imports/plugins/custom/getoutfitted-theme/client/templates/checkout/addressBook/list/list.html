@@ -3,7 +3,11 @@
     <div class="panel-body address-book">
       {{#each shippingAddresses addressBook}}
         <div class="address">
-          {{fullName}} <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
+          {{fullName}}
+          <span class="phone">
+            <i class="fa fa-phone"></i> {{phone}} <br />
+            <i class="fa fa-envelope-o"></i> {{email}}
+          </span>
           <address>
             {{#if company}}{{company}}<br>{{/if}}
             {{address1}}
