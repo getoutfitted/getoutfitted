@@ -211,10 +211,14 @@ Meteor.methods({
       // We send `cartId` as arguments because this method could be called from
       // publication method and in half cases it could be so, that
       // Meteor.userId() will be null.
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-        "checkoutLogin", cartId);
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-        "checkoutAddressBook", cartId);
+
+      // XXX: GETOUTFITTED MOD - use our cart workflow
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow",
+        "goCheckoutShippingAddress", cartId);
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
+      //   "checkoutLogin", cartId);
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
+      //   "checkoutAddressBook", cartId);
     }
 
     return currentCart._id;
@@ -776,7 +780,7 @@ Meteor.methods({
     // this will transition to review
     // XXX: GETOUTFITTED MOD - don't transition workflow to core
     // return Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "coreCheckoutShipping");
-    return Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutPayment");
+    return Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingAddress");
   },
 
   /**
@@ -860,7 +864,8 @@ Meteor.methods({
     }
 
     // refresh shipping quotes
-    Meteor.call("shipping/updateShipmentQuotes", cartId);
+    // XXX: GETOUTFITTED MOD - Don't do this
+    // Meteor.call("shipping/updateShipmentQuotes", cartId);
 
     if (typeof cart.workflow !== "object") {
       throw new Meteor.Error(500, "Internal Server Error",
@@ -871,8 +876,8 @@ Meteor.methods({
     // call it only once when we at the `checkoutAddressBook` step
     if (typeof cart.workflow.workflow === "object" &&
       cart.workflow.workflow.length < 2) {
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-        "coreCheckoutShipping");
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow",
+        "goCheckoutBillingAddress");
     }
 
     // if we change default address during further steps, we need to revert
@@ -880,7 +885,8 @@ Meteor.methods({
     if (typeof cart.workflow.workflow === "object" &&
       cart.workflow.workflow.length > 2) { // "2" index of
       // `coreCheckoutShipping`
-      Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+      // XXX: GETOUTFITTED MOD - Don't do this
+      // Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
     }
 
     return true;
@@ -934,6 +940,12 @@ Meteor.methods({
           }
         }
       };
+    }
+
+    if (typeof cart.workflow.workflow === "object" &&
+      cart.workflow.workflow.length < 3) {
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow",
+        "goCheckoutTermsOfService");
     }
 
     return Collections.Cart.update(selector, update);
@@ -1003,7 +1015,8 @@ Meteor.methods({
       if (isShippingDeleting) {
         // if we remove shipping address from cart, we need to revert
         // `cartWorkflow` to the `checkoutAddressBook` step.
-        Meteor.call("workflow/revertCartWorkflow", "checkoutAddressBook");
+        // XXX: GETOUTFITTED MOD - Don't do this
+        // Meteor.call("workflow/revertCartWorkflow", "checkoutAddressBook");
       }
     }
     return true;

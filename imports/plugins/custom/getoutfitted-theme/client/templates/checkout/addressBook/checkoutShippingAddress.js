@@ -18,7 +18,6 @@ Template.goCheckoutShippingAddress.onCreated(function () {
         this.currentAddressTemplate.set("shippingAddressAdd");
       } else {
         this.currentAddressTemplate.set("shippingAddressBook");
-        Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress", cart._id);
       }
     }
   });

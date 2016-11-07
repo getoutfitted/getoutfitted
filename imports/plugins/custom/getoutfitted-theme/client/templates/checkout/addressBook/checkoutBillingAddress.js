@@ -12,7 +12,7 @@ Template.goCheckoutBillingAddress.onCreated(function () {
 
     const account = Accounts.findOne({ userId: Meteor.userId() });
     const cart = Cart.findOne({ userId: Meteor.userId() });
-    
+
     if (cart && cart.useShippingForBilling) {
       this.currentAddressTemplate.set("useShippingForBilling");
     } else if (account && account.profile && account.profile.addressBook) {
@@ -26,8 +26,6 @@ Template.goCheckoutBillingAddress.onCreated(function () {
         } else {
           this.currentAddressTemplate.set("billingAddressAdd");
         }
-
-        Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingOptions");
       }
     }
   });

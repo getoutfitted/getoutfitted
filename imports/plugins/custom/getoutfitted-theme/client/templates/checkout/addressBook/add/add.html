@@ -7,7 +7,7 @@
             {{#if hasAddressBookEntries}}
               <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
             {{/if}}
-            <button type="submit" class="btn btn-info" data-i18n="app.save" data-event-action="saveAddress">Save Address</button>
+            <button type="submit" class="btn btn-info" data-event-action="saveAddress">Next</button>
           </div>
       </fieldset>
     {{/autoForm}}
@@ -20,7 +20,7 @@
       <fieldset>
           {{> billingAddressForm}}
           <div class="row text-right">
-            <button type="submit" class="btn btn-primary" data-i18n="app.save" data-event-action="saveAddress">Save</button>
+            <button type="submit" class="btn btn-info" data-event-action="saveAddress">Next</button>
           </div>
       </fieldset>
     {{/autoForm}}
