@@ -35,20 +35,12 @@ Reaction.registerPackage({
     priority: 2,
     position: "2"
   }, {
-    template: "goCheckoutShippingOptions",
-    label: "Shipping Options",
-    workflow: "goCartWorkflow",
-    container: "checkout-steps-main",
-    audience: ["guest", "anonymous"],
-    priority: 3,
-    position: "3"
-  }, {
-    template: "goCheckoutReview",
-    label: "Review and Agree",
+    template: "goCheckoutTermsOfService",
+    label: "Terms of Service",
     workflow: "goCartWorkflow",
     container: "checkout-steps-side",
     audience: ["guest", "anonymous"],
-    priority: 4,
+    priority: 3,
     position: "3"
   }, {
     template: "goCheckoutPayment",
@@ -56,7 +48,7 @@ Reaction.registerPackage({
     workflow: "goCartWorkflow",
     container: "checkout-steps-side",
     audience: ["guest", "anonymous"],
-    priority: 5,
+    priority: 4,
     position: "4"
   }]
 });

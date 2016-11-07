@@ -1,12 +1,7 @@
 <template name="goCheckoutPayment">
-  test
-  {{!-- XXX: GetOutfitted Mod: check terms of service agreement --}}
   {{#if customerHasAgreedToTermsOfService}}
   <div class="panel panel-default">
-
     <div class="panel-heading">
-      {{> checkoutStepBadge}}
-
       <h3 class="panel-title">
         <span data-i18n="checkoutPayment.addPaymentToCompleteOrder">Add payment to complete order</span></h3>
     </div>

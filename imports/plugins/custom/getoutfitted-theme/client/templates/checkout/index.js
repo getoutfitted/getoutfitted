@@ -1,7 +1,7 @@
 // COMMENTED OUT FILES GENERALLY MEANS WE ARE USING
 // THE REACTION CORE VERSION OF THOSE TEMPLATES/HELPERS AS IS
 
-// import "./helpers/cart";
+import "./helpers.js";
 // import "./methods/cart";
 import "./cart/cart.html";
 import "./cart/cart.js";
@@ -58,6 +58,7 @@ import "./review/review.html";
 import "./review/review.js";
 import "./termsOfService/termsOfService.html";
 import "./termsOfService/termsOfService.js";
+import "./termsOfService/termsOfServiceWaiverAndReleaseOfLiability.html";
 import "./shipping/shipping.html";
 import "./shipping/shipping.js";
 import "./checkout.html";
