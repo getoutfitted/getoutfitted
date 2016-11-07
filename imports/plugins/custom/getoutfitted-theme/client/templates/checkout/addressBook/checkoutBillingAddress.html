@@ -1,17 +1,15 @@
 <template name="goCheckoutBillingAddress">
-  <div class="panel panel-default panel-shipping-address">
-    <div class="panel-control-bar">
-      <h3 class="panel-title">
-        <span>Billing Address</span>
-      </h3>
+  <div class="panel panel-default panel-billing-address">
+    <div class="panel-heading">
+      {{#if billingSelected}}
+        <div class="step-success">
+          {{> miniSuccessAnimation}}
+        </div>
+      {{/if}}
+      <h3 class="panel-title"><span>Billing Address</span></h3>
     </div>
     {{#if shippingAddressExists}}
       <div class="checkbox checkout-option">
-        {{#if useShippingForBilling}}
-          <div class="step-success">
-            {{> miniSuccessAnimation}}
-          </div>
-        {{/if}}
         <label>
           <input type="checkbox" id="useShippingForBilling" name="useShippingForBilling" checked={{useShippingForBilling}} />
           Same as shipping address.

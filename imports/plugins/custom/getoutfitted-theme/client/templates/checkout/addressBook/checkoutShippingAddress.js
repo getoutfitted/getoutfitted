@@ -30,6 +30,17 @@ Template.goCheckoutShippingAddress.helpers({
   },
   data() {
     return Template.instance().templateData.get();
+  },
+  shippingSelected() {
+    const cart = Cart.findOne({
+      userId: Meteor.userId()
+    });
+    if (cart && Array.isArray(cart.shipping) && cart.shipping[0] && cart.shipping[0].address) {
+      if (cart.shipping[0].address.postal) {
+        return true;
+      }
+    }
+    return false;
   }
 });
 

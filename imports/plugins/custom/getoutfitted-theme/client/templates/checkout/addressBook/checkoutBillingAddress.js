@@ -52,11 +52,23 @@ Template.goCheckoutBillingAddress.helpers({
     if (account && account.profile && Array.isArray(account.profile.addressBook)) {
       const defaultShippingAddress = account.profile.addressBook.find((address) => address.isShippingDefault === true);
       const defaultBillingAddress = account.profile.addressBook.find((address) => address.isBillingDefault === true);
-      
+
       if (defaultShippingAddress && !defaultBillingAddress) {
         return true;
       }
     }
+    return false;
+  },
+  billingSelected() {
+    const cart = Cart.findOne({
+      userId: Meteor.userId()
+    });
+    if (cart && Array.isArray(cart.billing) && cart.billing[0] && cart.billing[0].address) {
+      if (cart.billing[0].address.postal) {
+        return true;
+      }
+    }
+    return false;
   }
 });
 
@@ -64,13 +76,6 @@ Template.goCheckoutBillingAddress.onRendered(function () {
 });
 
 Template.goCheckoutBillingAddress.events({
-  // "click [data-event-action=addNewAddress]": function (event) {
-  //   event.preventDefault();
-  //   event.stopPropagation();
-  //
-  //   Template.instance().currentAddressTemplate.set("billingAddressAdd");
-  // },
-
   // **************************************************************************
   // Edit an address
   //
@@ -84,29 +89,6 @@ Template.goCheckoutBillingAddress.events({
 
     Template.instance().currentAddressTemplate.set("shippingAddressEdit");
   },
-
-  // "click [data-event-action=removeAddress]": function (event, template) {
-  //   event.preventDefault();
-  //   event.stopPropagation();
-  //
-  //   Meteor.call("accounts/addressBookRemove", this._id, (error, result) => {
-  //     if (error) {
-  //       Alerts.toast(i18next.t("addressBookGrid.cantRemoveThisAddress", { err: error.message }), "error");
-  //     }
-  //     if (result) {
-  //       const account = Accounts.findOne({
-  //         userId: Meteor.userId()
-  //       });
-  //       if (account) {
-  //         if (account.profile) {
-  //           if (account.profile.addressBook.length === 0) {
-  //             template.currentAddressTemplate.set("billingAddressAdd");
-  //           }
-  //         }
-  //       }
-  //     }
-  //   });
-  // },
 
   "click [data-event-action=cancelAddressEdit], form submit, showMainView": function (event) {
     event.preventDefault();

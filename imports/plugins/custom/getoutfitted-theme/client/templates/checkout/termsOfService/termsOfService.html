@@ -1,6 +1,11 @@
 <template name="goCheckoutTermsOfService">
   <div class="panel panel-default">
     <div class="panel-heading">
+      {{#if customerAgreedToTermsOfService}}
+        <div class="step-success">
+          {{> miniSuccessAnimation}}
+        </div>
+      {{/if}}
       <h3 class="panel-title">Terms of Service</h3>
     </div>
     <div class="panel-body">
@@ -13,7 +18,7 @@
         <div class="col-xs-12">
           <div class="checkbox">
             <label>
-              <input name="termsOfService" id="termsOfService" type="checkbox" value="{{test}}">
+              <input name="termsOfService" id="termsOfService" type="checkbox" checked="{{customerAgreedToTermsOfService}}">
               <strong>I have read and agree to the Terms of Service listed above</strong>
             </label>
           </div>

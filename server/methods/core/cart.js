@@ -775,8 +775,8 @@ Meteor.methods({
 
     // this will transition to review
     // XXX: GETOUTFITTED MOD - don't transition workflow to core
-    return Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-      "coreCheckoutShipping");
+    // return Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "coreCheckoutShipping");
+    return Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutPayment");
   },
 
   /**

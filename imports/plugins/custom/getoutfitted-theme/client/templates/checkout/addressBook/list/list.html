@@ -1,17 +1,7 @@
 <template name="shippingAddressBook">
   {{#with account.profile}}
-  <div class="panel-control-bar">
-    <h3 class="panel-title">
-      <span>Shipping Address</span>
-    </h3>
-  </div>
     <div class="panel-body address-book">
       {{#each shippingAddresses addressBook}}
-        {{#if selectedShipping}}
-          <div class="step-success">
-            {{> miniSuccessAnimation}}
-          </div>
-        {{/if}}
         <div class="address">
           {{fullName}} <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
           <address>
