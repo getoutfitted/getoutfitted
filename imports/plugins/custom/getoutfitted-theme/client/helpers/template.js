@@ -269,6 +269,11 @@ Template.registerHelper("summaryDeliveryDate", function (order) {
 
   return moment(adjustDenverToLocalTime(moment(startTime))).subtract(1, "day").format("MMM D");
 });
+
+Template.registerHelper("viewingCart", () => {
+  return Router.current().route.name === "cart";
+});
+
 // Returns bool whether or not display price is zero
 Template.registerHelper("isZero", function (price) {
   return price === 0 || price === "0.00";
