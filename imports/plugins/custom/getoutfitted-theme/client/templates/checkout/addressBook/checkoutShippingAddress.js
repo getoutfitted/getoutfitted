@@ -34,8 +34,12 @@ Template.goCheckoutShippingAddress.helpers({
     const cart = Cart.findOne({
       userId: Meteor.userId()
     });
+    const cartStatus = cart.workflow.status;
     if (cart && Array.isArray(cart.shipping) && cart.shipping[0] && cart.shipping[0].address) {
       if (cart.shipping[0].address.postal) {
+        if (cartStatus === "goCheckoutShippingAddress") {
+          Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress");
+        }
         return true;
       }
     }

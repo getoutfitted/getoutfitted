@@ -72,3 +72,51 @@
 .cart-summary-total {
   border-top: 1px solid @gainsboro;
 }
+
+// Reservation Dates
+.reservation-dates {
+}
+.reservation-start, .reservation-end {
+  display: inline-block;
+  text-align: left;
+}
+.reservation-to {
+  display: inline-block;
+  margin: 0 5px;
+}
+.reservation-hyphen {
+  width: 20px;
+  border-top: 1px solid @brand-dark-color;
+  margin-bottom: 10px;
+}
+
+.reservation-day {
+  display: block;
+  color: @jumbo;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+.reservation-month {
+  display: inline-block;
+  margin: 0;
+  font-size: 18px;
+  line-height: 0.8;
+  text-transform: uppercase;
+  color: @jumbo;
+}
+.reservation-date {
+  display: inline-block;
+  font-size: 20px;
+  margin: 0;
+  line-height: 0.8;
+  color: @brand-dark-color;
+}
+
+
+@media screen and (max-width: @screen-xs-max) {
+  .reservation-dates {
+    width: 210px;
+    margin: 0;
+    
+  }
+}

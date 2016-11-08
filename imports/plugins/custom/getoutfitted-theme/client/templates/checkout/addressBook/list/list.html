@@ -30,11 +30,6 @@
   {{#with account.profile}}
     <div class="panel-body address-book">
       {{#each billingAddresses addressBook}}
-        {{#if selectedBilling}}
-          <div class="step-success">
-            {{> miniSuccessAnimation}}
-          </div>
-        {{/if}}
           <div class="address">
             {{fullName}} <span class="phone"><i class="fa fa-phone"></i> {{phone}}</span>
             <address>
