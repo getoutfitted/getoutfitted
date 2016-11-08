@@ -1,11 +1,5 @@
-.cart-drawer-swiper-slide:first-child {
-  width: 325px;
-}
-
-.cart-drawer .cart-totals {
-  width: 325px;
-  height: 225px;
-  color: @brand-dark-color;
+.cart-icon {
+  margin-right: 15px;
 }
 
 .cart-item.row {
@@ -28,16 +22,6 @@
   max-width: 100%;
 }
 
-.cart-items .center-cropped img {
-  min-width: auto;
-  min-height: auto;
-  padding: 0;
-  max-height: 175px;
-  opacity: 100;
-  box-shadow: none;
-  moz-box-shadow: none;
-  webkit-box-shadow: none;
-}
 
 .cart-items .remove-cart-item {
   color: @brand-dark-color;
@@ -54,21 +38,23 @@
   }
 }
 
-.cart-totals .reservation-dates {
-  padding-bottom: 15px;
-}
-
-.cart-totals .total-text {
-  padding-top: 20px;
-}
-
 .checkout-step-pending > .panel-default {
   display: none;
+}
+
+.cart-product-title {
+  font-size: 16px;
+  text-transform: none;
+  margin: 0;
 }
 
 // Outfit Section
 .outfit-number {
   margin-bottom: 4px;
+}
+
+.cart-outfit-item-size {
+  font-size: 12px;
 }
 
 .panel.panel-cart {
@@ -89,4 +75,52 @@
 // Cart Summary
 .cart-summary-total {
   border-top: 1px solid @gainsboro;
+}
+
+// Reservation Dates
+.reservation-dates {
+}
+.reservation-start, .reservation-end {
+  display: inline-block;
+  text-align: left;
+}
+.reservation-to {
+  display: inline-block;
+  margin: 0 5px;
+}
+.reservation-hyphen {
+  width: 20px;
+  border-top: 1px solid @brand-dark-color;
+  margin-bottom: 10px;
+}
+
+.reservation-day {
+  display: block;
+  color: @jumbo;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+.reservation-month {
+  display: inline-block;
+  margin: 0;
+  font-size: 18px;
+  line-height: 0.8;
+  text-transform: uppercase;
+  color: @jumbo;
+}
+.reservation-date {
+  display: inline-block;
+  font-size: 20px;
+  margin: 0;
+  line-height: 0.8;
+  color: @brand-dark-color;
+}
+
+
+@media screen and (max-width: @screen-xs-max) {
+  .reservation-dates {
+    width: 210px;
+    margin: 0;
+    
+  }
 }

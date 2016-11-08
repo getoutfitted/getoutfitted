@@ -9,6 +9,30 @@ import "./checkout.html";
 // controlling the load order of checkout step templates
 //
 
+const freeShippingMethod = {
+  name: "Free",
+  label: "Free Shipping",
+  group: "Ground",
+  enabled: true,
+  rate: 0,
+  validLocales: [ { deliveryBegin: 2, deliveryEnd: 7 } ],
+  validRanges: [ { begin: 50 } ],
+  _id: "GoFreeShippingMethod",
+  handling: 0
+};
+
+// const rushShippingMethod = {
+//   name: "Rush",
+//   label: "Rush Handling and Delivery",
+//   group: "Express",
+//   enabled: true,
+//   rate: 50,
+//   validLocales: [ { deliveryBegin: 2, deliveryEnd: 7 } ],
+//   validRanges: [ { begin: 50 } ],
+//   _id: "GoRushShippingMethod",
+//   handling: 0
+// }
+
 Template.cartCheckout.helpers({
   cart() {
     if (Reaction.Subscriptions.Cart.ready()) {
@@ -22,9 +46,22 @@ Template.cartCheckout.helpers({
 Template.cartCheckout.onCreated(function () {
   if (Reaction.Subscriptions.Cart.ready()) {
     const cart = Cart.findOne();
-    if (cart.workflow && cart.workflow.status === "new") {
-        // if user logged in as normal user, we must pass it through the first stage
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
+    if (cart.workflow && (
+      // catch any new workflow, or legacy workflow and migrate to new cart workflow
+      cart.workflow.status === "new" ||
+      cart.workflow.status === "checkoutLogin" ||
+      cart.workflow.status === "checkoutAddressBook" ||
+      cart.workflow.status === "coreCheckoutShipping" ||
+      cart.workflow.status === "checkoutReview" ||
+      cart.workflow.status === "checkoutPayment")
+    ) {
+      // if user logged in as normal user, we must pass it through the first stage
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
+      // XXX: GetOutfitted MOD: use custom cart workflow
+      Meteor.call("cart/setShipmentMethod", cart._id, freeShippingMethod);
+      // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingAddress");
+      // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress");
+      // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutTermsOfService");
     }
   }
 });

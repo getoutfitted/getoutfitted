@@ -515,7 +515,7 @@
         "failedToAddAddress": "Failed to add address: {{err}}"
       },
       "addressBookEdit": {
-        "editAddress": "Editing this address entry",
+        "editAddress": "Edit Address",
         "somethingWentWrong": "Something went wrong: {{err}}"
       },
       "corePackageConfig": {
@@ -609,7 +609,7 @@
         "complete": "Complete"
       },
       "checkoutPayment": {
-        "addPaymentToCompleteOrder": "Add payment to complete order",
+        "addPaymentToCompleteOrder": "Payment",
         "processingError": "There was a problem with your payment.",
         "completeYourOrder": "Complete your order",
         "noPaymentMethods": "No payment methods are configured.",

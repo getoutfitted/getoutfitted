@@ -5,11 +5,18 @@
       {{#if cartHasItems}}
         {{> cartLineItems}}
         <div class="row">
-          {{> faqPanel}}
-          {{#if hasReservationDates}}
-            {{> reservationDatePanel}}
-          {{/if}}
-          {{> cartSummaryPanel}}
+          <div class="col-xs-12 col-sm-4 col-sm-push-4 col-lg-push-5">
+            {{#if hasReservationDates}}
+              {{> reservationDatePanel}}
+            {{/if}}
+          </div>
+          <div class="col-xs-12 col-sm-4 col-sm-push-4 col-lg-3 col-lg-push-5">
+            {{> cartSummaryPanel}}
+            {{> cartCheckoutButton}}
+          </div>
+          <div class="col-xs-12 col-sm-4 col-sm-pull-8 col-lg-5 col-lg-pull-7">
+            {{> faqPanel}}
+          </div>
         </div>
       {{else}}
         <p>Your cart is empty.</p>

@@ -18,7 +18,7 @@ MethodHooks.after("cart/submitPayment", function (options) {
     });
 
     // update workflow
-    Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "paymentSubmitted");
+    Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goPaymentSubmitted");
 
     // create order
     if (cart) {

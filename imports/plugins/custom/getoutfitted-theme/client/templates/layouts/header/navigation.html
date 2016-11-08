@@ -4,14 +4,13 @@
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{! rentCompleteOutfitsLink}}
+        {{> rentCompleteOutfitsLink}}
         {{> rentWomensLink}}
         {{> rentMensLink}}
+        {{> rentKidsLink}}
       </ul>
     </div>
-    <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
     <div class="cart">{{> cartIcon}}</div>
-    <div class="cart-alert">{{> cartPanel}}</div>
   </div>
   <div class="rui navbar hidden-lg hidden-md hidden-sm">
     <div class=navbar-left>
@@ -22,7 +21,6 @@
       <div class='cart-small col-xs-8'>
       <span class='cart-small-span'>
         <div class="cart">{{> cartIcon}}</div>
-        <div class="cart-alert">{{> cartPanel}}</div>
       </span>
       </div>
       <div class='col-xs-4'>
@@ -42,15 +40,14 @@
       <div class="menu">
         <ul class="nav navbar-nav">
           {{> phoneNumberLink}}
+          {{> rentCompleteOutfitsLink}}
           {{> rentWomensLink}}
           {{> rentMensLink}}
+          {{> rentKidsLink}}
           {{! winterProductNavDropdown}}
           {{! demoProductNavDropdown}}
           {{! rentalProductNavDropdown}}
           {{! aboutNavDropdown}}
-          <div class="languages hide">{{> i18nChooser}}</div>
-          <hr>
-          <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
         </ul>
       </div>
     </div>
@@ -86,6 +83,12 @@
 <template name="rentWomensLink">
   <li>
     <a href="/collections/womens" class="dropdown-toggle">Womens</a>
+  </li>
+</template>
+
+<template name="rentKidsLink">
+  <li>
+    <a href="/collections/kids" class="dropdown-toggle">Kids</a>
   </li>
 </template>
 

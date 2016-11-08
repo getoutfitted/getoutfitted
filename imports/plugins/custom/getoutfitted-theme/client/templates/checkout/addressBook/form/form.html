@@ -1,0 +1,173 @@
+<template name="usAddressBookForm">
+  <div class="row">
+    {{>afFieldInput class="form-control" type="hidden" name="country" value="US"}}
+    <div class="form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
+        <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='fullName'}}</label>
+        <div class="col-xs-9 col-md-9">
+          {{>afFieldInput class="form-control" name="fullName" value=fullName autofocus='' placeholder="Jerry Skier"}}
+          {{#if afFieldIsInvalid name="fullName"}}
+            <span class="help-block">{{afFieldMessage name="fullName"}}</span>
+          {{/if}}
+        </div>
+    </div>
+  </div>
+  <div class="form-group{{#if afFieldIsInvalid name='company'}} has-error{{/if}}">
+      <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='company'}}</label>
+      <div class="col-xs-9 col-md-9">
+        {{>afFieldInput class="form-control" name="company" value=company autofocus='' placeholder="Hotel Name - Room 203"}}
+        {{#if afFieldIsInvalid name="company"}}
+          <span class="help-block">{{afFieldMessage name="company"}}</span>
+        {{/if}}
+      </div>
+  </div>
+  <div class="row">
+    <div class="form-group{{#if afFieldIsInvalid name='address1'}} has-error{{/if}}">
+        <label class="control-label col-xs-3">Address 1</label>
+        <div class="col-xs-9">
+          {{>afFieldInput class="form-control" name="address1" placeholder="103 E Main St"}}
+          {{#if afFieldIsInvalid name="address1"}}
+          <span class="help-block">{{afFieldMessage name="address1"}}</span>
+          {{/if}}
+        </div>
+    </div>
+    <div class="form-group{{#if afFieldIsInvalid name='address2'}} has-error{{/if}}">
+        <label class="control-label col-xs-3">Address 2</label>
+        <div class="col-xs-9">
+          {{>afFieldInput class="form-control" name="address2" placeholder="Unit E (Optional)"}}
+          {{#if afFieldIsInvalid name="address2"}}
+          <span class="help-block">{{afFieldMessage name="address2"}}</span>
+          {{/if}}
+        </div>
+    </div>
+    <div class="form-group{{#if afFieldIsInvalid name='city'}} has-error{{/if}}">
+        <label class="control-label col-xs-3">{{afFieldLabelText name='city'}}</label>
+        <div class="col-xs-9">
+          {{>afFieldInput class="form-control" name="city" value=city placeholder="Dillon"}}
+          {{#if afFieldIsInvalid name="city"}}
+          <span class="help-block">{{afFieldMessage name="city"}}</span>
+          {{/if}}
+        </div>
+    </div>
+  </div>
+  <div class="row keep-col-margin">
+    <div class="col-xs-6 form-group{{#if afFieldIsInvalid name='region'}} has-error{{/if}}">
+      <label class="control-label col-xs-12 col-md-6">State</label>
+      <div class="col-xs-12 col-md-6">
+        {{>afFieldInput class="form-control" name="region" value=region options=states}}
+      </div>
+    </div>
+    <div class="col-xs-6 form-group{{#if afFieldIsInvalid name='postal'}} has-error{{/if}}">
+      <label class="control-label col-xs-12 col-md-5">Zip Code</label>
+      <div class="col-xs-12 col-md-7">
+        {{>afFieldInput class="form-control" name="postal" value=postal maxlength="5" placeholder="80435"}}
+        {{#if afFieldIsInvalid name="postal"}}
+        <span class="help-block">{{afFieldMessage name="postal"}}</span>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+  <div class="form-group{{#if afFieldIsInvalid name='phone'}} has-error{{/if}}">
+    <label class="control-label col-xs-3">{{afFieldLabelText name='phone'}}</label>
+    <div class="col-xs-9">
+      {{>afFieldInput class="form-control" name="phone" placeholder="888-618-0305"}}
+      {{#if afFieldIsInvalid name="phone"}}
+      <span class="help-block">{{afFieldMessage name="phone"}}</span>
+      {{/if}}
+    </div>
+  </div>
+  <div class="form-group{{#if afFieldIsInvalid name='email'}} has-error{{/if}}">
+    <label class="control-label col-xs-3">{{afFieldLabelText name='email'}}</label>
+    <div class="col-xs-9">
+      {{>afFieldInput class="form-control" name="email" placeholder="jerry@example.com"}}
+      {{#if afFieldIsInvalid name="email"}}
+      <span class="help-block">{{afFieldMessage name="email"}}</span>
+      {{/if}}
+    </div>
+  </div>
+  {{>afFieldInput class="form-control" name="isShippingDefault" value="true" type="hidden"}}
+  {{>afFieldInput class="form-control" name="isBillingDefault" value="false" type="hidden"}}
+  {{>afFieldInput class="form-control" name="isCommercial" value="false" type="hidden"}}
+</template>
+
+
+<template name="billingAddressForm">
+  <div class="row">
+    {{>afFieldInput class="form-control" type="hidden" name="country" value="US"}}
+    <div class="form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">
+        <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='fullName'}}</label>
+        <div class="col-xs-9 col-md-9">
+          {{>afFieldInput class="form-control" name="fullName" value=fullName autofocus='' placeholder="Jerry Skier"}}
+          {{#if afFieldIsInvalid name="fullName"}}
+            <span class="help-block">{{afFieldMessage name="fullName"}}</span>
+          {{/if}}
+        </div>
+    </div>
+    <div class="form-group{{#if afFieldIsInvalid name='company'}} has-error{{/if}}">
+        <label class="control-label col-xs-3 col-md-3">{{afFieldLabelText name='company'}}</label>
+        <div class="col-xs-9 col-md-9">
+          {{>afFieldInput class="form-control" name="company" value=company autofocus='' placeholder="Company (Optional)"}}
+          {{#if afFieldIsInvalid name="company"}}
+            <span class="help-block">{{afFieldMessage name="company"}}</span>
+          {{/if}}
+        </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group{{#if afFieldIsInvalid name='address1'}} has-error{{/if}}">
+        <label class="control-label col-xs-3">Address 1</label>
+        <div class="col-xs-9">
+          {{>afFieldInput class="form-control" name="address1" placeholder="103 E Main St"}}
+          {{#if afFieldIsInvalid name="address1"}}
+          <span class="help-block">{{afFieldMessage name="address1"}}</span>
+          {{/if}}
+        </div>
+    </div>
+    <div class="form-group{{#if afFieldIsInvalid name='address2'}} has-error{{/if}}">
+        <label class="control-label col-xs-3">Address 2</label>
+        <div class="col-xs-9">
+          {{>afFieldInput class="form-control" name="address2" placeholder="Unit E (Optional)"}}
+          {{#if afFieldIsInvalid name="address2"}}
+          <span class="help-block">{{afFieldMessage name="address2"}}</span>
+          {{/if}}
+        </div>
+    </div>
+    <div class="form-group{{#if afFieldIsInvalid name='city'}} has-error{{/if}}">
+        <label class="control-label col-xs-3">{{afFieldLabelText name='city'}}</label>
+        <div class="col-xs-9">
+          {{>afFieldInput class="form-control" name="city" value=city placeholder="Dillon"}}
+          {{#if afFieldIsInvalid name="city"}}
+          <span class="help-block">{{afFieldMessage name="city"}}</span>
+          {{/if}}
+        </div>
+    </div>
+  </div>
+  <div class="row keep-col-margin">
+    <div class="col-xs-6 form-group{{#if afFieldIsInvalid name='region'}} has-error{{/if}}">
+      <label class="control-label col-xs-12 col-md-6">State</label>
+      <div class="col-xs-12 col-md-6">
+        {{>afFieldInput class="form-control" name="region" value=region options=states}}
+      </div>
+    </div>
+    <div class="col-xs-6 form-group{{#if afFieldIsInvalid name='postal'}} has-error{{/if}}">
+      <label class="control-label col-xs-12 col-md-5">Zip Code</label>
+      <div class="col-xs-12 col-md-7">
+        {{>afFieldInput class="form-control" name="postal" value=postal maxlength="5" placeholder="80435"}}
+        {{#if afFieldIsInvalid name="postal"}}
+        <span class="help-block">{{afFieldMessage name="postal"}}</span>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+  <div class="form-group{{#if afFieldIsInvalid name='phone'}} has-error{{/if}}">
+    <label class="control-label col-xs-3">{{afFieldLabelText name='phone'}}</label>
+    <div class="col-xs-9">
+      {{>afFieldInput class="form-control" name="phone" placeholder="555-555-1234"}}
+      {{#if afFieldIsInvalid name="phone"}}
+      <span class="help-block">{{afFieldMessage name="phone"}}</span>
+      {{/if}}
+    </div>
+  </div>
+  {{>afFieldInput class="form-control" name="isShippingDefault" value="false" type="hidden"}}
+  {{>afFieldInput class="form-control" name="isBillingDefault" value="true" type="hidden"}}
+  {{>afFieldInput class="form-control" name="isCommercial" value="false" type="hidden"}}
+</template>

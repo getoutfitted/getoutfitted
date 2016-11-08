@@ -1,0 +1,20 @@
+<template name="goPaymentMethods">
+  <div class="panel-group panel-group-accordian" id="payment-methods-accordian" role="tablist" aria-multiselectable="true">
+    {{#each reactionApps provides='paymentMethod' enabled=true}}
+      {{#with appDetails}}
+      <div class="panel panel-default">
+        <div id="{{template}}" class="panel-collapse collapse {{isOpen this}}" role="tabpanel" aria-labelledby="{{name}}">
+          <div class="core-payment-method-form panel-body">
+            {{> Template.dynamic template=template}}
+          </div>
+        </div>
+      </div>
+      {{/with}}
+    {{else}}
+      <div class="alert alert-danger">
+        <p>An error occured connecting to our payment gateway. Please try again or contact our customer service line.</p>
+        <p><a class="button" href="tel:18886180305"><i class="fa fa-phone"></i> 888-618-0305</a></p>
+      </div>
+    {{/each}}
+  </div>
+</template>

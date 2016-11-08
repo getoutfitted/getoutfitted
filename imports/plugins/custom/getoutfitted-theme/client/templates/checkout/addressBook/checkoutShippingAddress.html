@@ -1,0 +1,13 @@
+<template name="goCheckoutShippingAddress">
+  <div class="panel panel-default panel-shipping-address">
+    <div class="panel-heading">
+      {{#if shippingSelected}}
+        <div class="step-success">
+          {{> miniSuccessAnimation}}
+        </div>
+      {{/if}}
+      <h3 class="panel-title"><span>Shipping Address</span></h3>
+    </div>
+    {{> Template.dynamic template=currentView data=data}}
+  </div>
+</template>

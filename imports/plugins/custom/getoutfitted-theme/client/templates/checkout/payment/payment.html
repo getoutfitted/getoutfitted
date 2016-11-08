@@ -1,0 +1,16 @@
+<template name="goCheckoutPayment">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <span>Payment</span>
+      </h3>
+      <div class="flex-icon-right"><i class="fa fa-cc-stripe fa-2x"></i></div>
+    </div>
+
+    <div class="core-payment-methods">
+      {{> goPaymentMethods}}
+      <div id="payment-alerts">{{> inlineAlerts placement="paymentMethod"}}</div>
+    </div>
+
+  </div>
+</template>

@@ -5,18 +5,6 @@ import { Template } from "meteor/templating";
 import _ from "lodash";
 
 Template.checkoutReviewItems.onCreated(function () {
-  if (Reaction.Subscriptions.Cart.ready()) {
-    const cart = Cart.findOne();
-    if (cart.workflow && cart.workflow.status === "new") {
-      // console.log("cartworkflow");
-        // if user logged in as normal user, we must pass it through the first stage
-      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutItemReview", cart._id, "getoutfitted");
-    }
-  }
-  // ReactionAnalytics.trackEventWhenReady("Viewed Checkout Step", {
-  //   "step": 1,
-  //   "Step Name": "Review Cart"
-  // });
   // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
   //   "step": 1,
   //   "Step Name": "Review Cart"
@@ -24,11 +12,15 @@ Template.checkoutReviewItems.onCreated(function () {
 });
 
 Template.checkoutReviewItems.helpers({
-  cartItems: function () {
-    return Cart.findOne().items;
+  cart() {
+    return Cart.findOne({userId: Meteor.userId()});
   },
+  cartItems: function () {
+    return Cart.findOne({userId: Meteor.userId()}).items;
+  },
+
   media: function () {
-    let product = Products.findOne(this.productId);
+    const product = Products.findOne(this.productId);
     let defaultImage = Media.findOne({
       "metadata.variantId": this.variants._id,
       "metadata.purpose": "cart"
@@ -46,6 +38,7 @@ Template.checkoutReviewItems.helpers({
     }
     return defaultImage;
   },
+
   productTitle: function () {
     if (this.variants.productTitle) {
       return this.variants.productTitle;
