@@ -426,7 +426,7 @@ Template.productDetail.events({
               }
 
               const addToCartTitle = currentVariant.title || "";
-              Alerts.alert({
+              Alerts.cartAlert({
                 title: "Nice!",
                 text: `${addToCartTitle} was added to your cart successfully!`,
                 type: "success",
@@ -437,7 +437,7 @@ Template.productDetail.events({
                 confirmButtonText: "<i class='fa fa-shopping-cart'></i> View Cart",
                 confirmButtonColor: "#43AC6A",
                 reverseButtons: true
-              }, function () {
+              }, function (err) {
                 Router.go("cart");
               });
 

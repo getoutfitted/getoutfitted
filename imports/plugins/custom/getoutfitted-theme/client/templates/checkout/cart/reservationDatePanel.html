@@ -19,36 +19,36 @@
   </div>
 </template>
 <template name="reservationDatePanel">
-    <div class="panel panel-default panel-cart">
+  <div class="panel panel-default panel-cart">
+    <div class="panel-heading">
+      <h3 class="panel-title">Reservation Dates</h3>
+    </div>
+    <div class="panel-body">
+      <div class="reservation-dates">
+        <div class="reservation-start">
+          <div class="reservation-day">{{orderStartDay}}</div>
+          <div class="reservation-month">{{orderStartMonth}}</div>
+          <div class="reservation-date">{{orderStartDate}}</div>
+          
+        </div>
+        <div class="reservation-to">
+          <div class="reservation-hyphen">
+          </div>
+        </div>
+        <div class="reservation-end">
+          <div class="reservation-day">{{orderEndDay}}</div>
+          <div class="reservation-month">{{orderEndMonth}}</div>
+          <div class="reservation-date">{{orderEndDate}}</div>
+        </div>
+      </div>
       <div class="panel-heading">
-        <h3 class="panel-title">Reservation Dates</h3>
+        <h3 class="panel-title subtitle">Scheduled Delivery</h3>
       </div>
-      <div class="panel-body">
-        <div class="reservation-dates">
-          <div class="reservation-start">
-            <div class="reservation-day">{{orderStartDay}}</div>
-            <div class="reservation-month">{{orderStartMonth}}</div>
-            <div class="reservation-date">{{orderStartDate}}</div>
-            
-          </div>
-          <div class="reservation-to">
-            <div class="reservation-hyphen">
-            </div>
-          </div>
-          <div class="reservation-end">
-            <div class="reservation-day">{{orderEndDay}}</div>
-            <div class="reservation-month">{{orderEndMonth}}</div>
-            <div class="reservation-date">{{orderEndDate}}</div>
-          </div>
-        </div>
-        <div class="panel-heading">
-          <h3 class="panel-title subtitle">Gear Delivery</h3>
-        </div>
-        <div class="reservation-delivered">
-          <div class="reservation-day">{{orderDeliveryDay}}</div>
-          <div class="reservation-month">{{orderDeliveryMonth}}</div>
-          <div class="reservation-date">{{orderDeliveryDate}}</div>
-        </div>
+      <div class="reservation-delivered">
+        <div class="reservation-day">{{orderDeliveryDay}}</div>
+        <div class="reservation-month">{{orderDeliveryMonth}}</div>
+        <div class="reservation-date">{{orderDeliveryDate}}</div>
       </div>
+    </div>
     </div>
 </template>
