@@ -703,14 +703,20 @@ Meteor.methods({
       Logger.info("Transitioned cart " + cartId + " to order " + orderId);
       // catch send notification, we don't want
       // to block because of notification errors
-
-      if (order.email) {
-        Meteor.call("orders/sendNotification", Collections.Orders.findOne(orderId), (err) => {
-          if (err) {
-            Logger.error(err, `Error in orders/sendNotification for order ${orderId}`);
-          }
-        });
+      if (!order.email) {
+        if (Array.isArray(order.shipping) &&
+            order.shipping[0] &&
+            order.shipping[0].address &&
+            order.shipping[0].address.email) {
+          Meteor.call("orders/addOrderEmail", order.cartId, order.shipping[0].address.email);
+        }
       }
+
+      Meteor.call("orders/sendNotification", Collections.Orders.findOne(orderId), (err) => {
+        if (err) {
+          Logger.error(err, `Error in orders/sendNotification for order ${orderId}`);
+        }
+      });
 
       // order success
       return orderId;

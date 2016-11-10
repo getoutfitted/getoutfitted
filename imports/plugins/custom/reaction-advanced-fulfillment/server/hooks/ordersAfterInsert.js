@@ -42,14 +42,18 @@ Orders.after.insert(function () {
   advancedFulfillment.items = AdvancedFulfillment.itemsToAFItems(order.items);
 
   if (!order.email) {
-    // If no email, try to find past orders with emails
-    const pastOrder = Orders.findOne({
-      userId: order.userId,
-      email: {$exists: true}
-    });
-    if (pastOrder) {
-      Logger.warn('No Email was passed, so found email on past order from UserId');
-      af.email = pastOrder.email;
+    if (Array.isArray(order.shipping) && order.shipping[0] && order.shipping[0].address && order.shipping[0].address.email) {
+      order.email = order.shipping[0].address.email;
+    } else {
+      // If no email, try to find past orders with emails
+      const pastOrder = Orders.findOne({
+        userId: order.userId,
+        email: {$exists: true}
+      });
+      if (pastOrder) {
+        Logger.warn('No Email was passed, so found email on past order from UserId');
+        af.email = pastOrder.email;
+      }
     }
   }
   af.orderNumber = AdvancedFulfillment.findAndUpdateNextOrderNumber();
