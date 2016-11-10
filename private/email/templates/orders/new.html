@@ -1,400 +1,180 @@
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Order Confirm Email</title>
-  <style type="text/css">
-    /* Media Query for mobile */
-
-    @media screen and (max-width: 599px) {
-      /* This resizes tables and images to be 100% wide with a proportionate width */
-      table[class=emailwrapto100pc],
-      td[class=emailwrapto100pc],
-      img[class=emailwrapto100pc] {
-        width: 100% !important;
-        height: auto !important;
-      }
-      table[class=emailwrapto90pc],
-      td[class=emailwrapto90pc],
-      img[class=emailwrapto90pc] {
-        width: 90% !important;
-        height: auto !important;
-        margin: 0 auto !important;
-      }
-      td[class=padding] {
-        padding-left: 0 !important;
-        padding-right: 0px !important;
-      }
-      td[class=nopadding] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        padding-bottom: 0 !important;
-        padding-top: 0 !important;
-      }
-      td[class=textalignCenter] {
-        text-align: center !important;
-      }
-      img[class=resize] {
-        width: 90% !important;
-        height: 50px !important;
-      }
-      img[class=resize100] {
-        width: 100% !important;
-        height: auto !important;
-      }
-      img[class=resize1001] {
-        width: 100% !important;
-        height: auto !important;
-        padding: 10px 0 !important;
-      }
-      td[class=tabs] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        text-align: center !important;
-        width: 90% !important;
-        float: left !important;
-        margin: 0 5% !important;
-      }
-      td[class=tabsnopadd] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        padding-bottom: 0 !important;
-        padding-top: 0 !important;
-        text-align: center !important;
-        width: 90% !important;
-        float: left !important;
-        margin: 0 5% !important;
-      }
-      td[class=tabs100pc] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        text-align: center !important;
-        width: 100% !important;
-        float: left !important;
-        margin: 0 0% !important;
-      }
-      td[class=invisible] {
-        display: none !important;
-      }
-      td[class=noheight] {
-        height: auto;
-        padding-bottom: 20px;
-      }
-    }
-    /* Additional Media Query for tablets */
-
-    @media screen and (min-width: 620px) and (max-width: 1024px) {
-      /* Same as above */
-      /*table[class=emailwrapto100pc], img[class=emailwrapto100pc]{width:auto !important; max-width:738px; height:auto !important;}*/
-      a[href^=tel] {
-        color: inherit;
-        text-decoration: none;
-      }
-      a img {
-        border: 0;
-        outline: 0;
-      }
-      img {
-        border: 0;
-        outline: 0;
-      }
-      .a5q {
-        display: none !important;
-      }
-      table table table div {
-        display: none !important;
-      }
-    }
-
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>GetOutfitted Order Confirmation for Reservation Dates {{reservation.start}} - {{reservation.end}}</title>
 </head>
-
-<body style="margin:0; padding:0;">
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
+<body style="width:100% !important;height:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;line-height:1.4;background-color:#F2F4F6;color:#74787E;-webkit-text-size-adjust:none;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;" >
+  <span style="display:none !important;" >This is a receipt for your recent purchase on {{orderDate}}. No payment is due with this receipt.</span>
+  <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;background-color:#F2F4F6;" >
     <tr>
-      <td align="center" valign="middle">
-        <table width="600" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;" >
           <tr>
-            <td valign="top" align="left">
-              <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
+            <td style="padding-top:25px;padding-bottom:25px;padding-right:0;padding-left:0;text-align:center;" >
+              <a href="https://getoutfitted.com" style="font-size:16px;font-weight:bold;color:#bbbfc3;text-decoration:none;text-shadow:0 1px 0 white;" >
+      <img src="https://d2wpxyz1up89r3.cloudfront.net/logos/getoutfitted-wordmark.png" alt="GetOutfitted" style="border-style:none;" >
+    </a>
+            </td>
+          </tr>
+          <!-- Email Body -->
+          <tr>
+            <td width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;border-top-width:1px;border-top-style:solid;border-top-color:#EDEFF2;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;background-color:#FFFFFF;" >
+              <table align="center" width="570" cellpadding="0" cellspacing="0" style="width:570px;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:570px;-premailer-cellpadding:0;-premailer-cellspacing:0;background-color:#FFFFFF;" >
+                <!-- Body content -->
                 <tr>
-                  <td height="10" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <td height="4" align="left" valign="top" bgcolor="#1c98d5" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <td align="center" valign="top">
-                    <table width="545" border="0" cellspacing="0" cellpadding="0" class="emailwrapto90pc">
+                  <td style="padding-top:35px;padding-bottom:35px;padding-right:35px;padding-left:35px;" >
+                    <h1 style="margin-top:0;color:#2F3133;font-size:19px;font-weight:bold;text-align:left;" >Hi {{billing.address.fullName}},</h1>
+                    <p style="margin-top:0;color:#74787E;font-size:16px;line-height:1.5em;text-align:left;" >Thanks for choosing GetOutfitted! This email is the confirmation that we've received your reservation and have scheduled delivery for the items you've ordered. This order has already been paid and no further payment is due.</p>
+                    <!-- Discount -->
+
+                    <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:25px;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;" >
                       <tr>
-                        <td valign="top" align="left">
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
+                        <th style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                          <p style="line-height:1.5em;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Order Number</p>
+                        </th>
+                        <th style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                          <p style="line-height:1.5em;text-align:right;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Order Placed</p>
+                        </th>
+                      </tr>
+                      <tr>
+                        <td width="80%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" ><a href="{{homepage}}{{orderUrl}}" style="color:#3FA5BC;" >{{order.orderNumber}}</a></td>
+                        <td width="20%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" >{{orderDate}}</td>
+                      </tr>
+                    </table>
+
+                    <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:25px;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;" >
+                      <tr>
+                        <td colspan="3">
+                          <h3 style="margin-top:0;color:#2F3133;font-size:14px;font-weight:bold;text-align:left;" >Your Reservation</h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th width="34%" style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                          <p style="line-height:1.5em;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Dates</p>
+                        </th>
+                        <th width="33%" style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                          <p style="line-height:1.5em;text-align:center;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Length</p>
+                        </th>
+                        <th width="33%" style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                          <p style="line-height:1.5em;text-align:right;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Delivery</p>
+                        </th>
+                      </tr>
+                      <tr>
+                        <td width="34%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" ><p style="margin-top:0;color:#74787E;font-size:16px;line-height:1.5em;text-align:left;" >{{reservation.start}} - {{reservation.end}}</p></td>
+                        <td width="33%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" ><p style="margin-top:0;color:#74787E;font-size:16px;line-height:1.5em;text-align:center;" >{{reservation.length}} Days</p></td>
+                        <td width="33%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" ><p style="margin-top:0;color:#74787E;font-size:16px;line-height:1.5em;text-align:right;" >{{reservation.delivery}}</p></td>
+                      </tr>
+                    </table>
+
+                    <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:25px;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;" >
+                      <tr>
+                        <th width="50%" style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" ><p style="line-height:1.5em;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Shipping</p></th>
+                        <th width="50%" style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" ><p style="line-height:1.5em;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Billing</p></th>
+                      </tr>
+                      <tr>
+                        <td width="50%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;line-height:18px;vertical-align:top;font-size:12px;" >
+                          {{shipping.address.fullName}}<br>
+                          {{#if shipping.address.company}}{{shipping.address.company}}<br>{{/if}}
+                          {{shipping.address.address1}}<br>
+                          {{#if shipping.address.address2}}{{shipping.address.address2}}<br>{{/if}}
+                          {{shipping.address.city}}, {{shipping.address.region}} {{shipping.address.postal}}<br>
+                          {{shipping.address.phone}}
+                        </td>
+
+                        <td width="50%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;line-height:18px;vertical-align:top;font-size:12px;" >
+                          {{billing.address.fullName}}<br>
+                          {{#if billing.address.company}}{{billing.address.company}}<br>{{/if}}
+                          {{billing.address.address1}}<br>
+                          {{#if billing.address.address2}}{{billing.address.address2}}<br>{{/if}}
+                          {{billing.address.city}}, {{billing.address.region}} {{billing.address.postal}}<br>
+                          {{billing.address.phone}}<br>
+                          <br>
+                          Payment: {{billing.paymentMethod.storedCard}}
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:35px;padding-bottom:35px;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;" >
+                      <tr>
+                        <td colspan="2">
+                          <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:25px;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;" >
                             <tr>
-                              <td height="34" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                              <th style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                                <p style="line-height:1.5em;text-align:left;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Description</p>
+                              </th>
+                              <th style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                                <p style="line-height:1.5em;text-align:right;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >Amount</p>
+                              </th>
+                              <th style="padding-bottom:8px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#EDEFF2;" >
+                                <p style="line-height:1.5em;text-align:right;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;color:#9BA2AB;font-size:12px;" >QTY</p>
+                              </th>
                             </tr>
+                            {{#each rentalItems}}
+                              <tr>
+                                <td width="70%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" >{{variants.title}}</td>
+                                <td width="20%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" >${{variants.price}}</td>
+                                <td width="10%" style="padding-top:10px;padding-bottom:10px;padding-right:0;padding-left:0;color:#74787E;font-size:15px;line-height:18px;" >{{quantity}}</td>
+                              </tr>
+                            {{/each}}
                             <tr>
-                              <td align="left" valign="top">
-                                <a href="#"><img src="{{emailLogo}}" width="49" height="49"
-                                      alt="logo"></a>
+                              <td width="80%" colspan="2" valign="middle" style="padding-top:15px;border-top-width:1px;border-top-style:solid;border-top-color:#EDEFF2;" >
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >Subtotal</p>
+                              </td>
+                              <td width="20%" valign="middle" style="padding-top:15px;border-top-width:1px;border-top-style:solid;border-top-color:#EDEFF2;" >
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >${{billing.subtotal}}</p>
                               </td>
                             </tr>
                             <tr>
-                              <td height="31" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                              <td align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:22px; font-weight:bold; line-height:22px; color:#1e98d5;">Order Confirmation</td>
-                            </tr>
-                            <tr>
-                              <td align="left" valign="top">
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" valign="top">
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                          <tbody>
-                                            <tr>
-                                              <td align="left" valign="top" height="25" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Your Order</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Order Date</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">&nbsp;</td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </td>
-                                    </tr>
-
-                                    <tr>
-                                      <td valign="top" align="left" height="10" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="2" style="line-height:2px; font-size:2px; border-top:solid 2px #efefee;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="15" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td align="left" valign="top">
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                          <tbody>
-                                            <tr>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#1c98d5; font-family:Arial, helvetica;"><a href="{{homepage}}{{orderUrl}}" style="color:#1c98d5;">{{order._id}}</a></td>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">{{orderDate}}</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">&nbsp;</td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="13" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-
-                                    <tr>
-                                      <td valign="top" align="left" height="13" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td align="left" valign="top">
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                          <tbody>
-                                            <tr>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica; font-weight:bold;">Shipping Address</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica; font-weight:bold;">Billing Address</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica; font-weight:bold;">Payment Type</td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </td>
-                                    </tr>
-
-                                    <tr>
-                                      <td valign="top" align="left" height="15" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="2" style="line-height:1px; font-size:1px; border-top:solid 2px #efefee;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="13" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td align="left" valign="top">
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                          <tbody>
-                                            <tr>
-                                              <td width="33%" align="left" valign="top" style="font-size:10px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">{{shipping.address.address1}},<br> {{shipping.address.city}},
-                                                {{shipping.address.region}} {{shipping.address.postal}}</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:10px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">{{order.billing.[0].address.address1}},<br> {{order.billing.[0].address.city}},
-                                                {{order.billing.[0].address.region}} {{order.billing.[0].address.postal}}</td>
-                                              <td width="33%" align="left" valign="top" style="font-size:10px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">{{order.billing.[0].paymentMethod.storedCard}}</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="left" height="30" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="left" style="font-size:14px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Item(s)</td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="15" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="2" style="line-height:1px; font-size:1px; border-top:solid 2px #efefee;">&nbsp;</td>
-                                    </tr>
-                                    {{#each combinedItems}}
-                                    <tr>
-                                      <td valign="top" align="left">
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                          <tbody>
-                                            <tr>
-                                              <td valign="top" align="left">
-                                                <table width="110" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td valign="middle" align="left" height="15" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                                    </tr>
-                                                    <tr>
-                                                      <td valign="middle" align="left" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">{{quantity}} x</td>
-                                                      <td valign="top" align="center" width="30" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                                      <td valign="middle" align="left">
-                                                        {{#if variantImage}}
-                                                          <img src="{{variantImage}}"  width="50" height="50" alt="" />
-                                                        {{else}}
-                                                          <img src="{{placeholderImage}}" width="50" height="50" alt="" />
-                                                        {{/if}}
-                                                      </td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </td>
-                                              <td width="180">&nbsp;</td>
-                                              <td valign="middle" align="left">
-                                                <table width="360" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td align="left" valign="middle" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">{{title}} - {{variants.title}}</td>
-                                                      <td align="right" valign="middle" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">${{variants.price}}</td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="15" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                      <td valign="top" align="left" height="2" style="line-height:1px; font-size:1px; border-top:solid 2px #efefee;">&nbsp;</td>
-                                    </tr>
-																		{{/each}}
-                                    <tr>
-                                      <td valign="top" align="right">
-                                        <table width="210" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                          <tbody>
-                                            <tr>
-                                              <td valign="top" align="left" height="20" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="right" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Subtotal: ${{billing.subtotal}}</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="right" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Shipping: ${{billing.shipping}}</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="right" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Tax: ${{billing.taxes}}</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="right" style="font-size:12px; line-height:normal; color:#4c4c4d; font-family:Arial, helvetica;">Discounts: ${{billing.discounts}}</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="left" height="10" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="left" height="2" style="line-height:1px; font-size:1px; border-top:solid 3px #4c4d4e;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="left" height="10" style="line-height:1px; font-size:1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                              <td valign="top" align="left">
-                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td valign="top" align="left" style="font-size:12px; line-height:normal; color:#a2a1a3; font-family:Arial, helvetica;">ORDER TOTAL:</td>
-                                                      <td valign="top" align="right" style="font-size:22px; line-height:normal; color:#4d4d4e; font-family:Arial, helvetica;">${{billing.total}}</td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
+                              <td width="80%" colspan="2" valign="middle">
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >Shipping</p>
                               </td>
-                            </tr>
-
-                            <tr>
-                              <td height="50" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                              <td align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:normal; line-height:17px;">You received this email because you created an order with {{shop.addressBook.[0].company}}. If you have any questions, concerns, or suggestions please email us:
-                                <a href="mailto:{{shop.emails.[0].address}}" style="text-decoration:none; color:#1e98d5;">{{shop.emails.[0].address}}</a></td>
-                            </tr>
-                            <tr>
-                              <td height="21" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                              <td align="left" valign="top">
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="emailwrapto100pc">
-                                  <tr>
-                                    <td width="26" align="left" valign="top">
-                                      <a href="#"><img src="{{homepage}}resources/email-templates/twitter-icon.png" width="26"
-                                            height="26" alt="twt_icon"></a>
-                                    </td>
-                                    <td width="10" align="left" valign="top">&nbsp;</td>
-                                    <td width="26" align="left" valign="top">
-                                      <a href="#"><img src="{{homepage}}resources/email-templates/facebook-icon.png" width="26"
-                                            height="26" alt="fb_icon"></a>
-                                    </td>
-                                    <td width="10" align="left" valign="top">&nbsp;</td>
-                                    <td>
-                                      <a href="#"><img src="{{homepage}}resources/email-templates/google-plus-icon.png" width="26"
-                                            height="26" alt="g_plus_icon"></a>
-                                    </td>
-                                  </tr>
-                                </table>
+                              <td width="20%" valign="middle">
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >${{billing.shipping}}</p>
                               </td>
                             </tr>
                             <tr>
-                              <td height="28" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                              <td width="80%" colspan="2" valign="middle">
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >Tax</p>
+                              </td>
+                              <td width="20%" valign="middle">
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >${{billing.taxes}}</p>
+                              </td>
                             </tr>
+                            <!-- <tr>
+                              <td width="80%" colspan="2" valign="middle">
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >Discounts</p>
+                              </td>
+                              <td width="20%"  valign="middle">
+                                <p style="color:#74787E;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-size:12px;padding-top:5px;padding-bottom:5px;padding-right:0;padding-left:0;" >${{billing.discounts}}</p>
+                              </td>
+                            </tr> -->
                             <tr>
-                              <td height="3" align="left" valign="top" bgcolor="#1f97d4" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                              <td height="18" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                              <td align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:normal; line-height:12px; color:#4d4c4d;">&copy; {{copyrightDate}} {{shop.addressBook.[0].company}}. All rights reserved</td>
-                            </tr>
-                            <tr>
-                              <td height="8" align="left" valign="top" style="font-size:1px; line-height:1px;">&nbsp;</td>
-                            </tr>
-                            <tr>
-                              <td align="left" valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:10px; font-weight:normal; line-height:10px; color:#787878;">{{shop.addressBook.[0].address1}} {{shop.addressBook.[0].address2}}, {{shop.addressBook.[0].city}},
-                                {{shop.addressBook.[0].region}} {{shop.addressBook.[0].postal}}</td>
+                              <td width="80%" colspan="2" valign="middle" style="padding-top:15px;border-top-width:1px;border-top-style:solid;border-top-color:#EDEFF2;" >
+                                <p style="font-size:16px;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-weight:bold;color:#2F3133;padding-top:0;padding-bottom:0;padding-right:15px;padding-left:0;" >Total</p>
+                              </td>
+                              <td width="20%" valign="middle" style="padding-top:15px;border-top-width:1px;border-top-style:solid;border-top-color:#EDEFF2;" >
+                                <p style="font-size:16px;line-height:1.5em;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;text-align:right;font-weight:bold;color:#2F3133;" >${{billing.total}}</p>
+                              </td>
                             </tr>
                           </table>
                         </td>
                       </tr>
                     </table>
+                    <p style="margin-top:0;color:#74787E;font-size:16px;line-height:1.5em;text-align:left;" >You received this email because you placed an order with GetOutfitted.<br>
+                      If you have any questions about your reservation, simply reply to this email or call our support team for help <a href="tel:18886180305" style="color:#3FA5BC;" >(888) 618-0305</a>.</p>
+                    <p style="margin-top:0;color:#74787E;font-size:16px;line-height:1.5em;text-align:left;" >Cheers,
+                      <br>The GetOutfitted Team</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table align="center" width="570" cellpadding="0" cellspacing="0" style="width:570px;margin-top:0;margin-bottom:0;margin-right:auto;margin-left:auto;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;-premailer-width:570px;-premailer-cellpadding:0;-premailer-cellspacing:0;text-align:center;" >
+                <tr>
+                  <td align="center" style="padding-top:35px;padding-bottom:35px;padding-right:35px;padding-left:35px;" >
+                    <p style="margin-top:0;line-height:1.5em;text-align:center;color:#AEAEAE;font-size:12px;" >&copy; 2016 GetOutfitted. All rights reserved.</p>
                   </td>
                 </tr>
               </table>
@@ -404,5 +184,4 @@
       </td>
     </tr>
   </table>
-
 </body>

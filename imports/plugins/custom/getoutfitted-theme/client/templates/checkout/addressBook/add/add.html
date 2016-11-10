@@ -1,0 +1,36 @@
+<template name="goAddressBookAdd">
+  <div class="panel-body panel-content">
+    {{#autoForm schema=Schemas.Address id="addressBookAddForm" doc=thisAddress type="normal" class="form-horizontal"}}
+      <fieldset>
+          {{> usAddressBookForm}}
+          <div class="row text-right">
+            {{#if hasAddressBookEntries}}
+              <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
+            {{/if}}
+            <button type="submit" class="btn btn-info" data-event-action="saveAddress">Next</button>
+          </div>
+      </fieldset>
+    {{/autoForm}}
+  </div>
+</template>
+
+<template name="goIntlAddressBookAdd">
+  <div class="panel-body panel-content">
+    {{#autoForm schema=Schemas.Address id="billingAddressAddForm" doc=thisAddress type="normal" class="form-horizontal"}}
+      <fieldset>
+          {{> billingAddressForm}}
+          <div class="row text-right">
+            <button type="submit" class="btn btn-info" data-event-action="saveAddress">Next</button>
+          </div>
+      </fieldset>
+    {{/autoForm}}
+  </div>
+</template>
+
+<template name="shippingAddressAdd">
+  {{> goAddressBookAdd}}
+</template>
+
+<template name="billingAddressAdd">
+  {{> goIntlAddressBookAdd}}
+</template>

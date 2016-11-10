@@ -159,13 +159,15 @@ Meteor.methods({
         if (typeof currentCart.workflow === "object" &&
         typeof currentCart.workflow.workflow === "object") {
           if (currentCart.workflow.workflow.length > 2) {
-            Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+            // XXX: GETOUTFITTED MOD -Don't do these next two things
+            // Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
             // refresh shipping quotes
-            Meteor.call("shipping/updateShipmentQuotes", cartId);
+            // Meteor.call("shipping/updateShipmentQuotes", cartId);
           }
         } else {
+          // XXX: GETOUTFITTED MOD -Don't revert cartWorkflow
           // if user logged in he doesn't need to show `checkoutLogin` step
-          Meteor.call("workflow/revertCartWorkflow", "checkoutAddressBook");
+          // Meteor.call("workflow/revertCartWorkflow", "checkoutAddressBook");
         }
 
         // We got an additional db call because of `workflow/revertCartWorkflow`
@@ -209,10 +211,14 @@ Meteor.methods({
       // We send `cartId` as arguments because this method could be called from
       // publication method and in half cases it could be so, that
       // Meteor.userId() will be null.
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-        "checkoutLogin", cartId);
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-        "checkoutAddressBook", cartId);
+
+      // XXX: GETOUTFITTED MOD - use our cart workflow
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow",
+        "goCheckoutShippingAddress", cartId);
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
+      //   "checkoutLogin", cartId);
+      // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
+      //   "checkoutAddressBook", cartId);
     }
 
     return currentCart._id;
@@ -394,12 +400,20 @@ Meteor.methods({
           return error;
         }
 
+        // XXX: GETOUTFITTED MOD -
+        // Don't updateShipmentQuotes because we are binary shipping
         // refresh shipping quotes
-        Meteor.call("shipping/updateShipmentQuotes", cart._id);
+        // Meteor.call("shipping/updateShipmentQuotes", cart._id);
+
+        // XXX: GETOUTFITTED MOD -
+        // don't revert cart workflow
         // revert workflow to checkout shipping step.
-        Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+        // Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+
+        // XXX: GETOUTFITTED MOD -
+        // don't reset selected shipment
         // reset selected shipment method
-        Meteor.call("cart/resetShipmentMethod", cart._id);
+        // Meteor.call("cart/resetShipmentMethod", cart._id);
 
         Logger.info(`cart: increment variant ${variantId} quantity by ${
           quantity}`);
@@ -437,12 +451,13 @@ Meteor.methods({
         return error;
       }
 
+      // XXX: GETOUTFITTED MOD - Commented out these next three meteor calls
       // refresh shipping quotes
-      Meteor.call("shipping/updateShipmentQuotes", cart._id);
+      // Meteor.call("shipping/updateShipmentQuotes", cart._id);
       // revert workflow to checkout shipping step.
-      Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+      // Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
       // reset selected shipment method
-      Meteor.call("cart/resetShipmentMethod", cart._id);
+      // Meteor.call("cart/resetShipmentMethod", cart._id);
 
       Logger.info(`cart: add variant ${variantId} to cartId ${cart._id}`);
       // XXX: GETOUTFITTED MOD - Additional logging
@@ -484,12 +499,13 @@ Meteor.methods({
       throw new Meteor.Error("cart-item-not-found", "Unable to find an item with such id in cart.");
     }
 
+    // XXX: GETOUTFITTED MOD - Don't reset cart workflow
     // refresh shipping quotes
-    Meteor.call("shipping/updateShipmentQuotes", cart._id);
+    // Meteor.call("shipping/updateShipmentQuotes", cart._id);
     // revert workflow to checkout shipping step.
-    Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+    // Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
     // reset selected shipment method
-    Meteor.call("cart/resetShipmentMethod", cart._id);
+    // Meteor.call("cart/resetShipmentMethod", cart._id);
 
     if (!quantity || quantity >= cartItem.quantity) {
       return Collections.Cart.update({
@@ -677,22 +693,30 @@ Meteor.methods({
         // updating `cart/workflow/status` to "coreCheckoutShipping"
         // by calling `workflow/pushCartWorkflow` three times. This is the only
         // way to do that without refactoring of `workflow/pushCartWorkflow`
-        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin");
-        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutAddressBook");
-        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "coreCheckoutShipping");
+        // XXX: GETOUTFITTED MOD - when resetting cart, update cart workflow to new GetOutfitted cart workflow
+        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "goCheckoutShippingAddress");
+        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "goCheckoutBillingAddress");
+        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "goCheckoutTermsOfService");
+        Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "goCheckoutPayment");
       }
 
       Logger.info("Transitioned cart " + cartId + " to order " + orderId);
       // catch send notification, we don't want
       // to block because of notification errors
-
-      if (order.email) {
-        Meteor.call("orders/sendNotification", Collections.Orders.findOne(orderId), (err) => {
-          if (err) {
-            Logger.error(err, `Error in orders/sendNotification for order ${orderId}`);
-          }
-        });
+      if (!order.email) {
+        if (Array.isArray(order.shipping) &&
+            order.shipping[0] &&
+            order.shipping[0].address &&
+            order.shipping[0].address.email) {
+          Meteor.call("orders/addOrderEmail", order.cartId, order.shipping[0].address.email);
+        }
       }
+
+      Meteor.call("orders/sendNotification", Collections.Orders.findOne(orderId), (err) => {
+        if (err) {
+          Logger.error(err, `Error in orders/sendNotification for order ${orderId}`);
+        }
+      });
 
       // order success
       return orderId;
@@ -711,6 +735,7 @@ Meteor.methods({
   "cart/setShipmentMethod": function (cartId, method) {
     check(cartId, String);
     check(method, Object);
+
     // get current cart
     const cart = Collections.Cart.findOne({
       _id: cartId,
@@ -759,8 +784,9 @@ Meteor.methods({
     }
 
     // this will transition to review
-    return Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-      "coreCheckoutShipping");
+    // XXX: GETOUTFITTED MOD - don't transition workflow to core
+    // return Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "coreCheckoutShipping");
+    return Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingAddress");
   },
 
   /**
@@ -844,7 +870,8 @@ Meteor.methods({
     }
 
     // refresh shipping quotes
-    Meteor.call("shipping/updateShipmentQuotes", cartId);
+    // XXX: GETOUTFITTED MOD - Don't do this
+    // Meteor.call("shipping/updateShipmentQuotes", cartId);
 
     if (typeof cart.workflow !== "object") {
       throw new Meteor.Error(500, "Internal Server Error",
@@ -855,8 +882,8 @@ Meteor.methods({
     // call it only once when we at the `checkoutAddressBook` step
     if (typeof cart.workflow.workflow === "object" &&
       cart.workflow.workflow.length < 2) {
-      Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow",
-        "coreCheckoutShipping");
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow",
+        "goCheckoutBillingAddress");
     }
 
     // if we change default address during further steps, we need to revert
@@ -864,7 +891,8 @@ Meteor.methods({
     if (typeof cart.workflow.workflow === "object" &&
       cart.workflow.workflow.length > 2) { // "2" index of
       // `coreCheckoutShipping`
-      Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
+      // XXX: GETOUTFITTED MOD - Don't do this
+      // Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
     }
 
     return true;
@@ -918,6 +946,12 @@ Meteor.methods({
           }
         }
       };
+    }
+
+    if (typeof cart.workflow.workflow === "object" &&
+      cart.workflow.workflow.length < 3) {
+      Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow",
+        "goCheckoutTermsOfService");
     }
 
     return Collections.Cart.update(selector, update);
@@ -987,7 +1021,8 @@ Meteor.methods({
       if (isShippingDeleting) {
         // if we remove shipping address from cart, we need to revert
         // `cartWorkflow` to the `checkoutAddressBook` step.
-        Meteor.call("workflow/revertCartWorkflow", "checkoutAddressBook");
+        // XXX: GETOUTFITTED MOD - Don't do this
+        // Meteor.call("workflow/revertCartWorkflow", "checkoutAddressBook");
       }
     }
     return true;

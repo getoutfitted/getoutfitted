@@ -12,7 +12,7 @@
                   </strong>
                 </div>
                 <div class="grid-order-item-details col-xs-10 col-md-10">
-                  <div class="grid-order-detail-title col-xs-8 col-md-9">
+                  <div class="grid-order-detail-title text-left {{#if viewingCart}}col-xs-8 col-md-9{{else}}col-xs-9 col-md-10{{/if}}">
                     Title
                   </div>
                   <div class="grid-order-detail-quantity text-center col-xs-1 col-md-1">
@@ -21,9 +21,11 @@
                   <div class="grid-order-detail-price text-center col-xs-2 col-md-1">
                     Price
                   </div>
-                  <div class="remove text-center col-xs-1">
-                    Remove
-                  </div>
+                  {{#if viewingCart}}
+                    <div class="remove text-center col-xs-1">
+                      Remove
+                    </div>
+                  {{/if}}
                 </div>
               </div>
             </header>

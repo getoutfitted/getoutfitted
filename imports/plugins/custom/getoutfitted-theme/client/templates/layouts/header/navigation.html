@@ -1,17 +1,17 @@
 <template name="goNavigationBar">
-  <div class="rui navbar hidden-xs  ">
+  <div class="rui navbar hidden-xs">
     {{> goNavigationBrand}}
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{! rentCompleteOutfitsLink}}
+        {{> rentOutfitsLink}}
         {{> rentWomensLink}}
         {{> rentMensLink}}
+        {{> rentKidsLink}}
+        {{> rentSkisLink}}
       </ul>
     </div>
-    <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
     <div class="cart">{{> cartIcon}}</div>
-    <div class="cart-alert">{{> cartPanel}}</div>
   </div>
   <div class="rui navbar hidden-lg hidden-md hidden-sm">
     <div class=navbar-left>
@@ -22,7 +22,6 @@
       <div class='cart-small col-xs-8'>
       <span class='cart-small-span'>
         <div class="cart">{{> cartIcon}}</div>
-        <div class="cart-alert">{{> cartPanel}}</div>
       </span>
       </div>
       <div class='col-xs-4'>
@@ -42,15 +41,10 @@
       <div class="menu">
         <ul class="nav navbar-nav">
           {{> phoneNumberLink}}
+          {{> rentOutfitsLink}}
           {{> rentWomensLink}}
           {{> rentMensLink}}
-          {{! winterProductNavDropdown}}
-          {{! demoProductNavDropdown}}
-          {{! rentalProductNavDropdown}}
-          {{! aboutNavDropdown}}
-          <div class="languages hide">{{> i18nChooser}}</div>
-          <hr>
-          <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
+          {{> rentKidsLink}}
         </ul>
       </div>
     </div>
@@ -71,9 +65,9 @@
   </li>
 </template>
 
-<template name="rentCompleteOutfitsLink">
+<template name="rentOutfitsLink">
   <li>
-    <a href="/collections/complete-outfits" class="dropdown-toggle">Complete Outfits</a>
+    <a href="/collections/outfits" class="dropdown-toggle">Outfits</a>
   </li>
 </template>
 
@@ -88,6 +82,19 @@
     <a href="/collections/womens" class="dropdown-toggle">Womens</a>
   </li>
 </template>
+
+<template name="rentKidsLink">
+  <li>
+    <a href="/collections/kids" class="dropdown-toggle">Kids</a>
+  </li>
+</template>
+
+<template name="rentSkisLink">
+  <li>
+    <a href="/collections/skis" class="dropdown-toggle">Skis + Snowboards</a>
+  </li>
+</template>
+
 
 <template name="winterProductNavDropdown">
   <li class="dropdown">

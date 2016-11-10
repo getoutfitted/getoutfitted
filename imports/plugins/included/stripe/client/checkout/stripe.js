@@ -44,6 +44,10 @@ function handleStripeSubmitError(error) {
 Template.stripePaymentForm.helpers({
   StripePayment() {
     return StripePayment;
+  },
+  agreedToTOS() {
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    return !cart.customerAgreedToTermsOfService;
   }
 });
 

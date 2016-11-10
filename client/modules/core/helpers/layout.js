@@ -24,6 +24,11 @@ Template.registerHelper("reactionTemplate", function (options) {
   let layout = _.find(Shop.layout, {
     workflow: options.hash.workflow || "coreWorkflow"
   });
+  if (!layout) {
+    layout = _.find(Shop.layout, function (l) {
+      return l.workflow === options.hash.workflow || "coreWorkflow";
+    });
+  }
 
   let layoutConfigCollection;
   let currentId;

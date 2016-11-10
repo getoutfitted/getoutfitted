@@ -138,21 +138,6 @@ Template.cartCompleted.helpers({
 });
 
 /**
- * cartCompleted events
- *
- * adds email to order
- */
-Template.cartCompleted.events({
-  "click #update-order": function () {
-    let templateInstance = Template.instance();
-    const email = templateInstance.find("input[name=email]").value;
-    check(email, String);
-    const cartId = Reaction.Router.getQueryParam("_id");
-    return Meteor.call("orders/addOrderEmail", cartId, email);
-  }
-});
-
-/**
  * cartCompleted onCreated
  *
  * when the order is completed we need to destroy and recreate
@@ -166,10 +151,15 @@ Template.cartCompleted.onCreated(function () {
   Reaction.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
 });
 
-
-Template.cartCompleted.onRendered(function () {
-  // ReactionAnalytics.trackEventWhenReady("Completed Checkout Step", {
-  //   "step": 6,
-  //   "Step Name": "Payment Information"
-  // });
+/**
+ * adds email to order
+ */
+Template.orderEmailMissingAlert.events({
+  "click #update-order": function () {
+    const templateInstance = Template.instance();
+    const email = templateInstance.find("input[name=email]").value;
+    check(email, String);
+    const cartId = Reaction.Router.getQueryParam("_id");
+    return Meteor.call("orders/addOrderEmail", cartId, email);
+  }
 });

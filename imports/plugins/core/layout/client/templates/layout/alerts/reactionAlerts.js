@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { Meteor } from "meteor/meteor";
+import { Router } from "/client/api";
 import swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.css";
 
@@ -70,7 +71,12 @@ Object.assign(Alerts, {
         if (isConfirm === true && typeof messageOrCallback === "function") {
           messageOrCallback(isConfirm);
         }
-      }).catch(_.noop);
+      }).catch((err) => {
+        if (err === "overlay" || err === "timer" || err === "esc" || err === "close" || err === "cancel") {
+          return undefined; // Silence error
+        }
+        throw err;
+      });
     }
 
     const title = titleOrOptions;
@@ -85,7 +91,51 @@ Object.assign(Alerts, {
       if (isConfirm === true && typeof callback === "function") {
         callback(isConfirm);
       }
-    }).catch(_.noop);
+    }).catch(function (err) {
+      if (err === "overlay" || err === "timer" || err === "esc" || err === "close" || err === "cancel") {
+        return undefined; // Silence error
+      }
+      throw err;
+    });
+  },
+  cartAlert(titleOrOptions, messageOrCallback, options, callback) {
+    if (_.isObject(titleOrOptions)) {
+      return swal({
+        type: "info",
+        ...titleOrOptions
+      }).then((isConfirm) => {
+        if (isConfirm === true && typeof messageOrCallback === "function") {
+          messageOrCallback(isConfirm);
+        }
+      }).catch((err) => {
+        if (err === "cancel") {
+          Router.go("collections");
+        }
+        if (err === "overlay" || err === "timer" || err === "esc" || err === "close" || err === "cancel") {
+          return undefined; // Silence error
+        }
+        throw err;
+      });
+    }
+
+    const title = titleOrOptions;
+    const message = messageOrCallback;
+
+    return swal({
+      title,
+      text: message,
+      type: "info",
+      ...options
+    }).then((isConfirm) => {
+      if (isConfirm === true && typeof callback === "function") {
+        callback(isConfirm);
+      }
+    }).catch(function (err) {
+      if (err === "overlay" || err === "timer" || err === "esc" || err === "close" || err === "cancel") {
+        return undefined; // Silence error
+      }
+      throw err;
+    });
   },
 
   toast(message, type, options) {

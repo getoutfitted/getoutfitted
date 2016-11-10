@@ -348,6 +348,7 @@ Meteor.methods({
 
     // Combine same products into single "product" for display purposes
     const combinedItems = [];
+    const rentalItems = []
     if (order) {
       // Loop through all items in the order. The items are split into indivital items
       for (const orderItem of order.items) {
@@ -367,6 +368,9 @@ Meteor.methods({
         } else {
           // Otherwise push the unique item into the combinedItems array
           combinedItems.push(orderItem);
+          if (orderItem.customerViewType !== "bundleComponent") {
+            rentalItems.push(orderItem);
+          }
 
           // Placeholder image if there is no product image
           orderItem.placeholderImage = Meteor.absoluteUrl() + "resources/placeholder.gif";
@@ -400,15 +404,26 @@ Meteor.methods({
       order: order,
       orderDate: moment(order.createdAt).format("MM/DD/YYYY"),
       billing: {
+        address: order.billing[0].address,
         subtotal: accounting.toFixed(order.billing[0].invoice.subtotal, 2),
         shipping: accounting.toFixed(order.billing[0].invoice.shipping, 2),
         taxes: accounting.toFixed(order.billing[0].invoice.taxes, 2),
         discounts: accounting.toFixed(order.billing[0].invoice.discounts, 2),
-        total: accounting.toFixed(order.billing[0].invoice.total, 2)
+        total: accounting.toFixed(order.billing[0].invoice.total, 2),
+        paymentMethod: order.billing[0].paymentMethod
       },
       shipping: order.shipping[0],
       orderUrl: getSlug(shop.name) + "/cart/completed?_id=" + order.cartId,
-      combinedItems: combinedItems
+      combinedItems: combinedItems,
+      rentalItems: rentalItems,
+      reservation: {
+        start: moment(order.startTime).format("MMM D"),
+        end: moment(order.endTime).format("MMM D"),
+        eventStart: moment(order.startTime).format(),
+        eventEnd: moment(order.endTime).format(),
+        delivery: moment(order.startTime).subtract(1, "day").format("MMM D"),
+        length: order.rentalDays
+      }
     };
 
     Logger.info(`orders/sendNotification status: ${order.workflow.status}`);
@@ -424,6 +439,16 @@ Meteor.methods({
       Logger.warn("No shop email configured. Using no-reply to send mail");
     }
 
+    // in case the order email still doesn't exist for some reason
+    if (!order.email) {
+      if (Array.isArray(order.shipping) &&
+          order.shipping[0] &&
+          order.shipping[0].address &&
+          order.shipping[0].address.email) {
+        order.email = order.shipping[0].address.email;
+      }
+    }
+
     // anonymous users without emails.
     if (!order.email) {
       const msg = "No order email found. No notification sent.";
@@ -435,11 +460,10 @@ Meteor.methods({
     // loads defaults from /private/email/templates
     const tpl = `orders/${order.workflow.status}`;
     SSR.compileTemplate(tpl, Reaction.Email.getTemplate(tpl));
-
     Reaction.Email.send({
       to: order.email,
       from: `${shop.name} <${shop.emails[0].address}>`,
-      subject: `Your order is confirmed`,
+      subject: `GetOutfitted order confirmation for reservation starting ${moment(order.startTime).format("MMM Do")}`,
       // subject: `Order update from ${shop.name}`,
       html: SSR.render(tpl,  dataForOrderEmail)
     });
