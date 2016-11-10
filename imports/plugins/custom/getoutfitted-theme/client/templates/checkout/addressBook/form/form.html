@@ -1,4 +1,8 @@
 <template name="usAddressBookForm">
+  <div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <small>Please use your destination address here. If you are travelling to a resort, hotel, condo or rental property, use that address as your shipping address.</small>
+  </div>
   <div class="row">
     {{>afFieldInput class="form-control" type="hidden" name="country" value="US"}}
     <div class="form-group{{#if afFieldIsInvalid name='fullName'}} has-error{{/if}}">

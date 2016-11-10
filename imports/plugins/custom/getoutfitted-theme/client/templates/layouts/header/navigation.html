@@ -1,13 +1,14 @@
 <template name="goNavigationBar">
-  <div class="rui navbar hidden-xs  ">
+  <div class="rui navbar hidden-xs">
     {{> goNavigationBrand}}
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{> rentCompleteOutfitsLink}}
+        {{> rentOutfitsLink}}
         {{> rentWomensLink}}
         {{> rentMensLink}}
         {{> rentKidsLink}}
+        {{> rentSkisLink}}
       </ul>
     </div>
     <div class="cart">{{> cartIcon}}</div>
@@ -40,14 +41,10 @@
       <div class="menu">
         <ul class="nav navbar-nav">
           {{> phoneNumberLink}}
-          {{> rentCompleteOutfitsLink}}
+          {{> rentOutfitsLink}}
           {{> rentWomensLink}}
           {{> rentMensLink}}
           {{> rentKidsLink}}
-          {{! winterProductNavDropdown}}
-          {{! demoProductNavDropdown}}
-          {{! rentalProductNavDropdown}}
-          {{! aboutNavDropdown}}
         </ul>
       </div>
     </div>
@@ -68,9 +65,9 @@
   </li>
 </template>
 
-<template name="rentCompleteOutfitsLink">
+<template name="rentOutfitsLink">
   <li>
-    <a href="/collections/complete-outfits" class="dropdown-toggle">Complete Outfits</a>
+    <a href="/collections/outfits" class="dropdown-toggle">Outfits</a>
   </li>
 </template>
 
@@ -91,6 +88,13 @@
     <a href="/collections/kids" class="dropdown-toggle">Kids</a>
   </li>
 </template>
+
+<template name="rentSkisLink">
+  <li>
+    <a href="/collections/skis" class="dropdown-toggle">Skis + Snowboards</a>
+  </li>
+</template>
+
 
 <template name="winterProductNavDropdown">
   <li class="dropdown">

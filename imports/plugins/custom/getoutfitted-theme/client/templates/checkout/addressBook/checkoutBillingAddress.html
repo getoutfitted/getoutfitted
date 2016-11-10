@@ -15,6 +15,12 @@
           Same as shipping address.
         </label>
       </div>
+      {{#if useShippingForBilling}}
+        <div class="alert alert-warning alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <small><strong>Note:</strong> We strongly encourage our customers to have gear shipped to their destination. If you're sure about your shipping address, please continue.</small>
+        </div>
+      {{/if}}
     {{/if}}
     {{> Template.dynamic template=currentView data=data}}
   </div>
