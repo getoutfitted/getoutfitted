@@ -67,6 +67,7 @@ Template.productDetail.onCreated(function () {
   this.autorun(() => {
     if (this.productId()) {
       this.subscribe("Product", this.productId());
+      this.subscribe("MediaByProductIdOrSlug", this.productId());
     }
   });
 

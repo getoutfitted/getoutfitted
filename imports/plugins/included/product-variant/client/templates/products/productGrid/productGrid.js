@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
-import { Reaction } from "/client/api";
+import { Reaction, Router } from "/client/api";
 import Logger from "/client/modules/logger";
 import { ReactionProduct } from "/lib/api";
 import Sortable from "sortablejs";
@@ -12,6 +12,11 @@ import Sortable from "sortablejs";
 
 Template.productGrid.onCreated(function () {
   Session.set("productGrid/selectedProducts", []);
+  const instance = this;
+  instance.autorun(() => {
+    this.subscribe("TagByRoute", Router.getParam("slug"));
+    this.subscribe("FeaturedMediaByTag", Router.getParam("slug"));
+  });
 });
 
 Template.productGrid.onRendered(function () {
