@@ -1,4 +1,5 @@
-import { Media, Products, Tags } from "/lib/collections";
+import { Meteor } from "meteor/meteor";
+import { Media, Products, Tags, Cart, Orders } from "/lib/collections";
 import { Reaction } from "/server/api";
 
 /**
@@ -54,19 +55,16 @@ Meteor.publish("MediaByProductIdOrSlug", function (productIdOrSlug) {
     },
     fields: {
       "copies.image": 0,
-      "copies.large": 0,
       "copies.medium": 0,
       "copies.small": 0,
-      "copies.thumbnail": 0,
-      "copies.portrait": 0,
-      "copies.cart": 0
+      "copies.portrait": 0
     }
   });
 });
 
 /**
  * CollectionFS - Image/Video Publication
- * @params {String} productIdOrSlug - handle or _id of current product
+ * @params {String} slug - slug of current tag on product grid
  */
 Meteor.publish("FeaturedMediaByTag", function (slug) {
   check(slug, Match.Maybe(String));
@@ -75,7 +73,7 @@ Meteor.publish("FeaturedMediaByTag", function (slug) {
     productSelector = { isVisible: true };
   } else {
     const tag = Tags.findOne({ slug: slug });
-    productSelector = { hashtags: tag._id, isVisible: true };
+    productSelector = { ancestors: [], hashtags: tag._id, isVisible: true };
   }
 
   const productIds = Products.find(productSelector).fetch().map(prod => prod._id);
@@ -86,12 +84,48 @@ Meteor.publish("FeaturedMediaByTag", function (slug) {
   return Media.find(selector, {
     fields: {
       "copies.image": 0,
-      "copies.landscape": 0,
       "copies.medium": 0,
       "copies.small": 0,
-      "copies.thumbnail": 0,
-      "copies.portrait": 0,
-      "copies.cart": 0
+      "copies.portrait": 0
+    }
+  });
+});
+
+Meteor.publish("CartMedia", function (userId) {
+  check(userId, String);
+  const cart = Cart.findOne({userId: userId});
+
+  const productIds = cart.items.map(prod => prod.productId);
+  const selector = {
+    "metadata.productId": {$in: productIds},
+    "metadata.purpose": "cart"
+  };
+  return Media.find(selector, {
+    fields: {
+      "copies.image": 0,
+      "copies.medium": 0,
+      "copies.small": 0,
+      "copies.portrait": 0
+    }
+  });
+});
+
+
+Meteor.publish("OrderMedia", function (cartId) {
+  check(cartId, String);
+  const order = Orders.findOne({cartId: cartId});
+
+  const productIds = order.items.map(prod => prod.productId);
+  const selector = {
+    "metadata.productId": {$in: productIds},
+    "metadata.purpose": "cart"
+  };
+  return Media.find(selector, {
+    fields: {
+      "copies.image": 0,
+      "copies.medium": 0,
+      "copies.small": 0,
+      "copies.portrait": 0
     }
   });
 });

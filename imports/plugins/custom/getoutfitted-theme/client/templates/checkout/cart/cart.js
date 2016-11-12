@@ -1,3 +1,5 @@
+import { Meteor } from "meteor/meteor";
+import { Reaction } from "/client/api";
 import { Cart } from "/lib/collections";
 import { Template } from "meteor/templating";
 
@@ -7,6 +9,10 @@ import { Template } from "meteor/templating";
  * @provides displayCartDrawer
  * @returns  open or closed cart drawer template
  */
+
+Template.cart.onCreated(function () {
+  Reaction.Subscriptions.Manager.subscribe("CartMedia", Meteor.userId());
+});
 
 Template.cart.helpers({
   cart() {
