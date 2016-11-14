@@ -1,0 +1,45 @@
+<template name="orderLineItemBundle">
+  <div class="cart-item row" id="{{productId}}{{variants._id}}">
+    <div class="cart-item-media col-xs-2 col-md-2">
+      {{#with media}}
+        <img src="{{url store='cart'}}">
+      {{else}}
+        <img src= "/resources/placeholder.gif">
+      {{/with}}
+    </div>
+
+    <div class="grid-order-item-details col-xs-10 col-md-10">
+      <div class="row">
+        <div class="grid-order-detail-title text-left {{#if viewingCart}}col-xs-8 col-md-9{{else}}col-xs-9 col-md-10{{/if}}">
+          <h3 class="cart-product-title">{{cartProductTitle}}</h3>
+          <br>
+          {{#each groupedOutfitComponentSelections}}
+            <div class="row">
+              {{#if moreThanOneOutfit ..}}
+                <div class="col-xs-12">
+                  <h4 class="outfit-number">Outfit #{{outfitNumber}}</h4>
+                </div>
+              {{/if}}
+              {{#each perOutfitComponentSelections}}
+                <div class="col-xs-12 col-sm-6 col-md-3 cart-outfit-item-size"><strong>{{componentLabel}}</strong> {{componentSelection}}</div>
+              {{/each}}
+            </div>
+          {{/each}}
+        </div>
+        <div class="grid-order-detail-quantity text-center col-xs-1 col-md-1">
+          <span class="badge badge-info">{{quantity}}</span>
+        </div>
+        <div class="col-xs-2 col-md-1 text-center">
+          <span class="grid-order-detail-price">
+            <span>{{formatPrice variants.price}}</span>
+          </span>
+        </div>
+        {{#if viewingCart}}
+          <div class="col-xs-1 text-center">
+            <i class="remove-cart-item fa fa-trash fa-lg" data-target="{{productId}}{{variants._id}}"></i>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</template>
