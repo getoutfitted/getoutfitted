@@ -37,82 +37,82 @@ Meteor.startup(() => {
   // use tracker autorun to detect language changes
   // this only runs on initial page loaded
   // and when user.profile.lang updates
-  Tracker.autorun(function () {
-    if (Reaction.Subscriptions.Shops.ready() && Meteor.user()) {
-      const shop = Shops.findOne(Reaction.getShopId());
-      let language = shop.language;
-      if (Meteor.user() && Meteor.user().profile && Meteor.user().profile.lang) {
-        language = Meteor.user().profile.lang;
-      }
-      //
-      // subscribe to user + shop Translations
-      //
-      return Meteor.subscribe("Translations", language, () => {
-        // fetch reaction translations
-        const translations = Translations.find({}, {
-          fields: {
-            _id: 0
-          }
-        }).fetch();
-
-        // map reduce translations into i18next formatting
-        const resources = translations.reduce(function (x, y) {
-          const ns = Object.keys(y.translation)[0];
-          // first creating the structure, when add additional namespaces
-          if (x[y.i18n]) {
-            x[y.i18n][ns] = y.translation[ns];
-          } else {
-            x[y.i18n] = y.translation;
-          }
-          return x;
-        }, {});
-
-        //
-        // initialize i18next
-        //
-        i18next
-          .use(i18nextBrowserLanguageDetector)
-          .use(i18nextLocalStorageCache)
-          .use(i18nextSprintfPostProcessor)
-          .use(i18nextJquery)
-          .init({
-            detection: options,
-            debug: false,
-            ns: packageNamespaces, // translation namespace for every package
-            defaultNS: "core", // reaction "core" is the default namespace
-            lng: language, // user session language
-            fallbackLng: shop ? shop.language : null, // Shop language
-            resources: resources
-            // saveMissing: true,
-            // missingKeyHandler: function (lng, ns, key, fallbackValue) {
-            //   Meteor.call("i18n/addTranslation", lng, ns, key, fallbackValue);
-            // }
-          }, (err, t) => {
-            // someday this should work
-            // see: https://github.com/aldeed/meteor-simple-schema/issues/494
-            for (const schema in _.omit(Schemas, "__esModule")) {
-              if ({}.hasOwnProperty.call(Schemas, schema)) {
-                const ss = Schemas[schema];
-                ss.labels(getLabelsFor(ss, schema));
-                ss.messages(getMessagesFor(ss, schema));
-              }
-            }
-
-            i18nextDep.changed();
-
-            // global first time init event finds and replaces
-            // data-i18n attributes in html/template source.
-            $elements = $("[data-i18n]").localize();
-
-            // apply language direction to html
-            if (t("languageDirection") === "rtl") {
-              return $("html").addClass("rtl");
-            }
-            return $("html").removeClass("rtl");
-          });
-      }); // return
-    }
-  });
+  // Tracker.autorun(function () {
+  //   if (Reaction.Subscriptions.Shops.ready() && Meteor.user()) {
+  //     const shop = Shops.findOne(Reaction.getShopId());
+  //     let language = shop.language;
+  //     if (Meteor.user() && Meteor.user().profile && Meteor.user().profile.lang) {
+  //       language = Meteor.user().profile.lang;
+  //     }
+  //     //
+  //     // subscribe to user + shop Translations
+  //     //
+  //     return Meteor.subscribe("Translations", language, () => {
+  //       // fetch reaction translations
+  //       const translations = Translations.find({}, {
+  //         fields: {
+  //           _id: 0
+  //         }
+  //       }).fetch();
+  //
+  //       // map reduce translations into i18next formatting
+  //       const resources = translations.reduce(function (x, y) {
+  //         const ns = Object.keys(y.translation)[0];
+  //         // first creating the structure, when add additional namespaces
+  //         if (x[y.i18n]) {
+  //           x[y.i18n][ns] = y.translation[ns];
+  //         } else {
+  //           x[y.i18n] = y.translation;
+  //         }
+  //         return x;
+  //       }, {});
+  //
+  //       //
+  //       // initialize i18next
+  //       //
+  //       i18next
+  //         .use(i18nextBrowserLanguageDetector)
+  //         .use(i18nextLocalStorageCache)
+  //         .use(i18nextSprintfPostProcessor)
+  //         .use(i18nextJquery)
+  //         .init({
+  //           detection: options,
+  //           debug: false,
+  //           ns: packageNamespaces, // translation namespace for every package
+  //           defaultNS: "core", // reaction "core" is the default namespace
+  //           lng: language, // user session language
+  //           fallbackLng: shop ? shop.language : null, // Shop language
+  //           resources: resources
+  //           // saveMissing: true,
+  //           // missingKeyHandler: function (lng, ns, key, fallbackValue) {
+  //           //   Meteor.call("i18n/addTranslation", lng, ns, key, fallbackValue);
+  //           // }
+  //         }, (err, t) => {
+  //           // someday this should work
+  //           // see: https://github.com/aldeed/meteor-simple-schema/issues/494
+  //           for (const schema in _.omit(Schemas, "__esModule")) {
+  //             if ({}.hasOwnProperty.call(Schemas, schema)) {
+  //               const ss = Schemas[schema];
+  //               ss.labels(getLabelsFor(ss, schema));
+  //               ss.messages(getMessagesFor(ss, schema));
+  //             }
+  //           }
+  //
+  //           i18nextDep.changed();
+  //
+  //           // global first time init event finds and replaces
+  //           // data-i18n attributes in html/template source.
+  //           $elements = $("[data-i18n]").localize();
+  //
+  //           // apply language direction to html
+  //           if (t("languageDirection") === "rtl") {
+  //             return $("html").addClass("rtl");
+  //           }
+  //           return $("html").removeClass("rtl");
+  //         });
+  //     }); // return
+  //   }
+  // });
 
   //
   // init i18nextJquery

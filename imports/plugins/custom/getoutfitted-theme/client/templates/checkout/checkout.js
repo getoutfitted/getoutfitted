@@ -33,6 +33,11 @@ const freeShippingMethod = {
 //   handling: 0
 // }
 
+Template.cartCheckout.onCreated(function () {
+  Reaction.Subscriptions.Manager.subscribe("CartMedia", Meteor.userId());
+});
+
+
 Template.cartCheckout.helpers({
   cart() {
     if (Reaction.Subscriptions.Cart.ready()) {

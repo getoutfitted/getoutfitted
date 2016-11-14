@@ -66,7 +66,9 @@ Template.productDetail.onCreated(function () {
   this.variantId = () => Reaction.Router.getParam("variantId");
   this.autorun(() => {
     if (this.productId()) {
+      // Subscriptions.Product = Subscriptions.Manager.subscribe("Product", this.productId());
       this.subscribe("Product", this.productId());
+      Reaction.Subscriptions.Manager.subscribe("MediaByProductIdOrSlug", this.productId());
     }
   });
 
