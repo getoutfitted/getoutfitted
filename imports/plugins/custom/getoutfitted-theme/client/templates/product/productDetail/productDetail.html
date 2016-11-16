@@ -71,6 +71,7 @@
                 <!-- video component -->
                 <hr>
                 {{> goProductSizingGuideImage}}
+                {{> customerReviews}}
             </div>
           </div>
         </div> <!-- end small devices details -->
@@ -108,6 +109,7 @@
           {{/with}}
           <hr>
           {{> goProductSizingGuideImage}}
+          {{> customerReviews}}
           <hr>
           {{> goProductImageGallery}}
           <hr>
@@ -133,8 +135,30 @@
   </div>
 </template>
 
-<template name="goProductFeatures">
-  {{> includedComponent}}
+<template name="customerReviews">
+  {{#if hasReviews}}
+    <div class="customer-reviews">
+      <h4 class="description-title">Customer Reviews ({{numberOfReviews}})</h4>
+      {{#each reviews}}
+        <div class="row customer-review">
+          <div class="col-xs-5 customer-attributes">
+            <div class="customer-name">
+              <em>{{name}}</em>
+            </div>
+            <div class="customer-attr">
+              <span class="attr-title">Height:</span> {{height}}
+            </div>
+            <div class="customer-attr">
+               <span class="attr-title">Weight:</span> {{weight}}
+             </div>
+          </div>
+          <div class="col-xs-7 customer-quote">
+            <span class="quotemark left-quote">&ldquo;</span>{{quote}}<span class="quotemark">&rdquo;</span>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
 </template>
 
 <template name="goProductTrailer">
