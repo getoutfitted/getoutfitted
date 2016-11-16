@@ -8,6 +8,7 @@ import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { EditButton } from "/imports/plugins/core/ui/client/components";
+import { ProductReviews } from "/imports/plugins/custom/product-reviews/lib/collections";
 
 function filteredProductVariantTitle(variant) {
   const title = `${variant.vendor}
@@ -68,6 +69,7 @@ Template.productDetail.onCreated(function () {
     if (this.productId()) {
       // Subscriptions.Product = Subscriptions.Manager.subscribe("Product", this.productId());
       this.subscribe("Product", this.productId());
+      this.subscribe("ProductReviewsByProductHandle", this.productId());
       Reaction.Subscriptions.Manager.subscribe("MediaByProductIdOrSlug", this.productId());
     }
   });
@@ -226,6 +228,9 @@ Template.productDetail.helpers({
     }
 
     return null;
+  },
+  numberOfReviews() {
+    return ProductReviews.find().count();
   },
   tags: function () {
     const product = ReactionProduct.selectedProduct();
@@ -705,5 +710,17 @@ Template.productDetailDashboardControls.events({
         return true;
       });
     }
+  }
+});
+
+Template.customerReviews.helpers({
+  numberOfReviews() {
+    return ProductReviews.find({productSlug: this.handle}).count();
+  },
+  reviews() {
+    return ProductReviews.find({productSlug: this.handle});
+  },
+  hasReviews() {
+    return ProductReviews.find({productSlug: this.handle}).count() > 0;
   }
 });

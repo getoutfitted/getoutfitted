@@ -57,19 +57,27 @@ function uploadHandler(event, metaOptions = {}) {
   });
 }
 
-function featuredUploadHandler (event) {
+function featuredUploadHandler(event) {
   return uploadHandler(event, {purpose: "featured"});
 }
 
-function widgetUploadHandler (event) {
+function widgetUploadHandler(event) {
   return uploadHandler(event, {purpose: "widget"});
 }
 
-function cartUploadHandler (event) {
+function cartUploadHandler(event) {
   return uploadHandler(event, {purpose: "cart"});
 }
 
-function galleryUploadHandler (event) {
+function sizingGuideUploadHandler(event) {
+  return uploadHandler(event, {purpose: "sizingGuide"});
+}
+
+function catalogUploadHandler(event) {
+  return uploadHandler(event, {purpose: "catalog"});
+}
+
+function galleryUploadHandler(event) {
   return uploadHandler(event, {purpose: "gallery"});
 }
 
@@ -156,6 +164,24 @@ Template.goProductWidgetImage.helpers({
       });
     }
     return widgetImage;
+  }
+});
+
+Template.goProductSizingGuideImage.helpers({
+  sizingGuideImage: function () {
+    const product = ReactionProduct.selectedProduct();
+
+    if (product) {
+      return Media.findOne({
+        "metadata.productId": product._id,
+        "metadata.purpose": "sizingGuide"
+      }, {
+        sort: {
+          "metadata.priority": 1
+        }
+      });
+    }
+    return false;
   }
 });
 
@@ -282,6 +308,24 @@ Template.goCartImageUploader.events({
   "change #cartFiles": cartUploadHandler,
   "dropped #cartDropzone": cartUploadHandler
 });
+Template.goSizingGuideImageUploader.events({
+  // Cart Image Event Handling
+  "click #btn-sizing-guide-upload": function () {
+    return $("#sizingGuideFiles").click();
+  },
+  "change #sizingGuideFiles": sizingGuideUploadHandler,
+  "dropped #sizingGuideDropzone": sizingGuideUploadHandler
+});
+Template.goCatalogImageUploader.events({
+  // Cart Image Event Handling
+  "click #btn-catalog-upload": function () {
+    return $("#catalogFiles").click();
+  },
+  "change #catalogFiles": catalogUploadHandler,
+  "dropped #catalogDropzone": catalogUploadHandler
+});
+
+
 
 Template.registerHelper("noImageWithPurpose", (purpose) => {
   let variant = ReactionProduct.selectedVariant();

@@ -18,6 +18,23 @@
   {{/if}}
 </template>
 
+<template name="goProductSizingGuideImage">
+  {{#if sizingGuideImage}}
+  <div class="row">
+    <div id="sizing-guide-image" class="col-xs-12">
+      <h4 class="description-title">Sizing Guide:</h4>
+      <img src="{{sizingGuideImage.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{sizingGuideImage.title}}" data-index="{{sizingGuideImage._id}}">
+      <p class="sizing-guide-subtext">
+        Measurements refer to body size, not garment dimensions, and are in inches , unless otherwise noted.<br><br>
+        <em><i class="fa fa-warning"></i> For glove size, measure across the knuckles with a tape measure</em><br>
+        <em><i class="fa fa-warning"></i> If you are between sizes or are worried the size you order might be too tight with layers on underneath, we strongly recommend that you go to the next size up. Customers are always happier if their clothing is a little too big than too small.</em>
+      </p>
+    </div>
+  </div>
+  <hr>
+  {{/if}}
+</template>
+
 <template name="goProductImageGallery">
   <h4 class="description-title">{{./title}} Images</h4>
   <div id="galleryDropPane" class="galleryDropPane">
@@ -34,21 +51,33 @@
     {{> goFeaturedImageUploader}}
     {{> goWidgetImageUploader}}
     {{> goCartImageUploader}}
+    {{> goSizingGuideImageUploader}}
+    {{> goCatalogImageUploader}}
     {{#if hasPermission "createProduct"}}
       <div class="row">
-        <div class="col-sm-4">
+        <div class="col-xs-4">
           {{#if imageWithPurpose "featured"}}
             {{> goFeaturedImageDetail image=(imageWithPurpose "featured")}}
           {{/if}}
         </div>
-        <div class="col-sm-4">
+        <div class="col-xs-4">
           {{#if imageWithPurpose "cart"}}
             {{> goCartImageDetail image=(imageWithPurpose "cart")}}
           {{/if}}
         </div>
-        <div class="col-sm-4">
+        <div class="col-xs-4">
           {{#if imageWithPurpose "widget"}}
             {{> goWidgetImageDetail image=(imageWithPurpose "widget")}}
+          {{/if}}
+        </div>
+        <div class="col-xs-4">
+          {{#if imageWithPurpose "sizingGuide"}}
+            {{> goSizingGuideImageDetail image=(imageWithPurpose "sizingGuide")}}
+          {{/if}}
+        </div>
+        <div class="col-xs-4">
+          {{#if imageWithPurpose "catalog"}}
+            {{> goCatalogImageDetail image=(imageWithPurpose "catalog")}}
           {{/if}}
         </div>
       </div>
@@ -155,6 +184,37 @@
   {{/if}}
 </template>
 
+<template name="goSizingGuideImageDetail">
+  {{#if hasPermission "createProduct"}}
+    <div class="productCartImage">
+      <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
+      {{#unless image.isUploaded}}
+        {{> FS.UploadProgressBar bootstrap=true}}
+      {{/unless}}
+      <div class="gallery-tools">
+        <a class="image-remove-link" data-index="{{image._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
+      </div>
+      <span>Sizing Guide Image</span>
+    </div>
+  {{/if}}
+</template>
+
+<template name="goCatalogImageDetail">
+  {{#if hasPermission "createProduct"}}
+    <div class="productCartImage">
+      <img src="{{image.url uploading='/resources/placeholder.gif' storing='/resources/placeholder.gif' store='landscape'}}" class="img-responsive" alt="{{image.title}}" data-index="{{image._id}}">
+      {{#unless image.isUploaded}}
+        {{> FS.UploadProgressBar bootstrap=true}}
+      {{/unless}}
+      <div class="gallery-tools">
+        <a class="image-remove-link" data-index="{{image._id}}"><i class="remove-image fa fa-times-circle fa-2x"></i></a>
+      </div>
+      <span>Catalog Image</span>
+    </div>
+  {{/if}}
+</template>
+
+
 
 <template name="goGalleryImageUploader">
 {{#if hasPermission "createProduct"}}
@@ -193,6 +253,28 @@
     <div id="cartDropzone" class="dropzone dropzone-icon cart">
      <input name="files" id="cartFiles" class="hidden" type="file"/>
       <div class="btn btn-default btn-block" id="btn-cart-upload" data-i18n="productDetail.dropFile">Drop file to upload cart image</div>
+    </div>
+  </div>
+{{/if}}
+</template>
+
+<template name="goSizingGuideImageUploader">
+{{#if hasPermission "createProduct"}}
+  <div class="relative-pos {{noImageWithPurpose 'sizingGuide'}}">
+    <div id="sizingGuideDropzone" class="dropzone dropzone-icon sizing-guide">
+     <input name="files" id="sizingGuideFiles" class="hidden" type="file"/>
+      <div class="btn btn-default btn-block" id="btn-sizing-guide-upload" data-i18n="productDetail.dropFile">Drop file to upload sizing guide image</div>
+    </div>
+  </div>
+{{/if}}
+</template>
+
+<template name="goCatalogImageUploader">
+{{#if hasPermission "createProduct"}}
+  <div class="relative-pos {{noImageWithPurpose 'catalog'}}">
+    <div id="catalogDropzone" class="dropzone dropzone-icon catalog">
+     <input name="files" id="catalogFiles" class="hidden" type="file"/>
+      <div class="btn btn-default btn-block" id="btn-catalog-upload" data-i18n="productDetail.dropFile">Drop file to upload catalog image</div>
     </div>
   </div>
 {{/if}}
