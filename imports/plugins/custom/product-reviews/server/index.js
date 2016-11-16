@@ -1,2 +1,2 @@
-import './publications';
-export * from '../lib/collections';
+import "./publications";
+export * from "../lib/collections";
