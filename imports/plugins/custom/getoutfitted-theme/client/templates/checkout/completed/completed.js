@@ -149,7 +149,11 @@ Template.cartCompleted.onCreated(function () {
   let cartSub = Reaction.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
   cartSub.stop();
   Reaction.Subscriptions.Cart = Meteor.subscribe("Cart", sessionId, userId);
-  Reaction.Subscriptions.Manager.subscribe("OrderMedia", Reaction.Router.getQueryParam("_id"));
+  this.autorun(() => {
+    if (Reaction.Router.getQueryParam("_id")) {
+      Reaction.Subscriptions.Manager.subscribe("OrderMedia", Reaction.Router.getQueryParam("_id") || "");
+    }
+  });
 });
 
 /**
