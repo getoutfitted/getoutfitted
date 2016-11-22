@@ -1,41 +1,41 @@
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { PackageConfig } from '/lib/collections/schemas/registry';
-import { Order} from '/lib/collections/schemas';
-import { Workflow } from '/lib/collections/schemas/workflow';
+import { SimpleSchema } from "meteor/aldeed:simple-schema";
+import { PackageConfig } from "/lib/collections/schemas/registry";
+import { Order} from "/lib/collections/schemas";
+import { Workflow } from "/lib/collections/schemas/workflow";
 
 export const AdvancedFulfillmentPackageConfig = new SimpleSchema([
   PackageConfig, {
-    'settings.shipstation': {
+    "settings.shipstation": {
       type: Boolean,
-      label: 'Enable Intrgration from Shipstation Package',
+      label: "Enable Intrgration from Shipstation Package",
       optional: true
     },
-    'settings.aftership.enabled': {
+    "settings.aftership.enabled": {
       type: Boolean,
-      label: 'Enable Aftership webhook',
+      label: "Enable Aftership webhook",
       optional: true
     },
-    'settings.aftership.preSharedKey': {
+    "settings.aftership.preSharedKey": {
       type: String,
-      label: 'Pre Shared Key for authenticating webhooks',
+      label: "Pre Shared Key for authenticating webhooks",
       optional: true
     },
-    'settings.klaviyo': {
+    "settings.klaviyo": {
       type: Boolean,
-      label: 'Enable Klaviyo Event Triggers'
+      label: "Enable Klaviyo Event Triggers"
     },
-    'settings.slack': {
+    "settings.slack": {
       type: Boolean,
-      label: 'Enable Slack Messaging'
+      label: "Enable Slack Messaging"
     },
-    'settings.slackChannel': {
+    "settings.slackChannel": {
       type: String,
-      label: 'Choose Slack Channel to Post In',
+      label: "Choose Slack Channel to Post In",
       optional: true
     },
-    'settings.ambassador': {
+    "settings.ambassador": {
       type: Boolean,
-      label: 'Enable Ambassador check when order is placed',
+      label: "Enable Ambassador check when order is placed",
       optional: true
     }
   }
@@ -107,7 +107,7 @@ export const AdvancedFulfillmentItem = new SimpleSchema({
   productId: {
     type: String,
     index: 1,
-    label: 'THE PRODUCT IN AF',
+    label: "THE PRODUCT IN AF",
     optional: true
   },
   shopId: {
@@ -227,6 +227,29 @@ export const AdvancedFulfillmentObject = new SimpleSchema({
   }
 });
 
+export const BackpackOrderNotes = new SimpleSchema({
+  userId: {
+    type: String
+  },
+  username: {
+    type: String,
+    optional: true
+  },
+  note: {
+    type: String
+  },
+  type: {
+    type: String,
+    optional: true
+  },
+  createdAt: {
+    type: Date
+  },
+  updatedAt: {
+    type: Date
+  }
+});
+
 export const AdvancedFulfillment = new SimpleSchema([Order, {
   advancedFulfillment: {
     type: AdvancedFulfillmentObject,
@@ -234,6 +257,10 @@ export const AdvancedFulfillment = new SimpleSchema([Order, {
   },
   orderNotes: {
     type: String,
+    optional: true
+  },
+  backpackOrderNotes: {
+    type: [BackpackOrderNotes],
     optional: true
   },
   orderNumber: {

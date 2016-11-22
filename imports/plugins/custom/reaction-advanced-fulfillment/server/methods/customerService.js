@@ -24,7 +24,7 @@ Meteor.methods({
   'advancedFulfillment/cancelOrder': function (orderId, userId) {
     check(orderId, String);
     check(userId, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     const history = {
@@ -64,7 +64,7 @@ Meteor.methods({
   'advancedFulfillment/bundleColorConfirmation': function (orderId, userId) {
     check(orderId, String);
     check(userId, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     let history = {
@@ -90,7 +90,7 @@ Meteor.methods({
     check(age, Number);
     check(shoeSize, String);
     check(level, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     let history = {
@@ -116,7 +116,7 @@ Meteor.methods({
   'advancedFulfillment/nonWarehouseOrder': function (orderId, userId) {
     check(orderId, String);
     check(userId, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     let history = {

@@ -15,7 +15,7 @@ AdvancedFulfillment.humanActionStatuses = {
 };
 
 AdvancedFulfillment.humanOrderStatuses = {
-  'orderCreated': 'Created',
+  'orderCreated': 'Ready',
   'orderPrinted': 'Printed',
   'orderPicking': 'Picking',
   'orderPicked': 'Picked',
@@ -120,4 +120,3 @@ AdvancedFulfillment.shippingCalendarReference = {
 AdvancedFulfillment.dateFormatter = function (date) {
   return moment(date).format('MMMM Do, YYYY');
 };
-

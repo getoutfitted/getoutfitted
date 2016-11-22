@@ -38,10 +38,14 @@ Template.registerHelper('formattedRange', (start, end) => {
   });
 });
 
-
-Template.registerHelper('pastDate', (date) => {
-  check(date, Date);
-  return new Date() > moment(date).startOf('day').add(16, 'hours');
+// TODO: Rename to something like dateError
+Template.registerHelper("pastDate", (date) => {
+  check(date, Match.Maybe(Date));
+  if (!date) {
+    // if date is undefined or null, there's an issue, flag it.
+    return true;
+  }
+  return new Date() > moment(date).startOf("day").add(16, "hours");
 });
 
 Template.registerHelper('hasCustomerServiceIssue', (order) => {

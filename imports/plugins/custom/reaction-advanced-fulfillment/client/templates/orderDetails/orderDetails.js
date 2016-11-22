@@ -1,17 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { Reaction } from '/client/api';
-import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
-import { check } from 'meteor/check';
-import { _ } from 'meteor/underscore';
-import moment from 'moment';
-import { Orders } from '/lib/collections';
-import AdvancedFulfillment from '../../../lib/api';
+import { Meteor } from "meteor/meteor";
+import { Reaction } from "/client/api";
+import { Template } from "meteor/templating";
+import { _ } from "meteor/underscore";
+import { Orders } from "/lib/collections";
+import AdvancedFulfillment from "../../../lib/api";
 
-import '../helpers';
-import './orderDetails.html';
-import './status';
+import "../helpers";
+import "./orderDetails.html";
+import "./status";
 
 function getIndexBy(array, name, value) {
   for (let i = 0; i < array.length; i++) {
@@ -21,37 +17,37 @@ function getIndexBy(array, name, value) {
   }
 }
 
-function labelMaker(word, bootStrapColor = 'primary') {
-  return '<span class="label label-' + bootStrapColor + '">' + word + '</span> ';
+function labelMaker(label, labelStyle = "primary") {
+  return `<span class="label label-${labelStyle}">${label}</span>`;
 }
 
 Template.orderDetails.onCreated(function () {
+  const orderId = Reaction.Router.getParam("_id");
   this.autorun(() => {
-    let orderId = Reaction.Router.getParam('_id');
-    this.subscribe('advancedFulfillmentOrder', orderId);
+    this.subscribe("advancedFulfillmentOrder", orderId);
   });
 });
 
 Template.orderDetails.helpers({
   order: function () {
-    let orderId = Reaction.Router.getParam('_id');
+    const orderId = Reaction.Router.getParam("_id");
     return Orders.findOne({_id: orderId});
   },
   currentStatus: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let generalTemplates = [
-      'orderCreated',
-      'orderPrinted',
-      'orderPicked',
-      'orderShipped',
-      'orderIncomplete',
-      'orderCompleted',
-      'nonWarehouseOrder'
+    const currentStatus = this.advancedFulfillment.workflow.status;
+    const generalTemplates = [
+      "orderCreated",
+      "orderPrinted",
+      "orderPicked",
+      "orderShipped",
+      "orderIncomplete",
+      "orderCompleted",
+      "nonWarehouseOrder"
     ];
     // let generalTemplates = AdvancedFulfillment.assignmentStatuses;
-    let valid = _.contains(generalTemplates, currentStatus);
+    const valid = _.contains(generalTemplates, currentStatus);
     if (valid) {
-      return 'defaultStatus';
+      return "defaultStatus";
     }
     return currentStatus;
   },
@@ -68,91 +64,82 @@ Template.orderDetails.helpers({
     return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
   },
   orderCreated: function () {
-    let valid = this.advancedFulfillment.workflow.status === 'orderCreated';
-    return valid;
+    return this.advancedFulfillment.workflow.status === "orderCreated";
   },
   nextStatus: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let options = AdvancedFulfillment.workflow;
-    let indexOfStatus = _.indexOf(options, currentStatus);
+    const currentStatus = this.advancedFulfillment.workflow.status;
+    const options = AdvancedFulfillment.workflow;
+    const indexOfStatus = _.indexOf(options, currentStatus);
     return options[indexOfStatus + 1];
   },
   readyForAssignment: function () {
-    let status = this.advancedFulfillment.workflow.status;
-    let updateableStatuses = AdvancedFulfillment.assignmentStatuses;
-    return _.contains(updateableStatuses, status);
+    const status = this.advancedFulfillment.workflow.status;
+    const assignmentStatuses = AdvancedFulfillment.assignmentStatuses;
+    return _.contains(assignmentStatuses, status);
   },
-  shippingTo: function () {
-    return this.shipping[0].address.fullName;
+  shippingAddress() {
+    // Currently assumes 1 address per order as is the limit in RC core as of 0.17.x
+    return this.shipping[0].address;
   },
-  shippingAddress1: function () {
-    if (this.shipping[0].address2) {
-      return this.shipping[0].address.address1 + ' ' + this.shipping[0].address2;
-    }
-    return this.shipping[0].address.address1;
+  billingAddress() {
+    // Currently assumes 1 address per order as is the limit in RC core as of 0.17.x
+    return this.billing[0].address;
   },
-  shippingAddress2: function () {
-    return this.shipping[0].address.address2;
-  },
-  city: function () {
-    return this.shipping[0].address.city;
-  },
-  state: function () {
-    return this.shipping[0].address.region;
-  },
-  zipcode: function () {
-    return this.shipping[0].address.postal;
+  paymentInfo() {
+    const source = this.billing[0].paymentMethod.transactions[0].source;
+    return {
+      name: source.name,
+      brand: source.brand,
+      last4: source.last4
+    };
   },
   contactInfo: function () {
-    return this.email || 'Checked Out As Guest';
+    return this.email || "Checked Out As Guest";
   },
   phoneNumber: function () {
-    return this.shipping[0].address.phone || '';
+    return this.shipping[0].address.phone || "Missing Phone";
   },
   printLabel: function () {
-    let status = this.advancedFulfillment.workflow.status;
-    if (status === 'orderFulfilled') {
-      return true;
-    }
-    return false;
+    const status = this.advancedFulfillment.workflow.status;
+    return status === "orderFulfilled";
   },
   currentlyAssignedUser: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let history = _.findWhere(this.history, {event: currentStatus});
-    let assignedUser = history.userId;
+    const currentStatus = this.advancedFulfillment.workflow.status;
+    const history = _.findWhere(this.history, {event: currentStatus});
+    const assignedUser = history.userId;
     return Meteor.users.findOne(assignedUser).username;
   },
   currentlyAssignedTime: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let history = _.findWhere(this.history, {event: currentStatus});
-    let assignedTime = history.updatedAt;
+    const currentStatus = this.advancedFulfillment.workflow.status;
+    const history = _.findWhere(this.history, {event: currentStatus});
+    const assignedTime = history.updatedAt;
     return assignedTime;
   },
   noItemsToPick: function () {
-    let numberOfItems = this.advancedFulfillment.items.length;
-    let status = this.advancedFulfillment.workflow.status;
-    if (status !== 'nonWarehouseOrder') {
+    const numberOfItems = this.advancedFulfillment.items.length;
+    const status = this.advancedFulfillment.workflow.status;
+    if (status !== "nonWarehouseOrder") {
       return numberOfItems === 0;
     }
     return false;
   },
   myOrdersInCurrentStep: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let history = _.findWhere(this.history, {event: currentStatus});
+    const currentStatus = this.advancedFulfillment.workflow.status;
+    const history = _.findWhere(this.history, {event: currentStatus});
     if (!history) {
       return false;
     }
     // TODO: Maybe change to cursor?
-    let orders = Orders.find({
-      'history.userId': Meteor.userId(),
-      'history.event': currentStatus,
-      'advancedFulfillment.workflow.status': currentStatus
+    const orders = Orders.find({
+      "history.userId": Meteor.userId(),
+      "history.event": currentStatus,
+      "advancedFulfillment.workflow.status": currentStatus
     }).fetch();
-    let myOrder = history.userId === Meteor.userId();
-    let myOrders = {};
-    let currentOrder = getIndexBy(orders, '_id', this._id);
-    let nextOrder = myOrder ? orders[currentOrder - 1] : undefined;
-    let prevOrder = myOrder ? orders[currentOrder + 1] : undefined;
+    const myOrder = history.userId === Meteor.userId();
+    const myOrders = {};
+    const currentOrder = getIndexBy(orders, "_id", this._id);
+    const nextOrder = myOrder ? orders[currentOrder - 1] : undefined;
+    const prevOrder = myOrder ? orders[currentOrder + 1] : undefined;
     myOrders.nextOrderId = nextOrder ? nextOrder._id : undefined;
     myOrders.hasNextOrder = nextOrder ? true : false;
     myOrders.hasPrevOrder = prevOrder ? true : false;
@@ -165,54 +152,54 @@ Template.orderDetails.helpers({
   },
   fedExShipping: function () {
     const transitTimes = ReactionCore.Collections.Packages.findOne({
-      name: 'transit-times',
+      name: "transit-times",
       shopId: ReactionCore.getShopId()
     });
-    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === 'fedex') {
+    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === "fedex") {
       return true;
     }
     return false;
   },
   upsShipping: function () {
     const transitTimes = ReactionCore.Collections.Packages.findOne({
-      name: 'transit-times',
+      name: "transit-times",
       shopId: ReactionCore.getShopId()
     });
-    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === 'ups') {
+    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === "ups") {
       return true;
     }
     return false;
   },
   hasCustomerServiceIssue: function () {
-    let anyIssues = [
+    const issues = [
       this.infoMissing,
       this.itemMissingDetails,
       this.bundleMissingColor,
       this.advancedFulfillment.impossibleShipDate
     ];
-    return _.some(anyIssues);
+    return _.some(issues);
   },
   typeofIssue: function () {
-    let issues = '';
+    let issues = "";
     if (this.infoMissing) {
-      issues += labelMaker('Missing Rental Dates');
+      issues += labelMaker("Missing Rental Dates");
     }
     if (this.itemMissingDetails) {
-      issues += labelMaker('Items Missing Color and Size');
+      issues += labelMaker("Items Missing Color and Size");
     }
     if (this.bundleMissingColor) {
-      issues += labelMaker('Bundle Packages Were Assigned Default Color');
+      issues += labelMaker("Bundle Packages Were Assigned Default Color");
     }
     if (this.bundleMissingColor) {
-      issues += labelMaker('Arrive By Date is Impossible to Fulfill');
+      issues += labelMaker("Arrive By Date is Impossible to Fulfill");
     }
-    return '<h4>' + issues + '</h4>';
+    return "<h4>" + issues + "</h4>";
   }
 });
 
 // Template.orderDetails.onRendered(function () {
-//   let orderId = ReactionRouter.getParam('_id');
-//   $('#barcode').barcode(orderId, 'code128', {
+//   let orderId = ReactionRouter.getParam("_id");
+//   $("#barcode").barcode(orderId, "code128", {
 //     barWidth: 2,
 //     barHeight: 150,
 //     moduleSize: 15,
@@ -222,57 +209,54 @@ Template.orderDetails.helpers({
 // });
 
 Template.orderDetails.events({
-  'click .advanceOrder': function (event) {
+  "click .advanceOrder": function (event) {
     event.preventDefault();
     const currentStatus = this.advancedFulfillment.workflow.status;
     const orderId = this._id;
     const userId = Meteor.userId();
-    const orderShipped = currentStatus === 'orderShipped';
+    const orderShipped = currentStatus === "orderShipped";
     if (orderShipped) {
-      Meteor.call('advancedFulfillment/updateItemsToShippedOrCompleted', this);
+      Meteor.call("advancedFulfillment/updateItemsToShippedOrCompleted", this);
     }
-    let noRentals = _.every(this.advancedFulfillment.items, function (afItem) {
-      return afItem.functionalType === 'variant';
+    const noRentals = _.every(this.advancedFulfillment.items, function (afItem) {
+      return afItem.functionalType === "variant";
     });
     if (orderShipped && noRentals) {
-      Meteor.call('advancedFulfillment/bypassWorkflowAndComplete', orderId, userId);
+      Meteor.call("advancedFulfillment/bypassWorkflowAndComplete", orderId, userId);
     } else {
-      Meteor.call('advancedFulfillment/updateOrderWorkflow', orderId, userId, currentStatus);
+      Meteor.call("advancedFulfillment/updateOrderWorkflow", orderId, userId, currentStatus);
     }
   },
-  'submit .add-notes': function (event) {
+  "submit .add-notes": function (event) {
     event.preventDefault();
-    let notes = event.currentTarget.notes.value;
-    if (notes) {
-      let order = this;
-      let user = Meteor.user();
-      if (user) {
-        user = user.username;
-      } else {
-        user = user.emails[0].address;
-      }
-      Meteor.call('advancedFulfillment/updateOrderNotes', order, notes, user);
+    const note = event.currentTarget.note.value;
+
+    if (note) {
+      const order = this;
+      // Meteor.call("advancedFulfillment/updateOrderNotes", order, note, user);
+      Meteor.call("advancedFulfillment/addOrderNote", order._id, note);
       Alerts.removeSeen();
-      Alerts.add('Order Note Added', 'success', {
+      // TODO: place this strategically
+      Alerts.add("Order Note Added", "success", {
         autoHide: true
       });
-      event.currentTarget.notes.value = '';
+      event.currentTarget.note.value = "";
     } else {
       Alerts.removeSeen();
-      Alerts.add('Order Notes Cannot Be Blank', 'danger', {
+      Alerts.add("Order Note Cannot Be Blank", "danger", {
         autoHide: true
       });
     }
   },
-  'click .print-invoice': function () {
-    let orderId = event.target.dataset.orderId;
-    let userId = Meteor.userId();
-    Meteor.call('advancedFulfillment/printInvoice', orderId, userId);
+  "click .print-invoice": function () {
+    const orderId = event.target.dataset.orderId;
+    const userId = Meteor.userId();
+    Meteor.call("advancedFulfillment/printInvoice", orderId, userId);
   },
-  'click .noWarehouseItems': function (event) {
+  "click .noWarehouseItems": function (event) {
     event.preventDefault();
-    let orderId = this._id;
-    let userId = Meteor.userId();
-    Meteor.call('advancedFulfillment/nonWarehouseOrder', orderId, userId);
+    const orderId = this._id;
+    const userId = Meteor.userId();
+    Meteor.call("advancedFulfillment/nonWarehouseOrder", orderId, userId);
   }
 });
