@@ -1,18 +1,18 @@
-import { Template } from 'meteor/templating';
-import { check } from 'meteor/check';
-import moment from 'moment';
-import 'twix';
-import AdvancedFulfillment from '../../lib/api';
+import moment from "moment";
+import "twix";
+import { Template } from "meteor/templating";
+import { check } from "meteor/check";
+import AdvancedFulfillment from "../../lib/api";
 
-Template.registerHelper('displayOrderNumber', (order) => {
+Template.registerHelper("displayOrderNumber", (order) => {
   if (order.orderNumber) {
-    return 'Order #' + order.orderNumber;
+    return "Order #" + order.orderNumber;
   }
   // Default
-  return 'Order #' + order._id;
+  return "Order #" + order._id;
 });
 
-Template.registerHelper('showOrderNumber', (order) => {
+Template.registerHelper("showOrderNumber", (order) => {
   if (order.orderNumber) {
     return order.orderNumber;
   }
@@ -20,21 +20,21 @@ Template.registerHelper('showOrderNumber', (order) => {
   return  order._id;
 });
 
-Template.registerHelper('formattedDate', (date) => {
+Template.registerHelper("formattedDate", (date) => {
   if (!date) {
-    return '---------------';
+    return "---------------";
   }
   return moment(date).calendar(null, AdvancedFulfillment.shippingCalendarReference);
 });
 
-Template.registerHelper('formatInputDate', (date) => {
-  return moment(date).format('MM/DD/YYYY');
+Template.registerHelper("formatInputDate", (date) => {
+  return moment(date).format("MM/DD/YYYY");
 });
 
-Template.registerHelper('formattedRange', (start, end) => {
+Template.registerHelper("formattedRange", (start, end) => {
   return moment(start).twix(end, {allDay: true}).format({
-    monthFormat: 'MMMM',
-    dayFormat: 'Do'
+    monthFormat: "MMMM",
+    dayFormat: "Do"
   });
 });
 
@@ -42,15 +42,15 @@ Template.registerHelper('formattedRange', (start, end) => {
 Template.registerHelper("pastDate", (date) => {
   check(date, Match.Maybe(Date));
   if (!date) {
-    // if date is undefined or null, there's an issue, flag it.
+    // if date is undefined or null, there"s an issue, flag it.
     return true;
   }
   return new Date() > moment(date).startOf("day").add(16, "hours");
 });
 
-Template.registerHelper('hasCustomerServiceIssue', (order) => {
-  let anyIssues = [
+Template.registerHelper("hasCustomerServiceIssue", (order) => {
+  const issues = [
     order.advancedFulfillment.items.length === 0
   ];
-  return _.some(anyIssues);
+  return _.some(issues);
 });

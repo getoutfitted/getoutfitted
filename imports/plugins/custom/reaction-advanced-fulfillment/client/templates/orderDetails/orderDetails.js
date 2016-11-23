@@ -22,9 +22,11 @@ function labelMaker(label, labelStyle = "primary") {
 }
 
 Template.orderDetails.onCreated(function () {
-  const orderId = Reaction.Router.getParam("_id");
+  this.orderId = () => Reaction.Router.getParam("_id");
   this.autorun(() => {
-    this.subscribe("advancedFulfillmentOrder", orderId);
+    if (this.orderId()) {
+      this.subscribe("advancedFulfillmentOrder", this.orderId());
+    }
   });
 });
 

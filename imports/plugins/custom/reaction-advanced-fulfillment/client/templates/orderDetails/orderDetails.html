@@ -89,7 +89,8 @@
                         <a  target='_blank' href="https://wwwapps.ups.com/WebTracking/processInputRequest?tracknum={{advancedFulfillment.shippingHistory.trackingNumber}}">{{advancedFulfillment.shippingHistory.trackingNumber}}</a>
                       {{else}}
                         {{#if fedExShipping}}
-                          <a  target='_blank' href="https://www.fedex.com/apps/fedextrack/?action=track&trackingnumber={{advancedFulfillment.shippingHistory.trackingNumber}}&cntry_code=us">{{advancedFulfillment.shippingHistory.trackingNumber}}</a>
+                          <!-- <a  target='_blank' href="https://www.fedex.com/apps/fedextrack/?action=track&trackingnumber={{advancedFulfillment.shippingHistory.trackingNumber}}&cntry_code=us">{{advancedFulfillment.shippingHistory.trackingNumber}}</a> -->
+                          FEDEX: {{advancedFulfillment.shippingHistory.trackingNumber}}
                         {{else}}
                           {{advancedFulfillment.shippingHistory.trackingNumber}}
                         {{/if}}
@@ -172,14 +173,18 @@
   <p>{{phone}}</p>
 </template>
 
+<template name="backpackPaymentInfo">
+  <p><strong>Payment Info</strong></p>
+  <p>{{name}}</p>
+  <p>{{brand}} {{last4}}</p>
+</template>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!--  ~~~~~~~~~~~ Order Notes ~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <template name="backpackOrderNotes">
   <p><strong>Order Notes:</strong></p>
-  <form class='form-inline add-notes'>
-    <div class='form-group'>
-      <input type='text' name='note' class='form-control note' placeholder='Add a note'>
-    </div>
-    <button type='submit' class='btn btn-default'>Add Notes</button>
-  </form>
+  {{> backpackOrderNoteForm}}
   <div class="alert alert-danger">{{{orderNotes}}}</div>
   {{#each backpackOrderNotes}}
     <div class="alert alert-info">
@@ -189,8 +194,11 @@
   {{/each}}
 </template>
 
-<template name="backpackPaymentInfo">
-  <p><strong>Payment Info</strong></p>
-  <p>{{name}}</p>
-  <p>{{brand}} {{last4}}</p>
+<template name="backpackOrderNoteForm">
+  <form class='form-inline add-notes'>
+    <div class='form-group'>
+      <input type='text' name='note' class='form-control note' placeholder='Add a note'>
+    </div>
+    <button type='submit' class='btn btn-default'>Add Notes</button>
+  </form>
 </template>
