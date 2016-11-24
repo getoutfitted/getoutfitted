@@ -3,13 +3,13 @@ import "twix";
 import { Template } from "meteor/templating";
 import { check } from "meteor/check";
 import AdvancedFulfillment from "../../lib/api";
+import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
 Template.registerHelper("displayOrderNumber", (order) => {
-  if (order.orderNumber) {
-    return "Order #" + order.orderNumber;
+  if (order) {
+    return order.orderNumber || order._id;
   }
-  // Default
-  return "Order #" + order._id;
+  return "";
 });
 
 Template.registerHelper("showOrderNumber", (order) => {
@@ -53,4 +53,45 @@ Template.registerHelper("hasCustomerServiceIssue", (order) => {
     order.advancedFulfillment.items.length === 0
   ];
   return _.some(issues);
+});
+
+Template.registerHelper("backpackDeliveryDay", function (order) {
+  // Note: we conflate "Arrival" and "Delivery" quite a bit here.
+  // Many legacy bits of code use the term "arrival" and we actaully mean Delivery
+  let deliveryTime;
+  if (order && order.advancedFulfillment && order.advancedFulfillment.arriveBy) {
+    deliveryTime = order.advancedFulfillment.arriveBy;
+  } else if (this && this.advancedFulfillment.arriveBy) {
+    deliveryTime = this.advancedFulfillment.arriveBy;
+  } else {
+    return "";
+  }
+
+  return moment(GetOutfitted.adjustDenverToLocalTime(moment(deliveryTime))).format("dddd");
+});
+
+Template.registerHelper("backpackDeliveryDate", function (order) {
+  let deliveryTime;
+  if (order && order.advancedFulfillment && order.advancedFulfillment.arriveBy) {
+    deliveryTime = order.advancedFulfillment.arriveBy;
+  } else if (this && this.advancedFulfillment.arriveBy) {
+    deliveryTime = this.advancedFulfillment.arriveBy;
+  } else {
+    return "";
+  }
+
+  return moment(GetOutfitted.adjustDenverToLocalTime(moment(deliveryTime))).format("DD");
+});
+
+Template.registerHelper("backpackDeliveryMonth", function (order) {
+  let deliveryTime;
+  if (order && order.advancedFulfillment && order.advancedFulfillment.arriveBy) {
+    deliveryTime = order.advancedFulfillment.arriveBy;
+  } else if (this && this.advancedFulfillment.arriveBy) {
+    deliveryTime = this.advancedFulfillment.arriveBy;
+  } else {
+    return "";
+  }
+
+  return moment(GetOutfitted.adjustDenverToLocalTime(moment(deliveryTime))).format("MMM");
 });

@@ -95,6 +95,12 @@ Template.orderDetails.helpers({
       last4: source.last4
     };
   },
+  destination() {
+    if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
+      return this.shipping[0].address.region;
+    }
+    return "";
+  },
   contactInfo: function () {
     return this.email || "Checked Out As Guest";
   },
@@ -260,5 +266,38 @@ Template.orderDetails.events({
     const orderId = this._id;
     const userId = Meteor.userId();
     Meteor.call("advancedFulfillment/nonWarehouseOrder", orderId, userId);
+  }
+});
+
+Template.shippingLabel.helpers({
+  label() {
+    const processedOrder = this.advancedFulfillment;
+    const label = {};
+
+    if (!processedOrder) {
+      return label;
+    }
+
+    if (processedOrder.localDelivery) {
+      label.style = "info";
+      label.content = "local";
+      return label;
+    }
+
+    const now = new Date();
+    const shipBy = moment(processedOrder.shipmentDate).startOf("day").add(16, "hours").toDate();
+
+    if (now > shipBy) {
+      label.style = "danger";
+      label.content = "rush";
+    } else if (processedOrder.rushDelivery) {
+      label.style = "warning";
+      label.content = "rush";
+    } else {
+      label.style = "primary";
+      label.content = "ground";
+    }
+
+    return label;
   }
 });

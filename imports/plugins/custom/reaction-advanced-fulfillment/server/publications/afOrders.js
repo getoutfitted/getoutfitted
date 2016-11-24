@@ -39,6 +39,7 @@ Meteor.publish('afOrders', function () {
   return this.ready();
 });
 
+// TODO: This publication needs optimization
 Meteor.publish('afProducts', function () {
   if (Roles.userIsInRole(this.userId, AdvancedFulfillment.server.permissions, Reaction.getShopId())) {
     return Products.find({});
