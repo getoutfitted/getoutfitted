@@ -70,20 +70,20 @@ input#afSearchInput {
   padding: 10px 5px;
 }
 
+// Reservation Details
 .reservation-details {
   display: flex;
+  align-items: flex-end;
   background: @vapor;
   padding: 20px;
   margin-right: 20px;
+  margin-bottom: 20px;
   border-radius: 5px;
+  border: 1px solid @smoke;
 }
 
 .reservation-item {
   flex-grow: 1;
-}
-
-.reservation-item .value {
-  height: 45px;
 }
 
 .reservation-item .title {
@@ -91,16 +91,38 @@ input#afSearchInput {
   font-size: 12px;
   border-top: 1px solid @base;
   margin: 0 10px;
+  text-align: center;
 }
 
 .reservation-item .label {
   font-size: 24px;
   text-transform: uppercase;
   padding: 6px 12px;
+  line-height: 2;
 }
 
 span.graphic {
   font-size: 32px;
   color: @jumbo;
   font-weight: bold;
+}
+
+.reservation-item .address {
+  line-height: 1.5;
+  font-size: 12px;
+  color: @charcoal;
+}
+
+.address .name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.address .phone {
+  line-height: 1.8;
+}
+.alert-default {
+  background-color: @vapor;
+  border-color: @smoke;
+  color: @charcoal;
 }

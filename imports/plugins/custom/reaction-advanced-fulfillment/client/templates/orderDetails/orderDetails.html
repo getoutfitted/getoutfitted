@@ -1,6 +1,157 @@
 <template name='orderDetails'>
 {{#if Template.subscriptionsReady}}
   {{#with order}}
+    {{> orderDetailHeader}}
+
+    <section class="order-body">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-12 col-lg-8">
+            {{#if hasShippingInfo}}
+              {{#with shipmentDetails}}
+                {{> backpackShipmentDetails}}
+              {{/with}}
+            {{/if}}
+            <div class="reservation-details text-center">
+              <div class="reservation-item">
+                <div class="value">
+                  <span>{{> shippingLabel}}</span>
+                </div>
+                <div class="title">
+                  Shipping
+                </div>
+              </div>
+              <div class="reservation-item">
+                <div class="value">
+                  <div class="reservation-delivered">
+                    <div class="reservation-day">{{backpackDeliveryDay}}</div>
+                    <div class="reservation-month">{{backpackDeliveryMonth}}</div>
+                    <div class="reservation-date">{{backpackDeliveryDate}}</div>
+                  </div>
+                </div>
+                <div class="title">
+                  Scheduled Delivery
+                </div>
+              </div>
+              <div class="reservation-item">
+                <div class="value">
+                  <div class="reservation-dates">
+                    <div class="reservation-start">
+                      <div class="reservation-day">{{orderStartDay}}</div>
+                      <div class="reservation-month">{{orderStartMonth}}</div>
+                      <div class="reservation-date">{{orderStartDate}}</div>
+
+                    </div>
+                    <div class="reservation-to">
+                      <div class="reservation-hyphen">
+                      </div>
+                    </div>
+                    <div class="reservation-end">
+                      <div class="reservation-day">{{orderEndDay}}</div>
+                      <div class="reservation-month">{{orderEndMonth}}</div>
+                      <div class="reservation-date">{{orderEndDate}}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="title">
+                  Reservation Dates
+                </div>
+              </div>
+              <div class="reservation-item">
+                <div class="value">
+                  <span class="graphic">{{actualTransitTime}}</span>
+                </div>
+                <div class="title">
+                  Transit Time
+                </div>
+              </div>
+              <div class="reservation-item">
+                <div class="value">
+                  <span class="graphic">{{destination}}</span>
+                </div>
+                <div class="title">
+                  Destination
+                </div>
+              </div>
+            </div>
+            <div class="reservation-details">
+              {{#with shippingAddress}}
+                <div class="reservation-item">
+                  {{> backpackShippingAddress}}
+                </div>
+              {{/with}}
+
+              {{#with billingAddress}}
+                <div class="reservation-item">
+                  {{> backpackBillingAddress}}
+                </div>
+              {{/with}}
+              {{#with paymentInfo}}
+                <div class="reservation-item">
+                  {{> backpackPaymentInfo}}
+                </div>
+              {{/with}}
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-lg-4">
+            <div class="text-center order-actions">
+              {{#if orderCreated}}
+                <a class='btn btn-lg btn-success print-invoice' data-order-id='{{_id}}'  target='_blank' href="{{pathFor 'advancedFulfillmentPDF' _id=this._id }}">Print Invoice</a>
+              {{else}}
+                {{#if readyForAssignment}}
+                  <button class='btn btn-lg btn-success advanceOrder' data-status='{{status}}' href='#'>{{actionStatus}}</button>
+                {{else}}
+                  <button id="orderProgressButton" class="order-progress btn btn-block btn-lg btn-success">{{progressStatus}}</button>
+                  <p class="alert alert-warning">{{progressStatusNote}}</p>
+                {{/if}}
+              {{/if}}
+
+
+              <!-- <a class='btn btn-lg btn-block btn-info update-to-shipped' href="#">Manually Update Order to Shipped</a> -->
+              <!-- <p class='text-center bg-warn'>When hooked into AfterShip, shipped status will automatically update when picked up by FedEx</p> -->
+            </div>
+            <div class="alert alert-default">
+              <p><strong>Customer Contact</strong></p>
+              <p><i class="fa fa-envelope"></i> <a href="mailto:{{contactInfo}}">{{email}}</a></p>
+              <p><i class="fa fa-phone"></i> <a href="tel:{{phoneNumber}}">{{phone}}</a></p>
+            </div>
+            {{> backpackOrderNotes}}
+          </div>
+          <div class="col-xs-8">
+            {{> Template.dynamic template=currentStatus}}
+            {{#if noItemsToPick}}
+              <div class='row text-center'>
+                <a class='btn btn-lg btn-warning noWarehouseItems'>This order ONLY contains items that aren't located in Dillon Warehouse</a>
+              </div>
+            {{/if}}
+            <hr>
+            <div class='row'>
+              <br>
+              <a class='btn btn-lg btn-block btn-info' href="{{pathFor 'updateOrder' _id=_id}}">Adjust Order</a>
+              <br>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-sm-6 text-center">
+                {{#if myOrdersInCurrentStep.hasPrevOrder}}
+                  <a href="{{pathFor 'orderDetails' _id=myOrdersInCurrentStep.prevOrderId}}" class="prevOrder btn btn-large btn-default">Prev Order</a>
+                {{/if}}
+              </div>
+              <div class="col-xs-12 col-sm-6 text-center">
+                {{#if myOrdersInCurrentStep.hasNextOrder}}
+                  <a href="{{pathFor 'orderDetails' _id=myOrdersInCurrentStep.nextOrderId}}" class="nextOrder btn btn-large btn-default">Next Order</a>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {{/with}}
+{{/if}}
+</template>
+
+<template name="orderDetailHeader">
   <section class="order-header">
     <div class="container-fluid">
       <div class="row">
@@ -18,210 +169,88 @@
       </div>
     </div>
   </section>
+</template>
 
-  <section class="order-body">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xs-12 col-lg-8">
-          <div class="reservation-details text-center">
-            <div class="reservation-item">
-              <div class="value">
-                <span>{{> shippingLabel}}</span>
-              </div>
-              <div class="title">
-                Shipping
-              </div>
-            </div>
-            <div class="reservation-item">
-              <div class="value">
-                <div class="reservation-delivered">
-                  <div class="reservation-day">{{backpackDeliveryDay}}</div>
-                  <div class="reservation-month">{{backpackDeliveryMonth}}</div>
-                  <div class="reservation-date">{{backpackDeliveryDate}}</div>
-                </div>
-              </div>
-              <div class="title">
-                Scheduled Delivery
-              </div>
-            </div>
-            <div class="reservation-item">
-              <div class="value">
-                <div class="reservation-dates">
-                  <div class="reservation-start">
-                    <div class="reservation-day">{{orderStartDay}}</div>
-                    <div class="reservation-month">{{orderStartMonth}}</div>
-                    <div class="reservation-date">{{orderStartDate}}</div>
-
-                  </div>
-                  <div class="reservation-to">
-                    <div class="reservation-hyphen">
-                    </div>
-                  </div>
-                  <div class="reservation-end">
-                    <div class="reservation-day">{{orderEndDay}}</div>
-                    <div class="reservation-month">{{orderEndMonth}}</div>
-                    <div class="reservation-date">{{orderEndDate}}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="title">
-                Reservation Dates
-              </div>
-            </div>
-            <div class="reservation-item">
-              <div class="value">
-                <span class="graphic">{{actualTransitTime}}</span>
-              </div>
-              <div class="title">
-                Transit Time
-              </div>
-            </div>
-            <div class="reservation-item">
-              <div class="value">
-                <span class="graphic">{{destination}}</span>
-              </div>
-              <div class="title">
-                Destination
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xs-12 col-lg-4">
-          <div class="text-center order-actions">
-            {{#if orderCreated}}
-              <a class='btn btn-lg btn-success print-invoice' data-order-id='{{_id}}'  target='_blank' href="{{pathFor 'advancedFulfillmentPDF' _id=this._id }}">Print Invoice</a>
-            {{else}}
-              {{#if readyForAssignment}}
-                <button class='btn btn-lg btn-success advanceOrder' data-status='{{status}}' href='#'>{{actionStatus}}</button>
-              {{else}}
-                <button id="orderProgressButton" class="order-progress btn btn-block btn-lg btn-success">{{progressStatus}}</button>
-                <p class="alert alert-warning">{{progressStatusNote}}</p>
-              {{/if}}
-            {{/if}}
-
-
-            <!-- <a class='btn btn-lg btn-block btn-info update-to-shipped' href="#">Manually Update Order to Shipped</a> -->
-            <!-- <p class='text-center bg-warn'>When hooked into AfterShip, shipped status will automatically update when picked up by FedEx</p> -->
-          </div>
-        </div>
-        <div class="col-xs-8">
-                <!-- {{#if hasCustomerServiceIssue}}
-                  <div class='row'>
-                    <div class='col-sm-7 col-md-4 text-center'>
-                      <h1><span class="label label-danger">Customer Service Action Required</span></h1>
-                    </div>
-                    <div class='visible-lg-* visible-md-* hidden-sm hidden-xs col-sm-5 col-md-8'>
-                      <br>
-                      {{{typeofIssue}}}
-                    </div>
-                    <div class='visible-xs-* visible-sm-* hidden-md hidden-lg text-center col-sm-5 col-md-8'>
-                      <br>
-                      {{{typeofIssue}}}
-                    </div>
-                  </div>
-                {{/if}} -->
-
-          <!-- {{#if hasShippingInfo}}
-            <div class='row'>
-              <table class="table text-center" style="font-size: 16px; margin-top: 15px;">
-                <thead class="text-center">
-                  <th class="text-center">Tracking Number</th>
-                  <th class="text-center">Current Shipping Status</th>
-                  <th class="text-center">Last Shipping CheckPoint</th>
-                  <th class="text-center">Current Location</th>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      {{#if upsShipping}}
-                        <a target='_blank' href="https://wwwapps.ups.com/WebTracking/processInputRequest?tracknum={{advancedFulfillment.shippingHistory.trackingNumber}}">{{advancedFulfillment.shippingHistory.trackingNumber}}</a>
-                      {{else}}
-                        {{advancedFulfillment.shippingHistory.trackingNumber}}
-                      {{/if}}
-                    </td>
-                    <td>{{advancedFulfillment.shippingHistory.currentStatus}}</td>
-                    <td>{{advancedFulfillment.shippingHistory.currentMessage}}</td>
-                    <td>{{advancedFulfillment.shippingHistory.currentCity}}, {{advancedFulfillment.shippingHistory.currentState}}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <hr>
-            </div>
-          {{/if}} -->
-
-          {{> Template.dynamic template=currentStatus}}
-          {{#if noItemsToPick}}
-            <div class='row text-center'>
-              <a class='btn btn-lg btn-warning noWarehouseItems'>This order ONLY contains items that aren't located in Dillon Warehouse</a>
-            </div>
-          {{/if}}
-          <hr>
-          <div class='row'>
-            <br>
-            <a class='btn btn-lg btn-block btn-info' href="{{pathFor 'updateOrder' _id=_id}}">Adjust Order</a>
-            <br>
-          </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6 text-center">
-              {{#if myOrdersInCurrentStep.hasPrevOrder}}
-                <a href="{{pathFor 'orderDetails' _id=myOrdersInCurrentStep.prevOrderId}}" class="prevOrder btn btn-large btn-default">Prev Order</a>
-              {{/if}}
-            </div>
-            <div class="col-xs-12 col-sm-6 text-center">
-              {{#if myOrdersInCurrentStep.hasNextOrder}}
-                <a href="{{pathFor 'orderDetails' _id=myOrdersInCurrentStep.nextOrderId}}" class="nextOrder btn btn-large btn-default">Next Order</a>
-              {{/if}}
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-4">
-          <p><strong>Contact:</strong></p>
-          <p>Email: {{contactInfo}}</p>
-          <p>Shipping Phone: {{phoneNumber}}</p>
-          <p>Billing Phone: {{phoneNumber}}</p>
-          {{> backpackOrderNotes}}
-          {{#with shippingAddress}}
-            {{> backpackShippingAddress}}
-          {{/with}}
-
-          {{#with billingAddress}}
-            {{> backpackBillingAddress}}
-          {{/with}}
-          {{#with paymentInfo}}
-            {{> backpackPaymentInfo}}
-          {{/with}}
-        </div>
+<template name="backpackShipmentDetails">
+  <div class="reservation-details text-center">
+    <div class="reservation-item">
+      <div class="value">
+        {{#if shippingProviderIsUPS}}
+          <a target='_blank' href="https://wwwapps.ups.com/WebTracking/processInputRequest?tracknum={{advancedFulfillment.shippingHistory.trackingNumber}}">{{advancedFulfillment.shippingHistory.trackingNumber}}</a>
+        {{else}}
+          {{trackingNumber}}
+        {{/if}}
+      </div>
+      <div class="title">
+        Tracking Number
       </div>
     </div>
-  </section>
-  {{/with}}
-  {{/if}}
+    <div class="reservation-item">
+      <div class="value">
+        {{currentStatus}}
+      </div>
+      <div class="title">
+        Status
+      </div>
+    </div>
+    <div class="reservation-item">
+      <div class="value">
+        {{currentMessage}}
+      </div>
+      <div class="title">
+        Latest Checkpoint
+      </div>
+    </div>
+    <div class="reservation-item">
+      <div class="value">
+        {{currentCity}}, {{currentState}}
+      </div>
+      <div class="title">
+        Location
+      </div>
+    </div>
+  </div>
 </template>
 
 <template name="backpackShippingAddress">
-  <p><strong>Shipping Address:</strong></p>
-  {{> backpackAddress}}
+  <div class="value">
+    {{> backpackAddress}}
+  </div>
+  <div class="title">
+    Shipping Address
+  </div>
 </template>
 
 <template name="backpackBillingAddress">
-  <p><strong>Billing Address:</strong></p>
-  {{> backpackAddress}}
+  <div class="value">
+    {{> backpackAddress}}
+  </div>
+  <div class="title">
+    Billing Address
+  </div>
 </template>
 
 <template name="backpackAddress">
-  <p>{{fullName}}</p>
-  <p>{{business}}</p>
-  <p>{{address1}}</p>
-  <p>{{address2}}</p>
-  <p>{{city}} {{region}}, {{postal}}</p>
-  <p>{{phone}}</p>
+  <p class="address">
+    <span class="name">{{fullName}}</span><br>
+    {{#if business}}{{business}}<br>{{/if}}
+    {{address1}}<br>
+    {{#if address2}}{{address2}}<br>{{/if}}
+    {{city}} {{region}}, {{postal}}<br>
+    <span class="phone">{{phone}}</span>
+  </p>
 </template>
 
 <template name="backpackPaymentInfo">
-  <p><strong>Payment Info</strong></p>
-  <p>{{name}}</p>
-  <p>{{brand}} {{last4}}</p>
+  <div class="value">
+    <p class="address">
+      <span class="name">{{name}}</span><br>
+      {{brand}} {{last4}}
+    </p>
+  </div>
+  <div class="title">
+    Payment Info
+  </div>
 </template>
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -252,4 +281,22 @@
   {{#with label}}
     <span class="label label-{{style}}">{{content}}</span>
   {{/with}}
+</template>
+
+<template name="backpackCustomerServiceIssueList">
+  <!-- {{#if hasCustomerServiceIssue}}
+    <div class='row'>
+      <div class='col-sm-7 col-md-4 text-center'>
+        <h1><span class="label label-danger">Customer Service Action Required</span></h1>
+      </div>
+      <div class='visible-lg-* visible-md-* hidden-sm hidden-xs col-sm-5 col-md-8'>
+        <br>
+        {{{typeofIssue}}}
+      </div>
+      <div class='visible-xs-* visible-sm-* hidden-md hidden-lg text-center col-sm-5 col-md-8'>
+        <br>
+        {{{typeofIssue}}}
+      </div>
+    </div>
+  {{/if}} -->
 </template>

@@ -35,6 +35,9 @@ Template.orderDetails.helpers({
     const orderId = Reaction.Router.getParam("_id");
     return Orders.findOne({_id: orderId});
   },
+  shipmentDetails() {
+    return this.advancedFulfillment.shippingHistory;
+  },
   currentStatus: function () {
     const currentStatus = this.advancedFulfillment.workflow.status;
     const generalTemplates = [
@@ -62,9 +65,6 @@ Template.orderDetails.helpers({
   actionStatus: function () {
     return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
   },
-  humanStatus: function () {
-    return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
-  },
   progressStatus: function () {
     return AdvancedFulfillment.orderProgressStatus[this.advancedFulfillment.workflow.status];
   },
@@ -87,11 +87,17 @@ Template.orderDetails.helpers({
   },
   shippingAddress() {
     // Currently assumes 1 address per order as is the limit in RC core as of 0.17.x
-    return this.shipping[0].address;
+    if (Array.isArray(this.shipping) && this.shipping[0]) {
+      return this.shipping[0].address;
+    }
+    return {};
   },
   billingAddress() {
     // Currently assumes 1 address per order as is the limit in RC core as of 0.17.x
-    return this.billing[0].address;
+    if (Array.isArray(this.billing) && this.billing[0]) {
+      return this.billing[0].address;
+    }
+    return {};
   },
   paymentInfo() {
     const source = this.billing[0].paymentMethod.transactions[0].source;
@@ -107,11 +113,11 @@ Template.orderDetails.helpers({
     }
     return "";
   },
-  contactInfo: function () {
-    return this.email || "Checked Out As Guest";
-  },
-  phoneNumber: function () {
-    return this.shipping[0].address.phone || "Missing Phone";
+  phone() {
+    if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
+      return this.shipping[0].address.phone;
+    }
+    return "Unavailable";
   },
   printLabel: function () {
     const status = this.advancedFulfillment.workflow.status;
@@ -163,26 +169,6 @@ Template.orderDetails.helpers({
   },
   hasShippingInfo: function () {
     return this.advancedFulfillment.shippingHistory;
-  },
-  fedExShipping: function () {
-    const transitTimes = ReactionCore.Collections.Packages.findOne({
-      name: "transit-times",
-      shopId: ReactionCore.getShopId()
-    });
-    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === "fedex") {
-      return true;
-    }
-    return false;
-  },
-  upsShipping: function () {
-    const transitTimes = ReactionCore.Collections.Packages.findOne({
-      name: "transit-times",
-      shopId: ReactionCore.getShopId()
-    });
-    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === "ups") {
-      return true;
-    }
-    return false;
   },
   hasCustomerServiceIssue: function () {
     const issues = [
@@ -272,6 +258,25 @@ Template.orderDetails.events({
     const orderId = this._id;
     const userId = Meteor.userId();
     Meteor.call("advancedFulfillment/nonWarehouseOrder", orderId, userId);
+  }
+});
+
+Template.orderDetailHeader.helpers({
+  humanStatus() {
+    return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
+  }
+});
+
+Template.backpackShipmentDetails.helpers({
+  shippingProviderIsUPS: function () {
+    const transitTimes = ReactionCore.Collections.Packages.findOne({
+      name: "transit-times",
+      shopId: ReactionCore.getShopId()
+    });
+    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === "ups") {
+      return true;
+    }
+    return false;
   }
 });
 
