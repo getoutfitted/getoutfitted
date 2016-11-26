@@ -88,14 +88,21 @@
         </div>
 
         <div class="col-xs-12 col-lg-4">
-          <div class="panel panel-default text-center order-actions">
+          <div class="text-center order-actions">
             {{#if orderCreated}}
               <a class='btn btn-lg btn-success print-invoice' data-order-id='{{_id}}'  target='_blank' href="{{pathFor 'advancedFulfillmentPDF' _id=this._id }}">Print Invoice</a>
             {{else}}
               {{#if readyForAssignment}}
                 <button class='btn btn-lg btn-success advanceOrder' data-status='{{status}}' href='#'>{{actionStatus}}</button>
+              {{else}}
+                <button id="orderProgressButton" class="order-progress btn btn-block btn-lg btn-success">{{progressStatus}}</button>
+                <p class="alert alert-warning">{{progressStatusNote}}</p>
               {{/if}}
             {{/if}}
+
+
+            <!-- <a class='btn btn-lg btn-block btn-info update-to-shipped' href="#">Manually Update Order to Shipped</a> -->
+            <!-- <p class='text-center bg-warn'>When hooked into AfterShip, shipped status will automatically update when picked up by FedEx</p> -->
           </div>
         </div>
         <div class="col-xs-8">

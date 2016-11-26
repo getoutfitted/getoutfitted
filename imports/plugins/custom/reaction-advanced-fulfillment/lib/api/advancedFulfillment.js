@@ -30,6 +30,34 @@ AdvancedFulfillment.humanOrderStatuses = {
   'orderCancelled': 'Cancelled'
 };
 
+AdvancedFulfillment.orderProgressStatus = {
+  'orderCreated': 'Mark as Printed',
+  'orderPrinted': 'Mark as Picked',
+  'orderPicking': 'Mark as Picked',
+  'orderPicked': 'Mark as Packed',
+  'orderPacking': 'Mark as Packed',
+  'orderPacked': 'Mark as Labeled',
+  'orderReadyToShip': 'Mark as Shipped',
+  'orderShipped': 'Mark as Returned',
+  'orderReturned': 'Archive Order',
+  'orderComplete': 'View Order',
+  'orderIncomplete': 'View Order'
+};
+
+AdvancedFulfillment.orderProgressStatusNotes = {
+  'orderCreated': '',
+  'orderPrinted': '',
+  'orderPicking': '',
+  'orderPicked': '',
+  'orderPacking': '',
+  'orderPacked': '',
+  'orderReadyToShip': 'When hooked into AfterShip, shipped status will automatically update when order is picked up by carrier',
+  'orderShipped': '',
+  'orderReturned': '',
+  'orderComplete': '',
+  'orderIncomplete': ''
+};
+
 AdvancedFulfillment.workflow = [
   'orderCreated',
   'orderPrinted',
@@ -102,19 +130,19 @@ AdvancedFulfillment.localDeliveryZipcodes = [
 AdvancedFulfillment.calendarReferenceTime = {
   sameDay: '[Today]',
   nextDay: '[Tomorrow]',
-  nextWeek: '[This] dddd',
+  nextWeek: 'dddd MMM D',
   lastDay: '[Yesterday]',
-  lastWeek: '[Last] dddd',
+  lastWeek: 'dddd MMM D',
   sameElse: 'll'
 };
 
 AdvancedFulfillment.shippingCalendarReference = {
-  sameDay: '[Today] MMM D, YYYY',
-  nextDay: '[Tomorrow]  MMM D, YYYY',
-  nextWeek: 'dddd',
-  lastDay: '[Yesterday] MMM D, YYYY',
-  lastWeek: '[Last] dddd',
-  sameElse: 'ddd MMM D, YYYY'
+  sameDay: '[Today] MMM D',
+  nextDay: '[Tomorrow]  MMM D',
+  nextWeek: 'dddd MMM D',
+  lastDay: '[Yesterday] MMM D',
+  lastWeek: '[Last] dddd MMM D',
+  sameElse: 'ddd MMM D'
 };
 
 AdvancedFulfillment.dateFormatter = function (date) {

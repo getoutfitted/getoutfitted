@@ -59,11 +59,17 @@ Template.orderDetails.helpers({
   actualTransitTime: function () {
     return this.advancedFulfillment.transitTime;
   },
+  actionStatus: function () {
+    return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
+  },
   humanStatus: function () {
     return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
   },
-  actionStatus: function () {
-    return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
+  progressStatus: function () {
+    return AdvancedFulfillment.orderProgressStatus[this.advancedFulfillment.workflow.status];
+  },
+  progressStatusNote: function () {
+    return AdvancedFulfillment.orderProgressStatusNotes[this.advancedFulfillment.workflow.status];
   },
   orderCreated: function () {
     return this.advancedFulfillment.workflow.status === "orderCreated";
