@@ -146,5 +146,9 @@ AdvancedFulfillment.shippingCalendarReference = {
 };
 
 AdvancedFulfillment.dateFormatter = function (date) {
-  return moment(date).format('MMMM Do, YYYY');
+  return moment(date).format("MMMM Do, YYYY");
+};
+
+AdvancedFulfillment.orderNoteIcons = {
+  note: "fa fa-sticky-note cancel-color"
 };

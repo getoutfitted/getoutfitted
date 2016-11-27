@@ -59,9 +59,6 @@ Template.orderDetails.helpers({
   status: function () {
     return this.advancedFulfillment.workflow.status;
   },
-  actualTransitTime: function () {
-    return this.advancedFulfillment.transitTime;
-  },
   actionStatus: function () {
     return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
   },
@@ -106,12 +103,6 @@ Template.orderDetails.helpers({
       brand: source.brand,
       last4: source.last4
     };
-  },
-  destination() {
-    if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
-      return this.shipping[0].address.region;
-    }
-    return "";
   },
   phone() {
     if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
@@ -230,7 +221,6 @@ Template.orderDetails.events({
   "submit .add-notes": function (event) {
     event.preventDefault();
     const note = event.currentTarget.note.value;
-
     if (note) {
       const order = this;
       // Meteor.call("advancedFulfillment/updateOrderNotes", order, note, user);
@@ -277,6 +267,24 @@ Template.backpackShipmentDetails.helpers({
       return true;
     }
     return false;
+  }
+});
+
+Template.backpackReservationDetails.helpers({
+  transitTime() {
+    return this.advancedFulfillment.transitTime;
+  },
+  destination() {
+    if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
+      return this.shipping[0].address.region;
+    }
+    return "";
+  }
+});
+
+Template.backpackOrderNotes.helpers({
+  icon() {
+    return AdvancedFulfillment.orderNoteIcons[this.type];
   }
 });
 

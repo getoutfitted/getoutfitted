@@ -121,8 +121,33 @@ span.graphic {
 .address .phone {
   line-height: 1.8;
 }
-.alert-default {
-  background-color: @vapor;
-  border-color: @smoke;
-  color: @charcoal;
+
+// Order Items
+.reservation-details.order-items {
+  display: block;
+}
+
+
+.order-actions {
+  margin-bottom: 20px;
+}
+
+// Order Notes
+.order-note {
+  overflow: hidden;
+  margin-top: 10px;
+  padding: 0 0 10px 0;
+  border-bottom: 1px solid @smoke;
+}
+
+.order-note .context {
+  float: right;
+  color: @base;
+  font-size: 12px;
+  .author {
+    color: @primary-color-shadow;
+  }
+}
+.add-notes {
+  margin-top: 10px;
 }
