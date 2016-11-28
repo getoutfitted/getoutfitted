@@ -61,18 +61,17 @@ Template.advancedFulfillmentPDF.helpers({
     }
     return item.variants[attr];
   },
+  nonBundleItems() {
+    const order = this;
+    return order.items.filter(function (item) {
+      const notBundleVariant = item.variants.functionalType !== "bundleVariant";
+      const notBundleComponent = item.customerViewType !== "bundleComponent";
+      return notBundleVariant && notBundleComponent;
+    });
+  },
   bundles: function () {
     const order = this;
-    // const bundles = order.items.filter(item => item.variants.functionalType === "bundleVariant");
     const index = {};
-    // bundles.forEach(function (bundle) {
-    //   if (bundleCount[bundle.productId]) {
-    //     bundleCount[bundle.productId] += 1;
-    //   } else {
-    //     bundleCount[bundle.productId] = 1;
-    //   }
-    // });
-    // return {bundles, bundleCount};
     const bundles = order.items.reduce(function (acc, item) {
       if (item.variants.functionalType === "bundleVariant") {
         if (index[item.productId]) {
@@ -91,9 +90,6 @@ Template.advancedFulfillmentPDF.helpers({
     itemsByBundle = order.items.filter(function (item) {
       itemMatches = item.bundleProductId === bundle.productId;
       indexMatches = item.bundleIndex === bundle.index;
-      if (itemMatches && indexMatches) {
-        console.log(item);
-      }
       return itemMatches && indexMatches;
     });
     return itemsByBundle;
