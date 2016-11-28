@@ -31,11 +31,75 @@ Template.advancedFulfillmentPDF.helpers({
     let date = this.advancedFulfillment.returnDate;
     return moment(date).format('MMMM Do, YYYY');
   },
-  shippingAddress: function () {
-    return this.shipping[0].address;
+  // shippingAddress: function () {
+  //   return this.shipping[0].address;
+  // },
+  // billingAddress: function () {
+  //   return this.billing[0].address;
+  // },
+  humanReadableDate: function (day) {
+    // let date = this.advancedFulfillment.shipmentDate;
+    return moment(day).format('MMMM Do, YYYY');
   },
-  billingAddress: function () {
-    return this.billing[0].address;
+  shippingAddress: function (order) {
+    if (!order.shipping) { // TODO: Build default message for missing shipping address
+      return {};
+    }
+    return order.shipping[0].address;
+  },
+  billingAddress: function (order) {
+    // TODO: Build default message for missing billing address
+    if (!order.billing) {
+      return {};
+    }
+    return order.billing[0].address;
+  },
+  itemAttr: function (attr) {
+    item = _.findWhere(Template.parentData().items, {_id: this._id});
+    if (!item) {
+      return false;
+    }
+    return item.variants[attr];
+  },
+  bundles: function () {
+    const order = this;
+    // const bundles = order.items.filter(item => item.variants.functionalType === "bundleVariant");
+    const index = {};
+    // bundles.forEach(function (bundle) {
+    //   if (bundleCount[bundle.productId]) {
+    //     bundleCount[bundle.productId] += 1;
+    //   } else {
+    //     bundleCount[bundle.productId] = 1;
+    //   }
+    // });
+    // return {bundles, bundleCount};
+    const bundles = order.items.reduce(function (acc, item) {
+      if (item.variants.functionalType === "bundleVariant") {
+        if (index[item.productId]) {
+          index[item.productId] += 1;
+        } else {
+          index[item.productId] = 1;
+        }
+        acc.push(Object.assign({index: index[item.productId]}, item));
+      }
+      return acc;
+    }, [])
+    return bundles;
+  },
+  itemsByBundle: function (bundle) {
+    const order = this;
+    itemsByBundle = order.items.filter(function (item) {
+      itemMatches = item.bundleProductId === bundle.productId;
+      indexMatches = item.bundleIndex === bundle.index;
+      if (itemMatches && indexMatches) {
+        console.log(item);
+      }
+      return itemMatches && indexMatches;
+    });
+    return itemsByBundle;
+  },
+  bundleIndex(bundle) {
+    return bundle.index > 1 ? `#${bundle.index}` : "";
   }
 });
 
