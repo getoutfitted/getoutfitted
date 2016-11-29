@@ -17,9 +17,9 @@ Template.advancedFulfillmentPDF.onRendered(function () {
 });
 
 Template.advancedFulfillmentPDF.helpers({
-  order: function () {
-    const orderId = Reaction.Router.getParam('_id');
-    return Orders.findOne({
+  orders: function () {
+    const orderId = Reaction.Router.getParam("_id");
+    return Orders.find({
       _id: orderId
     });
   },

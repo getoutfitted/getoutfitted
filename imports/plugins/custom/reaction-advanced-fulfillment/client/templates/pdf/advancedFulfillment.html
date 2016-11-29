@@ -39,7 +39,7 @@
     </div>
   </div>
   {{#if Template.subscriptionsReady}}
-    {{#with order}}
+    {{#each orders}}
       <header>
         <div class='container'>
           <div class='row'>
@@ -118,7 +118,7 @@
             <tr>&nbsp;</tr>
         {{/each}}
       </table>
-    {{/with}}
+    {{/each}}
   {{/if}}
 </body>
 </template>
