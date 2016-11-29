@@ -54,13 +54,6 @@ Template.advancedFulfillmentPDF.helpers({
     }
     return order.billing[0].address;
   },
-  itemAttr: function (attr) {
-    item = _.findWhere(Template.parentData().items, {_id: this._id});
-    if (!item) {
-      return false;
-    }
-    return item.variants[attr];
-  },
   nonBundleItems() {
     const order = this;
     return order.items.filter(function (item) {
@@ -69,7 +62,7 @@ Template.advancedFulfillmentPDF.helpers({
       return notBundleVariant && notBundleComponent;
     });
   },
-  bundles: function () {
+  bundles() {
     const order = this;
     const index = {};
     const bundles = order.items.reduce(function (acc, item) {
@@ -82,10 +75,10 @@ Template.advancedFulfillmentPDF.helpers({
         acc.push(Object.assign({index: index[item.productId]}, item));
       }
       return acc;
-    }, [])
+    }, []);
     return bundles;
   },
-  itemsByBundle: function (bundle) {
+  itemsByBundle(bundle) {
     const order = this;
     itemsByBundle = order.items.filter(function (item) {
       itemMatches = item.bundleProductId === bundle.productId;

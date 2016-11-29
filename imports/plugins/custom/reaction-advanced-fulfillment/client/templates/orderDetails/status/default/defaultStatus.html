@@ -1,29 +1,43 @@
 <template name='defaultStatus'>
   <div class='itemDetails container-fluid'>
-    <h1>Items in this Order:</h1>
     <div class='table-responsive'>
       <table class='table table-hover'>
         <thead>
           <tr>
-            <th>QTY</th>
-            <th>Description</th>
+            <th>Title</th>
             <th>Color</th>
             <th>Size</th>
             <th>Status</th>
-            <th>Location</th>
-            <th>Type</th>
+            <th>QTY</th>
           </tr>
         </thead>
         <tbody >
-          {{#each item in items}}
+          {{#each bundle in bundles}}
+            <tr>
+              <td cols="5">
+                <strong>{{bundle.title}} {{bundleIndex bundle}}</strong>
+              </td>
+            </tr>
+            {{#each item in itemsByBundle bundle}}
+              <tr>
+                <td>{{item.title}}</td>
+                <td>{{item.variants.color}}</td>
+                <td>{{item.variants.size}}</td>
+                <td>{{fulfillmentStatus item}}</td>
+                <td><strong>{{item.quantity}}</strong></td>
+              </tr>
+            {{/each}}
+            <tr class="no-border">&nbsp;</tr>
+          {{/each}}
+          {{#each item in nonBundleItems}}
             <tr>
               <td><strong>{{item.quantity}}</strong></td>
-              <td>{{item.itemDescription}}</td>
-              <td>{{color item}}</td>
-              <td>{{size item}}</td>
+              {{#with orderItem item}}
+                <td>{{title}}</td>
+                <td>{{variants.color}}</td>
+                <td>{{variants.size}}</td>
+              {{/with}}
               <td>{{item.workflow.status}}</td>
-              <td>{{location item}}</td>
-              <td>{{itemType item}}</td>
             </tr>
           {{/each}}
         </tbody>

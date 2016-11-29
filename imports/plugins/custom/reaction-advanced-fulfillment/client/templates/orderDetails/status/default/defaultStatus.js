@@ -1,55 +1,49 @@
-import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
-import './defaultStatus.html';
+import { Template } from "meteor/templating";
 
-function findOrderItem(order, itemId) {
-  return _.findWhere(order.items, {_id: itemId});
+function findFulfillmentItem(order, itemId) {
+  return order.advancedFulfillment.items.find(item => item._id === itemId);
 }
 
 Template.defaultStatus.helpers({
-  items: function () {
-    return this.advancedFulfillment.items;
+  nonBundleItems() {
+    const order = this;
+    return order.items.filter(function (item) {
+      const notBundleVariant = item.variants.functionalType !== "bundleVariant";
+      const notBundleComponent = item.customerViewType !== "bundleComponent";
+      return notBundleVariant && notBundleComponent;
+    });
   },
-  orderId: function () {
-    return this._id;
+  bundles() {
+    const order = this;
+    const index = {};
+    const bundles = order.items.reduce(function (acc, item) {
+      if (item.variants.functionalType === "bundleVariant") {
+        if (index[item.productId]) {
+          index[item.productId] += 1;
+        } else {
+          index[item.productId] = 1;
+        }
+        acc.push(Object.assign({index: index[item.productId]}, item));
+      }
+      return acc;
+    }, []);
+    return bundles;
   },
-  userName: function () {
-    return Meteor.user().username;
+  itemsByBundle(bundle) {
+    const order = this;
+    itemsByBundle = order.items.filter(function (item) {
+      itemMatches = item.bundleProductId === bundle.productId;
+      indexMatches = item.bundleIndex === bundle.index;
+      return itemMatches && indexMatches;
+    });
+    return itemsByBundle;
   },
-  SKU: function (item) {
-    if (item.sku) {
-      return item.sku;
-    }
-    return 'No SKU';
+  bundleIndex(bundle) {
+    return bundle.index > 1 ? `#${bundle.index}` : "";
   },
-  location: function (item) {
-    if (item.location) {
-      return item.location;
-    }
-    return 'No Location';
-  },
-  color: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      return orderItem.variants.color;
-    }
-  },
-  size: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      return orderItem.variants.size;
-    }
-  },
-  itemType: function (item) {
-    let itemType = item.functionalType;
-    if (itemType === 'variant') {
-      return 'purchased';
-    }
-    return 'rental';
+  fulfillmentStatus(item) {
+    const order = this;
+    const fulfillmentItem = findFulfillmentItem(order, item._id);
+    return fulfillmentItem.workflow.status;
   }
 });
