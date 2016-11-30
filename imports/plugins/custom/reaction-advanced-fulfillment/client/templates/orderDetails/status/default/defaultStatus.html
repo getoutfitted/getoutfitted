@@ -4,6 +4,7 @@
       <table class='table table-hover'>
         <thead>
           <tr>
+            <th>Action</th>
             <th>Title</th>
             <th>Color</th>
             <th>Size</th>
@@ -14,12 +15,22 @@
         <tbody >
           {{#each bundle in bundles}}
             <tr>
-              <td cols="5">
+              <td></td>
+              <td cols="4">
                 <strong>{{bundle.title}} {{bundleIndex bundle}}</strong>
               </td>
             </tr>
             {{#each item in itemsByBundle bundle}}
               <tr>
+                <td>
+                  {{#unless isPicked item._id}}
+                    <button
+                      class="btn btn-lg btn-success item-action"
+                      data-order-id="{{_id}}"
+                      data-item-id="{{item._id}}"
+                      data-item-status="{{fulfillmentStatus item}}">Pick Item</button>
+                  {{/unless}}
+                </td>
                 <td>{{item.title}}</td>
                 <td>{{item.variants.color}}</td>
                 <td>{{item.variants.size}}</td>

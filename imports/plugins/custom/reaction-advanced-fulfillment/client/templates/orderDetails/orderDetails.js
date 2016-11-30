@@ -31,18 +31,26 @@ Template.orderDetails.onCreated(function () {
 });
 
 Template.orderDetails.helpers({
-  order: function () {
+  order() {
     const orderId = Reaction.Router.getParam("_id");
     return Orders.findOne({_id: orderId});
   },
   shipmentDetails() {
     return this.advancedFulfillment.shippingHistory;
   },
+  orderActions() {
+    const status = this.advancedFulfillment.workflow.status;
+    if (AdvancedFulfillment.assignmentStatuses.indexOf(status) !== -1) {
+      return "orderAssignmentActions";
+    }
+    return `${status}Actions`;
+  },
   currentStatus: function () {
     const currentStatus = this.advancedFulfillment.workflow.status;
     const generalTemplates = [
       "orderCreated",
       "orderPrinted",
+      "orderPicking",
       "orderPicked",
       "orderShipped",
       "orderIncomplete",
@@ -60,7 +68,7 @@ Template.orderDetails.helpers({
     return this.advancedFulfillment.workflow.status;
   },
   actionStatus: function () {
-    return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
+    return AdvancedFulfillment.humanActionStatus[this.advancedFulfillment.workflow.status];
   },
   progressStatus: function () {
     return AdvancedFulfillment.orderProgressStatus[this.advancedFulfillment.workflow.status];
@@ -73,7 +81,7 @@ Template.orderDetails.helpers({
   },
   nextStatus: function () {
     const currentStatus = this.advancedFulfillment.workflow.status;
-    const options = AdvancedFulfillment.workflow;
+    const options = AdvancedFulfillment.workflowSteps;
     const indexOfStatus = _.indexOf(options, currentStatus);
     return options[indexOfStatus + 1];
   },
@@ -253,7 +261,7 @@ Template.orderDetails.events({
 
 Template.orderDetailHeader.helpers({
   humanStatus() {
-    return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
+    return AdvancedFulfillment.humanOrderStatus[this.advancedFulfillment.workflow.status];
   }
 });
 

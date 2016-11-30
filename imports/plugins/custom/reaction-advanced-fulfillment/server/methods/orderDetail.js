@@ -3,118 +3,119 @@ import { Meteor } from "meteor/meteor";
 import { check } from "meteor/check";
 import { Reaction } from "/server/api";
 import { Orders } from "/lib/collections";
+import AdvancedFulfillment from "../../lib/api";
 
-
-// XXX: Remove legacy code???
-function shipmentDateChecker(date, localDelivery, transitTime) {
-  if (localDelivery) {
-    return date;
-  }
-
-  let numberOfWeekendDays = 0;
-  const shipDate = moment(date);
-  const arrivalDate = moment(shipDate).add(transitTime, "days");
-  let additionalDays = 0;
-  let daysToAdd = 0;
-
-  if (moment(arrivalDate).isoWeekday() === 7) {
-    shipDate.subtract(2, "days");
-    additionalDays += 2;
-    arrivalDate.subtract(2, "days");
-  } else if (moment(arrivalDate).isoWeekday() === 6) {
-    shipDate.subtract(1, "days");
-    additionalDays += 1;
-    arrivalDate.subtract(1, "days");
-  }
-
-  if (moment(shipDate).isoWeekday() === 7) {
-    shipDate.subtract(2, "days");
-    additionalDays += 2;
-  } else if (moment(shipDate).isoWeekday() === 6) {
-    shipDate.subtract(1, "days");
-    additionalDays += 1;
-  }
-
-  const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
-  const iter = shipmentRange.iterate("days");
-  //
-  while (iter.hasNext()) {
-    const isoWeekday = iter.next().isoWeekday();
-    if (isoWeekday === 7 || isoWeekday === 6) {
-      numberOfWeekendDays += 1;
-    }
-  }
-
-  daysToAdd = numberOfWeekendDays - additionalDays;
-  if (daysToAdd <= 0) {
-    daysToAdd = 0;
-  }
-
-  return shipDate.subtract(daysToAdd, "days").toDate();
-}
-
-// XXX: Remove legacy code???
-function arrivalDateChecker(date, localDelivery) {
-  if (localDelivery) {
-    return date;
-  }
-  if (moment(date).isoWeekday() === 7) {
-    return moment(date).subtract(2, "days").toDate();
-  } else if (moment(date).isoWeekday() === 6) {
-    return moment(date).subtract(1, "days").toDate();
-  }
-  return date;
-}
-
-// XXX: Remove legacy code???
-function returnDateChecker(date, localDelivery) {
-  if (localDelivery) {
-    return date;
-  }
-  if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(1, "days").toDate();
-  }
-  return date;
-}
-
-// XXX: Remove legacy code???
-function rushShipmentChecker(date) {
-  if (moment(date).isoWeekday() === 7) {
-    return moment(date).add(1, "days").toDate();
-  } else if (moment(date).isoWeekday() === 6) {
-    return moment(date).add(2, "days").toDate();
-  }
-  return date.toDate();
-}
-
-function rushRequired(arriveBy, transitTime, isLocal) {
-  if (isLocal) {
-    return false;
-  }
-  const estimatedArrival = moment().startOf("day").add(transitTime, "days"); // shipDate as start of day
-  return moment(estimatedArrival).diff(moment(arriveBy)) > 0;
-}
-
-// XXX: Remove legacy code???
-function isLocalDelivery(postal) {
-  let localZips = [
-    "80424",
-    "80435",
-    "80443",
-    "80497",
-    "80498"
-  ];
-  return _.contains(localZips, postal);
-}
-
-// XXX: Remove legacy code???
-function buffer() {
-  let af = ReactionCore.Collections.Packages.findOne({name: "reaction-advanced-fulfillment"});
-  if (af && af.settings && af.settings.buffer) {
-    return af.settings.buffer;
-  }
-  return {shipping: 0, returning: 0};
-}
+const KLAVIYO_ENABLED = false;
+// // XXX: Remove legacy code???
+// function shipmentDateChecker(date, localDelivery, transitTime) {
+//   if (localDelivery) {
+//     return date;
+//   }
+//
+//   let numberOfWeekendDays = 0;
+//   const shipDate = moment(date);
+//   const arrivalDate = moment(shipDate).add(transitTime, "days");
+//   let additionalDays = 0;
+//   let daysToAdd = 0;
+//
+//   if (moment(arrivalDate).isoWeekday() === 7) {
+//     shipDate.subtract(2, "days");
+//     additionalDays += 2;
+//     arrivalDate.subtract(2, "days");
+//   } else if (moment(arrivalDate).isoWeekday() === 6) {
+//     shipDate.subtract(1, "days");
+//     additionalDays += 1;
+//     arrivalDate.subtract(1, "days");
+//   }
+//
+//   if (moment(shipDate).isoWeekday() === 7) {
+//     shipDate.subtract(2, "days");
+//     additionalDays += 2;
+//   } else if (moment(shipDate).isoWeekday() === 6) {
+//     shipDate.subtract(1, "days");
+//     additionalDays += 1;
+//   }
+//
+//   const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
+//   const iter = shipmentRange.iterate("days");
+//   //
+//   while (iter.hasNext()) {
+//     const isoWeekday = iter.next().isoWeekday();
+//     if (isoWeekday === 7 || isoWeekday === 6) {
+//       numberOfWeekendDays += 1;
+//     }
+//   }
+//
+//   daysToAdd = numberOfWeekendDays - additionalDays;
+//   if (daysToAdd <= 0) {
+//     daysToAdd = 0;
+//   }
+//
+//   return shipDate.subtract(daysToAdd, "days").toDate();
+// }
+//
+// // XXX: Remove legacy code???
+// function arrivalDateChecker(date, localDelivery) {
+//   if (localDelivery) {
+//     return date;
+//   }
+//   if (moment(date).isoWeekday() === 7) {
+//     return moment(date).subtract(2, "days").toDate();
+//   } else if (moment(date).isoWeekday() === 6) {
+//     return moment(date).subtract(1, "days").toDate();
+//   }
+//   return date;
+// }
+//
+// // XXX: Remove legacy code???
+// function returnDateChecker(date, localDelivery) {
+//   if (localDelivery) {
+//     return date;
+//   }
+//   if (moment(date).isoWeekday() === 7) {
+//     return moment(date).add(1, "days").toDate();
+//   }
+//   return date;
+// }
+//
+// // XXX: Remove legacy code???
+// function rushShipmentChecker(date) {
+//   if (moment(date).isoWeekday() === 7) {
+//     return moment(date).add(1, "days").toDate();
+//   } else if (moment(date).isoWeekday() === 6) {
+//     return moment(date).add(2, "days").toDate();
+//   }
+//   return date.toDate();
+// }
+//
+// function rushRequired(arriveBy, transitTime, isLocal) {
+//   if (isLocal) {
+//     return false;
+//   }
+//   const estimatedArrival = moment().startOf("day").add(transitTime, "days"); // shipDate as start of day
+//   return moment(estimatedArrival).diff(moment(arriveBy)) > 0;
+// }
+//
+// // XXX: Remove legacy code???
+// function isLocalDelivery(postal) {
+//   let localZips = [
+//     "80424",
+//     "80435",
+//     "80443",
+//     "80497",
+//     "80498"
+//   ];
+//   return _.contains(localZips, postal);
+// }
+//
+// // XXX: Remove legacy code???
+// function buffer() {
+//   let af = ReactionCore.Collections.Packages.findOne({name: "reaction-advanced-fulfillment"});
+//   if (af && af.settings && af.settings.buffer) {
+//     return af.settings.buffer;
+//   }
+//   return {shipping: 0, returning: 0};
+// }
 
 // XXX: Remove legacy code???
 function noteFormattedUser(user) {
@@ -141,31 +142,29 @@ function anyOrderNotes(orderNotes) {
 
 
 Meteor.methods({
-  "advancedFulfillment/updateOrderWorkflow": function (orderId, userId, status) {
+  "advancedFulfillment/updateOrderWorkflow": function (orderId, status) {
     check(orderId, String);
-    check(userId, String);
     check(status, String);
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
     }
-    let workflow = {
-      orderCreated: "orderPrinted",
-      orderPrinted: "orderPicking",
-      orderPicking: "orderPicked",
-      orderPicked: "orderPacking",
-      orderPacking: "orderPacked",
-      orderPacked: "orderReadyToShip",
-      orderReadyToShip: "orderShipped",
-      orderShipped: "orderReturned",
-      orderReturned: "orderCompleted",
-      orderIncomplete: "orderCompleted"
-    };
-    let date = new Date();
-    let historyEvent = {
+    const order = Orders.findOne({_id: orderId});
+    const currentStatus = order.advancedFulfillment.workflow.status;
+    const userId = Meteor.userId();
+    const workflow = AdvancedFulfillment.workflow;
+
+    if (status !== currentStatus) {
+      throw new Meteor.Error("500", `Error updating update order from ${currentStatus} to ${workflow[status]} - incongruent steps`);
+    }
+
+    const historyEvent = {
       event: workflow[status],
       userId: userId,
-      updatedAt: date
+      updatedAt: new Date()
     };
+
+    const note = AdvancedFulfillment.humanOrderStatus[workflow[status]];
+
     ReactionCore.Collections.Orders.update({_id: orderId}, {
       $addToSet: {
         "history": historyEvent,
@@ -175,11 +174,16 @@ Meteor.methods({
         "advancedFulfillment.workflow.status": workflow[status]
       }
     });
-    if (status === "orderReadyToShip") {
-      Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped Product", "advancedFulfullment/createKlaviyoItemEvents");
-      Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped", "advancedFulfullment/createKlaviyoGeneralEvent");
-    } else if (status === "orderShipped") {
-      Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Returned", "advancedFulfullment/createKlaviyoGeneralEvent");
+
+    Meteor.call("advancedFulfillment/addOrderNote", orderId, note, type = "Status Update");
+
+    if (KLAVIYO_ENABLED) {
+      if (status === "orderReadyToShip") {
+        Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped Product", "advancedFulfullment/createKlaviyoItemEvents");
+        Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped", "advancedFulfullment/createKlaviyoGeneralEvent");
+      } else if (status === "orderShipped") {
+        Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Returned", "advancedFulfullment/createKlaviyoGeneralEvent");
+      }
     }
   },
 
@@ -192,20 +196,9 @@ Meteor.methods({
       throw new Meteor.Error(403, "Access Denied");
     }
 
-    let reverseWorkflow = {
-      orderPrinted: "orderCreated",
-      orderPicking: "orderPrinted",
-      orderPicked: "orderPicking",
-      orderPacking: "orderPicked",
-      orderPacked: "orderPacking",
-      orderReadyToShip: "orderPacked",
-      orderShipped: "orderReadyToShip",
-      orderReturned: "orderShipped",
-      orderIncomplete: "orderReturned",
-      orderCompleted: "orderReturned"
-    };
-    let date = new Date();
-    let historyEvent = {
+    const reverseWorkflow = AdvancedFulfillment.reverseWorkflow;
+    const date = new Date();
+    const historyEvent = {
       event: reverseWorkflow[status],
       userId: userId,
       updatedAt: date
