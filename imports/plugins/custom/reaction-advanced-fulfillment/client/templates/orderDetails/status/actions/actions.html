@@ -12,7 +12,21 @@
   <button class='btn btn-lg btn-block btn-success advanceOrder' data-status='{{status}}' href='#'>{{actionStatus}}</button>
 </template>
 
-<template name="orderProgressActions">
-  <button id="orderProgressButton" class="order-progress btn btn-block btn-lg btn-success">{{progressStatus}}</button>
-  <p class="alert alert-warning">{{progressStatusNote}}</p>
+<template name="orderPackingActions">
+  <button class='btn btn-success btn-lg btn-block' id="all-items-packed">Mark as Packed</button>
+</template>
+
+<template name="orderPackedActions">
+  {{#if localDelivery}}
+    <a href="{{pathFor 'localDeliveryLabelPDF' _id=_id}}" target='_blank' class='btn btn-lg btn-block btn-success js-label-print'>Print Local Label</a>
+  {{else}}
+    <a href='https://ss5.shipstation.com/#/orders' target='_blank' class='btn btn-block btn-lg btn-success js-label-print'>Print Shipstation Label</a>
+  {{/if}}
+
+</template>
+
+<template name="orderReadyToShipActions">
+  <button id="order-shipped" class="order-progress btn btn-block btn-lg btn-success js-mark-as-shipped">Mark as Shipped</button>
+  <br>
+  <p class="alert alert-info">When hooked into AfterShip, shipped status will automatically update when order is picked up by carrier</p>
 </template>

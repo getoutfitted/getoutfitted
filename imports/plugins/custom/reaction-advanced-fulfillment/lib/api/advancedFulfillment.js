@@ -30,34 +30,6 @@ AdvancedFulfillment.humanOrderStatus = {
   "orderCancelled": "Cancelled"
 };
 
-AdvancedFulfillment.orderProgressStatus = {
-  "orderCreated": "Mark as Printed",
-  "orderPrinted": "Mark as Picked",
-  "orderPicking": "Mark as Picked",
-  "orderPicked": "Mark as Packed",
-  "orderPacking": "Mark as Packed",
-  "orderPacked": "Mark as Labeled",
-  "orderReadyToShip": "Mark as Shipped",
-  "orderShipped": "Mark as Returned",
-  "orderReturned": "Archive Order",
-  "orderComplete": "View Order",
-  "orderIncomplete": "View Order"
-};
-
-AdvancedFulfillment.orderProgressStatusNotes = {
-  "orderCreated": "",
-  "orderPrinted": "",
-  "orderPicking": "",
-  "orderPicked": "",
-  "orderPacking": "",
-  "orderPacked": "",
-  "orderReadyToShip": "When hooked into AfterShip, shipped status will automatically update when order is picked up by carrier",
-  "orderShipped": "",
-  "orderReturned": "",
-  "orderComplete": "",
-  "orderIncomplete": ""
-};
-
 AdvancedFulfillment.workflow = {
   orderCreated: "orderPrinted",
   orderPrinted: "orderPicking",
@@ -149,10 +121,7 @@ AdvancedFulfillment.localDeliveryZipcodes = [
   "80435",
   "80443",
   "80497",
-  "80498",
-  "81657",
-  "81620",
-  "81657"
+  "80498"
 ];
 
 AdvancedFulfillment.calendarReferenceTime = {
@@ -173,10 +142,20 @@ AdvancedFulfillment.shippingCalendarReference = {
   sameElse: "ddd MMM D"
 };
 
+AdvancedFulfillment.orderNoteIcons = {
+  "Note": "fa fa-exclamation cancel-color",
+  "Status Update": "fa fa-check success-color",
+  "Status Revision": "fa fa-undo warning-color"
+};
+
 AdvancedFulfillment.dateFormatter = function (date) {
   return moment(date).format("MMMM Do, YYYY");
 };
 
-AdvancedFulfillment.orderNoteIcons = {
-  note: "fa fa-sticky-note cancel-color"
+AdvancedFulfillment.isLocalAddress = function (addressOrPostal) {
+  check(addressOrPostal, Match.OneOf(Object, Number));
+  if (typeof addressOrPostal === "Object" && addressOrPostal.postal) {
+    return AdvancedFulfillment.localDeliveryZipcodes.indexOf(addressOrPostal.postal) !== -1;
+  }
+  return AdvancedFulfillment.localDeliveryZipcodes.indexOf(addressOrPostal) !== -1;
 };

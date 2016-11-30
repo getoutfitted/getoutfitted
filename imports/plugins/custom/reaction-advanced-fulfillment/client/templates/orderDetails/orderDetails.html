@@ -6,7 +6,7 @@
     <section class="order-body">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-xs-12 col-lg-8">
+          <div class="col-xs-12 col-md-8">
             {{#if hasShippingInfo}}
               {{#with shipmentDetails}}
                 {{> backpackShipmentDetails}}
@@ -42,7 +42,7 @@
             </div>
           </div>
 
-          <div class="col-xs-12 col-lg-4">
+          <div class="col-xs-12 col-md-4">
             <div class="text-center order-actions">
               {{> Template.dynamic template=orderActions}}
 
@@ -240,7 +240,7 @@
     <div class="alert alert-danger">{{{orderNotes}}}</div>
   {{/if}}
   {{#each backpackOrderNotes}}
-    <div class="order-note">
+    <div class="order-note {{type}}">
       <div class="context">
         <span>{{formattedDate updatedAt}}</span><br>
         <span class="author">{{username}}</span>
