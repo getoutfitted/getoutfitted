@@ -393,10 +393,15 @@ Meteor.methods({
   //     }
   //   });
   // },
-  "advancedFulfillment/bypassWorkflowAndComplete": function (orderId, userId) {
+  "advancedFulfillment/bypassWorkflowAndComplete": function (orderId) {
     check(orderId, String);
-    check(userId, String);
-    let history = [
+
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const userId = Meteor.userId();
+    const history = [
       {
         event: "bypassedWorkFlowToComplete",
         userId: userId,
