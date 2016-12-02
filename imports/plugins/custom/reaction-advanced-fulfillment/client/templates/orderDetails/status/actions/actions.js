@@ -1,6 +1,8 @@
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 import { Reaction } from "/client/api";
+import { ReactiveVar } from "meteor/reactive-var";
+import { Orders } from "/lib/collections";
 import AdvancedFulfillment from "/imports/plugins/custom/reaction-advanced-fulfillment/lib/api";
 // import { Orders } from "/lib/collections";
 
@@ -105,5 +107,57 @@ Template.orderReadyToShipActions.events({
     } else {
       Meteor.call("advancedFulfillment/updateOrderWorkflow", orderId, currentStatus);
     }
+  }
+});
+
+Template.orderReturnedActions.events({
+  "click .items-inspected": function () {
+    const order = this;
+    const returnTypes = ["returned", "missing", "damaged", "completed"];
+    const orderItems = order.advancedFulfillment.items.filter(item => item.functionalType !== "bundleVariant");
+    const orderValid = orderItems.every(item => returnTypes.indexOf(item.workflow.status) !== -1);
+    if (orderValid) {
+      Meteor.call("advancedFulfillment/markOrderCompleted", order._id);
+    } else {
+      Alerts.removeSeen();
+      Alerts.add("All Items Have Not Been Verified, please select: Missing, Damaged or Returned for each Item", "danger", {
+        autoHide: false
+      });
+    }
+  }
+});
+
+Template.taskTimer.onCreated(function () {
+  const instance = this;
+  instance.orderId = () => Reaction.Router.getParam("_id");
+  instance.order = Orders.findOne({_id: instance.orderId()});
+  const status = instance.order.advancedFulfillment.workflow.status;
+  instance.autorun(() => {
+    if (instance.order.history) {
+      const history = instance.order.history.find(record => record.event === status);
+      const assignedTime = history.updatedAt;
+      instance.timer = new ReactiveVar(AdvancedFulfillment.timeSince(assignedTime));
+      instance.timerHandle = Meteor.setInterval(function () {
+        instance.timer.set(AdvancedFulfillment.timeSince(assignedTime));
+      }, 1000);
+    }
+  });
+});
+
+Template.taskTimer.destroyed = function () {
+  Meteor.clearInterval(this.timerHandle);
+};
+
+Template.taskTimer.helpers({
+  tasker: function () {
+    const instance = Template.instance();
+    const order = instance.order;
+    const status = order.advancedFulfillment.workflow.status;
+    const history = _.findWhere(order.history, {event: status});
+    const tasker = history.userId;
+    return Meteor.users.findOne(tasker).username;
+  },
+  taskTimer: function () {
+    return Template.instance().timer.get();
   }
 });

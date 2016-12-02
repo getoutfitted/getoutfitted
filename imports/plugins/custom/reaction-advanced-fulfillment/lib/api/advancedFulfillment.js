@@ -1,3 +1,4 @@
+import moment from "moment";
 export default AdvancedFulfillment = {};
 
 AdvancedFulfillment.humanActionStatus = {
@@ -113,8 +114,33 @@ AdvancedFulfillment.orderArchivedStatus = [
 ];
 
 AdvancedFulfillment.assignmentStatuses = ["orderPrinted", "orderPicked",  "orderShipped"];
+
 AdvancedFulfillment.nonAssignmentStatuses = ["orderCreated", "orderPicking", "orderPacking", "orderPacked", "orderReturned"];
-AdvancedFulfillment.itemStatus = ["In Stock", "picked", "packed", "shipped"];
+
+AdvancedFulfillment.itemStatus = [
+  "In Stock",
+  "picked",
+  "packed",
+  "shipped"
+];
+
+AdvancedFulfillment.itemWorkflow = {
+  "In Stock": "picked",
+  "picked": "packed",
+  "packed": "shipped",
+  "shipped": "returned",
+  "returned": "completed",
+  "completed": "completed"
+};
+
+AdvancedFulfillment.reverseItemWorkflow = {
+  "In Stock": "In Stock",
+  "picked": "In Stock",
+  "packed": "picked",
+  "shipped": "packed",
+  "returned": "shipped",
+  "completed": "returned"
+};
 
 AdvancedFulfillment.localDeliveryZipcodes = [
   "80424",
@@ -143,9 +169,11 @@ AdvancedFulfillment.shippingCalendarReference = {
 };
 
 AdvancedFulfillment.orderNoteIcons = {
-  "Note": "fa fa-exclamation cancel-color",
+  "Note": "fa fa-pencil-square-o cancel-color",
   "Status Update": "fa fa-check success-color",
-  "Status Revision": "fa fa-undo warning-color"
+  "Status Revision": "fa fa-undo warning-color",
+  "Missing Product": "fa fa-question cancel-color",
+  "Damaged Product": "fa fa-wrench warning-color"
 };
 
 AdvancedFulfillment.dateFormatter = function (date) {
@@ -154,8 +182,28 @@ AdvancedFulfillment.dateFormatter = function (date) {
 
 AdvancedFulfillment.isLocalAddress = function (addressOrPostal) {
   check(addressOrPostal, Match.OneOf(Object, Number));
-  if (typeof addressOrPostal === "Object" && addressOrPostal.postal) {
+  if (typeof addressOrPostal === "object" && addressOrPostal.postal) {
     return AdvancedFulfillment.localDeliveryZipcodes.indexOf(addressOrPostal.postal) !== -1;
   }
   return AdvancedFulfillment.localDeliveryZipcodes.indexOf(addressOrPostal) !== -1;
+};
+
+AdvancedFulfillment.timeSince = function (eventTime) {
+  const ms = moment().diff(moment(eventTime));
+  const seconds = Math.floor((ms / 1000) % 60 );
+  const minutes = Math.floor((ms / (1000 * 60)) % 60);
+  const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+
+  let stringTimeSince = seconds;
+  if (seconds < 10) {
+    stringTimeSince = "0" + seconds;
+  }
+  if (ms > 1000 * 60) {
+    stringTimeSince = minutes + ":" + stringTimeSince;
+  }
+  if (ms > 1000 * 60 * 60) {
+    stringTimeSince = hours + ":" + stringTimeSince;
+  }
+
+  return stringTimeSince;
 };

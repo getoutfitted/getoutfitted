@@ -118,27 +118,27 @@ const KLAVIYO_ENABLED = false;
 // }
 
 // XXX: Remove legacy code???
-function noteFormattedUser(user) {
-  check(user, String);
-  let date = moment().format("MM/DD/YY h:mma");
-  return  "| <em>" + user + "-" + date + "</em>";
-}
-
-// XXX: Remove legacy code???
-function userNameDeterminer(user) {
-  check(user, Object);
-  if (user.username) {
-    return user.username;
-  }
-  return user.emails[0].address;
-}
-
-function anyOrderNotes(orderNotes) {
-  if (!orderNotes) {
-    return "";
-  }
-  return orderNotes;
-}
+// function noteFormattedUser(user) {
+//   check(user, String);
+//   let date = moment().format("MM/DD/YY h:mma");
+//   return  "| <em>" + user + "-" + date + "</em>";
+// }
+//
+// // XXX: Remove legacy code???
+// function userNameDeterminer(user) {
+//   check(user, Object);
+//   if (user.username) {
+//     return user.username;
+//   }
+//   return user.emails[0].address;
+// }
+//
+// function anyOrderNotes(orderNotes) {
+//   if (!orderNotes) {
+//     return "";
+//   }
+//   return orderNotes;
+// }
 
 
 Meteor.methods({
@@ -220,6 +220,43 @@ Meteor.methods({
     Meteor.call("advancedFulfillment/addOrderNote", orderId, note, type = "Status Revision");
   },
 
+  "advancedFulfillment/markOrderCompleted": function (orderId) {
+    check(orderId, String);
+
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const userId = Meteor.userId();
+    const order = Orders.findOne({_id: orderId});
+    const returnedStatus = ["returned", "completed"];
+
+    const items = order.advancedFulfillment.items.filter(item => item.functionalType !== "bundleVariant");
+    const itemsReturned = items.every(item => returnedStatus.indexOf(item.workflow.status) !== -1);
+    const status = itemsReturned ? "orderCompleted" : "orderIncomplete";
+
+    const historyEvent = {
+      event: status,
+      userId: userId,
+      updatedAt: new Date()
+    };
+
+    const note = AdvancedFulfillment.humanOrderStatus[status];
+
+    ReactionCore.Collections.Orders.update({_id: orderId}, {
+      $addToSet: {
+        "history": historyEvent,
+        "advancedFulfillment.workflow.workflow": order.advancedFulfillment.workflow.status
+      },
+      $set: {
+        "advancedFulfillment.workflow.status": status
+      }
+    });
+
+    Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Status Update");
+  },
+
+  // Legacy - replaced by advancedFulfillment/markOrderCompleted
   "advancedFulfillment/orderCompletionVerifier": function (order, userId) {
     check(order, Object);
     check(userId, String);

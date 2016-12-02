@@ -39,15 +39,15 @@
                 </div>
               {{/if}}
               <a class='edit-order-button cancel-color' href="{{pathFor 'updateOrder' _id=_id}}">Edit Order</a>
+              {{#unless orderIsNew}}
+                <a href="{{pathFor 'advancedFulfillmentPDF' _id=this._id }}" target="_blank" class="print-order-button primary-color pull-right">Print Invoice</a>
+              {{/unless}}
             </div>
           </div>
 
           <div class="col-xs-12 col-md-4">
             <div class="text-center order-actions">
               {{> Template.dynamic template=orderActions}}
-
-              <!-- <a class='btn btn-lg btn-block btn-info update-to-shipped' href="#">Manually Update Order to Shipped</a> -->
-              <!-- <p class='text-center bg-warn'>When hooked into AfterShip, shipped status will automatically update when picked up by FedEx</p> -->
             </div>
             <div class="alert alert-default">
               <p><strong>Customer Contact</strong></p>
@@ -235,21 +235,39 @@
 <!--  ~~~~~~~~~~~ Order Notes ~~~~~~~~~~~ -->
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <template name="backpackOrderNotes">
-  <p><strong>Notes:</strong></p>
+  <h5><strong>Notes</strong></h5>
   {{#if orderNotes}}
     <div class="alert alert-danger">{{{orderNotes}}}</div>
   {{/if}}
-  {{#each backpackOrderNotes}}
-    <div class="order-note {{type}}">
-      <div class="context">
-        <span>{{formattedDate updatedAt}}</span><br>
-        <span class="author">{{username}}</span>
-      </div>
-      <i class="{{icon}}"></i>
-      <span class="note">{{note}}</span>
-    </div>
-  {{/each}}
+  <div class="notes order-exceptions">
+    {{#each note in orderExceptions}}
+      {{> backpackOrderNote note=note}}
+    {{/each}}
+  </div>
+  <div class="notes">
+    {{#each note in notes}}
+      {{> backpackOrderNote note=note}}
+    {{/each}}
+  </div>
   {{> backpackOrderNoteForm}}
+
+  <h5 class="order-status-header"><strong>Order Status</strong></h5>
+  <div class="notes">
+    {{#each note in statusUpdates}}
+      {{> backpackOrderNote note=note}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="backpackOrderNote">
+  <div class="order-note {{note.type}}">
+    <div class="context">
+      <span>{{formattedDate note.updatedAt}}</span><br>
+      <span class="author">{{note.username}}</span>
+    </div>
+    <i class="{{icon note.type}}"></i>
+    <span class="note">{{note.note}}</span>
+  </div>
 </template>
 
 <template name="backpackOrderNoteForm">

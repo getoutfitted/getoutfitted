@@ -1,17 +1,17 @@
 import { Template } from "meteor/templating";
 import { ReactiveDict } from "meteor/reactive-dict";
 
-function findFulfillmentItem(order, itemId) {
-  return order.advancedFulfillment.items.find(item => item._id === itemId);
-}
-
 Template.defaultStatus.onCreated(function () {
   const instance = this;
   const order = instance.data;
   instance.picking = new ReactiveDict();
+  instance.returning = new ReactiveDict();
   instance.autorun(() => {
     order.advancedFulfillment.items.forEach(function (item) {
-      instance.picking.set(item._id, item.workflow.status === "picked");
+      if (item) {
+        instance.picking.set(item._id, item.workflow.status === "picked");
+        instance.returning.set(item._id, item.workflow.status === "shipped");
+      }
     });
   });
   // const orderPickingStatus = {};
@@ -57,14 +57,50 @@ Template.defaultStatus.helpers({
   },
   fulfillmentStatus(item) {
     const order = this;
-    const fulfillmentItem = findFulfillmentItem(order, item._id);
-    return fulfillmentItem.workflow.status;
+    if (item) {
+      const fulfillmentItem = order.advancedFulfillment.items.find(
+        i => i._id === item._id
+      );
+      return fulfillmentItem.workflow.status;
+    }
+    return "";
+  },
+  workflowHasAction() {
+    const order = this;
+    const status = order.advancedFulfillment.workflow.status;
+    const workflowsWithAction = [
+      "orderPicking",
+      "orderReturned"
+    ];
+    // don't show picking buttons unless we're supposed to be picking
+    if (workflowsWithAction.indexOf(status) === -1) {
+      return false;
+    }
+    return true;
   },
   isPicked: function (itemId) {
     const instance = Template.instance();
+    const order = this;
+    const status = order.advancedFulfillment.workflow.status;
+    if (status !== "orderPicking") {
+      return true;
+    }
     // returns true if item picked
     if (instance.picking) {
       return instance.picking.get(itemId);
+    }
+    throw new Meteor.Error("picking status not established");
+  },
+  isReturning: function (itemId) {
+    const instance = Template.instance();
+    const order = this;
+    const status = order.advancedFulfillment.workflow.status;
+    if (status !== "orderReturned") {
+      return false;
+    }
+    // returns true if item picked
+    if (instance.returning) {
+      return instance.returning.get(itemId);
     }
     throw new Meteor.Error("picking status not established");
   }
@@ -72,12 +108,26 @@ Template.defaultStatus.helpers({
 
 Template.defaultStatus.events({
   "click .item-action": function (event) {
-    event.preventDefault();
     const instance = Template.instance();
     const itemId = event.target.dataset.itemId;
     const orderId = event.target.dataset.orderId;
     const itemStatus = event.target.dataset.itemStatus;
     instance.picking.set(itemId, true);
     Meteor.call("advancedFulfillment/updateItemWorkflow", orderId, itemId, itemStatus);
+  },
+  "click .item-returned": function (event) {
+    const instance = Template.instance();
+    const itemId = event.currentTarget.dataset.itemId;
+    const orderId = event.currentTarget.dataset.orderId;
+    instance.returning.set(itemId, false);
+    Meteor.call("advancedFulfillment/updateItemWorkflow", orderId, itemId, "shipped");
+  },
+  "click .item-issue": function (event) {
+    const instance = Template.instance();
+    const itemId = event.currentTarget.dataset.itemId;
+    const orderId = event.currentTarget.dataset.orderId;
+    const issue = event.target.dataset.issue;
+    instance.returning.set(itemId, false);
+    Meteor.call("advancedFulfillment/itemIssue", orderId, itemId, issue);
   }
 });

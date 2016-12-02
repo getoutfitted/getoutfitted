@@ -44,8 +44,8 @@
         </div>
       </div>
       <div class='row'>
-        <div class="col-xs-12">
-          <img class='img-responsive' src="/custom/images/go-logo-1000.png">
+        <div class="col-xs-12 text-center">
+          <img width='120' src="https://d2wpxyz1up89r3.cloudfront.net/logos/getoutfitted-square-120.png">
         </div>
       </div>
       {{#with order}}
@@ -69,11 +69,14 @@
           <div class='col-xs-12'>
             {{#with shippingAddress}}
               <h4><strong>{{fullName}}</strong></h4>
-              <h4><strong>{{address1}} {{#if address2}}{{address2}}{{/if}}</strong></h4>
+              <h4><strong>{{company}}</strong></h4>
+              <h4><strong>{{address1}}</strong></h4>
+              <h4><strong>{{address2}}</strong></h4>
               <h4><strong>{{city}}, {{region}} {{postal}} {{country}}</strong></h4>
               <hr>
             {{/with}}
-              <h4><strong>Primary #{{shippingPhone}} | Billing #{{billingPhone}}</strong></h4>
+              <h4><strong>Shipping Phone No. {{shippingPhone}}</strong></h4>
+              <h4><strong>Billing Phone No. {{billingPhone}}</strong></h4>
 
           </div>
         </div>

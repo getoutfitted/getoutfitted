@@ -137,6 +137,13 @@ span.graphic {
   overflow: hidden;
   margin-top: 10px;
   padding: 0 0 10px 0;
+}
+
+.order-note:not(:last-child) {
+  border-bottom: 1px solid @smoke;
+}
+
+.order-exceptions .order-note:last-child {
   border-bottom: 1px solid @smoke;
 }
 
@@ -144,10 +151,18 @@ span.graphic {
   float: right;
   color: @base;
   font-size: 12px;
+  min-width: 110px;
+  margin-left: 15px;
   .author {
     color: @primary-color-shadow;
   }
 }
+
+.order-status-header {
+  padding-top: 20px;
+  border-top: 1px solid @smoke;
+}
+
 .add-notes {
   margin-top: 10px;
 }
