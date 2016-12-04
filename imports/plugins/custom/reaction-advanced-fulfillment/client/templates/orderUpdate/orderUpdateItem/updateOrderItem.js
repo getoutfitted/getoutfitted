@@ -5,8 +5,6 @@ import { _ } from 'meteor/underscore';
 import { Session } from 'meteor/session';
 import { Products, Orders } from '/lib/collections';
 
-import './updateOrderItem.html';
-
 function uniqueFieldValues(allProducts, field) {
   let uniq = _.uniq(_.pluck(allProducts, field));
   return _.without(uniq, undefined);

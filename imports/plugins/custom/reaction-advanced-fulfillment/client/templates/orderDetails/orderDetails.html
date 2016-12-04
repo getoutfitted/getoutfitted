@@ -236,24 +236,26 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <template name="backpackOrderNotes">
   <h5><strong>Notes</strong></h5>
-  {{#if orderNotes}}
-    <div class="alert alert-danger">{{{orderNotes}}}</div>
-  {{/if}}
+  {{> backpackOrderExceptions}}
+  {{> backpackOrderUserNotes}}
+  {{> backpackOrderNoteForm}}
+  {{> backpackOrderStatusUpdates}}
+</template>
+
+<template name="backpackOrderExceptions">
   <div class="notes order-exceptions">
     {{#each note in orderExceptions}}
       {{> backpackOrderNote note=note}}
     {{/each}}
   </div>
+</template>
+
+<template name="backpackOrderUserNotes">
+  {{#if orderNotes}}
+    <div class="alert alert-danger">{{{orderNotes}}}</div>
+  {{/if}}
   <div class="notes">
     {{#each note in notes}}
-      {{> backpackOrderNote note=note}}
-    {{/each}}
-  </div>
-  {{> backpackOrderNoteForm}}
-
-  <h5 class="order-status-header"><strong>Order Status</strong></h5>
-  <div class="notes">
-    {{#each note in statusUpdates}}
       {{> backpackOrderNote note=note}}
     {{/each}}
   </div>
@@ -277,6 +279,15 @@
     </div>
     <button type='submit' class='btn btn-default'>Add Note</button>
   </form>
+</template>
+
+<template name="backpackOrderStatusUpdates">
+  <h5 class="order-status-header"><strong>Order Status</strong></h5>
+  <div class="notes">
+    {{#each note in statusUpdates}}
+      {{> backpackOrderNote note=note}}
+    {{/each}}
+  </div>
 </template>
 
 <template name='shippingLabel'>

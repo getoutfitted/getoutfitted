@@ -208,27 +208,39 @@ Template.backpackReservationDetails.helpers({
   }
 });
 
-Template.backpackOrderNotes.helpers({
+/**
+ * *********************
+ * backpackOrderNotes
+ * *********************
+ **/
+
+Template.backpackOrderExceptions.helpers({
+  orderExceptions() {
+    const order = this;
+    const exceptions = ["Missing Product", "Damaged Product"];
+    if (order.backpackOrderNotes) {
+      return order.backpackOrderNotes.filter(note => exceptions.indexOf(note.type) !== -1);
+    }
+    return [];
+  }
+});
+
+Template.backpackOrderUserNotes.helpers({
   notes() {
     const order = this;
     if (order.backpackOrderNotes) {
       return order.backpackOrderNotes.filter(note => note.type === "Note");
     }
     return [];
-  },
+  }
+});
+
+Template.backpackOrderStatusUpdates.helpers({
   statusUpdates() {
     const order = this;
     const updates = ["Status Update", "Status Revision"];
     if (order.backpackOrderNotes) {
       return order.backpackOrderNotes.filter(note => updates.indexOf(note.type) !== -1).reverse();
-    }
-    return [];
-  },
-  orderExceptions() {
-    const order = this;
-    const exceptions = ["Missing Product", "Damaged Product"];
-    if (order.backpackOrderNotes) {
-      return order.backpackOrderNotes.filter(note => exceptions.indexOf(note.type) !== -1);
     }
     return [];
   }

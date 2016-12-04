@@ -1,37 +1,56 @@
-import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
-import { Reaction } from '/client/api';
-import { Orders, Products } from '/lib/collections';
-import { Session } from 'meteor/session';
-import $ from 'jquery';
-import 'bootstrap-datepicker';
-
-import './orderUpdate.html';
+import $ from "jquery";
+import { _ } from "meteor/underscore";
+import { Template } from "meteor/templating";
+import { Session } from "meteor/session";
+import { ReactiveDict } from "meteor/reactive-dict";
+import { Reaction } from "/client/api";
+import { Orders, Products } from "/lib/collections";
+import "bootstrap-datepicker";
 
 function findOrderItem(order, itemId) {
   return _.findWhere(order.items, {_id: itemId});
 }
 
 Template.updateOrder.onCreated(function () {
+  const orderId = Reaction.Router.getParam("_id");
+  this.addingItems = new ReactiveDict();
   this.autorun(() => {
-    let orderId = Reaction.Router.getParam('_id');
-    this.subscribe('afProducts');
-    this.subscribe('advancedFulfillmentOrder', orderId);
+    this.subscribe("afProducts");
+    this.subscribe("advancedFulfillmentOrder", orderId);
   });
-});
-
-Template.updateOrder.onRendered(function () {
-  const orderId = Reaction.Router.getParam('_id');
-  Session.setDefault('cancel-order-' + orderId, false);
 });
 
 Template.updateOrder.helpers({
   order: function () {
-    const orderId = Reaction.Router.getParam('_id');
-    return Orders.findOne({ _id: orderId});
+    const orderId = () => Reaction.Router.getParam("_id");
+    return Orders.findOne({_id: orderId()});
   },
-  afItems: function () {
-    return this.advancedFulfillment.items;
+  bundles: function () {
+    const orderId = () => Reaction.Router.getParam("_id");
+    const order = Orders.findOne({_id: orderId()});
+    const index = {};
+    const bundles = order.items.reduce(function (acc, item) {
+      if (item.variants.functionalType === "bundleVariant") {
+        if (index[item.productId]) {
+          index[item.productId] += 1;
+        } else {
+          index[item.productId] = 1;
+        }
+        acc.push(Object.assign({index: index[item.productId]}, item));
+      }
+      return acc;
+    }, []);
+    return bundles;
+  },
+  itemsByBundle: function (bundle) {
+    const orderId = Reaction.Router.getParam("_id");
+    const order = Orders.findOne({ _id: orderId});
+    itemsByBundle = order.items.filter(function (item) {
+      itemMatches = item.bundleProductId === bundle.productId;
+      indexMatches = item.bundleIndex === bundle.index;
+      return itemMatches && indexMatches;
+    });
+    return itemsByBundle;
   },
   colorOptions: function (item) {
     let productId = item.productId;
@@ -97,8 +116,9 @@ Template.updateOrder.helpers({
     }
     return false;
   },
-  addingItems: function () {
-    let addingItems = Session.get('addItems');
+  addingItems: function (bundleId) {
+    const instance = Template.instance();
+    const addingItems = instance.addingItems.get(bundleId);
     return addingItems || false;
   }
 });
@@ -147,10 +167,23 @@ Template.updateOrder.events({
     let user = Meteor.user();
     Meteor.call('advancedFulfillment/updateItemsColorAndSize', order, itemId, productId, newVariantId, user);
   },
-  'click .add-new-item': function (event) {
-    event.preventDefault();
-    let addingItems = !Session.get('addItems') || false;
-    Session.set('addItems', addingItems);
+  "click .add-new-item": function (event) {
+    const instance = Template.instance();
+    const bundleId = event.currentTarget.dataset.bundleId;
+    const orderId = event.currentTarget.dataset.orderId;
+    if (bundleId) {
+      return instance.addingItems.set(bundleId, true);
+    }
+    return instance.addingItems.set(orderId, true);
+  },
+  "click .cancel-add-new-item": function (event) {
+    const instance = Template.instance();
+    const bundleId = event.currentTarget.dataset.bundleId;
+    const orderId = event.currentTarget.dataset.orderId;
+    if (bundleId) {
+      return instance.addingItems.set(bundleId, false);
+    }
+    return instance.addingItems.set(orderId, false);
   }
 });
 
