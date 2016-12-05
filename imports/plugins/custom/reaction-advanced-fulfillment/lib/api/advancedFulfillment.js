@@ -173,7 +173,9 @@ AdvancedFulfillment.orderNoteIcons = {
   "Status Update": "fa fa-check success-color",
   "Status Revision": "fa fa-undo warning-color",
   "Missing Product": "fa fa-question cancel-color",
-  "Damaged Product": "fa fa-wrench warning-color"
+  "Damaged Product": "fa fa-wrench warning-color",
+  "Product Added": "fa fa-plus info-color",
+  "Product Exchanged": "fa fa-exchange warning-color"
 };
 
 AdvancedFulfillment.dateFormatter = function (date) {

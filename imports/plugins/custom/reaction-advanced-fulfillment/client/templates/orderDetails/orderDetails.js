@@ -238,7 +238,7 @@ Template.backpackOrderUserNotes.helpers({
 Template.backpackOrderStatusUpdates.helpers({
   statusUpdates() {
     const order = this;
-    const updates = ["Status Update", "Status Revision"];
+    const updates = ["Status Update", "Status Revision", "Product Added", "Product Exchanged"];
     if (order.backpackOrderNotes) {
       return order.backpackOrderNotes.filter(note => updates.indexOf(note.type) !== -1).reverse();
     }

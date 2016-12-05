@@ -55,6 +55,14 @@
             {{/each}}
             <tr class="no-border">&nbsp;</tr>
           {{/each}}
+          <tr>
+            {{#if workflowHasAction}}
+              <td></td>
+            {{/if}}
+            <td colspan="4">
+              <strong>Items not in an Outfit</strong>
+            </td>
+          </tr>
           {{#each item in nonBundleItems}}
             <tr>
               {{#if workflowHasAction}}

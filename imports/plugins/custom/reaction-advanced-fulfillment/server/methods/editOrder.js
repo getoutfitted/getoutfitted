@@ -1,7 +1,9 @@
 import { _ } from "meteor/underscore";
 import { Meteor } from "meteor/meteor";
+import { Random } from "meteor/random";
 import { check } from "meteor/check";
-import { Reaction } from "/server/api";
+import { Logger, Reaction } from "/server/api";
+import { Orders, Products } from "/lib/collections";
 import AdvancedFulfillment from "../../lib/api";
 
 // const KLAVIYO_ENABLED = false;
@@ -332,36 +334,39 @@ Meteor.methods({
   },
 
   // TODO: Should check availability before updating items
-  "advancedFulfillment/addItem": function (order, type, gender, title, color, variantId, userObj) {
-    check(order, Object);
-    check(type, String);
-    check(gender, String);
-    check(title, String);
-    check(color, String);
+  "advancedFulfillment/addItem": function (orderId, productId, variantId, bundleId, bundleIndex) {
+    check(orderId, String);
+    check(productId, String);
     check(variantId, String);
-    check(userObj, Object);
-    // XXX: Too many params - use options object.
+    check(bundleId, Match.Maybe(String));
+    check(bundleIndex, Match.Maybe(String));
 
+    // Check for permission
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
     }
-    let user = userNameDeterminer(userObj);
-    let product = Products.findOne({
-      productType: type,
-      gender: gender,
-      title: title
-    });
-    let variant = _.findWhere(product.variants, {_id: variantId});
-    let id = Random.id();
-    let shopId = ReactionCore.getShopId();
-    let newItem = {
+
+    if (bundleId && !bundleIndex) {
+      throw new Meteor.Error(422, "bundleIndex must be included to add an item to a bundle");
+    }
+
+    const product = Products.findOne({_id: productId});
+    const variant = Products.findOne({_id: variantId});
+    const id = Random.id();
+    const shopId = ReactionCore.getShopId();
+    const isBundle = !!bundleId;
+
+    const newItem = {
       _id: id,
       shopId: shopId,
       productId: product._id,
       quantity: 1,
+      title: product.title,
+      type: product.type,
+      workflow: product.workflow,
       variants: variant
     };
-    let newAfItem = {
+    const newAfItem = {
       _id: id,
       productId: product._id,
       shopId: shopId,
@@ -376,29 +381,35 @@ Meteor.methods({
         workflow: ["added"]
       }
     };
-    if (!order.orderNotes) {
-      order.orderNotes = "";
+
+    if (isBundle) {
+      Object.assign(newItem, {
+        bundleProductId: bundleId,
+        bundleIndex: bundleIndex,
+        customerViewType: "bundleComponent"
+      });
     }
-    let orderNotes = order.orderNotes + "<p>Item Added: "
-      + newAfItem.itemDescription + " - " + newItem.variants.size
-      + " - " + newItem.variants.color
-      + noteFormattedUser(user)
-      + "</p>";
-    ReactionCore.Collections.Orders.update({
-      _id: order._id
+
+    // TODO: Book Item
+
+    Orders.update({
+      _id: orderId
     }, {
-      $set: {
-        orderNotes: orderNotes
-      },
       $addToSet: {
         "items": newItem,
         "advancedFulfillment.items": newAfItem,
         "history": {
           event: "itemAdded",
-          userId: userObj._id,
+          userId: Meteor.userId(),
           updatedAt: new Date()
         }
-      }
+      },
+      updatedAt: new Date()
     });
+
+    // Add note to order
+    const note = `${newAfItem.sku} was added to order.`;
+    Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Added");
+    Logger.info(`Order ${orderId} had an item added to it.`);
   }
 });

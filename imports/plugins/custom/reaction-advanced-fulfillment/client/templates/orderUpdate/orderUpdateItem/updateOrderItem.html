@@ -35,47 +35,47 @@
 <template name='productSelector'>
   <select class='form-control productType-selector'>
     <option disabled selected> -- select a product type -- </option>
-    {{#each possibleProductType in productTypes}}
-      <option class="form-control" value="{{possibleProductType}}">{{possibleProductType}}</option>
+    {{#each product in productTypes}}
+      <option class="form-control" value="{{product.productType}}">{{product.productType}}</option>
     {{/each}}
   </select>
   {{#if productTypeSelected}}
-    <select   class='form-control gender-selector'>
+    <select class='form-control gender-selector'>
       <option disabled selected> -- select gender -- </option>
-      {{#each possibleGender in productGenders}}
-        <option class="form-control" value="{{possibleGender}}">{{possibleGender}}</option>
+      {{#each product in productGenders}}
+        <option class="form-control" value="{{product.gender}}">{{product.gender}}</option>
       {{/each}}
     </select>
   {{/if}}
   {{#if productGenderSelected}}
-    <select   class='form-control product-selector'>
+    <select class='form-control product-selector'>
       <option disabled selected> -- select product -- </option>
-      {{#each possibleProduct in productTitles}}
-        <option class="form-control" value="{{possibleProduct}}">{{possibleProduct}}</option>
+      {{#each product in productTitles}}
+        <option class="form-control" value="{{product._id}}">{{product.title}}</option>
       {{/each}}
     </select>
   {{/if}}
-  {{#if productTitleSelected}}
-     <select   class='form-control color-selector'>
+  {{#if productSelected}}
+     <select class='form-control color-selector'>
       <option disabled selected> -- select color -- </option>
-      {{#each possibleColor in productColorWays}}
-        <option class="form-control" value="{{possibleColor}}">{{possibleColor}}</option>
+      {{#each product in productColorWays}}
+        <option class="form-control" data-product-id="{{product._id}}" value="{{product.color}}">{{product.color}}</option>
       {{/each}}
     </select>
   {{/if}}
   {{#if productColorSelected}}
-     <select   class='form-control size-selector'>
+     <select class='form-control size-selector'>
       <option disabled selected> -- select size-- </option>
-      {{#each possibleSize in productSizes}}
-        <option class="form-control" value="{{possibleSize._id}}">{{possibleSize.size}}</option>
+      {{#each product in productSizes}}
+        <option class="form-control" value="{{product._id}}">{{product.size}}</option>
       {{/each}}
     </select>
   {{/if}}
   {{#if productVariantSelected}}
     {{#if addItem}}
-      <a class='btn btn-lg btn-block btn-danger add-item' href="#">Add item to Order</a>
+      <button class='btn btn-lg btn-block btn-success add-item' data-bundle-id="{{bundle.productId}}" data-order-id="{{order._id}}" data-bundle-index={{bundle.index}}>Add item to Order</button>
     {{else}}
-      <a class='btn btn-lg btn-block btn-danger replace-item' data-item-id='{{item.afItem._id}}' href="#">Update exisiting item in order with selected item</a>
+      <button class='btn btn-lg btn-block btn-success replace-item' data-bundle-id="{{bundle.productId}}" data-order-id="{{order._id}}" data-item-id='{{item.afItem._id}}'>Exchange Item</button>
     {{/if}}
   {{/if}}
 </template>
