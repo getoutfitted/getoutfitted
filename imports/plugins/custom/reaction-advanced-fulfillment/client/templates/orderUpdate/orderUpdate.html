@@ -20,9 +20,9 @@
                   {{#each bundle in bundles}}
                     <tr class="bundle-title">
                       <td>{{#if addingItems bundle._id}}
-                        <button class='btn btn-danger cancel-add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Cancel</button>
+                        <button class='btn btn-danger btn-sm cancel-add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Cancel</button>
                       {{else}}
-                        <button class='btn btn-info add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Add Item to Outfit</button>
+                        <button class='btn btn-info btn-sm add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Add Item to Outfit</button>
                       {{/if}}</td>
                       <td colspan="3"><strong>{{bundle.title}}</strong></td>
                       <td></td>
