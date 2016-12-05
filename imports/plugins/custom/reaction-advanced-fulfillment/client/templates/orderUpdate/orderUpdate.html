@@ -19,9 +19,24 @@
                 <tbody>
                   {{#each bundle in bundles}}
                     <tr class="bundle-title">
-                      <td></td>
+                      <td>{{#if addingItems bundle._id}}
+                        <button class='btn btn-danger cancel-add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Cancel</button>
+                      {{else}}
+                        <button class='btn btn-info add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Add Item to Outfit</button>
+                      {{/if}}</td>
                       <td colspan="3"><strong>{{bundle.title}}</strong></td>
                       <td></td>
+                    </tr>
+                    <tr>
+                      <td>
+                      </td>
+                      <td colspan="3">
+                        <div class='row item-selector'>
+                        {{#if addingItems bundle._id}}
+                          {{> productSelector}}
+                        {{/if}}
+                        </div>
+                      </td>
                     </tr>
                     {{#each item in itemsByBundle bundle}}
                       {{#if colorAndSize item}}
@@ -62,22 +77,6 @@
                         </tr>
                       {{/if}}
                     {{/each}}
-                    <tr>
-                      <td>
-                        {{#if addingItems bundle._id}}
-                          <button class='btn btn-danger cancel-add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Cancel</button>
-                        {{else}}
-                          <button class='btn btn-info add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Add an Item</button>
-                        {{/if}}
-                      </td>
-                      <td colspan="3">
-                        <div class='row item-selector'>
-                        {{#if addingItems bundle._id}}
-                          {{> productSelector}}
-                        {{/if}}
-                        </div>
-                      </td>
-                    </tr>
                   {{/each}}
                   <tr>
                     <td>
