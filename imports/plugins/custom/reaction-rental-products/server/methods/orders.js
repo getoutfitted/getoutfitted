@@ -1,13 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Reaction, Logger } from '/server/api';
-import { _ } from 'meteor/underscore';
-import { InventoryVariants } from '../../lib/collections';
-import { Orders } from '/lib/collections';
-import moment from 'moment';
-import 'moment-timezone';
-import 'twix';
-import { Transit } from '/imports/plugins/custom/transit-times/server/api';
+import { _ } from "meteor/underscore";
+import moment from "moment";
+import "moment-timezone";
+import "twix";
+
+import { Meteor } from "meteor/meteor";
+import { check } from "meteor/check";
+import { Reaction, Logger } from "/server/api";
+import { Orders } from "/lib/collections";
+
+import { InventoryVariants } from "../../lib/collections";
+import { Transit } from "/imports/plugins/custom/transit-times/server/api";
+import RentalProducts from "../../lib/api";
 
 function adjustLocalToDenverTime(time) {
   let here = moment(time);
@@ -130,6 +133,45 @@ Meteor.methods({
         }
       }
     }
+  },
+  "rentalProducts/reserveInventory": function (inventoryVariantId, reservation, orderId) {
+    check(inventoryVariantId, String); // simpleSchema cartItem
+    check(reservation, Object);
+    check(orderId, String);
+
+    // TODO: give this real permission check
+    if (!Reaction.hasPermission(RentalProducts.server.permissions)) { // could give user permissions with  && order.userId !== Meteor.userId()
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    // Not using $in because we need to determine the correct position
+    // to insert the new dates separately for each inventoryVariant
+    const inventoryVariant = InventoryVariants.findOne({
+      _id: inventoryVariantId
+    }, {fields: {unavailableDates: 1}});
+
+    const reservedDates = inventoryVariant.unavailableDates;
+
+    // We take the time to insert unavailable dates in ascending date order
+    // find the position that we should insert the reserved dates
+    const positionToInsert = _.sortedIndex(reservedDates, reservation.datesToReserve[0]);
+
+    // insert datesToReserve into the correct variants at the correct position
+    return InventoryVariants.update({_id: inventoryVariantId}, {
+      $inc: {
+        numberOfDatesBooked: reservation.datesToReserve.length
+      },
+      $push: {
+        unavailableDates: {
+          $each: reservation.datesToReserve,
+          $position: positionToInsert
+        },
+        unavailableDetails: {
+          $each: reservation.detailsToReserve,
+          $position: positionToInsert
+        }
+      }
+    });
   },
   "rentalProducts/inventoryUnbook": function (orderId) {
     check(orderId, String);

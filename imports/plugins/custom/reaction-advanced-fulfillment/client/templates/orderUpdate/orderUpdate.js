@@ -11,9 +11,11 @@ function findOrderItem(order, itemId) {
   return _.findWhere(order.items, {_id: itemId});
 }
 
+export const Backpack = {};
+
 Template.updateOrder.onCreated(function () {
   const orderId = Reaction.Router.getParam("_id");
-  this.addingItems = new ReactiveDict();
+  Backpack.addingItems = new ReactiveDict();
   this.autorun(() => {
     this.subscribe("afProducts");
     this.subscribe("advancedFulfillmentOrder", orderId);
@@ -118,7 +120,7 @@ Template.updateOrder.helpers({
   },
   addingItems: function (bundleId) {
     const instance = Template.instance();
-    const addingItems = instance.addingItems.get(bundleId);
+    const addingItems = Backpack.addingItems.get(bundleId);
     return addingItems || false;
   }
 });
@@ -172,18 +174,18 @@ Template.updateOrder.events({
     const bundleId = event.currentTarget.dataset.bundleId;
     const orderId = event.currentTarget.dataset.orderId;
     if (bundleId) {
-      return instance.addingItems.set(bundleId, true);
+      return Backpack.addingItems.set(bundleId, true);
     }
-    return instance.addingItems.set(orderId, true);
+    return Backpack.addingItems.set(orderId, true);
   },
   "click .cancel-add-new-item": function (event) {
     const instance = Template.instance();
     const bundleId = event.currentTarget.dataset.bundleId;
     const orderId = event.currentTarget.dataset.orderId;
     if (bundleId) {
-      return instance.addingItems.set(bundleId, false);
+      return Backpack.addingItems.set(bundleId, false);
     }
-    return instance.addingItems.set(orderId, false);
+    return Backpack.addingItems.set(orderId, false);
   }
 });
 

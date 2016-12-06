@@ -5,6 +5,7 @@ import { Reaction } from "/client/api";
 import { _ } from "meteor/underscore";
 import { Session } from "meteor/session";
 import { Products, Orders } from "/lib/collections";
+import { Backpack } from "../orderUpdate";
 
 function uniqueFieldValues(products, field) {
   const fieldValues = {};
@@ -211,17 +212,24 @@ Template.productSelector.events({
     const instance = Template.instance();
     const orderId = Reaction.Router.getParam("_id");
     const bundleId = event.currentTarget.dataset.bundleId;
+    const bundleCartItemId = event.currentTarget.dataset.bundleCartItemId;
     const bundleIndex = event.currentTarget.dataset.bundleIndex;
     const variantId = instance.productVariant.get();
     const productId = instance.productId.get();
 
     Meteor.call("advancedFulfillment/addItem", orderId, productId, variantId, bundleId, bundleIndex);
 
-    instance.productType.set(type);
+    instance.productType.set(undefined);
     instance.productGender.set(undefined);
     instance.productTitle.set(undefined);
     instance.productId.set(undefined);
     instance.productColor.set(undefined);
     instance.productVariant.set(undefined);
+
+    if (bundleId) {
+      Backpack.addingItems.set(bundleCartItemId, false);
+    } else {
+      Backpack.addingItems.set(orderId, false);
+    }
   }
 });

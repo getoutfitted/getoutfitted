@@ -5,9 +5,7 @@ import { check } from "meteor/check";
 import { Logger, Reaction } from "/server/api";
 import { Orders, Products } from "/lib/collections";
 import AdvancedFulfillment from "../../lib/api";
-
-// const KLAVIYO_ENABLED = false;
-
+import RentalProducts from "/imports/plugins/custom/reaction-rental-products/server/api";
 
 Meteor.methods({
   // TODO: This should check availability and not allow updates if availability does not exist.
@@ -333,7 +331,6 @@ Meteor.methods({
     });
   },
 
-  // TODO: Should check availability before updating items
   "advancedFulfillment/addItem": function (orderId, productId, variantId, bundleId, bundleIndex) {
     check(orderId, String);
     check(productId, String);
@@ -350,6 +347,7 @@ Meteor.methods({
       throw new Meteor.Error(422, "bundleIndex must be included to add an item to a bundle");
     }
 
+    const order = Orders.findOne({_id: orderId});
     const product = Products.findOne({_id: productId});
     const variant = Products.findOne({_id: variantId});
     const id = Random.id();
@@ -390,26 +388,42 @@ Meteor.methods({
       });
     }
 
-    // TODO: Book Item
+    // Shipment times should be identical to rest of order
+    const shipment = {
+      firstDayToReserve: order.advancedFulfillment.shipmentDate,
+      lastDayToReserve: order.advancedFulfillment.returnDate
+    };
 
-    Orders.update({
-      _id: orderId
-    }, {
-      $addToSet: {
-        "items": newItem,
-        "advancedFulfillment.items": newAfItem,
-        "history": {
-          event: "itemAdded",
-          userId: Meteor.userId(),
-          updatedAt: new Date()
-        }
-      },
-      updatedAt: new Date()
-    });
+    const inventoryVariantIds = Meteor.call("rentalProducts/checkInventoryAvailability",
+                                      newItem.variants._id,
+                                      {endTime: shipment.lastDayToReserve, startTime: shipment.firstDayToReserve},
+                                      newItem.quantity, false);
 
-    // Add note to order
-    const note = `${newAfItem.sku} was added to order.`;
-    Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Added");
-    Logger.info(`Order ${orderId} had an item added to it.`);
+    if (inventoryVariantIds.length === newItem.quantity) {
+      inventoryVariantIds.forEach(function (inventoryVariantId) {
+        const reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId);
+        Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, reservation, orderId);
+      });
+
+      Orders.update({
+        _id: orderId
+      }, {
+        $addToSet: {
+          "items": newItem,
+          "advancedFulfillment.items": newAfItem,
+          "history": {
+            event: "itemAdded",
+            userId: Meteor.userId(),
+            updatedAt: new Date()
+          }
+        },
+        updatedAt: new Date()
+      });
+
+      // Add note to order
+      const note = `${newAfItem.sku} was added to order.`;
+      Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Added");
+      Logger.info(`Order ${orderId} had an item added to it.`);
+    }
   }
 });
