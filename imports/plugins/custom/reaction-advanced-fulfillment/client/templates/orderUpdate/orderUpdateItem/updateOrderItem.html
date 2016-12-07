@@ -64,12 +64,16 @@
     </select>
   {{/if}}
   {{#if productColorSelected}}
-     <select class='form-control size-selector'>
-      <option disabled selected> -- select size-- </option>
-      {{#each product in productSizes}}
-        <option class="form-control" value="{{product._id}}">{{product.size}}</option>
-      {{/each}}
-    </select>
+    {{#if availabilityReady}}
+       <select class='form-control size-selector'>
+        <option disabled selected> -- select size-- </option>
+        {{#each product in productSizes}}
+          <option class="form-control" value="{{product._id}}" {{isAvailable product._id}}>{{product.size}} (qty: {{quantityAvailable product._id}})</option>
+        {{/each}}
+      </select>
+    {{else}}
+      <span><i class="fa fa-spinner fa-spin"></i> Checking Availability</span>
+    {{/if}}
   {{/if}}
   {{#if productVariantSelected}}
     {{#if addItem}}

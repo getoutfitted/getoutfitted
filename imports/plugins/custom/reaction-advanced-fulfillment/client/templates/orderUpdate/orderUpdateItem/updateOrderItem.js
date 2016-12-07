@@ -1,11 +1,12 @@
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 import { ReactiveVar } from "meteor/reactive-var";
-import { Reaction } from "/client/api";
+import { Logger, Reaction } from "/client/api";
 import { _ } from "meteor/underscore";
 import { Session } from "meteor/session";
 import { Products, Orders } from "/lib/collections";
 import { Backpack } from "../orderUpdate";
+import RentalProducts  from "/imports/plugins/custom/reaction-rental-products/lib/api";
 
 function uniqueFieldValues(products, field) {
   const fieldValues = {};
@@ -52,17 +53,19 @@ Template.productSelector.onCreated(function () {
   instance.productGender = new ReactiveVar();
   instance.productTitle = new ReactiveVar();
   instance.productVariant = new ReactiveVar();
+  instance.productAvailability = new ReactiveVar();
   instance.productId = new ReactiveVar();
 });
 
 Template.productSelector.onRendered(function () {
   const instance = this;
-  instance.productType.set(undefined)
-  instance.productColor.set(undefined)
-  instance.productGender.set(undefined)
-  instance.productTitle.set(undefined)
-  instance.productVariant.set(undefined)
-  instance.productId.set(undefined)
+  instance.productType.set(undefined);
+  instance.productColor.set(undefined);
+  instance.productGender.set(undefined);
+  instance.productTitle.set(undefined);
+  instance.productId.set(undefined);
+  instance.productAvailability.set(undefined);
+  instance.productVariant.set(undefined);
 });
 
 Template.productSelector.helpers({
@@ -137,11 +140,33 @@ Template.productSelector.helpers({
       ancestors: productId,
       color: color
     }, {sort: {numberSize: 1}}).fetch();
+
     return products;
   },
   productVariantSelected: function () {
     const instance = Template.instance();
     return !!instance.productVariant.get();
+  },
+  availabilityReady: function () {
+    const instance = Template.instance();
+    const availability = instance.productAvailability.get();
+    return !!availability;
+  },
+  quantityAvailable(variantId) {
+    const instance = Template.instance();
+    const availability = instance.productAvailability.get();
+    if (availability) {
+      return availability[variantId];
+    }
+    return false;
+  },
+  isAvailable(variantId) {
+    const instance = Template.instance();
+    const availability = instance.productAvailability.get();
+    if (availability && availability[variantId] > 0) {
+      return "";
+    }
+    return "disabled";
   }
 });
 
@@ -156,6 +181,7 @@ Template.productSelector.events({
     instance.productId.set(undefined);
     instance.productColor.set(undefined);
     instance.productVariant.set(undefined);
+    instance.productAvailability.set(undefined);
   },
   "change .gender-selector": function (event) {
     const instance = Template.instance();
@@ -166,6 +192,7 @@ Template.productSelector.events({
     instance.productColor.set(undefined);
     instance.productId.set(undefined);
     instance.productVariant.set(undefined);
+    instance.productAvailability.set(undefined);
   },
   "change .product-selector": function (event) {
     const instance = Template.instance();
@@ -174,10 +201,32 @@ Template.productSelector.events({
     instance.productId.set(productId);
     instance.productColor.set(undefined);
     instance.productVariant.set(undefined);
+    instance.productAvailability.set(undefined);
   },
   "change .color-selector": function (event) {
     const instance = Template.instance();
     const color = event.target.value;
+    const orderId = Reaction.Router.getParam("_id");
+    const order = Orders.findOne({_id: orderId});
+    const reservationRequest = {
+      startTime: order.advancedFulfillment.shipmentDate,
+      endTime: order.advancedFulfillment.returnDate
+    };
+
+    const variants = Products.find({
+      ancestors: instance.productId.get(),
+      color: color
+    }, {sort: {numberSize: 1}}).fetch();
+
+    const variantIds = variants.map(v => v._id);
+
+    Meteor.call("rentalProducts/bulkCheckInventoryAvailability", variantIds, reservationRequest, function (error, result) {
+      if (error) {
+        Logger.warn("Error during rentalProducts/bulkCheckInventoryAvailability", error);
+      } else {
+        instance.productAvailability.set(result);
+      }
+    });
 
     instance.productColor.set(color);
     instance.productVariant.set(undefined);

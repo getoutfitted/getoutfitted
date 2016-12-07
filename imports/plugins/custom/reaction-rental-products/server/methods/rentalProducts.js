@@ -1,14 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Reaction } from '/server/api';
-import  RentalProducts from '../api';
-import { _ } from 'meteor/underscore';
-import { InventoryVariants } from '../../lib/collections';
-import { Products } from '/lib/collections';
-import moment from 'moment';
-import 'moment-timezone';
-import 'twix';
-import { Random } from 'meteor/random';
+import { _ } from "meteor/underscore";
+import moment from "moment";
+import "moment-timezone";
+import "twix";
+
+import { Meteor } from "meteor/meteor";
+import { Random } from "meteor/random";
+import { check } from "meteor/check";
+
+import { Reaction } from "/server/api";
+import { Products } from "/lib/collections";
+
+import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
+import  RentalProducts from "../api";
+import { InventoryVariants } from "../../lib/collections";
+
 
 function adjustLocalToDenverTime(time) {
   let here = moment(time);
@@ -88,6 +93,40 @@ Meteor.methods({
     // return requested variants array  (an array consisting of available variantIds)
     return requestedVariants;
   },
+
+  /**
+   * bulkCheckInventoryAvailability
+   * Checks each variantId supplied in array
+   * Returns object with variantIds as keys and boolean availablity status as values
+   */
+
+  "rentalProducts/bulkCheckInventoryAvailability": function (variantIds, reservationRequest) {
+    check(variantIds, [String]);
+    check(reservationRequest, {
+      startTime: Date,
+      endTime: Date
+    });
+
+    const inventoryAvailability = variantIds.reduce(function (obj, variantId) {
+      const availableCount = InventoryVariants.find({
+        productId: variantId,
+        unavailableDates: {
+          $not: {
+            $elemMatch: {
+              $gte: reservationRequest.startTime,
+              $lte: reservationRequest.endTime
+            }
+          }
+        }
+      }).count();
+
+      obj[variantId] = availableCount;
+      return obj;
+    }, {});
+
+    return inventoryAvailability;
+  },
+
 
   /*
    * TODO: Move inventory event creation to AdvancedFulfillment
