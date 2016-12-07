@@ -1,21 +1,19 @@
 import $ from "jquery";
-import { _ } from "meteor/underscore";
+import "bootstrap-datepicker";
+
 import { Template } from "meteor/templating";
 import { Session } from "meteor/session";
 import { ReactiveDict } from "meteor/reactive-dict";
-import { Reaction } from "/client/api";
-import { Orders, Products } from "/lib/collections";
-import "bootstrap-datepicker";
 
-function findOrderItem(order, itemId) {
-  return _.findWhere(order.items, {_id: itemId});
-}
+import { Reaction } from "/client/api";
+import { Orders } from "/lib/collections";
 
 export const Backpack = {};
 
 Template.updateOrder.onCreated(function () {
   const orderId = Reaction.Router.getParam("_id");
   Backpack.addingItems = new ReactiveDict();
+  Backpack.exchangingItem = new ReactiveDict();
   this.autorun(() => {
     this.subscribe("afProducts");
     this.subscribe("advancedFulfillmentOrder", orderId);
@@ -54,75 +52,79 @@ Template.updateOrder.helpers({
     });
     return itemsByBundle;
   },
-  colorOptions: function (item) {
-    let productId = item.productId;
-    let product = Products.findOne(productId);
-    if (product) {
-      return product.colors;
-    }
-  },
-  sizeOptions: function (item) {
-    let productId = item.productId;
-    let product = Products.findOne(productId);
-    let selectedColor = Session.get('colorSelectorFor-' + item._id);
-    let variantsWithSelectedColor = _.where(product.variants, {color: selectedColor});
-    return _.map(variantsWithSelectedColor, function (variant) {
-      return {
-        size: variant.size,
-        _id: variant._id
-      };
-    });
-  },
-  sizeAndColorSelected: function (item) {
-    let itemId = item._id;
-    let color = Session.get('colorSelectorFor-' + itemId);
-    let size = Session.get('sizeSelectorFor-' + itemId);
-    if (color && size) {
-      return true;
-    }
-    return false;
-  },
-  color: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      return orderItem.variants.color;
-    }
-  },
-  size: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      return orderItem.variants.size;
-    }
-  },
-  colorAndSize: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      if (orderItem.variants.size &&  orderItem.variants.color) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  },
-  readyToSelectSize: function (item) {
-    let itemId = item._id;
-    let session = Session.get('colorSelectorFor-' + itemId);
-    if (session) {
-      return true;
-    }
-    return false;
-  },
   addingItems: function (bundleId) {
-    const instance = Template.instance();
     const addingItems = Backpack.addingItems.get(bundleId);
     return addingItems || false;
+  },
+  exchangingItem(itemId) {
+    const exchangingItem = Backpack.exchangingItem.get(itemId);
+    return exchangingItem || false;
   }
+  // colorOptions: function (item) {
+  //   let productId = item.productId;
+  //   let product = Products.findOne(productId);
+  //   if (product) {
+  //     return product.colors;
+  //   }
+  // },
+  // sizeOptions: function (item) {
+  //   let productId = item.productId;
+  //   let product = Products.findOne(productId);
+  //   let selectedColor = Session.get('colorSelectorFor-' + item._id);
+  //   let variantsWithSelectedColor = _.where(product.variants, {color: selectedColor});
+  //   return _.map(variantsWithSelectedColor, function (variant) {
+  //     return {
+  //       size: variant.size,
+  //       _id: variant._id
+  //     };
+  //   });
+  // },
+  // sizeAndColorSelected: function (item) {
+  //   let itemId = item._id;
+  //   let color = Session.get('colorSelectorFor-' + itemId);
+  //   let size = Session.get('sizeSelectorFor-' + itemId);
+  //   if (color && size) {
+  //     return true;
+  //   }
+  //   return false;
+  // },
+  // colorAndSize: function (item) {
+  //   let itemId = item._id;
+  //   let order = this;
+  //   let orderItem = findOrderItem(order, itemId);
+  //   if (orderItem) {
+  //     if (orderItem.variants.size &&  orderItem.variants.color) {
+  //       return true;
+  //     }
+  //     return false;
+  //   }
+  //   return false;
+  // },
+  // color: function (item) {
+  //   console.log(item);
+  //   let itemId = item._id;
+  //   let order = this;
+  //   let orderItem = findOrderItem(order, itemId);
+  //   if (orderItem) {
+  //     return orderItem.variants.color;
+  //   }
+  // },
+  // size: function (item) {
+  //   let itemId = item._id;
+  //   let order = this;
+  //   let orderItem = findOrderItem(order, itemId);
+  //   if (orderItem) {
+  //     return orderItem.variants.size;
+  //   }
+  // },
+  // readyToSelectSize: function (item) {
+  //   let itemId = item._id;
+  //   let session = Session.get('colorSelectorFor-' + itemId);
+  //   if (session) {
+  //     return true;
+  //   }
+  //   return false;
+  // },
 });
 
 Template.updateCustomerDetails.onCreated(function () {
@@ -147,30 +149,7 @@ Template.updateCustomerDetails.helpers({
 });
 
 Template.updateOrder.events({
-  'change .color-selector': function (event) {
-    event.preventDefault();
-    let itemId = event.target.dataset.id;
-    let selectedColor = event.target.value;
-    Session.set('sizeSelectorFor-' + itemId, undefined);
-    Session.set('colorSelectorFor-' + itemId, selectedColor);
-  },
-  'change .size-selector': function (event) {
-    event.preventDefault();
-    let itemId = event.target.dataset.id;
-    let selectedSize = event.target.value;
-    Session.set('sizeSelectorFor-' + itemId, selectedSize);
-  },
-  'click .save-item': function (event) {
-    event.preventDefault();
-    let itemId = event.target.dataset.id;
-    let productId = event.target.dataset.productId;
-    let newVariantId = Session.get('sizeSelectorFor-' + itemId);
-    let order = this;
-    let user = Meteor.user();
-    Meteor.call('advancedFulfillment/updateItemsColorAndSize', order, itemId, productId, newVariantId, user);
-  },
-  "click .add-new-item": function (event) {
-    const instance = Template.instance();
+  "click .add-item-start": function (event) {
     const bundleId = event.currentTarget.dataset.bundleId;
     const orderId = event.currentTarget.dataset.orderId;
     if (bundleId) {
@@ -178,15 +157,45 @@ Template.updateOrder.events({
     }
     return Backpack.addingItems.set(orderId, true);
   },
-  "click .cancel-add-new-item": function (event) {
-    const instance = Template.instance();
+  "click .add-item-cancel": function (event) {
     const bundleId = event.currentTarget.dataset.bundleId;
     const orderId = event.currentTarget.dataset.orderId;
     if (bundleId) {
       return Backpack.addingItems.set(bundleId, false);
     }
     return Backpack.addingItems.set(orderId, false);
+  },
+  "click .exchange-item-start": function (event) {
+    const itemId = event.currentTarget.dataset.itemId;
+    console.log(itemId);
+    return Backpack.exchangingItem.set(itemId, true);
+  },
+  "click .exchange-item-cancel": function (event) {
+    const itemId = event.currentTarget.dataset.itemId;
+    return Backpack.exchangingItem.set(itemId, false);
   }
+  // 'change .color-selector': function (event) {
+  //   event.preventDefault();
+  //   let itemId = event.target.dataset.id;
+  //   let selectedColor = event.target.value;
+  //   Session.set('sizeSelectorFor-' + itemId, undefined);
+  //   Session.set('colorSelectorFor-' + itemId, selectedColor);
+  // },
+  // 'change .size-selector': function (event) {
+  //   event.preventDefault();
+  //   let itemId = event.target.dataset.id;
+  //   let selectedSize = event.target.value;
+  //   Session.set('sizeSelectorFor-' + itemId, selectedSize);
+  // },
+  // 'click .save-item': function (event) {
+  //   event.preventDefault();
+  //   let itemId = event.target.dataset.id;
+  //   let productId = event.target.dataset.productId;
+  //   let newVariantId = Session.get('sizeSelectorFor-' + itemId);
+  //   let order = this;
+  //   let user = Meteor.user();
+  //   Meteor.call('advancedFulfillment/updateItemsColorAndSize', order, itemId, productId, newVariantId, user);
+  // },
 });
 
 Template.updateCustomerDates.onRendered(function () {

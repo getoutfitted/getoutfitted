@@ -74,12 +74,8 @@ Template.productSelector.helpers({
     return Orders.findOne({_id: orderId});
   },
   addItem: function () {
-    let orderId = Reaction.Router.getParam('orderId');
-    let itemId = Reaction.Router.getParam('itemId');
-    if (orderId && itemId) {
-      return false;
-    }
-    return true;
+    // If we passed an item into this template then we're exchanging that item.
+    return !this.item;
   },
   productTypes: function () {
     const productTypes = Products.find({}, {field: {productType: 1}}).fetch();
@@ -237,24 +233,29 @@ Template.productSelector.events({
 
     instance.productVariant.set(productId);
   },
-  'click .replace-item': function (event) {
-    event.preventDefault();
-    let order = this;
-    let user = Meteor.user();
-    let oldItemId = ReactionRouter.getParam('itemId');
-    let type = Session.get('productType-' + this._id);
-    let gender = Session.get('productGender-' + this._id);
-    let title = Session.get('productTitle-' + this._id);
-    let color = Session.get('productColor-' + this._id);
-    let variantId = Session.get('productVariant-' + this._id);
+  "click .exchange-item": function (event) {
+    const instance = Template.instance();
+    const orderId = Reaction.Router.getParam("_id");
+    const existingItemCartId = this.item._id;
+    const existingItemVariantId = this.item.variants._id;
+    const variantId = instance.productVariant.get();
+    const productId = instance.productId.get();
 
-    Meteor.call('advancedFulfillment/itemExchange', order, oldItemId, type, gender, title, color, variantId, user);
-    Session.set('productColor-' + this._id, undefined);
-    Session.set('productGender-' + this._id, undefined);
-    Session.set('productTitle-' + this._id, undefined);
-    Session.set('productVariant-' + this._id, undefined);
-    Session.set('productType-' + this._id, undefined);
-    ReactionRouter.go('updateOrder', {_id: order._id});
+    const bundle = this.bundle || {};
+    const bundleId = bundle.productId;
+    const bundleIndex = bundle.index;
+
+    Meteor.call("advancedFulfillment/itemExchange", {orderId, existingItemCartId, existingItemVariantId, productId, variantId, bundleId, bundleIndex});
+
+    instance.productType.set(undefined);
+    instance.productGender.set(undefined);
+    instance.productTitle.set(undefined);
+    instance.productId.set(undefined);
+    instance.productColor.set(undefined);
+    instance.productVariant.set(undefined);
+    instance.productAvailability.set(undefined);
+
+    Backpack.exchangingItem.set(existingItemCartId, false);
   },
 
   "click .add-item": function (event) {
@@ -266,7 +267,7 @@ Template.productSelector.events({
     const variantId = instance.productVariant.get();
     const productId = instance.productId.get();
 
-    Meteor.call("advancedFulfillment/addItem", orderId, productId, variantId, bundleId, bundleIndex);
+    Meteor.call("advancedFulfillment/addItem", {orderId, productId, variantId, bundleId, bundleIndex});
 
     instance.productType.set(undefined);
     instance.productGender.set(undefined);
@@ -274,6 +275,7 @@ Template.productSelector.events({
     instance.productId.set(undefined);
     instance.productColor.set(undefined);
     instance.productVariant.set(undefined);
+    instance.productAvailability.set(undefined);
 
     if (bundleId) {
       Backpack.addingItems.set(bundleCartItemId, false);

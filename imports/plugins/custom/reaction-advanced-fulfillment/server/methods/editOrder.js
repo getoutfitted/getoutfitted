@@ -238,105 +238,128 @@ Meteor.methods({
     });
   },
 
-  // TODO: This should check item availability before swapping items
-  "advancedFulfillment/itemExchange": function (order, oldItemId, type, gender, title, color, variantId, userObj) {
-    check(order, Object);
-    check(oldItemId, String);
-    check(type, String);
-    check(gender, String);
-    check(title, String);
-    check(color, String);
-    check(variantId, String);
-    check(userObj, Object);
-    // XXX: Way too many params, lets use an options object.
+  "advancedFulfillment/itemExchange": function (options) {
+    check(options, {
+      orderId: String,
+      existingItemCartId: String, // To remove from order
+      existingItemVariantId: String, // To find and remove bookings
+      productId: String,
+      variantId: String,
+      bundleId: Match.Maybe(String),
+      bundleIndex: Match.OneOf(String, Number, undefined, null)
+    });
 
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
     }
-    let user = userNameDeterminer(userObj);
-    let product = Products.findOne({
-      productType: type,
-      gender: gender,
-      title: title
-    });
-    let variant = _.findWhere(product.variants, {_id: variantId});
-    let orderItems = order.items;
-    let oldItem = _.findWhere(orderItems, {_id: oldItemId});
-    let orderAfItems = order.advancedFulfillment.items;
-    let oldAfItem = _.findWhere(orderAfItems, {_id: oldItemId});
-    let id = Random.id();
-    let shopId = ReactionCore.getShopId();
-    let newItem = {
-      _id: id,
-      shopId: shopId,
-      productId: product._id,
-      quantity: 1,
-      variants: variant,
-      workflow: oldItem.workflow
-    };
-    let newAfItem = {
-      _id: id,
-      productId: product._id,
-      shopId: shopId,
-      quantity: 1,
-      variantId: variant._id,
-      price: variant.price,
-      sku: variant.sku,
-      location: variant.location,
-      itemDescription: product.gender + " - " + product.vendor + " - " + product.title,
-      workflow: oldAfItem.workflow
-    };
-    let updatedItems = _.map(orderItems, function (item) {
-      if (item._id === oldItemId) {
-        return newItem;
-      }
-      return item;
-    });
-    let updatedAfItems = _.map(orderAfItems, function (item) {
-      if (item._id === oldItemId) {
-        return newAfItem;
-      }
-      return item;
-    });
-    let allItemsUpdated = _.every(updatedAfItems, function (item) {
-      return item.variantId;
-    });
-    if (!order.orderNotes) {
-      order.orderNotes = "";
-    }
-    let orderNotes = order.orderNotes + "<p>Item Replacement: "
-      + oldAfItem.itemDescription + "-"
-      + oldItem.variants.size + "- "
-      + oldItem.variants.color
-      + " with: " + newAfItem.itemDescription
-      + "-" + newItem.variants.size + "-" + newItem.variants.color
-      + noteFormattedUser(user)
-      + "</p>";
-    ReactionCore.Collections.Orders.update({
-      _id: order._id
-    }, {
-      $set: {
-        "items": updatedItems,
-        "advancedFulfillment.items": updatedAfItems,
-        "orderNotes": orderNotes,
-        "itemMissingDetails": !allItemsUpdated
-      },
-      $addToSet: {
-        history: {
-          event: "itemExchange",
-          userId: userObj._id,
-          updatedAt: new Date
-        }
-      }
-    });
+
+    const addOptions = Object.assign({isExchange: true}, options);
+    delete addOptions.existingItemCartId;
+    delete addOptions.existingItemVariantId;
+
+    const result = Meteor.call("advancedFulfillment/addItem", addOptions);
+
+    console.log(result);
+
+    const {
+      existingItemCartId,
+      existingItemVariantId
+    } = options;
+    // let product = Products.findOne({
+    //   productType: type,
+    //   gender: gender,
+    //   title: title
+    // });
+    // let variant = _.findWhere(product.variants, {_id: variantId});
+    // let orderItems = order.items;
+    // let oldItem = _.findWhere(orderItems, {_id: oldItemId});
+    // let orderAfItems = order.advancedFulfillment.items;
+    // let oldAfItem = _.findWhere(orderAfItems, {_id: oldItemId});
+    // let id = Random.id();
+    // let shopId = ReactionCore.getShopId();
+    // let newItem = {
+    //   _id: id,
+    //   shopId: shopId,
+    //   productId: product._id,
+    //   quantity: 1,
+    //   variants: variant,
+    //   workflow: oldItem.workflow
+    // };
+    // let newAfItem = {
+    //   _id: id,
+    //   productId: product._id,
+    //   shopId: shopId,
+    //   quantity: 1,
+    //   variantId: variant._id,
+    //   price: variant.price,
+    //   sku: variant.sku,
+    //   location: variant.location,
+    //   itemDescription: product.gender + " - " + product.vendor + " - " + product.title,
+    //   workflow: oldAfItem.workflow
+    // };
+    // let updatedItems = _.map(orderItems, function (item) {
+    //   if (item._id === oldItemId) {
+    //     return newItem;
+    //   }
+    //   return item;
+    // });
+    // let updatedAfItems = _.map(orderAfItems, function (item) {
+    //   if (item._id === oldItemId) {
+    //     return newAfItem;
+    //   }
+    //   return item;
+    // });
+    // let allItemsUpdated = _.every(updatedAfItems, function (item) {
+    //   return item.variantId;
+    // });
+    // if (!order.orderNotes) {
+    //   order.orderNotes = "";
+    // }
+    // let orderNotes = order.orderNotes + "<p>Item Replacement: "
+    //   + oldAfItem.itemDescription + "-"
+    //   + oldItem.variants.size + "- "
+    //   + oldItem.variants.color
+    //   + " with: " + newAfItem.itemDescription
+    //   + "-" + newItem.variants.size + "-" + newItem.variants.color
+    //   + noteFormattedUser(user)
+    //   + "</p>";
+    // ReactionCore.Collections.Orders.update({
+    //   _id: order._id
+    // }, {
+    //   $set: {
+    //     "items": updatedItems,
+    //     "advancedFulfillment.items": updatedAfItems,
+    //     "orderNotes": orderNotes,
+    //     "itemMissingDetails": !allItemsUpdated
+    //   },
+    //   $addToSet: {
+    //     history: {
+    //       event: "itemExchange",
+    //       userId: userObj._id,
+    //       updatedAt: new Date
+    //     }
+    //   }
+    // });
   },
 
-  "advancedFulfillment/addItem": function (orderId, productId, variantId, bundleId, bundleIndex) {
-    check(orderId, String);
-    check(productId, String);
-    check(variantId, String);
-    check(bundleId, Match.Maybe(String));
-    check(bundleIndex, Match.Maybe(String));
+  "advancedFulfillment/addItem": function (options) {
+    check(options, {
+      orderId: String,
+      productId: String,
+      variantId: String,
+      bundleId: String,
+      bundleIndex: Match.OneOf(String, Number, undefined, null),
+      isExchange: Match.Maybe(Boolean)
+    });
+    // destructure
+    const {
+      orderId,
+      productId,
+      variantId,
+      bundleId,
+      bundleIndex,
+      isExchange
+    } = options;
 
     // Check for permission
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {

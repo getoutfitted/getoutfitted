@@ -13,67 +13,53 @@
                     <th>Title</th>
                     <th>Color</th>
                     <th>Size</th>
-                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {{#each bundle in bundles}}
                     <tr class="bundle-title edit-outfit">
                       <td>{{#if addingItems bundle._id}}
-                        <button class='btn btn-danger btn-sm cancel-add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Cancel</button>
+                        <button class='btn btn-danger btn-sm add-item-cancel' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Cancel</button>
                       {{else}}
-                        <button class='btn btn-info btn-sm add-new-item' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Add Item to Outfit</button>
+                        <button class='btn btn-info btn-sm add-item-start' data-order-id="{{_id}}" data-bundle-id="{{bundle._id}}">Add Item to Outfit</button>
                       {{/if}}</td>
                       <td colspan="3"><strong>{{bundle.title}}</strong></td>
                       <td></td>
                     </tr>
                     {{#if addingItems bundle._id}}
                       <tr>
-                        <td>
-                        </td>
+                        <td></td>
                         <td colspan="3">
                           <div class='row item-selector'>
-                            {{> productSelector bundle=bundle this=this}}
+                            {{> productSelector bundle=bundle}}
                           </div>
                         </td>
                       </tr>
                     {{/if}}
                     {{#each item in itemsByBundle bundle}}
-                      {{#if colorAndSize item}}
-                        <tr>
-                          <td><a class='btn btn-sm btn-warning disabled' href="{{pathFor 'updateOrderItem' orderId=this._id itemId=item._id}}">Edit this Item</a></td>
+                      <tr>
+                        {{#unless exchangingItem item._id}}
+                          <td><button class="btn btn-sm btn-warning exchange-item-start" data-item-id="{{item._id}}">Exchange Item</button></td>
                           <td>{{item.title}}</td>
-                          <td>{{color item}}</td>
-                          <td>{{size item}}</td>
+                          <td>{{item.variants.color}}</td>
+                          <td>{{item.variants.size}}</td>
+                        {{else}}
+                          <td class="danger"><button class="btn btn-sm btn-danger exchange-item-cancel" data-item-id="{{item._id}}">Cancel Exchange</button></td>
+                          <td class="danger">{{item.title}}</td>
+                          <td class="danger">{{item.variants.color}}</td>
+                          <td class="danger">{{item.variants.size}}</td>
+                        {{/unless}}
+                        <td></td>
+                      </tr>
+                      {{#if exchangingItem item._id}}
+                        <tr>
                           <td></td>
-                        </tr>
-                      {{else}}
-                        <tr class='danger'>
-                          <td><a class='btn btn-sm btn-danger' href="{{pathFor 'updateOrderItem' orderId=this._id itemId=item._id}}">Edit this Item</a></td>
-                          <td>{{item.itemDescription}}</td>
-                          <td>
-                            <select id='color-selector-{{item._id}}' data-id='{{item._id}}' class='form-control color-selector'>
-                              <option disabled selected> -- select a color -- </option>
-                              {{#each possibleColor in colorOptions item}}
-                                <option class="form-control" value="{{possibleColor}}">{{possibleColor}}</option>
-                              {{/each}}
-                            </select>
+                          <td colspan="3">
+                            <div class='row item-selector'>
+                              {{> productSelector bundle=bundle item=item}}
+                            </div>
                           </td>
-                          <td>
-                            {{#if readyToSelectSize item}}
-                              <select id='size-selector-{{item._id}}' data-id='{{item._id}}' class='form-control size-selector'>
-                                <option disabled selected> -- select a size -- </option>
-                                {{#each possibleSize in sizeOptions item}}
-                                <option class='form-control' value={{possibleSize._id}}>{{possibleSize.size}}</option>
-                                {{/each}}
-                              </select>
-                            {{/if}}
-                          </td>
-                          <td>
-                            {{#if sizeAndColorSelected item}}
-                              <a class='btn btn-success save-item' data-id='{{item._id}}' data-product-id='{{item.productId}}' href='#'>Save</a>
-                            {{/if}}
-                          </td>
+                          <td></td>
                         </tr>
                       {{/if}}
                     {{/each}}
@@ -83,9 +69,9 @@
                   <tr>
                     <td>
                       {{#if addingItems _id}}
-                        <button class='btn btn-danger btn-sm cancel-add-new-item' data-order-id="{{_id}}">Cancel</button>
+                        <button class='btn btn-danger btn-sm add-item-cancel' data-order-id="{{_id}}">Cancel</button>
                       {{else}}
-                        <button class='btn btn-info btn-sm add-new-item' data-order-id="{{_id}}">Add Item to Order</button>
+                        <button class='btn btn-info btn-sm add-item-start' data-order-id="{{_id}}">Add Item to Order</button>
                       {{/if}}
                     </td>
                     <td colspan="3">
