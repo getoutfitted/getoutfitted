@@ -60,71 +60,6 @@ Template.updateOrder.helpers({
     const exchangingItem = Backpack.exchangingItem.get(itemId);
     return exchangingItem || false;
   }
-  // colorOptions: function (item) {
-  //   let productId = item.productId;
-  //   let product = Products.findOne(productId);
-  //   if (product) {
-  //     return product.colors;
-  //   }
-  // },
-  // sizeOptions: function (item) {
-  //   let productId = item.productId;
-  //   let product = Products.findOne(productId);
-  //   let selectedColor = Session.get('colorSelectorFor-' + item._id);
-  //   let variantsWithSelectedColor = _.where(product.variants, {color: selectedColor});
-  //   return _.map(variantsWithSelectedColor, function (variant) {
-  //     return {
-  //       size: variant.size,
-  //       _id: variant._id
-  //     };
-  //   });
-  // },
-  // sizeAndColorSelected: function (item) {
-  //   let itemId = item._id;
-  //   let color = Session.get('colorSelectorFor-' + itemId);
-  //   let size = Session.get('sizeSelectorFor-' + itemId);
-  //   if (color && size) {
-  //     return true;
-  //   }
-  //   return false;
-  // },
-  // colorAndSize: function (item) {
-  //   let itemId = item._id;
-  //   let order = this;
-  //   let orderItem = findOrderItem(order, itemId);
-  //   if (orderItem) {
-  //     if (orderItem.variants.size &&  orderItem.variants.color) {
-  //       return true;
-  //     }
-  //     return false;
-  //   }
-  //   return false;
-  // },
-  // color: function (item) {
-  //   console.log(item);
-  //   let itemId = item._id;
-  //   let order = this;
-  //   let orderItem = findOrderItem(order, itemId);
-  //   if (orderItem) {
-  //     return orderItem.variants.color;
-  //   }
-  // },
-  // size: function (item) {
-  //   let itemId = item._id;
-  //   let order = this;
-  //   let orderItem = findOrderItem(order, itemId);
-  //   if (orderItem) {
-  //     return orderItem.variants.size;
-  //   }
-  // },
-  // readyToSelectSize: function (item) {
-  //   let itemId = item._id;
-  //   let session = Session.get('colorSelectorFor-' + itemId);
-  //   if (session) {
-  //     return true;
-  //   }
-  //   return false;
-  // },
 });
 
 Template.updateCustomerDetails.onCreated(function () {
@@ -174,28 +109,6 @@ Template.updateOrder.events({
     const itemId = event.currentTarget.dataset.itemId;
     return Backpack.exchangingItem.set(itemId, false);
   }
-  // 'change .color-selector': function (event) {
-  //   event.preventDefault();
-  //   let itemId = event.target.dataset.id;
-  //   let selectedColor = event.target.value;
-  //   Session.set('sizeSelectorFor-' + itemId, undefined);
-  //   Session.set('colorSelectorFor-' + itemId, selectedColor);
-  // },
-  // 'change .size-selector': function (event) {
-  //   event.preventDefault();
-  //   let itemId = event.target.dataset.id;
-  //   let selectedSize = event.target.value;
-  //   Session.set('sizeSelectorFor-' + itemId, selectedSize);
-  // },
-  // 'click .save-item': function (event) {
-  //   event.preventDefault();
-  //   let itemId = event.target.dataset.id;
-  //   let productId = event.target.dataset.productId;
-  //   let newVariantId = Session.get('sizeSelectorFor-' + itemId);
-  //   let order = this;
-  //   let user = Meteor.user();
-  //   Meteor.call('advancedFulfillment/updateItemsColorAndSize', order, itemId, productId, newVariantId, user);
-  // },
 });
 
 Template.updateCustomerDates.onRendered(function () {

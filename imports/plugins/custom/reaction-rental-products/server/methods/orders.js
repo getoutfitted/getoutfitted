@@ -173,6 +173,40 @@ Meteor.methods({
       }
     });
   },
+  "rentalProducts/removeReservation": function (orderId, variantId, turnaroundTime = 1) {
+    check(orderId, String);
+    check(variantId, String);
+    check(turnaroundTime, Match.Maybe(Number));
+
+    if (!Reaction.hasPermission(RentalProducts.server.permissions)) { // could give user permissions with  && order.userId !== Meteor.userId()
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const order = Orders.findOne({_id: orderId});
+    const start = order.advancedFulfillment.shipmentDate;
+    const end = moment(order.advancedFulfillment.returnDate).add(turnaroundTime, "days").toDate();
+
+    const inventoryVariant = InventoryVariants.findOne({
+      productId: variantId,
+      "unavailableDetails.orderId": orderId
+    });
+
+    InventoryVariants.update({
+      "productId": variantId,
+      "unavailableDetails.orderId": orderId
+    }, {
+      $pull: {
+        unavailableDates: {
+          $gte: start,
+          $lte: end
+        },
+        unavailableDetails: {
+          orderId: orderId
+        }
+      }
+    });
+  },
+
   "rentalProducts/inventoryUnbook": function (orderId) {
     check(orderId, String);
     const impactedInventory = InventoryVariants.find({"unavailableDetails.orderId": orderId}).fetch();

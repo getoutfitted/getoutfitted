@@ -253,93 +253,29 @@ Meteor.methods({
       throw new Meteor.Error(403, "Access Denied");
     }
 
-    const addOptions = Object.assign({isExchange: true}, options);
-    delete addOptions.existingItemCartId;
-    delete addOptions.existingItemVariantId;
+    const addOptions = {
+      orderId: options.orderId,
+      productId: options.productId,
+      variantId: options.variantId,
+      bundleId: options.bundleId,
+      bundleIndex: options.bundleIndex,
+      isExchange: true
+    };
+    const removeOptions = {
+      orderId: options.orderId,
+      cartItemId: options.existingItemCartId,
+      variantId: options.existingItemVariantId,
+      isExchange: true
+    };
 
-    const result = Meteor.call("advancedFulfillment/addItem", addOptions);
+    Meteor.call("advancedFulfillment/addItem", addOptions);
+    Meteor.call("advancedFulfillment/removeItem", removeOptions);
 
-    console.log(result);
-
-    const {
-      existingItemCartId,
-      existingItemVariantId
-    } = options;
-    // let product = Products.findOne({
-    //   productType: type,
-    //   gender: gender,
-    //   title: title
-    // });
-    // let variant = _.findWhere(product.variants, {_id: variantId});
-    // let orderItems = order.items;
-    // let oldItem = _.findWhere(orderItems, {_id: oldItemId});
-    // let orderAfItems = order.advancedFulfillment.items;
-    // let oldAfItem = _.findWhere(orderAfItems, {_id: oldItemId});
-    // let id = Random.id();
-    // let shopId = ReactionCore.getShopId();
-    // let newItem = {
-    //   _id: id,
-    //   shopId: shopId,
-    //   productId: product._id,
-    //   quantity: 1,
-    //   variants: variant,
-    //   workflow: oldItem.workflow
-    // };
-    // let newAfItem = {
-    //   _id: id,
-    //   productId: product._id,
-    //   shopId: shopId,
-    //   quantity: 1,
-    //   variantId: variant._id,
-    //   price: variant.price,
-    //   sku: variant.sku,
-    //   location: variant.location,
-    //   itemDescription: product.gender + " - " + product.vendor + " - " + product.title,
-    //   workflow: oldAfItem.workflow
-    // };
-    // let updatedItems = _.map(orderItems, function (item) {
-    //   if (item._id === oldItemId) {
-    //     return newItem;
-    //   }
-    //   return item;
-    // });
-    // let updatedAfItems = _.map(orderAfItems, function (item) {
-    //   if (item._id === oldItemId) {
-    //     return newAfItem;
-    //   }
-    //   return item;
-    // });
-    // let allItemsUpdated = _.every(updatedAfItems, function (item) {
-    //   return item.variantId;
-    // });
-    // if (!order.orderNotes) {
-    //   order.orderNotes = "";
-    // }
-    // let orderNotes = order.orderNotes + "<p>Item Replacement: "
-    //   + oldAfItem.itemDescription + "-"
-    //   + oldItem.variants.size + "- "
-    //   + oldItem.variants.color
-    //   + " with: " + newAfItem.itemDescription
-    //   + "-" + newItem.variants.size + "-" + newItem.variants.color
-    //   + noteFormattedUser(user)
-    //   + "</p>";
-    // ReactionCore.Collections.Orders.update({
-    //   _id: order._id
-    // }, {
-    //   $set: {
-    //     "items": updatedItems,
-    //     "advancedFulfillment.items": updatedAfItems,
-    //     "orderNotes": orderNotes,
-    //     "itemMissingDetails": !allItemsUpdated
-    //   },
-    //   $addToSet: {
-    //     history: {
-    //       event: "itemExchange",
-    //       userId: userObj._id,
-    //       updatedAt: new Date
-    //     }
-    //   }
-    // });
+    // Create note
+    const existingProduct = Products.findOne({_id: options.existingItemVariantId});
+    const newProduct = Products.findOne({_id: options.variantId});
+    const note = `${existingProduct.sku} was exchanged for ${newProduct.sku}.`;
+    Meteor.call("advancedFulfillment/addOrderNote", options.orderId, note, "Product Exchanged");
   },
 
   "advancedFulfillment/addItem": function (options) {
@@ -374,7 +310,7 @@ Meteor.methods({
     const product = Products.findOne({_id: productId});
     const variant = Products.findOne({_id: variantId});
     const id = Random.id();
-    const shopId = ReactionCore.getShopId();
+    const shopId = Reaction.getShopId();
     const isBundle = !!bundleId;
 
     const newItem = {
@@ -443,10 +379,59 @@ Meteor.methods({
         updatedAt: new Date()
       });
 
-      // Add note to order
-      const note = `${newAfItem.sku} was added to order.`;
-      Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Added");
-      Logger.info(`Order ${orderId} had an item added to it.`);
+      if (!isExchange) {
+        const bundle = Products.findOne({_id: bundleId});
+        let productAddedTo = "order";
+        if (bundle) {
+          productAddedTo = bundle.title;
+        }
+        // Add note to order
+        const note = `${newAfItem.sku} was added to ${productAddedTo}.`;
+        Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Added");
+      }
+    }
+  },
+
+  "advancedFulfillment/removeItem": function (options) {
+    check(options, {
+      orderId: String,
+      cartItemId: String,
+      variantId: String,
+      isExchange: Match.Maybe(Boolean)
+    });
+    // destructure
+    const {
+      orderId,
+      cartItemId,
+      variantId,
+      isExchange
+    } = options;
+
+    // Check for permission
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    Orders.update({
+      _id: orderId
+    }, {
+      $pull: {
+        "items": {
+          _id: cartItemId
+        },
+        "advancedFulfillment.items": {
+          _id: cartItemId
+        }
+      }
+    });
+
+    Meteor.call("rentalProducts/removeReservation", orderId, variantId);
+
+    // Add note to order
+    if (!isExchange) {
+      const product = Products.findOne({_id: variantId});
+      const note = `${product.sku} was removed from order.`;
+      Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Removed");
     }
   }
 });

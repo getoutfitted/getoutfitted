@@ -175,7 +175,8 @@ AdvancedFulfillment.orderNoteIcons = {
   "Missing Product": "fa fa-question cancel-color",
   "Damaged Product": "fa fa-wrench warning-color",
   "Product Added": "fa fa-plus info-color",
-  "Product Exchanged": "fa fa-exchange warning-color"
+  "Product Exchanged": "fa fa-exchange warning-color",
+  "Product Removed": "fa fa-exchange danger-color"
 };
 
 AdvancedFulfillment.dateFormatter = function (date) {
