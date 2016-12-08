@@ -13,6 +13,7 @@
                     <th>Title</th>
                     <th>Color</th>
                     <th>Size</th>
+                    <th class="text-center">Remove</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -30,7 +31,7 @@
                       <tr>
                         <td></td>
                         <td colspan="3">
-                          <div class='row item-selector'>
+                          <div class='item-selector'>
                             {{> productSelector bundle=bundle}}
                           </div>
                         </td>
@@ -43,19 +44,20 @@
                           <td>{{item.title}}</td>
                           <td>{{item.variants.color}}</td>
                           <td>{{item.variants.size}}</td>
+                          <td><button class="btn btn-sm btn-remove remove-item" data-item-product-id="{{item.variants._id}}" data-item-id="{{item._id}}"><i class="fa fa-times-circle-o fa-2x"></i></button></td>
                         {{else}}
                           <td class="danger"><button class="btn btn-sm btn-danger exchange-item-cancel" data-item-id="{{item._id}}">Cancel Exchange</button></td>
                           <td class="danger">{{item.title}}</td>
                           <td class="danger">{{item.variants.color}}</td>
                           <td class="danger">{{item.variants.size}}</td>
+                          <td></td>
                         {{/unless}}
-                        <td></td>
                       </tr>
                       {{#if exchangingItem item._id}}
                         <tr>
                           <td></td>
                           <td colspan="3">
-                            <div class='row item-selector'>
+                            <div>
                               {{> productSelector bundle=bundle item=item}}
                             </div>
                           </td>
@@ -76,12 +78,49 @@
                     </td>
                     <td colspan="3">
                       <div class='row item-selector'>
+                        <strong>Items not in Outfits</strong>
+                      </div>
+                    </td>
+                  </tr>
+                  {{#if addingItems _id}}
+                    <td></td>
+                    <td colspan="3">
+                      <div class='item-selector'>
                       {{#if addingItems _id}}
                         {{> productSelector}}
                       {{/if}}
                       </div>
                     </td>
-                  </tr>
+                    <td></td>
+                  {{/if}}
+                  {{#each item in nonBundleItems}}
+                    <tr>
+                      {{#unless exchangingItem item._id}}
+                        <td><button class="btn btn-sm btn-warning exchange-item-start" data-item-id="{{item._id}}">Exchange Item</button></td>
+                        <td>{{item.title}}</td>
+                        <td>{{item.variants.color}}</td>
+                        <td>{{item.variants.size}}</td>
+                        <td><button class="btn btn-sm btn-remove remove-item" data-item-product-id="{{item.variants._id}}" data-item-id="{{item._id}}"><i class="fa fa-times-circle-o fa-2x"></i></button></td>
+                      {{else}}
+                        <td class="danger"><button class="btn btn-sm btn-danger exchange-item-cancel" data-item-id="{{item._id}}">Cancel Exchange</button></td>
+                        <td class="danger">{{item.title}}</td>
+                        <td class="danger">{{item.variants.color}}</td>
+                        <td class="danger">{{item.variants.size}}</td>
+                        <td></td>
+                      {{/unless}}
+                    </tr>
+                    {{#if exchangingItem item._id}}
+                      <tr>
+                        <td></td>
+                        <td colspan="3">
+                          <div class='row item-selector'>
+                            {{> productSelector bundle=bundle item=item}}
+                          </div>
+                        </td>
+                        <td></td>
+                      </tr>
+                    {{/if}}
+                  {{/each}}
                 </tbody>
               </table>
             </div>

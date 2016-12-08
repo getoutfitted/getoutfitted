@@ -244,10 +244,12 @@ Meteor.methods({
       existingItemCartId: String, // To remove from order
       existingItemVariantId: String, // To find and remove bookings
       productId: String,
-      variantId: String,
-      bundleId: Match.Maybe(String),
-      bundleIndex: Match.OneOf(String, Number, undefined, null)
+      variantId: String
     });
+
+    // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+    check(options.bundleId, Match.Maybe(String));
+    check(options.bundleIndex, Match.OneOf(String, Number, undefined, null));
 
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
@@ -282,11 +284,14 @@ Meteor.methods({
     check(options, {
       orderId: String,
       productId: String,
-      variantId: String,
-      bundleId: String,
-      bundleIndex: Match.OneOf(String, Number, undefined, null),
-      isExchange: Match.Maybe(Boolean)
+      variantId: String
     });
+
+    // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+    check(options.bundleId, Match.Maybe(String));
+    check(options.bundleIndex, Match.OneOf(String, Number, undefined, null));
+    check(options.isExchange, Match.Maybe(Boolean));
+
     // destructure
     const {
       orderId,
@@ -383,7 +388,7 @@ Meteor.methods({
         const bundle = Products.findOne({_id: bundleId});
         let productAddedTo = "order";
         if (bundle) {
-          productAddedTo = bundle.title;
+          productAddedTo = `${bundle.title} ${bundleIndex}`;
         }
         // Add note to order
         const note = `${newAfItem.sku} was added to ${productAddedTo}.`;
@@ -396,9 +401,11 @@ Meteor.methods({
     check(options, {
       orderId: String,
       cartItemId: String,
-      variantId: String,
-      isExchange: Match.Maybe(Boolean)
+      variantId: String
     });
+    // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+    check(options.isExchange, Match.Maybe(Boolean));
+
     // destructure
     const {
       orderId,

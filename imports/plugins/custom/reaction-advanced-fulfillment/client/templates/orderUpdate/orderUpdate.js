@@ -11,12 +11,12 @@ import { Orders } from "/lib/collections";
 export const Backpack = {};
 
 Template.updateOrder.onCreated(function () {
-  const orderId = Reaction.Router.getParam("_id");
+  const orderId = () => Reaction.Router.getParam("_id");
   Backpack.addingItems = new ReactiveDict();
   Backpack.exchangingItem = new ReactiveDict();
   this.autorun(() => {
     this.subscribe("afProducts");
-    this.subscribe("advancedFulfillmentOrder", orderId);
+    this.subscribe("advancedFulfillmentOrder", orderId());
   });
 });
 
@@ -51,6 +51,14 @@ Template.updateOrder.helpers({
       return itemMatches && indexMatches;
     });
     return itemsByBundle;
+  },
+  nonBundleItems() {
+    const order = this;
+    return order.items.filter(function (item) {
+      const notBundleVariant = item.variants.functionalType !== "bundleVariant";
+      const notBundleComponent = item.customerViewType !== "bundleComponent";
+      return notBundleVariant && notBundleComponent;
+    });
   },
   addingItems: function (bundleId) {
     const addingItems = Backpack.addingItems.get(bundleId);
@@ -102,12 +110,17 @@ Template.updateOrder.events({
   },
   "click .exchange-item-start": function (event) {
     const itemId = event.currentTarget.dataset.itemId;
-    console.log(itemId);
     return Backpack.exchangingItem.set(itemId, true);
   },
   "click .exchange-item-cancel": function (event) {
     const itemId = event.currentTarget.dataset.itemId;
     return Backpack.exchangingItem.set(itemId, false);
+  },
+  "click .remove-item": function (event) {
+    const orderId = Reaction.Router.getParam("_id");
+    const cartItemId = event.currentTarget.dataset.itemId;
+    const variantId = event.currentTarget.dataset.itemProductId;
+    Meteor.call("advancedFulfillment/removeItem", {orderId, cartItemId, variantId});
   }
 });
 
