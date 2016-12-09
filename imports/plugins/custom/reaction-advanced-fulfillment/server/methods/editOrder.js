@@ -181,63 +181,6 @@ Meteor.methods({
     }
   },
 
-  // TODO: This will need to check availability of items before updating
-  "advancedFulfillment/updateItemsColorAndSize": function (order, itemId, productId, variantId, userObj) {
-    check(order, Object);
-    check(itemId, String);
-    check(productId, String);
-    check(variantId, String);
-    check(userObj, Object);
-
-    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
-      throw new Meteor.Error(403, "Access Denied");
-    }
-    let user = userNameDeterminer(userObj);
-    let product = Products.findOne(productId);
-    let variants = product.variants;
-    let variant = _.findWhere(variants, {_id: variantId});
-    let orderItems = order.items;
-    let orderNotes = anyOrderNotes(order.orderNotes);
-
-    orderNotes = orderNotes + "<p>Item Details Added " + product.gender + "-"
-     + product.vendor + "-" + product.title
-     + " was updated with: color:" + variant.color + " size: " + variant.size
-     + noteFormattedUser(user) + "</p>";
-
-    _.each(orderItems, function (item) {
-      if (item._id === itemId) {
-        item.variants = variant;
-      }
-    });
-    let afItems = order.advancedFulfillment.items;
-    _.each(afItems, function (item) {
-      if (item._id === itemId) {
-        item.variantId = variant._id;
-        item.location = variant.location;
-        item.sku = variant.sku;
-      }
-    });
-
-    let allItemsUpdated = _.every(afItems, function (item) {
-      return item.variantId;
-    });
-    ReactionCore.Collections.Orders.update({_id: order._id}, {
-      $set: {
-        "items": orderItems,
-        "advancedFulfillment.items": afItems,
-        "orderNotes": orderNotes,
-        "itemMissingDetails": !allItemsUpdated
-      },
-      $addToSet: {
-        history: {
-          event: "itemDetailsAdded",
-          userId: userObj._id,
-          updatedAt: new Date()
-        }
-      }
-    });
-  },
-
   "advancedFulfillment/itemExchange": function (options) {
     check(options, Object);
     // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
