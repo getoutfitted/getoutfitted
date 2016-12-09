@@ -5,142 +5,6 @@ import { Reaction } from "/server/api";
 import { Orders } from "/lib/collections";
 import AdvancedFulfillment from "../../lib/api";
 
-const KLAVIYO_ENABLED = false;
-// // XXX: Remove legacy code???
-// function shipmentDateChecker(date, localDelivery, transitTime) {
-//   if (localDelivery) {
-//     return date;
-//   }
-//
-//   let numberOfWeekendDays = 0;
-//   const shipDate = moment(date);
-//   const arrivalDate = moment(shipDate).add(transitTime, "days");
-//   let additionalDays = 0;
-//   let daysToAdd = 0;
-//
-//   if (moment(arrivalDate).isoWeekday() === 7) {
-//     shipDate.subtract(2, "days");
-//     additionalDays += 2;
-//     arrivalDate.subtract(2, "days");
-//   } else if (moment(arrivalDate).isoWeekday() === 6) {
-//     shipDate.subtract(1, "days");
-//     additionalDays += 1;
-//     arrivalDate.subtract(1, "days");
-//   }
-//
-//   if (moment(shipDate).isoWeekday() === 7) {
-//     shipDate.subtract(2, "days");
-//     additionalDays += 2;
-//   } else if (moment(shipDate).isoWeekday() === 6) {
-//     shipDate.subtract(1, "days");
-//     additionalDays += 1;
-//   }
-//
-//   const shipmentRange = shipDate.twix(arrivalDate, {allDay: true});
-//   const iter = shipmentRange.iterate("days");
-//   //
-//   while (iter.hasNext()) {
-//     const isoWeekday = iter.next().isoWeekday();
-//     if (isoWeekday === 7 || isoWeekday === 6) {
-//       numberOfWeekendDays += 1;
-//     }
-//   }
-//
-//   daysToAdd = numberOfWeekendDays - additionalDays;
-//   if (daysToAdd <= 0) {
-//     daysToAdd = 0;
-//   }
-//
-//   return shipDate.subtract(daysToAdd, "days").toDate();
-// }
-//
-// // XXX: Remove legacy code???
-// function arrivalDateChecker(date, localDelivery) {
-//   if (localDelivery) {
-//     return date;
-//   }
-//   if (moment(date).isoWeekday() === 7) {
-//     return moment(date).subtract(2, "days").toDate();
-//   } else if (moment(date).isoWeekday() === 6) {
-//     return moment(date).subtract(1, "days").toDate();
-//   }
-//   return date;
-// }
-//
-// // XXX: Remove legacy code???
-// function returnDateChecker(date, localDelivery) {
-//   if (localDelivery) {
-//     return date;
-//   }
-//   if (moment(date).isoWeekday() === 7) {
-//     return moment(date).add(1, "days").toDate();
-//   }
-//   return date;
-// }
-//
-// // XXX: Remove legacy code???
-// function rushShipmentChecker(date) {
-//   if (moment(date).isoWeekday() === 7) {
-//     return moment(date).add(1, "days").toDate();
-//   } else if (moment(date).isoWeekday() === 6) {
-//     return moment(date).add(2, "days").toDate();
-//   }
-//   return date.toDate();
-// }
-//
-// function rushRequired(arriveBy, transitTime, isLocal) {
-//   if (isLocal) {
-//     return false;
-//   }
-//   const estimatedArrival = moment().startOf("day").add(transitTime, "days"); // shipDate as start of day
-//   return moment(estimatedArrival).diff(moment(arriveBy)) > 0;
-// }
-//
-// // XXX: Remove legacy code???
-// function isLocalDelivery(postal) {
-//   let localZips = [
-//     "80424",
-//     "80435",
-//     "80443",
-//     "80497",
-//     "80498"
-//   ];
-//   return _.contains(localZips, postal);
-// }
-//
-// // XXX: Remove legacy code???
-// function buffer() {
-//   let af = ReactionCore.Collections.Packages.findOne({name: "reaction-advanced-fulfillment"});
-//   if (af && af.settings && af.settings.buffer) {
-//     return af.settings.buffer;
-//   }
-//   return {shipping: 0, returning: 0};
-// }
-
-// XXX: Remove legacy code???
-// function noteFormattedUser(user) {
-//   check(user, String);
-//   let date = moment().format("MM/DD/YY h:mma");
-//   return  "| <em>" + user + "-" + date + "</em>";
-// }
-//
-// // XXX: Remove legacy code???
-// function userNameDeterminer(user) {
-//   check(user, Object);
-//   if (user.username) {
-//     return user.username;
-//   }
-//   return user.emails[0].address;
-// }
-//
-// function anyOrderNotes(orderNotes) {
-//   if (!orderNotes) {
-//     return "";
-//   }
-//   return orderNotes;
-// }
-
-
 Meteor.methods({
   "advancedFulfillment/updateOrderWorkflow": function (orderId, status) {
     check(orderId, String);
@@ -177,13 +41,11 @@ Meteor.methods({
 
     Meteor.call("advancedFulfillment/addOrderNote", orderId, note, type = "Status Update");
 
-    if (KLAVIYO_ENABLED) {
-      if (status === "orderReadyToShip") {
-        Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped Product", "advancedFulfullment/createKlaviyoItemEvents");
-        Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped", "advancedFulfullment/createKlaviyoGeneralEvent");
-      } else if (status === "orderShipped") {
-        Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Returned", "advancedFulfullment/createKlaviyoGeneralEvent");
-      }
+    if (status === "orderReadyToShip") {
+      Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped Product", "advancedFulfullment/createKlaviyoItemEvents");
+      Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Shipped", "advancedFulfullment/createKlaviyoGeneralEvent");
+    } else if (status === "orderShipped") {
+      Meteor.call("advancedFulfillment/klaviyoEnabled", orderId, "Returned", "advancedFulfullment/createKlaviyoGeneralEvent");
     }
   },
 
