@@ -43,9 +43,9 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turna
     // Insert into Unavailable Details
     if (counter === 0) {
       reason = "Shipped";            // First reservation day is when order is shipped from warehouse
-    } else if (counter === shippingTime) {
+    } else if (counter === shippingTime - 1) {
       reason = "Delivered";          //
-    } else if (counter - 1 < shippingTime) {
+    } else if (counter < shippingTime - 1) {
       reason = "In Transit";         // Second day through transitTime is delivery
     } else if (counter === reservationLength - returnTime - turnaroundTime - 1) {
       reason = "Return Shipped";

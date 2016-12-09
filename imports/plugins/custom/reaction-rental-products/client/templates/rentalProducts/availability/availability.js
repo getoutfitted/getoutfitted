@@ -66,20 +66,20 @@ Template.dashboardRentalProductAvailability.helpers({
 // each inventory variant a month/view start-view end at a time
 // rather than each day independently
 Template.dashboardVariantAvailability.helpers({
-  viewStart: Session.get('dashboardViewStart'),
-  viewEnd: Session.get('dashboardViewEnd'),
-  currentMonth: moment(Session.get('dashboardViewStart')).format('MMMM'),
+  viewStart: Session.get("dashboardViewStart"),
+  viewEnd: Session.get("dashboardViewEnd"),
+  currentMonth: moment(Session.get("dashboardViewStart")).format("MMMM"),
   days: function () {
-    let viewStart = Session.get('dashboardViewStart');
-    let viewEnd = Session.get('dashboardViewEnd');
-    return moment(viewStart).twix(moment(viewEnd)).split(1, 'day');
+    let viewStart = Session.get("dashboardViewStart");
+    let viewEnd = Session.get("dashboardViewEnd");
+    return moment(viewStart).twix(moment(viewEnd)).split(1, "day");
   },
   reservationStatus: function (day, unavailableDetails) {
-    let icons = {
+    const icons = {
       "Shipped": "fa fa-upload fa-rotate-90 delivery-brown",
       "In Transit": "fa fa-truck fa-flip-horizontal delivery-brown",
-      "Delivered": "fa fa-download fa-rotate-270 primary-color",
-      "Return Shipped": "fa fa-upload fa-rotate-90 primary-color",
+      "Delivered": "fa fa-download fa-rotate-270 delivery-brown",
+      "Return Shipped": "fa fa-upload fa-rotate-90 returning-green",
       "Return In Transit": "fa fa-truck fa-flip-horizontal returning-green",
       "Return Delivered": "fa fa-download fa-rotate-270 returning-green",
       "In Transit - Rush Delivery": "fa fa-plane rush-delivery-orange",
