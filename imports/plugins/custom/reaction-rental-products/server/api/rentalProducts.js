@@ -20,7 +20,6 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turna
 
   const order = Orders.findOne({_id: orderId});
   const transit = new Transit(order);
-
   const shipmentDate = order.advancedFulfillment.shipmentDate;
   const shippingTime = transit.calculateTotalShippingDays();
 
@@ -65,7 +64,6 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turna
     });
     counter++;
   }  // Create array of requested dates
-
   return {datesToReserve, detailsToReserve};
 };
 

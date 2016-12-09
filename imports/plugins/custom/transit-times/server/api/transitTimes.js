@@ -98,19 +98,23 @@ export class Transit {
     return _.contains(this.settings.localPostalCodes, this.postal);
   }
 
+  // TODO: Not sure why this is uppercase - should refactor to camelcase.
   TransitTimesCache() {
     const transitTime = TransitTimesCache.findOne({
       postal: this.postal
     });
-    if (transitTime && this.settings.selectedShippingProvider) {
-      const provider = this.settings.selectedShippingProvider.toLowerCase();
+    if (transitTime) {
+      let provider = "ups";
+      if (this.settings && this.settings.selectedShippingProvider) {
+        provider = this.settings.selectedShippingProvider.toLowerCase();
+      }
+
       this.transitTime = transitTime[provider + 'TransitTime'];
-      Logger.info('TransitTimeCache found transitTime');
       return transitTime[provider + 'TransitTime'];
-    } else {
-      Logger.warn(`Transit Time for ${this.postal} is not in transtimescache`);
-      return false;
     }
+    // XXX: what happens when we return false here?
+    Logger.warn(`Transit Time for ${this.postal} is not in transtimescache`);
+    return false;
   }
 
   calculateTransitTime() {

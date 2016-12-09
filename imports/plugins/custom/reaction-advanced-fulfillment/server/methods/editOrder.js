@@ -239,15 +239,14 @@ Meteor.methods({
   },
 
   "advancedFulfillment/itemExchange": function (options) {
-    check(options, {
-      orderId: String,
-      existingItemCartId: String, // To remove from order
-      existingItemVariantId: String, // To find and remove bookings
-      productId: String,
-      variantId: String
-    });
-
+    check(options, Object);
     // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+    check(options.orderId, String);
+    check(options.existingItemCartId, String);
+    check(options.existingItemVariantId, String);
+    check(options.productId, String);
+    check(options.variantId, String);
+
     check(options.bundleId, Match.Maybe(String));
     check(options.bundleIndex, Match.OneOf(String, Number, undefined, null));
 
@@ -281,13 +280,11 @@ Meteor.methods({
   },
 
   "advancedFulfillment/addItem": function (options) {
-    check(options, {
-      orderId: String,
-      productId: String,
-      variantId: String
-    });
-
+    check(options, Object);
     // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+    check(options.orderId, String);
+    check(options.productId, String);
+    check(options.variantId, String);
     check(options.bundleId, Match.Maybe(String));
     check(options.bundleIndex, Match.OneOf(String, Number, undefined, null));
     check(options.isExchange, Match.Maybe(Boolean));
@@ -394,16 +391,17 @@ Meteor.methods({
         const note = `${newAfItem.sku} was added to ${productAddedTo}.`;
         Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Added");
       }
+    } else {
+      throw new Meteor.Error(`inventory not available for variantId ${variantId}`);
     }
   },
 
   "advancedFulfillment/removeItem": function (options) {
-    check(options, {
-      orderId: String,
-      cartItemId: String,
-      variantId: String
-    });
-    // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+      // workaround for know issue with check https://github.com/meteor/meteor/issues/6959
+    check(options, Object);
+    check(options.orderId, String);
+    check(options.cartItemId, String);
+    check(options.variantId, String);
     check(options.isExchange, Match.Maybe(Boolean));
 
     // destructure

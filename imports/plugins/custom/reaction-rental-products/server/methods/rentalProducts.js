@@ -40,58 +40,76 @@ Meteor.methods({
    * only need to supply updated information
    * returns array of available (inventory) variant ids
    */
-  "rentalProducts/checkInventoryAvailability": function (variantId, reservationRequest, quantity = 1, searchLeastBookedFirst = true) {
+  "rentalProducts/checkInventoryAvailability": function (variantId, reservationRequest, quantity = 1, searchLeastBookedFirst = false) {
     check(variantId, String);
     check(reservationRequest, {
       startTime: Date,
       endTime: Date
     });
     check(quantity, Number);
-    check(searchLeastBookedFirst, Match.Optional(Boolean));
+    check(searchLeastBookedFirst, Match.Maybe(Boolean));
 
-    // let InventoryVariants = ReactionCore.Collections.InventoryVariants;
-
-    let requestedVariants = [];
-    let requestedDates = [];
-    let sortDirection = searchLeastBookedFirst ? 1 : -1;
-
-    let iter = moment(reservationRequest.startTime).twix(reservationRequest.endTime, {
-      allDay: true
-    }).iterate("days");
-
-    while (iter.hasNext()) {
-      requestedDates.push(adjustLocalToDenverTime(iter.next()));
-    }
-
-    // Sort by length of inventory variants unavailableDates array
-    let inventoryVariants = InventoryVariants.find(
-      {
-        productId: variantId,
-        active: true
-      }, {sort: {
-        numberOfDatesBooked: sortDirection
-      }}
-    ).fetch();
-
-    if (inventoryVariants.length > 0) {
-      // if this variant has multiple inventory
-      for (let uid of inventoryVariants) {
-        // Check to see if any of the dates requested are unavailable
-        // if so, this item is unavailable for requested time period
-        if (RentalProducts.checkAvailability(uid.unavailableDates, requestedDates)) {
-          requestedVariants.push(uid._id);
-          if (requestedVariants.length >= quantity) {
-            break;
+    const inventoryVariants = InventoryVariants.find({
+      productId: variantId,
+      unavailableDates: {
+        $not: {
+          $elemMatch: {
+            $gte: reservationRequest.startTime,
+            $lte: reservationRequest.endTime
           }
         }
       }
-    // TODO: Update single inventory existing on variant for future
-    } else if (RentalProducts.checkAvailability(variant.unavailableDates, requestedDates)) {
-      // else if there is only one of this variant
-      requestedVariants.push(variant._id);
-    }
-    // return requested variants array  (an array consisting of available variantIds)
-    return requestedVariants;
+    }, {
+      fields: {
+        productId: 1
+      },
+      limit: quantity
+    }).fetch();
+
+    // Return an array of available ids;
+    return inventoryVariants.map(inventory => inventory._id);
+
+    // let requestedVariants = [];
+    // let requestedDates = [];
+    // let sortDirection = searchLeastBookedFirst ? 1 : -1;
+    //
+    // let iter = moment(reservationRequest.startTime).twix(reservationRequest.endTime, {
+    //   allDay: true
+    // }).iterate("days");
+    //
+    // while (iter.hasNext()) {
+    //   requestedDates.push(adjustLocalToDenverTime(iter.next()));
+    // }
+    //
+    // // Sort by length of inventory variants unavailableDates array
+    // let inventoryVariants = InventoryVariants.find(
+    //   {
+    //     productId: variantId,
+    //     active: true
+    //   }, {sort: {
+    //     numberOfDatesBooked: sortDirection
+    //   }}
+    // ).fetch();
+    //
+    // if (inventoryVariants.length > 0) {
+    //   // if this variant has multiple inventory
+    //   for (let uid of inventoryVariants) {
+    //     // Check to see if any of the dates requested are unavailable
+    //     // if so, this item is unavailable for requested time period
+    //     if (RentalProducts.checkAvailability(uid.unavailableDates, requestedDates)) {
+    //       requestedVariants.push(uid._id);
+    //       if (requestedVariants.length >= quantity) {
+    //         break;
+    //       }
+    //     }
+    //   }
+    // // TODO: Update single inventory existing on variant for future
+    // } else if (RentalProducts.checkAvailability(variant.unavailableDates, requestedDates)) {
+    //   // else if there is only one of this variant
+    //   requestedVariants.push(variant._id);
+    // }
+    // // return requested variants array  (an array consisting of available variantIds)
+    // return requestedVariants;
   },
 
   /**
