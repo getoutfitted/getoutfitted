@@ -183,20 +183,28 @@ Template.updateCustomerDetails.events({
       Alerts.removeSeen();
       Alerts.add('Phone and Email are both required', 'danger');
     }
-  },
-  'click .confirm-to-cancel': function (event) {
-    event.preventDefault();
-    const orderId = this._id;
-    Session.set('cancel-order-' + orderId, !Session.get('cancel-order-' + orderId));
-  },
-  'click .cancel-order': function (event) {
-    event.preventDefault();
-    const orderId = this._id;
-    Meteor.call('advancedFulfillment/cancelOrder', orderId, Meteor.userId());
-    Alerts.removeSeen();
-    Alerts.add('Order #' + this.shopifyOrderNumber + ' has been cancelled', 'info', {
-      autoHide: true
+  }
+});
+
+Template.backpackCancelOrder.events({
+  "click .cancel-order": function () {
+    const orderId = Reaction.Router.getParam("_id");
+    const order = Orders.findOne({_id: orderId});
+    const orderNumber = order.orderNumber;
+    Alerts.alert({
+      title: "Are You Sure?",
+      text: `You are about to cancel order #${orderNumber}. This is an irreversible decision.`,
+      type: "warning",
+      reverseButtons: true,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes, Cancel Order",
+      confirmButtonColor: "#BB3526"
+    }, (isConfirm) => {
+      if (isConfirm) {
+        Meteor.call("advancedFulfillment/cancelOrder", orderId);
+        Reaction.Router.go("orderDetails", {_id: orderId});
+      }
     });
-    Session.set('cancel-order-' + orderId, !Session.get('cancel-order-' + orderId));
   }
 });

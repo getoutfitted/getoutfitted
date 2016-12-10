@@ -173,46 +173,6 @@ Meteor.methods({
       }
     });
   },
-  // TODO: rewrite addReservation.
-  // "rentalProducts/addReservation": function (inventoryVariantId, reservation, orderId) {
-  //   check(variantId, String); // simpleSchema cartItem
-  //   check(reservation, Object);
-  //   check(orderId, String);
-  //
-  //   // TODO: give this real permission check
-  //   if (!Reaction.hasPermission(RentalProducts.server.permissions)) { // could give user permissions with  && order.userId !== Meteor.userId()
-  //     throw new Meteor.Error(403, "Access Denied");
-  //   }
-  //
-  //   // Not using $in because we need to determine the correct position
-  //   // to insert the new dates separately for each inventoryVariant
-  //   const inventoryVariant = InventoryVariants.findOne({
-  //     _id: inventoryVariantId
-  //   }, {fields: {unavailableDates: 1}});
-  //
-  //   const reservedDates = inventoryVariant.unavailableDates;
-  //
-  //   // We take the time to insert unavailable dates in ascending date order
-  //   // find the position that we should insert the reserved dates
-  //   const positionToInsert = _.sortedIndex(reservedDates, reservation.datesToReserve[0]);
-  //
-  //   // insert datesToReserve into the correct variants at the correct position
-  //   return InventoryVariants.update({_id: inventoryVariantId}, {
-  //     $inc: {
-  //       numberOfDatesBooked: reservation.datesToReserve.length
-  //     },
-  //     $push: {
-  //       unavailableDates: {
-  //         $each: reservation.datesToReserve,
-  //         $position: positionToInsert
-  //       },
-  //       unavailableDetails: {
-  //         $each: reservation.detailsToReserve,
-  //         $position: positionToInsert
-  //       }
-  //     }
-  //   });
-  // },
   "rentalProducts/removeReservation": function (orderId, variantId, turnaroundTime = 1) {
     check(orderId, String);
     check(variantId, String);
@@ -225,7 +185,7 @@ Meteor.methods({
     const order = Orders.findOne({_id: orderId});
     const start = order.advancedFulfillment.shipmentDate;
     const end = moment(order.advancedFulfillment.returnDate).add(turnaroundTime, "days").toDate();
-    const datesBooked = moment(start).diff(moment(end), "days") + 1; // inclusive
+    const datesBooked = moment(start).diff(moment(end), "days") - 1; // inclusive
 
     // TODO: set first and last based on actual booked dates?
     InventoryVariants.update({
@@ -242,10 +202,83 @@ Meteor.methods({
         }
       },
       $inc: {
-        numberOfDatesBooked: -datesBooked
+        numberOfDatesBooked: datesBooked
       }
     });
   },
+
+  "rentalProducts/bulkRemoveReservation": function (orderId, variantIds, turnaroundTime = 1) {
+    check(orderId, String);
+    check(variantIds, [String]);
+    check(turnaroundTime, Match.Maybe(Number));
+
+    if (!Reaction.hasPermission(RentalProducts.server.permissions)) { // could give user permissions with  && order.userId !== Meteor.userId()
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const order = Orders.findOne({_id: orderId});
+    const start = order.advancedFulfillment.shipmentDate;
+    const end = moment(order.advancedFulfillment.returnDate).add(turnaroundTime, "days").toDate();
+    const datesBooked = moment(start).diff(moment(end), "days") - 1; // inclusive
+
+    // TODO: set first and last based on actual booked dates?
+    InventoryVariants.update({
+      "productId": {
+        $in: variantIds
+      },
+      "unavailableDetails.orderId": orderId
+    }, {
+      $pull: {
+        unavailableDates: {
+          $gte: start,
+          $lte: end
+        },
+        unavailableDetails: {
+          orderId: orderId
+        }
+      },
+      $inc: {
+        numberOfDatesBooked: datesBooked
+      }
+    }, {
+      multi: true
+    });
+  },
+
+  "rentalProducts/removeOrderReservations": function (orderId, turnaroundTime = 1) {
+    check(orderId, String);
+    check(turnaroundTime, Match.Maybe(Number));
+
+    if (!Reaction.hasPermission(RentalProducts.server.permissions)) { // could give user permissions with  && order.userId !== Meteor.userId()
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const order = Orders.findOne({_id: orderId});
+    const start = order.advancedFulfillment.shipmentDate;
+    const end = moment(order.advancedFulfillment.returnDate).add(turnaroundTime, "days").toDate();
+    const datesBooked = moment(start).diff(moment(end), "days") - 1; // inclusive
+
+    // TODO: set first and last based on actual booked dates?
+    InventoryVariants.update({
+      "unavailableDetails.orderId": orderId
+    }, {
+      $pull: {
+        unavailableDates: {
+          $gte: start,
+          $lte: end
+        },
+        unavailableDetails: {
+          orderId: orderId
+        }
+      },
+      $inc: {
+        numberOfDatesBooked: datesBooked
+      }
+    }, {
+      multi: true
+    });
+  },
+
 
   "rentalProducts/inventoryUnbook": function (orderId) {
     check(orderId, String);

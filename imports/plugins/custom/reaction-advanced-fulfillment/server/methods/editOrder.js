@@ -381,5 +381,35 @@ Meteor.methods({
       const note = `${product.sku} was removed from order.`;
       Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Product Removed");
     }
+  },
+
+  "advancedFulfillment/cancelOrder": function (orderId) {
+    check(orderId, String);
+
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const history = {
+      event: "orderCancelled",
+      userId: Meteor.userId(),
+      updatedAt: new Date()
+    };
+
+    ReactionCore.Collections.Orders.update({
+      _id: orderId
+    }, {
+      $addToSet: {
+        history: history
+      },
+      $set: {
+        "advancedFulfillment.workflow.status": "orderCancelled",
+        "advancedFulfillment.impossibleShipDate": false
+      }
+    });
+
+    Meteor.call("advancedFulfillment/addOrderNote", orderId, "Order Cancelled", "Order Cancelled");
+
+    Meteor.call("rentalProducts/removeOrderReservations", orderId);
   }
 });

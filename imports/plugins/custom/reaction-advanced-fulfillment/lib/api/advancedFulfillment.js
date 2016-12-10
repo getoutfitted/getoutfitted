@@ -176,7 +176,10 @@ AdvancedFulfillment.orderNoteIcons = {
   "Damaged Product": "fa fa-wrench warning-color",
   "Product Added": "fa fa-plus info-color",
   "Product Exchanged": "fa fa-exchange warning-color",
-  "Product Removed": "fa fa-times danger-color"
+  "Product Removed": "fa fa-times danger-color",
+  "Order Cancelled": "fa fa-times danger-color",
+  "Order Rescheduled": "fa fa-exchange warning-color",
+  "Order Destination Changed": "fa fa-address-card-o warning-color"
 };
 
 AdvancedFulfillment.dateFormatter = function (date) {

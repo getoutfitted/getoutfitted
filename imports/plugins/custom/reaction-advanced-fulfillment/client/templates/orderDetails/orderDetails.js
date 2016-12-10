@@ -113,19 +113,11 @@ Template.orderDetails.helpers({
   },
   hasShippingInfo: function () {
     return this.advancedFulfillment.shippingHistory;
+  },
+  orderCancelled(order) {
+    return order.advancedFulfillment.workflow.status === "orderCancelled";
   }
 });
-
-// Template.orderDetails.onRendered(function () {
-//   let orderId = ReactionRouter.getParam("_id");
-//   $("#barcode").barcode(orderId, "code128", {
-//     barWidth: 2,
-//     barHeight: 150,
-//     moduleSize: 15,
-//     showHRI: true,
-//     fontSize: 14
-//   });
-// });
 
 Template.orderDetails.events({
   "click .advanceOrder": function () {
@@ -228,8 +220,15 @@ Template.backpackOrderExceptions.helpers({
 Template.backpackOrderUserNotes.helpers({
   notes() {
     const order = this;
+    const importantNotes = [
+      "Note",
+      "Order Cancelled",
+      "Order Rescheduled",
+      "Order Destination Change"
+    ];
+
     if (order.backpackOrderNotes) {
-      return order.backpackOrderNotes.filter(note => note.type === "Note");
+      return order.backpackOrderNotes.filter(note => importantNotes.indexOf(note.type) !== -1).reverse();
     }
     return [];
   }

@@ -1,6 +1,9 @@
 <template name='orderDetails'>
 {{#if Template.subscriptionsReady}}
   {{#with order}}
+    {{#if orderCancelled order}}
+      {{> backpackOrderCancelledBar}}
+    {{/if}}
     {{> orderDetailHeader}}
 
     <section class="order-body">
@@ -328,5 +331,11 @@
         <a href="{{pathFor 'orderDetails' _id=myOrdersInCurrentStep.nextOrderId}}" class="nextOrder btn btn-large btn-default">Next Order</a>
       {{/if}}
     </div>
+  </div>
+</template>
+
+<template name="backpackOrderCancelledBar">
+  <div class="alert alert-danger text-center">
+    <p><strong>Order Cancelled</strong></p>
   </div>
 </template>
