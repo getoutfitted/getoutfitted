@@ -90,12 +90,15 @@ Template.orderDetails.helpers({
     return {};
   },
   paymentInfo() {
-    const source = this.billing[0].paymentMethod.transactions[0].source;
-    return {
+    const transaction = this.billing[0].paymentMethod.transactions[0];
+    const source = transaction.source;
+    const invoice = this.billing[0].invoice;
+    return Object.assign(invoice, {
       name: source.name,
       brand: source.brand,
-      last4: source.last4
-    };
+      last4: source.last4,
+      stripeId: transaction.id
+    });
   },
   phone() {
     if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {

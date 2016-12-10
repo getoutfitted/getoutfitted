@@ -70,6 +70,52 @@ Meteor.methods({
     return inventoryVariants.map(inventory => inventory._id);
   },
 
+  "rentalProducts/checkMultiInventoryAvailability": function (quantityByVariantId, reservationRequest, searchLeastBookedFirst = false) {
+    check(quantityByVariantId, Match.Any);
+    check(reservationRequest, {
+      startTime: Date,
+      endTime: Date
+    });
+    check(searchLeastBookedFirst, Match.Maybe(Boolean));
+
+    const variantIds = Object.keys(quantityByVariantId);
+
+    // Returns an object where the variantId is the key, and an array of available
+    // InventoryVariants is the value.
+    return variantIds.reduce(function (availabilityByVariantId, variantId) {
+      // check(quantityByVariantId, Object);
+      // check(availabilityByVariantId, Object);
+      // check(variantId, String);
+      // check(reservationRequest, {
+      //   startTime: Date,
+      //   endTime: Date
+      // });
+      const inventoryAvailable = InventoryVariants.find({
+        productId: variantId,
+        unavailableDates: {
+          $not: {
+            $elemMatch: {
+              $gte: reservationRequest.startTime,
+              $lte: reservationRequest.endTime
+            }
+          }
+        }
+      }, {
+        fields: {
+          productId: 1
+        },
+        limit: parseInt(quantityByVariantId[variantId], 10),
+        sort: {
+          numberOfDatesBooked: -1
+        }
+      }).fetch();
+
+      availabilityByVariantId[variantId] = inventoryAvailable.map(inventory => inventory._id);
+      console.log("some availabilityByVariantId", availabilityByVariantId);
+      return availabilityByVariantId;
+    }, {});
+  },
+
   /**
    * bulkCheckInventoryAvailability
    * Checks each variantId supplied in array

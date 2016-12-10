@@ -226,7 +226,12 @@
   <div class="value">
     <p class="address">
       <span class="name">{{name}}</span><br>
-      {{brand}} {{last4}}
+      <a href="https://https://dashboard.stripe.com/payments/{{stripeId}}"><i class="fa fa-credit-card"></i> {{brand}} {{last4}}</a><br>
+      <span class="invoice-label">Subtotal:</span> ${{subtotal}}<br>
+      <!-- <span class="invoice-label">Shipping:</span> ${{shipping}}<br> -->
+      <span class="invoice-label">Taxes:</span> ${{taxes}}<br>
+      <!-- <span class="invoice-label">Discounts:</span> ${{discounts}}<br> -->
+      <strong><span class="invoice-label">Total:</span> ${{total}}</strong>
     </p>
   </div>
   <div class="title">

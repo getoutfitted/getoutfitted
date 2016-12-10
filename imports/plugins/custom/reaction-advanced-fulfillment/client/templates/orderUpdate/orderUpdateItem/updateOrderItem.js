@@ -2,17 +2,14 @@ import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 import { ReactiveVar } from "meteor/reactive-var";
 import { Logger, Reaction } from "/client/api";
-import { _ } from "meteor/underscore";
-import { Session } from "meteor/session";
 import { Products, Orders } from "/lib/collections";
 import { Backpack } from "../orderUpdate";
-import RentalProducts  from "/imports/plugins/custom/reaction-rental-products/lib/api";
 
 function uniqueFieldValues(products, field) {
   const fieldValues = {};
   const uniqueProducts = products.reduce(function (acc, product) {
     if (product[field]) {
-      const val = product[field]
+      const val = product[field];
       if (!fieldValues[val]) {
         acc.push(product);
         fieldValues[val] = true;
@@ -22,27 +19,6 @@ function uniqueFieldValues(products, field) {
   }, []);
   return uniqueProducts;
 }
-
-Template.updateOrderItem.onCreated(function () {
-  this.subscribe("advancedFulfillmentOrder", Reaction.Router.getParam("orderId"));
-});
-
-Template.updateOrderItem.helpers({
-  order: function () {
-    let orderId = Reaction.Router.getParam('orderId');
-    return Orders.findOne({ _id: orderId});
-  },
-  item: function () {
-    let itemId = Reaction.Router.getParam('itemId');
-    let order = this;
-    let regItem = _.findWhere(order.items, {_id: itemId});
-    let afItem = _.findWhere(order.advancedFulfillment.items, {_id: itemId});
-    return {
-      regItem: regItem,
-      afItem: afItem
-    };
-  }
-});
 
 Template.productSelector.onCreated(function () {
   // TODO: Optimize this publication

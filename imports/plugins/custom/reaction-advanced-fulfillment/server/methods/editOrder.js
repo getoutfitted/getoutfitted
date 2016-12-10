@@ -4,6 +4,7 @@ import { Random } from "meteor/random";
 import { check } from "meteor/check";
 import { Logger, Reaction } from "/server/api";
 import { Orders, Products } from "/lib/collections";
+import { Transit } from "/imports/plugins/custom/transit-times/server/api";
 import AdvancedFulfillment from "../../lib/api";
 import RentalProducts from "/imports/plugins/custom/reaction-rental-products/server/api";
 
@@ -76,82 +77,177 @@ Meteor.methods({
   "advancedFulfillment/updateShippingAddress": function (orderId, address) {
     check(orderId, String);
     check(address, Object);
+
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
     }
-    const user = Meteor.user();
-    const userName = user.username || user.emails[0].address;
-    const order = ReactionCore.Collections.Orders.findOne(orderId);
-    const prevAddress = order.shipping[0].address;
-    const localDelivery = TransitTimes.isLocalDelivery(address.postal);
-    const transitTime = TransitTimes.calculateTransitTime(address);
-    const transitTimeToPrevAddress = TransitTimes.calculateTransitTime(prevAddress);
 
-    let returnDate = order.advancedFulfillment.returnDate;
-    let shipmentDate = order.advancedFulfillment.shipmentDate;
-    let arrivalDate = order.advancedFulfillment.arrivalDate;
-    let returnBy = order.advancedFulfillment.returnBy;
+    const order = Orders.findOne({_id: orderId});
+    const existingAddress = order.shipping[0].address;
+    const newAddressTransitObject = {
+      orderNumber: order.orderNumber,
+      startTime: order.startTime,
+      endTime: order.endTime,
+      shipping: [{address: address}]
+    };
 
-    if (transitTime !== transitTimeToPrevAddress) {
-      order.shipping[0].address = address;
-      const startDate = order.startTime;
-      const endDate = order.endTime;
-      const totalShippingDays = TransitTimes.calculateTotalShippingDaysByOrder(order);
-
-      shipmentDate = TransitTimes.calculateShippingDayByOrder(order);
-      arrivalDate = startDate;
-      returnBy = endDate;
-      returnDate = TransitTimes.calculateReturnDayByOrder(order);
-
-      if (localDelivery) {
-        shipmentDate = arrivalDate; // Remove transit day from local deliveries
+    const quantityByVariantId = order.items.reduce(function (qtyByVariantId, item) {
+      if (qtyByVariantId[item.variants._id]) {
+        qtyByVariantId[item.variants._id]++;
+      } else {
+        qtyByVariantId[item.variants._id] = 1;
       }
+      return qtyByVariantId;
+    }, {});
 
-      let rushOrder = rushRequired(arrivalDate, totalShippingDays, localDelivery);
-      if (rushOrder && !localDelivery) {
-        shipmentDate = TransitTimes.nextBusinessDay(moment().startOf("day"));
-      }
-    }
+    const existingTransit = new Transit(order);
+    const newTransit = new Transit(newAddressTransitObject);
 
-    let orderNotes = anyOrderNotes(order.orderNotes);
-    // TODO: turn order notes into an array of strings
-    // Build updated orderNotes
-    orderNotes = orderNotes + "<br /><p> Shipping Address updated from: <br />"
-    + prevAddress.fullName + "<br />"
-    + prevAddress.address1 + "<br />";
+    // const localDelivery = TransitTimes.isLocalDelivery(address.postal);
+    // const transitTime = TransitTimes.calculateTransitTime(address);
+    // const transitTimeToExistingAddress = TransitTimes.calculateTransitTime(existingAddress);
 
-    orderNotes = prevAddress.address2 ? orderNotes + prevAddress.address2 + "<br />" : orderNotes;
+    const returnDate = order.advancedFulfillment.returnDate;
+    const shipmentDate = order.advancedFulfillment.shipmentDate;
+    console.log(Meteor.call("rentalProducts/checkMultiInventoryAvailability", quantityByVariantId, {startTime: shipmentDate, endTime: returnDate}));
 
-    orderNotes = orderNotes + prevAddress.city + " "
-    + prevAddress.region + ", " + prevAddress.postal
-    + noteFormattedUser(userName) + "</p>";
-
-    try {
-      ReactionCore.Collections.Orders.update({_id: orderId}, {
-        $set: {
-          "advancedFulfillment.localDelivery": localDelivery,
-          // This line adds a day to transit time because we estimate from first ski day during import.
-          "advancedFulfillment.transitTime": transitTime,
-          "advancedFulfillment.shipmentDate": shipmentDate,
-          "advancedFulfillment.returnDate": returnDate,
-          "advancedFulfillment.arriveBy": arrivalDate,
-          "advancedFulfillment.shipReturnBy": returnBy,
-          "shipping.0.address": address,
-          "orderNotes": orderNotes
-        },
-        $addToSet: {
-          history: {
-            event: "orderShippingAddressUpdated",
-            userId: Meteor.userId(),
-            updatedAt: new Date()
-          }
-        }
-      });
-      ReactionCore.Log.info("Successfully updated shipping address for order: " + order.shopifyOrderNumber);
-    } catch (e) {
-      ReactionCore.Log.error("Error updating shipping address for order: " + order.shopifyOrderNumber, e);
-    }
+    return true;
+    // if (localDelivery || (transitTime <= transitTimeToExistingAddress)) {
+    //   // update order
+    // } else {
+    //   // console.log(Meteor.call("rentalProducts/checkMultiInventoryAvailability", quantityByVariantId, {startTime: shipmentDate, endTime: returnDate}));
+    // }
+    //
+    // let arrivalDate = order.advancedFulfillment.arrivalDate;
+    // let returnBy = order.advancedFulfillment.returnBy;
+    //
+    //
+    // if (transitTime !== transitTimeToExistingAddress) {
+    //   order.shipping[0].address = address;
+    //   const startDate = order.startTime;
+    //   const endDate = order.endTime;
+    //   const totalShippingDays = TransitTimes.calculateTotalShippingDaysByOrder(order);
+    //
+    //   shipmentDate = TransitTimes.calculateShippingDayByOrder(order);
+    //   arrivalDate = startDate;
+    //   returnBy = endDate;
+    //   returnDate = TransitTimes.calculateReturnDayByOrder(order);
+    //
+    //   if (localDelivery) {
+    //     shipmentDate = arrivalDate; // Remove transit day from local deliveries
+    //   }
+    //
+    //   let rushOrder = rushRequired(arrivalDate, totalShippingDays, localDelivery);
+    //   if (rushOrder && !localDelivery) {
+    //     shipmentDate = TransitTimes.nextBusinessDay(moment().startOf("day"));
+    //   }
+    // }
+    //
+    // try {
+    //   ReactionCore.Collections.Orders.update({_id: orderId}, {
+    //     $set: {
+    //       "advancedFulfillment.localDelivery": localDelivery,
+    //       "advancedFulfillment.transitTime": transitTime,
+    //       "advancedFulfillment.shipmentDate": shipmentDate,
+    //       "advancedFulfillment.returnDate": returnDate,
+    //       "advancedFulfillment.arriveBy": arrivalDate,
+    //       "advancedFulfillment.shipReturnBy": returnBy,
+    //       "shipping.0.address": address,
+    //       "orderNotes": orderNotes
+    //     },
+    //     $addToSet: {
+    //       history: {
+    //         event: "orderShippingAddressUpdated",
+    //         userId: Meteor.userId(),
+    //         updatedAt: new Date()
+    //       }
+    //     }
+    //   });
+    //   ReactionCore.Log.info("Successfully updated shipping address for order: " + order.shopifyOrderNumber);
+    // } catch (e) {
+    //   ReactionCore.Log.error("Error updating shipping address for order: " + order.shopifyOrderNumber, e);
+    // }
   },
+
+  // "advancedFulfillment/updateShippingAddress": function (orderId, address) {
+  //   check(orderId, String);
+  //   check(address, Object);
+  //   if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+  //     throw new Meteor.Error(403, "Access Denied");
+  //   }
+  //   const user = Meteor.user();
+  //   const userName = user.username || user.emails[0].address;
+  //   const order = ReactionCore.Collections.Orders.findOne(orderId);
+  //   const prevAddress = order.shipping[0].address;
+  //   const localDelivery = TransitTimes.isLocalDelivery(address.postal);
+  //   const transitTime = TransitTimes.calculateTransitTime(address);
+  //   const transitTimeToPrevAddress = TransitTimes.calculateTransitTime(prevAddress);
+  //
+  //   let returnDate = order.advancedFulfillment.returnDate;
+  //   let shipmentDate = order.advancedFulfillment.shipmentDate;
+  //   let arrivalDate = order.advancedFulfillment.arrivalDate;
+  //   let returnBy = order.advancedFulfillment.returnBy;
+  //
+  //   if (transitTime !== transitTimeToPrevAddress) {
+  //     order.shipping[0].address = address;
+  //     const startDate = order.startTime;
+  //     const endDate = order.endTime;
+  //     const totalShippingDays = TransitTimes.calculateTotalShippingDaysByOrder(order);
+  //
+  //     shipmentDate = TransitTimes.calculateShippingDayByOrder(order);
+  //     arrivalDate = startDate;
+  //     returnBy = endDate;
+  //     returnDate = TransitTimes.calculateReturnDayByOrder(order);
+  //
+  //     if (localDelivery) {
+  //       shipmentDate = arrivalDate; // Remove transit day from local deliveries
+  //     }
+  //
+  //     let rushOrder = rushRequired(arrivalDate, totalShippingDays, localDelivery);
+  //     if (rushOrder && !localDelivery) {
+  //       shipmentDate = TransitTimes.nextBusinessDay(moment().startOf("day"));
+  //     }
+  //   }
+  //
+  //   let orderNotes = anyOrderNotes(order.orderNotes);
+  //   // TODO: turn order notes into an array of strings
+  //   // Build updated orderNotes
+  //   orderNotes = orderNotes + "<br /><p> Shipping Address updated from: <br />"
+  //   + prevAddress.fullName + "<br />"
+  //   + prevAddress.address1 + "<br />";
+  //
+  //   orderNotes = prevAddress.address2 ? orderNotes + prevAddress.address2 + "<br />" : orderNotes;
+  //
+  //   orderNotes = orderNotes + prevAddress.city + " "
+  //   + prevAddress.region + ", " + prevAddress.postal
+  //   + noteFormattedUser(userName) + "</p>";
+  //
+  //   try {
+  //     ReactionCore.Collections.Orders.update({_id: orderId}, {
+  //       $set: {
+  //         "advancedFulfillment.localDelivery": localDelivery,
+  //         // This line adds a day to transit time because we estimate from first ski day during import.
+  //         "advancedFulfillment.transitTime": transitTime,
+  //         "advancedFulfillment.shipmentDate": shipmentDate,
+  //         "advancedFulfillment.returnDate": returnDate,
+  //         "advancedFulfillment.arriveBy": arrivalDate,
+  //         "advancedFulfillment.shipReturnBy": returnBy,
+  //         "shipping.0.address": address,
+  //         "orderNotes": orderNotes
+  //       },
+  //       $addToSet: {
+  //         history: {
+  //           event: "orderShippingAddressUpdated",
+  //           userId: Meteor.userId(),
+  //           updatedAt: new Date()
+  //         }
+  //       }
+  //     });
+  //     ReactionCore.Log.info("Successfully updated shipping address for order: " + order.shopifyOrderNumber);
+  //   } catch (e) {
+  //     ReactionCore.Log.error("Error updating shipping address for order: " + order.shopifyOrderNumber, e);
+  //   }
+  // },
 
   "advancedFulfillment/updateContactInformation": function (orderId, phone, email) {
     check(orderId, String);

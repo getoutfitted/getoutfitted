@@ -151,23 +151,56 @@ Template.updateCustomerDates.events({
 });
 
 Template.updateCustomerDetails.events({
-  'submit #updateShippingAddressForm': function (event) {
+  "submit #updateShippingAddressForm": function (event) {
     event.preventDefault();
     const form = event.currentTarget;
-    let address = this.shipping[0].address;
+    const order = this;
+    const orderId = this._id;
+    const address = order.shipping[0].address;
     address.fullName = form.shippingName.value;
+    address.company = form.company.value;
     address.address1 = form.shippingAddress1.value;
     address.address2 = form.shippingAddress2.value;
     address.city = form.shippingCity.value;
     address.postal = form.shippingPostal.value;
     address.region = form.shippingRegion.value;
     if (address.fullName && address.address1 && address.city && address.postal && address.region) {
-      Meteor.call('advancedFulfillment/updateShippingAddress', this._id, address);
-      Alerts.removeSeen();
-      Alerts.add('Shipping Address Updated', 'success', {autoHide: true});
+      Alerts.alert({
+        title: "Change Destination Address",
+        text: "If the all items in the order are available to be shipped for the new address, the address will be changed.",
+        type: "warning",
+        reverseButtons: true,
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Change Destination",
+        confirmButtonColor: "#AACBC9",
+        showLoaderOnConfirm: true,
+        preConfirm: function () {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("advancedFulfillment/updateShippingAddress", orderId, address, function (error, result) {
+              if (error) {
+                reject("Error checking destination availability");
+              }
+              if (result === true) {
+                resolve();
+              } else {
+                reject("Some items were not available with an address change.");
+              }
+            });
+          });
+        },
+        allowOutsideClick: false
+      }, (isConfirm) => {
+        if (isConfirm) {
+          Alerts.alert({
+            type: "success",
+            title: "Destination Address Change Successful"
+          });
+        }
+      });
     } else {
       Alerts.removeSeen();
-      Alerts.add('All fields required except Address 2', 'danger');
+      Alerts.add("All fields required except Address 2 and Company", "danger");
     }
   },
   'submit #updateContactInformationForm': function (event) {
