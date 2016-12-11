@@ -114,6 +114,7 @@ export class Transit {
     }
     // XXX: what happens when we return false here?
     Logger.warn(`Transit Time for ${this.postal} is not in transtimescache`);
+    // Should hit API instead of returning false.
     return false;
   }
 

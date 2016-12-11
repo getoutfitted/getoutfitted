@@ -83,7 +83,6 @@ Meteor.methods({
     }
 
     const order = Orders.findOne({_id: orderId});
-    const existingAddress = order.shipping[0].address;
     const newAddressTransitObject = {
       orderNumber: order.orderNumber,
       startTime: order.startTime,
@@ -91,25 +90,66 @@ Meteor.methods({
       shipping: [{address: address}]
     };
 
+    const existingTransit = new Transit(order);
+    const newTransit = new Transit(newAddressTransitObject);
+
+    const existingLocalDelivery = order.advancedFulfillment.localDelivery;
+    const localDelivery = newTranist.isLocalDelivery();
+    const transitTime = newTranist.calculateTransitTime();
+    const existingTransitTime = existingTransit.calculateTransitTime();
+
+    // New and old address are both local deliveries
+    if (existingLocalDelivery && localDelivery) {
+      // update address
+      // return successful
+      return true;
+    }
+
+    // New and old address have identical transit times
+    if (transitTime === existingTransitTime) {
+      // update address
+      // return successful
+    }
+
+    // New address is local or has shorter transit time than existing address
+    if (localDelivery || transitTime < existingTransitTime) {
+      // update address
+      // truncate inventory bookings
+      // return successful
+    }
+
+    // Else, we need to make sure all items are still available for reservation to the new location.
+    // Check availability
+    // If available, register new bookings
+    // Remove old bookings
+    // update address
+    // return successful
+    // If unavailable, notify user which items are unavailable
+    // return false
+
     const quantityByVariantId = order.items.reduce(function (qtyByVariantId, item) {
-      if (qtyByVariantId[item.variants._id]) {
-        qtyByVariantId[item.variants._id]++;
-      } else {
-        qtyByVariantId[item.variants._id] = 1;
+      if (item.variants.functionalType !== "bundleVariant") {
+        if (qtyByVariantId[item.variants._id]) {
+          qtyByVariantId[item.variants._id]++;
+        } else {
+          qtyByVariantId[item.variants._id] = 1;
+        }
       }
       return qtyByVariantId;
     }, {});
 
-    const existingTransit = new Transit(order);
-    const newTransit = new Transit(newAddressTransitObject);
+    const shipmentDate = newTransit.calculateShippingDay();
+    const returnDate = newTransit.calculateReturnDay();
 
-    // const localDelivery = TransitTimes.isLocalDelivery(address.postal);
-    // const transitTime = TransitTimes.calculateTransitTime(address);
-    // const transitTimeToExistingAddress = TransitTimes.calculateTransitTime(existingAddress);
+    availablityByVariantId = Meteor.call("rentalProducts/checkMultiInventoryAvailability", quantityByVariantId, {startTime: shipmentDate, endTime: returnDate});
 
-    const returnDate = order.advancedFulfillment.returnDate;
-    const shipmentDate = order.advancedFulfillment.shipmentDate;
-    console.log(Meteor.call("rentalProducts/checkMultiInventoryAvailability", quantityByVariantId, {startTime: shipmentDate, endTime: returnDate}));
+    // Check to make sure we have enough of each item.
+    for (const vId in quantityByVariantId) {
+      if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
+        return false
+      }
+      console.log(availablityByVariantId[vId]);
+    }
 
     return true;
     // if (localDelivery || (transitTime <= transitTimeToExistingAddress)) {

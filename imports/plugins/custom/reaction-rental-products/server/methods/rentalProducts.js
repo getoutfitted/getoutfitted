@@ -83,13 +83,6 @@ Meteor.methods({
     // Returns an object where the variantId is the key, and an array of available
     // InventoryVariants is the value.
     return variantIds.reduce(function (availabilityByVariantId, variantId) {
-      // check(quantityByVariantId, Object);
-      // check(availabilityByVariantId, Object);
-      // check(variantId, String);
-      // check(reservationRequest, {
-      //   startTime: Date,
-      //   endTime: Date
-      // });
       const inventoryAvailable = InventoryVariants.find({
         productId: variantId,
         unavailableDates: {
@@ -111,7 +104,6 @@ Meteor.methods({
       }).fetch();
 
       availabilityByVariantId[variantId] = inventoryAvailable.map(inventory => inventory._id);
-      console.log("some availabilityByVariantId", availabilityByVariantId);
       return availabilityByVariantId;
     }, {});
   },
