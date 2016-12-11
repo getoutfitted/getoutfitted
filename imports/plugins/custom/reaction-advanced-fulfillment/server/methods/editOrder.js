@@ -2,11 +2,46 @@ import { _ } from "meteor/underscore";
 import { Meteor } from "meteor/meteor";
 import { Random } from "meteor/random";
 import { check } from "meteor/check";
+import { SimpleSchema } from "meteor/aldeed:simple-schema";
 import { Logger, Reaction } from "/server/api";
 import { Orders, Products } from "/lib/collections";
 import { Transit } from "/imports/plugins/custom/transit-times/server/api";
 import AdvancedFulfillment from "../../lib/api";
 import RentalProducts from "/imports/plugins/custom/reaction-rental-products/server/api";
+
+const updateShippingAddress = new ValidatedMethod({
+  name: "updateShippingAddress",
+  validate(args) {
+    check(args, {
+      orderId: String,
+      update: Object
+    });
+  },
+  run({ orderId, update }) {
+    console.log("running");
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+    return Orders.update({_id: orderId}, {
+      $set: {
+        "advancedFulfillment.localDelivery": update.localDelivery,
+        "advancedFulfillment.transitTime": update.transitTime,
+        "advancedFulfillment.shipmentDate": update.shipmentDate,
+        "advancedFulfillment.returnDate": update.returnDate,
+        "advancedFulfillment.arriveBy": update.arrivalDate,
+        "advancedFulfillment.shipReturnBy": update.returnBy,
+        "shipping.0.address": update.address
+      },
+      $addToSet: {
+        history: {
+          event: "orderShippingAddressUpdated",
+          userId: Meteor.userId(),
+          updatedAt: new Date()
+        }
+      }
+    });
+  }
+});
 
 Meteor.methods({
   // TODO: This should check availability and not allow updates if availability does not exist.
@@ -91,31 +126,42 @@ Meteor.methods({
     };
 
     const existingTransit = new Transit(order);
-    const newTransit = new Transit(newAddressTransitObject);
-
-    const existingLocalDelivery = order.advancedFulfillment.localDelivery;
-    const localDelivery = newTranist.isLocalDelivery();
-    const transitTime = newTranist.calculateTransitTime();
+    const existingLocalDelivery = existingTransit.isLocalDelivery();
     const existingTransitTime = existingTransit.calculateTransitTime();
 
+    const newTransit = new Transit(newAddressTransitObject);
+
+    // Build update object
+    const update = {
+      localDelivery: newTransit.isLocalDelivery(),
+      transitTime: newTransit.calculateTransitTime(),
+      arriveBy: newTransit.getArriveBy(),
+      returnBy: newTransit.getShipReturnBy(),
+      shipmentDate: newTransit.calculateShippingDay(),
+      returnDate: newTransit.calculateReturnDay(),
+      address: address
+    };
+
     // New and old address are both local deliveries
-    if (existingLocalDelivery && localDelivery) {
-      // update address
-      // return successful
+    if (existingLocalDelivery && update.localDelivery) {
+      console.log("Both localDelivery");
+      updateShippingAddress.call({orderId, update});
       return true;
     }
 
     // New and old address have identical transit times
-    if (transitTime === existingTransitTime) {
-      // update address
-      // return successful
+    if (update.transitTime === existingTransitTime) {
+      console.log("equal transitTime");
+      console.log(updateShippingAddress.call({orderId, update}));
+      return true;
     }
 
     // New address is local or has shorter transit time than existing address
-    if (localDelivery || transitTime < existingTransitTime) {
-      // update address
-      // truncate inventory bookings
-      // return successful
+    if (update.localDelivery || update.transitTime < existingTransitTime) {
+      console.log("lesser transitTime");
+      updateShippingAddress(orderId, update);
+      Meteor.call("truncateInventoryBookings", orderId, update);
+      return true;
     }
 
     // Else, we need to make sure all items are still available for reservation to the new location.
@@ -138,15 +184,13 @@ Meteor.methods({
       return qtyByVariantId;
     }, {});
 
-    const shipmentDate = newTransit.calculateShippingDay();
-    const returnDate = newTransit.calculateReturnDay();
-
-    availablityByVariantId = Meteor.call("rentalProducts/checkMultiInventoryAvailability", quantityByVariantId, {startTime: shipmentDate, endTime: returnDate});
+    availablityByVariantId = Meteor.call("rentalProducts/checkMultiInventoryAvailability",
+      quantityByVariantId, { startTime: update.shipmentDate, endTime: update.returnDate });
 
     // Check to make sure we have enough of each item.
     for (const vId in quantityByVariantId) {
       if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
-        return false
+        return false;
       }
       console.log(availablityByVariantId[vId]);
     }

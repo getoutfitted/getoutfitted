@@ -83,15 +83,22 @@ export class Transit {
     return this.settings.selectedShippingProvider;
   }
 
+  getArriveBy() {
+    return this.arriveBy;
+  }
+
+  getShipReturnBy() {
+    return this.arriveBy;
+  }
+
   getAPIAuth() {
     if (this.settings.selectedShippingProvider) {
       let provider = this.settings.selectedShippingProvider;
       provider = provider.toLowerCase();
       return this.settings[provider];
-    } else {
-      Logger.warn('No Shipping Provided Selected');
-      return;
     }
+    Logger.warn('No Shipping Provided Selected');
+    return false;
   }
 
   isLocalDelivery() {
