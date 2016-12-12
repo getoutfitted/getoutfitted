@@ -92,7 +92,7 @@ export class Transit {
   }
 
   isLocalDelivery() {
-    return _.contains(this.settings.localPostalCodes, this.postal);
+    return this.settings.localDeliveryPostalCodes.indexOf(this.postal) !== -1;
   }
 
   // TODO: Not sure why this is uppercase - should refactor to camelcase.
