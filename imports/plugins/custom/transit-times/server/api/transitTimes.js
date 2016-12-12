@@ -44,9 +44,7 @@ function holidayCount(beginTransit, endTransit) {
     const holidays = transitPack.settings.shippingHolidays;
 
     holidays.forEach(function (holiday) {
-      console.log(`${holiday} - ${beginTransit}`);
       if (+holiday >= +beginTransit && +holiday <= +endTransit) {
-        console.log(beginTransit, holiday, endTransit);
         numberOfHolidaysWhileInTransit++;
       }
     });

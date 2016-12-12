@@ -158,11 +158,13 @@ Meteor.methods({
     // New address is local or has shorter transit time than existing address
     if (update.localDelivery || update.transitTime < existingTransitTime) {
       console.log("lesser transitTime");
+      // Determine which inventory variants we are using
+      const inventoryToTruncate = InventoryVariants.find({"unavailableDetails.orderId": orderId}, {fields: {_id: 1}}).fetch().map(iv => iv._id);
+      Meteor.call("rentalProducts/removeOrderReservations", orderId);
+
       updateShippingAddress.call({orderId, update});
       update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
-      const inventoryToTruncate = InventoryVariants.find({"unavailableDetails.orderId": orderId}, {fields: {_id: 1}}).fetch().map(iv => iv._id);
-      console.log("inventoryToTruncate", inventoryToTruncate);
-      Meteor.call("rentalProducts/removeOrderReservations", orderId);
+
       inventoryToTruncate.forEach(function (inventoryVariantId) {
         Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
       });
@@ -193,16 +195,17 @@ Meteor.methods({
     // Check to make sure we have enough of each item.
     for (const vId in availablityByVariantId) {
       if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
-        console.log(vId);
         return false;
       }
       availablityByVariantId[vId].forEach(function (inventoryVariantId) {
         inventoryToReserve.push(inventoryVariantId);
       });
     }
+    // We have to remove the existing reservations before changing the shipping address.
+    Meteor.call("rentalProducts/removeOrderReservations", orderId);
+
     updateShippingAddress.call({orderId, update});
     update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
-    Meteor.call("rentalProducts/removeOrderReservations", orderId);
     inventoryToReserve.forEach(function (inventoryVariantId) {
       Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
     });
