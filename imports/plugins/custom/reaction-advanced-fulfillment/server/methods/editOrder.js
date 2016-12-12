@@ -2,12 +2,12 @@ import { _ } from "meteor/underscore";
 import { Meteor } from "meteor/meteor";
 import { Random } from "meteor/random";
 import { check } from "meteor/check";
-import { SimpleSchema } from "meteor/aldeed:simple-schema";
-import { Logger, Reaction } from "/server/api";
+import { Reaction } from "/server/api";
 import { Orders, Products } from "/lib/collections";
 import { Transit } from "/imports/plugins/custom/transit-times/server/api";
 import AdvancedFulfillment from "../../lib/api";
 import RentalProducts from "/imports/plugins/custom/reaction-rental-products/server/api";
+import { InventoryVariants } from "/imports/plugins/custom/reaction-rental-products/lib/collections";
 
 const updateShippingAddress = new ValidatedMethod({
   name: "updateShippingAddress",
@@ -18,7 +18,6 @@ const updateShippingAddress = new ValidatedMethod({
     });
   },
   run({ orderId, update }) {
-    console.log("running");
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
     }
@@ -152,26 +151,28 @@ Meteor.methods({
     // New and old address have identical transit times
     if (update.transitTime === existingTransitTime) {
       console.log("equal transitTime");
-      console.log(updateShippingAddress.call({orderId, update}));
+      updateShippingAddress.call({orderId, update});
       return true;
     }
 
     // New address is local or has shorter transit time than existing address
     if (update.localDelivery || update.transitTime < existingTransitTime) {
       console.log("lesser transitTime");
-      updateShippingAddress(orderId, update);
-      Meteor.call("truncateInventoryBookings", orderId, update);
+      updateShippingAddress.call({orderId, update});
+      update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
+      const inventoryToTruncate = InventoryVariants.find({"unavailableDetails.orderId": orderId}, {fields: {_id: 1}}).fetch().map(iv => iv._id);
+      console.log("inventoryToTruncate", inventoryToTruncate);
+      Meteor.call("rentalProducts/removeOrderReservations", orderId);
+      inventoryToTruncate.forEach(function (inventoryVariantId) {
+        Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
+      });
       return true;
     }
 
-    // Else, we need to make sure all items are still available for reservation to the new location.
-    // Check availability
-    // If available, register new bookings
-    // Remove old bookings
-    // update address
-    // return successful
-    // If unavailable, notify user which items are unavailable
-    // return false
+    // New address has greater transit time than existing address.
+    // We need to check to make sure that there exist inventory that
+    // can accomodate the longer reservation period before booking.
+    console.log("greater transitTime");
 
     const quantityByVariantId = order.items.reduce(function (qtyByVariantId, item) {
       if (item.variants.functionalType !== "bundleVariant") {
@@ -187,70 +188,26 @@ Meteor.methods({
     availablityByVariantId = Meteor.call("rentalProducts/checkMultiInventoryAvailability",
       quantityByVariantId, { startTime: update.shipmentDate, endTime: update.returnDate });
 
+    const inventoryToReserve = [];
+
     // Check to make sure we have enough of each item.
-    for (const vId in quantityByVariantId) {
+    for (const vId in availablityByVariantId) {
       if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
+        console.log(vId);
         return false;
       }
-      console.log(availablityByVariantId[vId]);
+      availablityByVariantId[vId].forEach(function (inventoryVariantId) {
+        inventoryToReserve.push(inventoryVariantId);
+      });
     }
+    updateShippingAddress.call({orderId, update});
+    update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
+    Meteor.call("rentalProducts/removeOrderReservations", orderId);
+    inventoryToReserve.forEach(function (inventoryVariantId) {
+      Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
+    });
 
     return true;
-    // if (localDelivery || (transitTime <= transitTimeToExistingAddress)) {
-    //   // update order
-    // } else {
-    //   // console.log(Meteor.call("rentalProducts/checkMultiInventoryAvailability", quantityByVariantId, {startTime: shipmentDate, endTime: returnDate}));
-    // }
-    //
-    // let arrivalDate = order.advancedFulfillment.arrivalDate;
-    // let returnBy = order.advancedFulfillment.returnBy;
-    //
-    //
-    // if (transitTime !== transitTimeToExistingAddress) {
-    //   order.shipping[0].address = address;
-    //   const startDate = order.startTime;
-    //   const endDate = order.endTime;
-    //   const totalShippingDays = TransitTimes.calculateTotalShippingDaysByOrder(order);
-    //
-    //   shipmentDate = TransitTimes.calculateShippingDayByOrder(order);
-    //   arrivalDate = startDate;
-    //   returnBy = endDate;
-    //   returnDate = TransitTimes.calculateReturnDayByOrder(order);
-    //
-    //   if (localDelivery) {
-    //     shipmentDate = arrivalDate; // Remove transit day from local deliveries
-    //   }
-    //
-    //   let rushOrder = rushRequired(arrivalDate, totalShippingDays, localDelivery);
-    //   if (rushOrder && !localDelivery) {
-    //     shipmentDate = TransitTimes.nextBusinessDay(moment().startOf("day"));
-    //   }
-    // }
-    //
-    // try {
-    //   ReactionCore.Collections.Orders.update({_id: orderId}, {
-    //     $set: {
-    //       "advancedFulfillment.localDelivery": localDelivery,
-    //       "advancedFulfillment.transitTime": transitTime,
-    //       "advancedFulfillment.shipmentDate": shipmentDate,
-    //       "advancedFulfillment.returnDate": returnDate,
-    //       "advancedFulfillment.arriveBy": arrivalDate,
-    //       "advancedFulfillment.shipReturnBy": returnBy,
-    //       "shipping.0.address": address,
-    //       "orderNotes": orderNotes
-    //     },
-    //     $addToSet: {
-    //       history: {
-    //         event: "orderShippingAddressUpdated",
-    //         userId: Meteor.userId(),
-    //         updatedAt: new Date()
-    //       }
-    //     }
-    //   });
-    //   ReactionCore.Log.info("Successfully updated shipping address for order: " + order.shopifyOrderNumber);
-    // } catch (e) {
-    //   ReactionCore.Log.error("Error updating shipping address for order: " + order.shopifyOrderNumber, e);
-    // }
   },
 
   // "advancedFulfillment/updateShippingAddress": function (orderId, address) {

@@ -135,7 +135,7 @@ Meteor.methods({
     }
   },
   "rentalProducts/reserveInventory": function (inventoryVariantId, reservation, orderId) {
-    check(inventoryVariantId, String); // simpleSchema cartItem
+    check(inventoryVariantId, String);
     check(reservation, Object);
     check(orderId, String);
 
@@ -278,7 +278,6 @@ Meteor.methods({
       multi: true
     });
   },
-
 
   "rentalProducts/inventoryUnbook": function (orderId) {
     check(orderId, String);

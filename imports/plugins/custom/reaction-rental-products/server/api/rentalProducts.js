@@ -14,16 +14,23 @@ RentalProducts.server.permissions = [
   "reaction-rental-products"
 ];
 
-RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turnaroundTime = 1) {
+RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, transitObj, turnaroundTime = 1) {
   check(orderId, String);
+  check(transitObj, Match.Any);
   check(turnaroundTime, Match.Maybe(Number));
 
-  const order = Orders.findOne({_id: orderId});
-  const transit = new Transit(order);
-  const shipmentDate = order.advancedFulfillment.shipmentDate;
+  let transit;
+  let order;
+  if (transitObj) {
+    transit = transitObj;
+  } else {
+    order = Orders.findOne({_id: orderId});
+    transit = new Transit(order);
+  }
+  const shipmentDate = transit.calculateShippingDay();
   const shippingTime = transit.calculateTotalShippingDays();
 
-  const returnDate = order.advancedFulfillment.returnDate;
+  const returnDate = transit.calculateReturnDay();
   const returnTime = transit.calculateTotalReturnDays();
 
   const datesToReserve = [];
@@ -42,7 +49,7 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turna
 
     // Insert into Unavailable Details
     if (counter === 0) {
-      reason = "Shipped";            // First reservation day is when order is shipped from warehouse
+      reason = "Shipped"; // First reservation day is when order is shipped from warehouse
     } else if (counter === shippingTime - 1) {
       reason = "Delivered";          //
     } else if (counter < shippingTime - 1) {
