@@ -88,6 +88,14 @@ export class Transit {
     return this.shipReturnBy;
   }
 
+  getShipmentDate() {
+    return this.shipmentDate;
+  }
+
+  getReturnDate() {
+    return this.returnDate;
+  }
+
   getAPIAuth() {
     if (this.settings.selectedShippingProvider) {
       let provider = this.settings.selectedShippingProvider;

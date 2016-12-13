@@ -124,6 +124,9 @@ export default RentalProducts = {
 
   getTurnaroundTime: function () {
     const settings = RentalProducts._getSettings();
-    return settings.turnaroundTime || 1; // Changed from `selectedShipping`
+    if (settings) {
+      return settings.turnaroundTime || 1; // Changed from `selectedShipping`
+    }
+    return 1;
   }
 };

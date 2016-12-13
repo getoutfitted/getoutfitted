@@ -65,10 +65,11 @@ Meteor.methods({
     // update inventory status for cartItems
     for (const item of cartItems) {
       // XXX: GETOUTFITTED MOD - skip updating bundleVariant products traditional inventory
-      if (item.variants.functionalType === "bundleVariant") {
+      if (item.variants.functionalType === "bundleVariant" ||
+          item.variants.functionalType === "rentalVariant") {
         reservationCount = reservationCount || 0;
         Logger.info(
-          `skipped updating traditional inventory for bundle item ${item._id}`);
+          `skipped updating traditional inventory for bundle or rental item ${item._id}`);
       } else {
         // check of existing reserved inventory for this cart
         const existingReservations = Inventory.find({

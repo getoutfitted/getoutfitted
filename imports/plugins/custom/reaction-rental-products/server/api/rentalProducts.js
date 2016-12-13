@@ -41,7 +41,7 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, trans
   const reservation = moment(shipmentDate).twix(moment(returnDate).add(turnaroundTime, "days"), { allDay: true });
   const iter = reservation.iterate("days"); // Momentjs twix iterator
   while (iter.hasNext()) {
-    let reason = "Waiting For Transit";
+    let reason = "In Use";
     const requestedDate = iter.next().toDate();
     const denverRequestedDate = GetOutfitted.adjustLocalToDenverTime(requestedDate);
     datesToReserve.push(denverRequestedDate);
@@ -71,7 +71,6 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, trans
       reason: reason,
       orderId: orderId
     });
-    counter++;
   }  // Create array of requested dates
   return {datesToReserve, detailsToReserve};
 };
