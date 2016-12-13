@@ -17,7 +17,7 @@ function adjustLocalToDenverTime(time) {
 }
 
 Template.dashboardRentalProductAvailability.onRendered(function () {
-  let instance = this;
+  const instance = this;
   const productId = Reaction.Router.getParam("_id");
 
   instance.autorun(() => {
@@ -85,7 +85,8 @@ Template.dashboardVariantAvailability.helpers({
       "In Transit - Rush Delivery": "fa fa-plane rush-delivery-orange",
       "In Transit - Rush Returning": "fa fa-plane fa-flip-horizontal rush-delivery-orange",
       "Return Processing": "fa fa-refresh",
-      "In Use": "fa fa-user primary-color"
+      "In Use": "fa fa-user primary-color",
+      "Waiting For Transit": "fa fa-user-secret primary-color"
     };
 
     if (!unavailableDetails || unavailableDetails.length === 0) {

@@ -1,16 +1,20 @@
-import { _ } from "meteor/underscore";
 import { Meteor } from "meteor/meteor";
 import { Random } from "meteor/random";
 import { check } from "meteor/check";
 import { Reaction } from "/server/api";
 import { Orders, Products } from "/lib/collections";
+import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 import { Transit } from "/imports/plugins/custom/transit-times/server/api";
 import AdvancedFulfillment from "../../lib/api";
 import RentalProducts from "/imports/plugins/custom/reaction-rental-products/server/api";
 import { InventoryVariants } from "/imports/plugins/custom/reaction-rental-products/lib/collections";
 
-const updateShippingAddress = new ValidatedMethod({
-  name: "updateShippingAddress",
+// update reservation is a validated method that should only be called
+// from methods within this file. It should only be called after checking to ensure
+// availability of all inventory impacted by the change in reservation.
+// Called by `updateRentalDates` and `updateShippingAddress` currently
+const updateReservation = new ValidatedMethod({
+  name: "updateReservation",
   validate(args) {
     check(args, {
       orderId: String,
@@ -23,6 +27,8 @@ const updateShippingAddress = new ValidatedMethod({
     }
     return Orders.update({_id: orderId}, {
       $set: {
+        "startTime": update.startTime,
+        "endTime": update.endTime,
         "advancedFulfillment.localDelivery": update.localDelivery,
         "advancedFulfillment.transitTime": update.transitTime,
         "advancedFulfillment.shipmentDate": update.shipmentDate,
@@ -33,7 +39,7 @@ const updateShippingAddress = new ValidatedMethod({
       },
       $addToSet: {
         history: {
-          event: "orderShippingAddressUpdated",
+          event: "orderReservationInformationUpdated",
           userId: Meteor.userId(),
           updatedAt: new Date()
         }
@@ -43,69 +49,83 @@ const updateShippingAddress = new ValidatedMethod({
 });
 
 Meteor.methods({
-  // TODO: This should check availability and not allow updates if availability does not exist.
-  // TODO: This should also update the availability calendar
-  // Currently just switches dates in AF
-  "advancedFulfillment/updateRentalDates": function (orderId, startDate, endDate, userObj) {
+  "advancedFulfillment/updateRentalDates": function (orderId, startDate, endDate) {
     check(orderId, String);
     check(startDate, Date);
     check(endDate, Date);
-    check(userObj, Object);
 
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, "Access Denied");
     }
 
-    const order = ReactionCore.Collections.Orders.findOne(orderId);
-    const localDelivery = order.advancedFulfillment.localDelivery;
-    let user = userNameDeterminer(userObj);
+    const order = Orders.findOne(orderId);
+    // const localDelivery = order.advancedFulfillment.localDelivery;
+    const newTransit = new Transit({
+      startTime: GetOutfitted.adjustLocalToDenverTime(startDate),
+      endTime: GetOutfitted.adjustLocalToDenverTime(endDate),
+      orderNumber: order.orderNumber,
+      shipping: order.shipping
+    });
 
-    let rentalLength = moment(endDate).diff(moment(startDate), "days");
-    let arrivalDate = startDate;
-    let returnBy = endDate;
-    let shipmentDate = TransitTimes.calculateShippingDayByOrder(_.defaults({startTime: startDate}, order));
-    let returnDate = TransitTimes.calculateReturnDayByOrder(_.defaults({endTime: endDate}, order));
-    let shippingDays = TransitTimes.calculateTotalShippingDaysByOrder(_.defaults({startTime: startDate}, order));
+    // Build update object
+    const update = {
+      startTime: startDate,
+      endTime: endDate,
+      localDelivery: newTransit.isLocalDelivery(),
+      transitTime: newTransit.calculateTransitTime(),
+      arriveBy: newTransit.getArriveBy(),
+      returnBy: newTransit.getShipReturnBy(),
+      shipmentDate: newTransit.calculateShippingDay(),
+      returnDate: newTransit.calculateReturnDay(),
+      address: order.address
+    };
 
-    let rushOrder = rushRequired(arrivalDate, shippingDays, localDelivery);
-    if (rushOrder && !localDelivery) {
-      shipmentDate = TransitTimes.date.nextBusinessDay(moment().startOf("day")); // Ship Next Business Day
-    }
-
-    if (localDelivery) {
-      shipmentDate = arrivalDate; // Local delivery should be delivered the day it"s due.
-    }
-
-    // TODO: Call some function in RentalProducts to update rental dates as stored in calendar
-
-    let orderNotes = anyOrderNotes(order.orderNotes);
-    orderNotes = orderNotes + "<p> Rental Dates updated to: "
-    + moment(startDate).format("MM/D/YY") + "-"
-    + moment(endDate).format("MM/D/YY")
-    + noteFormattedUser(user) + "</p>";
-
-    ReactionCore.Collections.Orders.update({_id: orderId}, {
-      $set: {
-        "startTime": startDate,
-        "endTime": endDate,
-        "rentalDays": rentalLength,
-        "infoMissing": false,
-        "advancedFulfillment.shipmentDate": shipmentDate,
-        "advancedFulfillment.returnDate": returnDate,
-        "advancedFulfillment.workflow": {status: "orderCreated"},
-        "advancedFulfillment.arriveBy": arrivalDate,
-        "advancedFulfillment.shipReturnBy": returnBy,
-        "advancedFulfillment.impossibleShipDate": false,
-        "orderNotes": orderNotes
-      },
-      $addToSet: {
-        history: {
-          event: "updatedRentalDates",
-          userId: userObj._id,
-          updatedAt: new Date()
+    // Determine what quantity of each item we need to change the reservation of.
+    const quantityByVariantId = order.items.reduce(function (qtyByVariantId, item) {
+      if (item.variants.functionalType !== "bundleVariant") {
+        if (qtyByVariantId[item.variants._id]) {
+          qtyByVariantId[item.variants._id]++;
+        } else {
+          qtyByVariantId[item.variants._id] = 1;
         }
       }
+      return qtyByVariantId;
+    }, {});
+
+    availablityByVariantId = Meteor.call("rentalProducts/checkMultiInventoryAvailability",
+      quantityByVariantId, { startTime: update.shipmentDate, endTime: update.returnDate });
+
+    const inventoryToReserve = [];
+    const inventoryNotAvailable = [];
+    // Check to make sure we have enough of each item.
+    for (const vId in availablityByVariantId) {
+      if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
+        inventoryNotAvailable.push(vId);
+      }
+      availablityByVariantId[vId].forEach(function (inventoryVariantId) {
+        inventoryToReserve.push(inventoryVariantId);
+      });
+    }
+
+    // If anything isn't avaiable, return those IDs to the client and fail to update.
+    if (inventoryNotAvailable.length > 0) {
+      return {
+        successful: false,
+        inventoryNotAvailable: inventoryNotAvailable
+      };
+    }
+
+    // We have to remove the existing reservations before changing the reservation.
+    // If we don't we may fail to remove all dates associated with this order.
+    Meteor.call("rentalProducts/removeOrderReservations", orderId);
+
+    updateReservation.call({orderId, update});
+    update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
+    inventoryToReserve.forEach(function (inventoryVariantId) {
+      Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
     });
+
+    return {successful: true};
   },
 
   "advancedFulfillment/updateShippingAddress": function (orderId, address) {
@@ -138,43 +158,42 @@ Meteor.methods({
       returnBy: newTransit.getShipReturnBy(),
       shipmentDate: newTransit.calculateShippingDay(),
       returnDate: newTransit.calculateReturnDay(),
-      address: address
+      address: address,
+      startTime: order.startTime,
+      endTime: order.endTime
     };
 
     // New and old address are both local deliveries
     if (existingLocalDelivery && update.localDelivery) {
-      console.log("Both localDelivery");
-      updateShippingAddress.call({orderId, update});
-      return true;
+      updateReservation.call({orderId, update});
+      return {successful: true};
     }
 
     // New and old address have identical transit times
     if (update.transitTime === existingTransitTime) {
-      console.log("equal transitTime");
-      updateShippingAddress.call({orderId, update});
-      return true;
+      updateReservation.call({orderId, update});
+      return {successful: true};
     }
 
     // New address is local or has shorter transit time than existing address
     if (update.localDelivery || update.transitTime < existingTransitTime) {
-      console.log("lesser transitTime");
       // Determine which inventory variants we are using
       const inventoryToTruncate = InventoryVariants.find({"unavailableDetails.orderId": orderId}, {fields: {_id: 1}}).fetch().map(iv => iv._id);
       Meteor.call("rentalProducts/removeOrderReservations", orderId);
 
-      updateShippingAddress.call({orderId, update});
+      updateReservation.call({orderId, update});
       update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
 
       inventoryToTruncate.forEach(function (inventoryVariantId) {
         Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
       });
-      return true;
+      return {successful: true};
     }
 
+    // else
     // New address has greater transit time than existing address.
     // We need to check to make sure that there exist inventory that
     // can accomodate the longer reservation period before booking.
-    console.log("greater transitTime");
 
     const quantityByVariantId = order.items.reduce(function (qtyByVariantId, item) {
       if (item.variants.functionalType !== "bundleVariant") {
@@ -191,107 +210,37 @@ Meteor.methods({
       quantityByVariantId, { startTime: update.shipmentDate, endTime: update.returnDate });
 
     const inventoryToReserve = [];
-
+    const inventoryNotAvailable = [];
     // Check to make sure we have enough of each item.
     for (const vId in availablityByVariantId) {
       if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
-        return false;
+        inventoryNotAvailable.push(vId);
       }
       availablityByVariantId[vId].forEach(function (inventoryVariantId) {
         inventoryToReserve.push(inventoryVariantId);
       });
     }
-    // We have to remove the existing reservations before changing the shipping address.
+
+    // If anything isn't avaiable, return those IDs to the client and fail to update.
+    if (inventoryNotAvailable.length > 0) {
+      return {
+        successful: false,
+        inventoryNotAvailable: inventoryNotAvailable
+      };
+    }
+
+    // We have to remove the existing reservations before changing the reservation.
+    // If we don't we may fail to remove all dates associated with this order.
     Meteor.call("rentalProducts/removeOrderReservations", orderId);
 
-    updateShippingAddress.call({orderId, update});
+    updateReservation.call({orderId, update});
     update.reservation = RentalProducts.server.buildUnavailableInventoryArrays(orderId, newTransit);
     inventoryToReserve.forEach(function (inventoryVariantId) {
       Meteor.call("rentalProducts/reserveInventory", inventoryVariantId, update.reservation, orderId);
     });
 
-    return true;
+    return {successful: true};
   },
-
-  // "advancedFulfillment/updateShippingAddress": function (orderId, address) {
-  //   check(orderId, String);
-  //   check(address, Object);
-  //   if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
-  //     throw new Meteor.Error(403, "Access Denied");
-  //   }
-  //   const user = Meteor.user();
-  //   const userName = user.username || user.emails[0].address;
-  //   const order = ReactionCore.Collections.Orders.findOne(orderId);
-  //   const prevAddress = order.shipping[0].address;
-  //   const localDelivery = TransitTimes.isLocalDelivery(address.postal);
-  //   const transitTime = TransitTimes.calculateTransitTime(address);
-  //   const transitTimeToPrevAddress = TransitTimes.calculateTransitTime(prevAddress);
-  //
-  //   let returnDate = order.advancedFulfillment.returnDate;
-  //   let shipmentDate = order.advancedFulfillment.shipmentDate;
-  //   let arrivalDate = order.advancedFulfillment.arrivalDate;
-  //   let returnBy = order.advancedFulfillment.returnBy;
-  //
-  //   if (transitTime !== transitTimeToPrevAddress) {
-  //     order.shipping[0].address = address;
-  //     const startDate = order.startTime;
-  //     const endDate = order.endTime;
-  //     const totalShippingDays = TransitTimes.calculateTotalShippingDaysByOrder(order);
-  //
-  //     shipmentDate = TransitTimes.calculateShippingDayByOrder(order);
-  //     arrivalDate = startDate;
-  //     returnBy = endDate;
-  //     returnDate = TransitTimes.calculateReturnDayByOrder(order);
-  //
-  //     if (localDelivery) {
-  //       shipmentDate = arrivalDate; // Remove transit day from local deliveries
-  //     }
-  //
-  //     let rushOrder = rushRequired(arrivalDate, totalShippingDays, localDelivery);
-  //     if (rushOrder && !localDelivery) {
-  //       shipmentDate = TransitTimes.nextBusinessDay(moment().startOf("day"));
-  //     }
-  //   }
-  //
-  //   let orderNotes = anyOrderNotes(order.orderNotes);
-  //   // TODO: turn order notes into an array of strings
-  //   // Build updated orderNotes
-  //   orderNotes = orderNotes + "<br /><p> Shipping Address updated from: <br />"
-  //   + prevAddress.fullName + "<br />"
-  //   + prevAddress.address1 + "<br />";
-  //
-  //   orderNotes = prevAddress.address2 ? orderNotes + prevAddress.address2 + "<br />" : orderNotes;
-  //
-  //   orderNotes = orderNotes + prevAddress.city + " "
-  //   + prevAddress.region + ", " + prevAddress.postal
-  //   + noteFormattedUser(userName) + "</p>";
-  //
-  //   try {
-  //     ReactionCore.Collections.Orders.update({_id: orderId}, {
-  //       $set: {
-  //         "advancedFulfillment.localDelivery": localDelivery,
-  //         // This line adds a day to transit time because we estimate from first ski day during import.
-  //         "advancedFulfillment.transitTime": transitTime,
-  //         "advancedFulfillment.shipmentDate": shipmentDate,
-  //         "advancedFulfillment.returnDate": returnDate,
-  //         "advancedFulfillment.arriveBy": arrivalDate,
-  //         "advancedFulfillment.shipReturnBy": returnBy,
-  //         "shipping.0.address": address,
-  //         "orderNotes": orderNotes
-  //       },
-  //       $addToSet: {
-  //         history: {
-  //           event: "orderShippingAddressUpdated",
-  //           userId: Meteor.userId(),
-  //           updatedAt: new Date()
-  //         }
-  //       }
-  //     });
-  //     ReactionCore.Log.info("Successfully updated shipping address for order: " + order.shopifyOrderNumber);
-  //   } catch (e) {
-  //     ReactionCore.Log.error("Error updating shipping address for order: " + order.shopifyOrderNumber, e);
-  //   }
-  // },
 
   "advancedFulfillment/updateContactInformation": function (orderId, phone, email) {
     check(orderId, String);

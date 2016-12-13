@@ -257,7 +257,6 @@ Meteor.methods({
     const start = order.advancedFulfillment.shipmentDate;
     const end = moment(order.advancedFulfillment.returnDate).add(turnaroundTime, "days").toDate();
     const datesBooked = moment(start).diff(moment(end), "days") - 1; // inclusive
-    console.log("removingOrderReservations", start, end, datesBooked);
 
     // TODO: set first and last based on actual booked dates?
     InventoryVariants.update({

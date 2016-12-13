@@ -208,23 +208,22 @@
     <button type="submit" class="btn btn-info btn-block">Update Contact Info</button>
   </form>
   <hr>
-  {{> updateCustomerDates}}
+  {{> updateReservationDates}}
 {{/if}}
 </template>
 
-<template name='updateCustomerDates'>
-  <div class="form-group row">
-    <p><strong>Update Reservation Dates</strong></p>
-    <small>Temporarily disabled for new site launch</small>
+<template name='updateReservationDates'>
+  <p><strong>Update Reservation Dates</strong></p>
+  <form class="updateReservationDates" id="updateReservationDates">
     <div class='picker' id='{{_id}}'>
       <div class='input-daterange input-group' id='datepicker'>
-        <input type='text' class='form-control' name='start' placeholder="First Ski Day" value={{formatInputDate startTime}} disabled/>
+        <input type='text' class='form-control' name='start' placeholder="First Ski Day" value={{formatInputDate startTime}}/>
         <span class='input-group-addon'>to</span>
-        <input type='text' class='form-control' name='end' placeholder="Last Ski Day" value={{formatInputDate endTime}} disabled/>
+        <input type='text' class='form-control' name='end' placeholder="Last Ski Day" value={{formatInputDate endTime}}/>
       </div>
     </div>
-  </div>
-  <button class='btn btn-success btn-block update-rental-dates' disabled>Update Reservation Dates</button>
+    <button type="submit" class='btn btn-success btn-block update-rental-dates'>Update Reservation Dates</button>
+  </form>
 </template>
 
 <template name="backpackCancelOrder">

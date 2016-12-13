@@ -68,6 +68,13 @@ export class Transit {
       this.returnDate = this.calculateReturnDay();
     }
   }
+  getStartTime() {
+    return this.startTime;
+  }
+
+  getEndTime() {
+    return this.endTime;
+  }
 
   getSelectedProvider() {
     return this.settings.selectedShippingProvider;
@@ -78,7 +85,7 @@ export class Transit {
   }
 
   getShipReturnBy() {
-    return this.arriveBy;
+    return this.shipReturnBy;
   }
 
   getAPIAuth() {
@@ -236,7 +243,7 @@ export class Transit {
         days += 2;
       }
     }
-
+    console.log(days);
     return days + 1;
   }
 }
