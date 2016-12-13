@@ -6,7 +6,7 @@ import { Session } from "meteor/session";
 import { ReactiveDict } from "meteor/reactive-dict";
 
 import { Reaction } from "/client/api";
-import { Orders } from "/lib/collections";
+import { Orders, Products } from "/lib/collections";
 
 export const Backpack = {};
 
@@ -124,10 +124,10 @@ Template.updateOrder.events({
   }
 });
 
-Template.updateCustomerDates.onRendered(function () {
-  $('.picker .input-daterange').datepicker({
-    startDate: 'today',
-    todayBtn: 'linked',
+Template.updateReservationDates.onRendered(function () {
+  $(".picker .input-daterange").datepicker({
+    startDate: "today",
+    todayBtn: "linked",
     clearBtn: true,
     calendarWeeks: true,
     autoclose: true,
@@ -135,17 +135,51 @@ Template.updateCustomerDates.onRendered(function () {
   });
 });
 
-Template.updateCustomerDates.events({
-  'click .update-rental-dates': function (event) {
+Template.updateReservationDates.events({
+  "submit #updateReservationDates": function (event) {
     event.preventDefault();
-    let orderId = this._id;
-    let startDate = new Date($('#' + orderId + ' [name="start"]').val());
-    let endDate = new Date($('#' + orderId + ' [name="end"]').val());
-    let user = Meteor.user();
-    Meteor.call('advancedFulfillment/updateRentalDates', orderId, startDate, endDate, user);
-    Alerts.removeSeen();
-    Alerts.add('Rental Dates updated', 'success', {
-      autoHide: true
+    const orderId = this._id;
+    const form = event.currentTarget;
+    const startReservation = new Date(form.start.value);
+    const endReservation = new Date(form.end.value);
+    Alerts.alert({
+      title: "Change Reservation Dates",
+      text: "If the all items in the order are available to be shipped for the new reservation, the reservation will be changed.",
+      type: "warning",
+      reverseButtons: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Change Reservation",
+      confirmButtonColor: "#AACBC9",
+      showLoaderOnConfirm: true,
+      preConfirm: function () {
+        return new Promise(function (resolve, reject) {
+          Meteor.call("advancedFulfillment/updateRentalDates", orderId, startReservation, endReservation, function (error, result) {
+            if (error) {
+              reject("Error checking availability of new rental dates");
+            }
+            if (result.successful) {
+              resolve();
+            } else {
+              if (result.inventoryNotAvailable) {
+                const products = result.inventoryNotAvailable.map(function (variantId) {
+                  return Products.findOne({_id: variantId}).sku;
+                });
+                reject("The following items were not available with a reservation change: " + products.join(", "));
+              }
+              reject("Some items were not available, but there was an error determining which ones.");
+            }
+          });
+        });
+      },
+      allowOutsideClick: false
+    }, (isConfirm) => {
+      if (isConfirm) {
+        Alerts.alert({
+          type: "success",
+          title: "Reservation Date Change Successful"
+        });
+      }
     });
   }
 });
@@ -181,10 +215,16 @@ Template.updateCustomerDetails.events({
               if (error) {
                 reject("Error checking destination availability");
               }
-              if (result === true) {
+              if (result.successful) {
                 resolve();
               } else {
-                reject("Some items were not available with an address change.");
+                if (result.inventoryNotAvailable) {
+                  const products = result.inventoryNotAvailable.map(function (variantId) {
+                    return Products.findOne({_id: variantId}).sku;
+                  });
+                  reject("The following items were not available with an address change: " + products.join(", "));
+                }
+                reject("Some items were not available, but there was an error determining which ones.");
               }
             });
           });

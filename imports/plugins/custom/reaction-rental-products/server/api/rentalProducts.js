@@ -14,47 +14,56 @@ RentalProducts.server.permissions = [
   "reaction-rental-products"
 ];
 
-RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turnaroundTime = 1) {
+RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, transitObj, turnaroundTime = 1) {
   check(orderId, String);
+  check(transitObj, Match.Any);
   check(turnaroundTime, Match.Maybe(Number));
 
-  const order = Orders.findOne({_id: orderId});
-  const transit = new Transit(order);
-  const shipmentDate = order.advancedFulfillment.shipmentDate;
-  const shippingTime = transit.calculateTotalShippingDays();
+  let transit;
+  let order;
+  if (transitObj) {
+    transit = transitObj;
+  } else {
+    order = Orders.findOne({_id: orderId});
+    transit = new Transit(order);
+  }
 
-  const returnDate = order.advancedFulfillment.returnDate;
-  const returnTime = transit.calculateTotalReturnDays();
+  const shipmentDate = transit.calculateShippingDay();
+  const arriveBy = transit.getArriveBy();
+  const startTime = transit.getStartTime();
+  const endTime = transit.getEndTime();
+  const shipReturnBy = transit.getShipReturnBy();
+  const returnDate = transit.calculateReturnDay();
 
   const datesToReserve = [];
   const detailsToReserve = [];
 
   const reservation = moment(shipmentDate).twix(moment(returnDate).add(turnaroundTime, "days"), { allDay: true });
-  const reservationLength = reservation.count("days");
   const iter = reservation.iterate("days"); // Momentjs twix iterator
-
-  let counter = 0;
   while (iter.hasNext()) {
     let reason = "In Use";
     const requestedDate = iter.next().toDate();
     const denverRequestedDate = GetOutfitted.adjustLocalToDenverTime(requestedDate);
     datesToReserve.push(denverRequestedDate);
-
-    // Insert into Unavailable Details
-    if (counter === 0) {
-      reason = "Shipped";            // First reservation day is when order is shipped from warehouse
-    } else if (counter === shippingTime - 1) {
-      reason = "Delivered";          //
-    } else if (counter < shippingTime - 1) {
-      reason = "In Transit";         // Second day through transitTime is delivery
-    } else if (counter === reservationLength - returnTime - turnaroundTime - 1) {
+    const ts = +denverRequestedDate;
+    if (+ts <= +shipmentDate) {
+      reason = "Shipped";
+    } else if (+ts < +arriveBy) {
+      reason = "In Transit";
+    } else if (+ts < +startTime) {
+      reason = "Delivered";
+    } else if (+ts <= +endTime) {
+      reason = "In Use";
+    } else if (+ts < +shipReturnBy) {
+      reason = "Waiting For Transit";
+    } else if (+ts === +shipReturnBy) {
       reason = "Return Shipped";
-    } else if (counter === reservationLength - turnaroundTime - 1) {
-      reason = "Return Delivered";
-    } else if (counter >= reservationLength - turnaroundTime) {
-      reason = "Return Processing";
-    } else if (counter >= reservationLength - returnTime - turnaroundTime) {
+    } else if (+ts < +returnDate) {
       reason = "Return In Transit";
+    } else if (+ts === +returnDate) {
+      reason = "Return Delivered";
+    } else {
+      reason = "Return Processing";
     }
 
     detailsToReserve.push({
@@ -62,7 +71,6 @@ RentalProducts.server.buildUnavailableInventoryArrays = function (orderId, turna
       reason: reason,
       orderId: orderId
     });
-    counter++;
   }  // Create array of requested dates
   return {datesToReserve, detailsToReserve};
 };
