@@ -107,7 +107,10 @@ export class Transit {
   }
 
   isLocalDelivery() {
-    return this.settings.localDeliveryPostalCodes.indexOf(this.postal) !== -1;
+    if (this.settings && this.settings.localDeliveryPostalCodes) {
+      return this.settings.localDeliveryPostalCodes.indexOf(this.postal) !== -1;
+    }
+    return false;
   }
 
   // TODO: Not sure why this is uppercase - should refactor to camelcase.
