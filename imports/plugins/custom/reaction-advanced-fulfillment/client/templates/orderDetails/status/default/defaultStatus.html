@@ -1,29 +1,86 @@
 <template name='defaultStatus'>
   <div class='itemDetails container-fluid'>
-    <h1>Items in this Order:</h1>
     <div class='table-responsive'>
       <table class='table table-hover'>
         <thead>
           <tr>
-            <th>QTY</th>
-            <th>Description</th>
+            {{#if workflowHasAction}}
+              <th>Action</th>
+            {{/if}}
+            <th>Title</th>
             <th>Color</th>
             <th>Size</th>
-            <th>Status</th>
-            <th>Location</th>
-            <th>Type</th>
+            {{#unless workflowHasAction}}
+              <th>Status</th>
+            {{/unless}}
+            <th>QTY</th>
           </tr>
         </thead>
         <tbody >
-          {{#each item in items}}
+          {{#each bundle in bundles}}
             <tr>
+              {{#if workflowHasAction}}
+                <td></td>
+              {{/if}}
+              <td colspan="4">
+                <strong>{{bundle.title}} {{bundleIndex bundle}}</strong>
+              </td>
+            </tr>
+            {{#each item in itemsByBundle bundle}}
+              <tr>
+                {{#if workflowHasAction}}
+                  <td>
+                    {{#unless isPicked item._id}}
+                      <button
+                        class="btn btn-success item-action"
+                        data-order-id="{{_id}}"
+                        data-item-id="{{item._id}}"
+                        data-item-status="{{fulfillmentStatus item}}">Picked</button>
+                    {{/unless}}
+                    {{#if isReturning item._id}}
+                      <button class='btn btn-sm btn-danger item-issue' data-order-id="{{_id}}" data-item-id='{{item._id}}' data-issue='missing'><i class="fa fa-question"></i></button>
+                      <button class='btn btn-sm btn-warning item-issue' data-order-id="{{_id}}" data-item-id='{{item._id}}' data-issue='damaged'><i class="fa fa-wrench"></i></button>
+                      <button class='btn btn-sm btn-success item-returned' data-order-id="{{_id}}" data-item-id='{{item._id}}'><i class="fa fa-check"></i></button>
+                    {{/if}}
+                  </td>
+                {{/if}}
+                <td>{{item.title}}</td>
+                <td>{{item.variants.color}}</td>
+                <td>{{item.variants.size}}</td>
+                {{#unless workflowHasAction}}
+                  <td>{{fulfillmentStatus item}}</td>
+                {{/unless}}
+                <td><strong>{{item.quantity}}</strong></td>
+              </tr>
+            {{/each}}
+            <tr class="no-border">&nbsp;</tr>
+          {{/each}}
+          <tr>
+            {{#if workflowHasAction}}
+              <td></td>
+            {{/if}}
+            <td colspan="4">
+              <strong>Items not in an Outfit</strong>
+            </td>
+          </tr>
+          {{#each item in nonBundleItems}}
+            <tr>
+              {{#if workflowHasAction}}
+                <td>
+                  {{#unless isPicked item._id}}
+                    <button
+                      class="btn btn-lg btn-success item-action"
+                      data-order-id="{{_id}}"
+                      data-item-id="{{item._id}}"
+                      data-item-status="{{fulfillmentStatus item}}">Pick Item</button>
+                  {{/unless}}
+                </td>
+              {{/if}}
+              <td>{{item.title}}</td>
+              <td>{{item.variants.color}}</td>
+              <td>{{item.variants.size}}</td>
+              <td>{{fulfillmentStatus item}}</td>
               <td><strong>{{item.quantity}}</strong></td>
-              <td>{{item.itemDescription}}</td>
-              <td>{{color item}}</td>
-              <td>{{size item}}</td>
-              <td>{{item.workflow.status}}</td>
-              <td>{{location item}}</td>
-              <td>{{itemType item}}</td>
             </tr>
           {{/each}}
         </tbody>

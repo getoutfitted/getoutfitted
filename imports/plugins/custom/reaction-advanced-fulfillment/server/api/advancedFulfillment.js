@@ -67,10 +67,10 @@ AdvancedFulfillment.findHighestOrderNumber = function () {
 AdvancedFulfillment.server = {};
 
 AdvancedFulfillment.server.permissions = [
-  'admin',
-  'owner',
-  'dashboard/advanced-fulfillment',
-  'reaction-advanced-fulfillment'
+  "admin",
+  "owner",
+  "dashboard/advanced-fulfillment",
+  "reaction-advanced-fulfillment"
 ];
 
 // fields definitions for publications and collection pulls

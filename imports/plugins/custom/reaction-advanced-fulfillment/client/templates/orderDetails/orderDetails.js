@@ -1,17 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { Reaction } from '/client/api';
-import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
-import { check } from 'meteor/check';
-import { _ } from 'meteor/underscore';
-import moment from 'moment';
-import { Orders } from '/lib/collections';
-import AdvancedFulfillment from '../../../lib/api';
+import { _ } from "meteor/underscore";
+import moment from "moment";
+import { Meteor } from "meteor/meteor";
+import { Reaction } from "/client/api";
+import { Template } from "meteor/templating";
+import { Orders } from "/lib/collections";
+import AdvancedFulfillment from "../../../lib/api";
 
-import '../helpers';
-import './orderDetails.html';
-import './status';
+
+import "../helpers";
+import "./orderDetails.html";
+import "./status";
 
 function getIndexBy(array, name, value) {
   for (let i = 0; i < array.length; i++) {
@@ -21,258 +19,277 @@ function getIndexBy(array, name, value) {
   }
 }
 
-function labelMaker(word, bootStrapColor = 'primary') {
-  return '<span class="label label-' + bootStrapColor + '">' + word + '</span> ';
+function labelMaker(label, labelStyle = "primary") {
+  return `<span class="label label-${labelStyle}">${label}</span>`;
 }
 
 Template.orderDetails.onCreated(function () {
+  this.orderId = () => Reaction.Router.getParam("_id");
   this.autorun(() => {
-    let orderId = Reaction.Router.getParam('_id');
-    this.subscribe('advancedFulfillmentOrder', orderId);
+    if (this.orderId()) {
+      this.subscribe("advancedFulfillmentOrder", this.orderId());
+    }
   });
 });
 
 Template.orderDetails.helpers({
-  order: function () {
-    let orderId = Reaction.Router.getParam('_id');
+  order() {
+    const orderId = Reaction.Router.getParam("_id");
     return Orders.findOne({_id: orderId});
   },
+  shipmentDetails() {
+    return this.advancedFulfillment.shippingHistory;
+  },
+  orderActions() {
+    const status = this.advancedFulfillment.workflow.status;
+    if (AdvancedFulfillment.assignmentStatuses.indexOf(status) !== -1) {
+      return "orderAssignmentActions";
+    }
+    return `${status}Actions`;
+  },
   currentStatus: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let generalTemplates = [
-      'orderCreated',
-      'orderPrinted',
-      'orderPicked',
-      'orderShipped',
-      'orderIncomplete',
-      'orderCompleted',
-      'nonWarehouseOrder'
+    const currentStatus = this.advancedFulfillment.workflow.status;
+    const generalTemplates = [
+      "orderCreated",
+      "orderPrinted",
+      "orderPicking",
+      "orderPicked",
+      "orderPacking",
+      "orderPacked",
+      "orderShipped",
+      "orderReturned",
+      "orderIncomplete",
+      "orderCompleted",
+      "nonWarehouseOrder"
     ];
     // let generalTemplates = AdvancedFulfillment.assignmentStatuses;
-    let valid = _.contains(generalTemplates, currentStatus);
+    const valid = _.contains(generalTemplates, currentStatus);
     if (valid) {
-      return 'defaultStatus';
+      return "defaultStatus";
     }
     return currentStatus;
   },
   status: function () {
     return this.advancedFulfillment.workflow.status;
   },
-  actualTransitTime: function () {
-    return this.advancedFulfillment.transitTime;
+  orderIsNew: function () {
+    return this.advancedFulfillment.workflow.status === "orderCreated";
   },
-  humanStatus: function () {
-    return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
-  },
-  actionStatus: function () {
-    return AdvancedFulfillment.humanActionStatuses[this.advancedFulfillment.workflow.status];
-  },
-  orderCreated: function () {
-    let valid = this.advancedFulfillment.workflow.status === 'orderCreated';
-    return valid;
-  },
-  nextStatus: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let options = AdvancedFulfillment.workflow;
-    let indexOfStatus = _.indexOf(options, currentStatus);
-    return options[indexOfStatus + 1];
-  },
-  readyForAssignment: function () {
-    let status = this.advancedFulfillment.workflow.status;
-    let updateableStatuses = AdvancedFulfillment.assignmentStatuses;
-    return _.contains(updateableStatuses, status);
-  },
-  shippingTo: function () {
-    return this.shipping[0].address.fullName;
-  },
-  shippingAddress1: function () {
-    if (this.shipping[0].address2) {
-      return this.shipping[0].address.address1 + ' ' + this.shipping[0].address2;
+  shippingAddress() {
+    // Currently assumes 1 address per order as is the limit in RC core as of 0.17.x
+    if (Array.isArray(this.shipping) && this.shipping[0]) {
+      return this.shipping[0].address;
     }
-    return this.shipping[0].address.address1;
+    return {};
   },
-  shippingAddress2: function () {
-    return this.shipping[0].address.address2;
-  },
-  city: function () {
-    return this.shipping[0].address.city;
-  },
-  state: function () {
-    return this.shipping[0].address.region;
-  },
-  zipcode: function () {
-    return this.shipping[0].address.postal;
-  },
-  contactInfo: function () {
-    return this.email || 'Checked Out As Guest';
-  },
-  phoneNumber: function () {
-    return this.shipping[0].address.phone || '';
-  },
-  printLabel: function () {
-    let status = this.advancedFulfillment.workflow.status;
-    if (status === 'orderFulfilled') {
-      return true;
+  billingAddress() {
+    // Currently assumes 1 address per order as is the limit in RC core as of 0.17.x
+    if (Array.isArray(this.billing) && this.billing[0]) {
+      return this.billing[0].address;
     }
-    return false;
+    return {};
   },
-  currentlyAssignedUser: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let history = _.findWhere(this.history, {event: currentStatus});
-    let assignedUser = history.userId;
-    return Meteor.users.findOne(assignedUser).username;
+  paymentInfo() {
+    const transaction = this.billing[0].paymentMethod.transactions[0];
+    const source = transaction.source;
+    const invoice = this.billing[0].invoice;
+    return Object.assign(invoice, {
+      name: source.name,
+      brand: source.brand,
+      last4: source.last4,
+      stripeId: transaction.id
+    });
   },
-  currentlyAssignedTime: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let history = _.findWhere(this.history, {event: currentStatus});
-    let assignedTime = history.updatedAt;
-    return assignedTime;
+  phone() {
+    if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
+      return this.shipping[0].address.phone;
+    }
+    return "Unavailable";
   },
   noItemsToPick: function () {
-    let numberOfItems = this.advancedFulfillment.items.length;
-    let status = this.advancedFulfillment.workflow.status;
-    if (status !== 'nonWarehouseOrder') {
+    const numberOfItems = this.advancedFulfillment.items.length;
+    const status = this.advancedFulfillment.workflow.status;
+    if (status !== "nonWarehouseOrder") {
       return numberOfItems === 0;
     }
     return false;
   },
-  myOrdersInCurrentStep: function () {
-    let currentStatus = this.advancedFulfillment.workflow.status;
-    let history = _.findWhere(this.history, {event: currentStatus});
-    if (!history) {
-      return false;
-    }
-    // TODO: Maybe change to cursor?
-    let orders = Orders.find({
-      'history.userId': Meteor.userId(),
-      'history.event': currentStatus,
-      'advancedFulfillment.workflow.status': currentStatus
-    }).fetch();
-    let myOrder = history.userId === Meteor.userId();
-    let myOrders = {};
-    let currentOrder = getIndexBy(orders, '_id', this._id);
-    let nextOrder = myOrder ? orders[currentOrder - 1] : undefined;
-    let prevOrder = myOrder ? orders[currentOrder + 1] : undefined;
-    myOrders.nextOrderId = nextOrder ? nextOrder._id : undefined;
-    myOrders.hasNextOrder = nextOrder ? true : false;
-    myOrders.hasPrevOrder = prevOrder ? true : false;
-    myOrders.prevOrderId = prevOrder ? prevOrder._id : undefined;
-    myOrders.count = orders.length;
-    return myOrders;
-  },
   hasShippingInfo: function () {
     return this.advancedFulfillment.shippingHistory;
   },
-  fedExShipping: function () {
-    const transitTimes = ReactionCore.Collections.Packages.findOne({
-      name: 'transit-times',
-      shopId: ReactionCore.getShopId()
-    });
-    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === 'fedex') {
-      return true;
-    }
-    return false;
-  },
-  upsShipping: function () {
-    const transitTimes = ReactionCore.Collections.Packages.findOne({
-      name: 'transit-times',
-      shopId: ReactionCore.getShopId()
-    });
-    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === 'ups') {
-      return true;
-    }
-    return false;
-  },
-  hasCustomerServiceIssue: function () {
-    let anyIssues = [
-      this.infoMissing,
-      this.itemMissingDetails,
-      this.bundleMissingColor,
-      this.advancedFulfillment.impossibleShipDate
-    ];
-    return _.some(anyIssues);
-  },
-  typeofIssue: function () {
-    let issues = '';
-    if (this.infoMissing) {
-      issues += labelMaker('Missing Rental Dates');
-    }
-    if (this.itemMissingDetails) {
-      issues += labelMaker('Items Missing Color and Size');
-    }
-    if (this.bundleMissingColor) {
-      issues += labelMaker('Bundle Packages Were Assigned Default Color');
-    }
-    if (this.bundleMissingColor) {
-      issues += labelMaker('Arrive By Date is Impossible to Fulfill');
-    }
-    return '<h4>' + issues + '</h4>';
+  orderCancelled(order) {
+    return order.advancedFulfillment.workflow.status === "orderCancelled";
   }
 });
 
-// Template.orderDetails.onRendered(function () {
-//   let orderId = ReactionRouter.getParam('_id');
-//   $('#barcode').barcode(orderId, 'code128', {
-//     barWidth: 2,
-//     barHeight: 150,
-//     moduleSize: 15,
-//     showHRI: true,
-//     fontSize: 14
-//   });
-// });
-
 Template.orderDetails.events({
-  'click .advanceOrder': function (event) {
-    event.preventDefault();
+  "click .advanceOrder": function () {
     const currentStatus = this.advancedFulfillment.workflow.status;
     const orderId = this._id;
     const userId = Meteor.userId();
-    const orderShipped = currentStatus === 'orderShipped';
+    const orderShipped = currentStatus === "orderShipped";
     if (orderShipped) {
-      Meteor.call('advancedFulfillment/updateItemsToShippedOrCompleted', this);
+      Meteor.call("advancedFulfillment/updateItemsToShippedOrCompleted", this);
     }
-    let noRentals = _.every(this.advancedFulfillment.items, function (afItem) {
-      return afItem.functionalType === 'variant';
+    const noRentals = _.every(this.advancedFulfillment.items, function (afItem) {
+      return afItem.functionalType === "variant";
     });
     if (orderShipped && noRentals) {
-      Meteor.call('advancedFulfillment/bypassWorkflowAndComplete', orderId, userId);
+      Meteor.call("advancedFulfillment/bypassWorkflowAndComplete", orderId, userId);
     } else {
-      Meteor.call('advancedFulfillment/updateOrderWorkflow', orderId, userId, currentStatus);
+      Meteor.call("advancedFulfillment/updateOrderWorkflow", orderId, currentStatus);
     }
   },
-  'submit .add-notes': function (event) {
+  "submit .add-notes": function (event) {
     event.preventDefault();
-    let notes = event.currentTarget.notes.value;
-    if (notes) {
-      let order = this;
-      let user = Meteor.user();
-      if (user) {
-        user = user.username;
-      } else {
-        user = user.emails[0].address;
-      }
-      Meteor.call('advancedFulfillment/updateOrderNotes', order, notes, user);
+    const note = event.currentTarget.note.value;
+    if (note) {
+      const order = this;
+      // Meteor.call("advancedFulfillment/updateOrderNotes", order, note, user);
+      Meteor.call("advancedFulfillment/addOrderNote", order._id, note);
       Alerts.removeSeen();
-      Alerts.add('Order Note Added', 'success', {
+      // TODO: place this strategically
+      Alerts.add("Order Note Added", "success", {
         autoHide: true
       });
-      event.currentTarget.notes.value = '';
+      event.currentTarget.note.value = "";
     } else {
       Alerts.removeSeen();
-      Alerts.add('Order Notes Cannot Be Blank', 'danger', {
+      Alerts.add("Order Note Cannot Be Blank", "danger", {
         autoHide: true
       });
     }
   },
-  'click .print-invoice': function () {
-    let orderId = event.target.dataset.orderId;
-    let userId = Meteor.userId();
-    Meteor.call('advancedFulfillment/printInvoice', orderId, userId);
+  "click .print-invoice": function () {
+    const orderId = event.target.dataset.orderId;
+    Meteor.call("advancedFulfillment/printInvoice", orderId, userId);
   },
-  'click .noWarehouseItems': function (event) {
+  "click .noWarehouseItems": function (event) {
     event.preventDefault();
-    let orderId = this._id;
-    let userId = Meteor.userId();
-    Meteor.call('advancedFulfillment/nonWarehouseOrder', orderId, userId);
+    const orderId = this._id;
+    const userId = Meteor.userId();
+    Meteor.call("advancedFulfillment/nonWarehouseOrder", orderId, userId);
+  }
+});
+
+Template.orderDetailHeader.helpers({
+  humanStatus() {
+    return AdvancedFulfillment.humanOrderStatus[this.advancedFulfillment.workflow.status];
+  }
+});
+
+Template.backpackShipmentDetails.helpers({
+  shippingProviderIsUPS: function () {
+    const transitTimes = ReactionCore.Collections.Packages.findOne({
+      name: "transit-times",
+      shopId: ReactionCore.getShopId()
+    });
+    if (transitTimes && transitTimes.settings && transitTimes.settings.selectedShippingProvider === "ups") {
+      return true;
+    }
+    return false;
+  }
+});
+
+Template.backpackReservationDetails.helpers({
+  transitTime() {
+    return this.advancedFulfillment.transitTime;
+  },
+  destination() {
+    if (Array.isArray(this.shipping) && this.shipping[0] && this.shipping[0].address) {
+      return this.shipping[0].address.region;
+    }
+    return "";
+  }
+});
+
+/**
+ * *********************
+ * backpackOrderNotes
+ * *********************
+ **/
+
+Template.backpackOrderExceptions.helpers({
+  orderExceptions() {
+    const order = this;
+    const exceptions = ["Missing Product", "Damaged Product"];
+    if (order.backpackOrderNotes) {
+      return order.backpackOrderNotes.filter(note => exceptions.indexOf(note.type) !== -1);
+    }
+    return [];
+  }
+});
+
+Template.backpackOrderUserNotes.helpers({
+  notes() {
+    const order = this;
+    const importantNotes = [
+      "Note",
+      "Order Cancelled",
+      "Order Rescheduled",
+      "Order Destination Change"
+    ];
+
+    if (order.backpackOrderNotes) {
+      return order.backpackOrderNotes.filter(note => importantNotes.indexOf(note.type) !== -1).reverse();
+    }
+    return [];
+  }
+});
+
+Template.backpackOrderStatusUpdates.helpers({
+  statusUpdates() {
+    const order = this;
+    const updates = [
+      "Status Update",
+      "Status Revision",
+      "Product Added",
+      "Product Exchanged",
+      "Product Removed"
+    ];
+
+    if (order.backpackOrderNotes) {
+      return order.backpackOrderNotes.filter(note => updates.indexOf(note.type) !== -1).reverse();
+    }
+    return [];
+  }
+});
+
+Template.backpackOrderNote.helpers({
+  icon(type) {
+    return AdvancedFulfillment.orderNoteIcons[type];
+  }
+});
+
+Template.shippingLabel.helpers({
+  label() {
+    const processedOrder = this.advancedFulfillment;
+    const label = {};
+
+    if (!processedOrder) {
+      return label;
+    }
+
+    if (processedOrder.localDelivery) {
+      label.style = "info";
+      label.content = "local";
+      return label;
+    }
+
+    const now = new Date();
+    const shipBy = moment(processedOrder.shipmentDate).startOf("day").add(16, "hours").toDate();
+
+    if (now > shipBy) {
+      label.style = "danger";
+      label.content = "rush";
+    } else if (processedOrder.rushDelivery) {
+      label.style = "warning";
+      label.content = "rush";
+    } else {
+      label.style = "primary";
+      label.content = "ground";
+    }
+
+    return label;
   }
 });

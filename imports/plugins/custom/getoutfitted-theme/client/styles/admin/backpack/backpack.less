@@ -1,0 +1,185 @@
+// Backpack navbar
+.navbar-admin {
+  background: @brand-dark-color;
+}
+
+.navbar-admin .nav > li > a {
+  color: @iron;
+  padding-top: 20px;
+}
+
+.navbar-admin .nav > li > a:hover,
+.navbar-admin .nav > li > a:focus {
+  text-decoration: underline;
+  background-color: transparent;
+  color: @white
+}
+
+.navbar-admin a.navbar-brand {
+  font-weight: @font-weight-bold;
+  padding: 18px 5px 10px;
+  color: @iron;
+}
+
+.navbar-logo-mark-white {
+  height: 30px;
+  margin-top: -5px;
+}
+
+.dark-form input {
+  background: lighten(@brand-dark-color, 10%);
+  border-color: lighten(@brand-dark-color, 5%);
+  color: @iron;
+}
+
+.dark-form button {
+  background: lighten(@brand-dark-color, 20%);
+  border-color: lighten(@brand-dark-color, 5%);
+  color: @iron;
+}
+
+input#afSearchInput {
+  width: 200px;
+  padding-right: 0;
+}
+
+//
+// Backpack orderDetail
+//
+// Order Header
+.order-header {
+  background: @white;
+}
+
+.order-number {
+  font-size: 24px;
+  font-weight: normal;
+  line-height: 0;
+  padding: 10px 5px 18px;
+}
+
+.order-status {
+  font-size: 18px;
+  text-transform: none;
+  line-height: 18px;
+}
+
+// Order Body
+.order-body {
+  background: @white;
+  padding: 10px 5px;
+}
+
+// Reservation Details
+.reservation-details {
+  display: flex;
+  align-items: flex-end;
+  background: @vapor;
+  padding: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid @smoke;
+}
+
+.reservation-item {
+  flex-grow: 1;
+}
+
+.reservation-item .title {
+  color: @jumbo;
+  font-size: 12px;
+  border-top: 1px solid @base;
+  margin: 0 10px;
+  text-align: center;
+}
+
+.reservation-item .label {
+  font-size: 24px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  line-height: 2;
+}
+
+span.graphic {
+  font-size: 32px;
+  color: @jumbo;
+  font-weight: bold;
+}
+
+.reservation-item .address {
+  line-height: 1.5;
+  font-size: 12px;
+  color: @charcoal;
+}
+
+.address .name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.address .phone {
+  line-height: 1.8;
+}
+
+// Order Items
+.reservation-details.order-items {
+  display: block;
+}
+
+
+.order-actions {
+  margin-bottom: 20px;
+}
+
+// Order Notes
+.order-note {
+  overflow: hidden;
+  margin-top: 10px;
+  padding: 0 0 10px 0;
+}
+
+.order-note:not(:last-child) {
+  border-bottom: 1px solid @smoke;
+}
+
+.order-exceptions .order-note:last-child {
+  border-bottom: 1px solid @smoke;
+}
+
+.order-note .context {
+  float: right;
+  color: @base;
+  font-size: 12px;
+  min-width: 110px;
+  margin-left: 15px;
+  .author {
+    color: @primary-color-shadow;
+  }
+}
+
+.order-status-header {
+  padding-top: 20px;
+  border-top: 1px solid @smoke;
+}
+
+.add-notes {
+  margin-top: 10px;
+}
+
+// Edit Order
+
+.edit-city-state-postal {
+  display: flex;
+}
+
+
+@media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+  .reservation-item .label {
+    font-size: 14px;
+    line-height: 3;
+  }
+  .reservation-item .title {
+    font-size: 10px;
+  }
+}
