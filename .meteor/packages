@@ -89,10 +89,11 @@ practicalmeteor:sinon
 # meteorhacks:fast-render                   # improve initial page loads
 # meteortoys:allthings                      # developer tools
 # meteortoys:notifications                  # logging notification
-meteorhacks:kadira                          # performance monitoring
-meteorhacks:kadira-profiler                 # cpu profiling
-ongoworks:spiderable                        # adds phantomjs SEO rendering, use ongoworks:spiderable with Docker
+# meteorhacks:kadira                          # performance monitoring
+# meteorhacks:kadira-profiler                 # cpu profiling
+# ongoworks:spiderable                        # adds phantomjs SEO rendering, use ongoworks:spiderable with Docker
 # meteorhacks:sikka                         # additional ddp, login security
+
 
 
 # Custom Packages
