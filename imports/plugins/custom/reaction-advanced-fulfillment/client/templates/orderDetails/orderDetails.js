@@ -19,10 +19,6 @@ function getIndexBy(array, name, value) {
   }
 }
 
-function labelMaker(label, labelStyle = "primary") {
-  return `<span class="label label-${labelStyle}">${label}</span>`;
-}
-
 Template.orderDetails.onCreated(function () {
   this.orderId = () => Reaction.Router.getParam("_id");
   this.autorun(() => {
@@ -62,7 +58,7 @@ Template.orderDetails.helpers({
       "orderCompleted",
       "nonWarehouseOrder"
     ];
-    // let generalTemplates = AdvancedFulfillment.assignmentStatuses;
+
     const valid = _.contains(generalTemplates, currentStatus);
     if (valid) {
       return "defaultStatus";
@@ -243,6 +239,22 @@ Template.backpackOrderStatusUpdates.helpers({
     const updates = [
       "Status Update",
       "Status Revision",
+      "Product Added",
+      "Product Exchanged",
+      "Product Removed"
+    ];
+
+    if (order.backpackOrderNotes) {
+      return order.backpackOrderNotes.filter(note => updates.indexOf(note.type) !== -1).reverse();
+    }
+    return [];
+  }
+});
+
+Template.backpackOrderProductEdits.helpers({
+  productEdits() {
+    const order = this;
+    const updates = [
       "Product Added",
       "Product Exchanged",
       "Product Removed"
