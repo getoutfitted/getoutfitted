@@ -298,6 +298,15 @@
   </div>
 </template>
 
+<template name="backpackOrderProductEdits">
+  <h5 class="order-status-header"><strong>Product Edits</strong></h5>
+  <div class="notes">
+    {{#each note in productEdits}}
+      {{> backpackOrderNote note=note}}
+    {{/each}}
+  </div>
+</template>
+
 <template name='shippingLabel'>
   {{#with label}}
     <span class="label label-{{style}}">{{content}}</span>
