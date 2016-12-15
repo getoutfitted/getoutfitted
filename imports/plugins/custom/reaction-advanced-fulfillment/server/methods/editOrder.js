@@ -82,7 +82,7 @@ Meteor.methods({
 
     // Determine what quantity of each item we need to change the reservation of.
     const quantityByVariantId = order.items.reduce(function (qtyByVariantId, item) {
-      if (item.variants.functionalType !== "bundleVariant") {
+      if (item.variants.functionalType === "rentalVariant") {
         if (qtyByVariantId[item.variants._id]) {
           qtyByVariantId[item.variants._id]++;
         } else {
