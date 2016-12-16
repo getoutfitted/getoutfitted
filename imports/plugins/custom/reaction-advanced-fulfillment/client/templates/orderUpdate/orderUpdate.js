@@ -129,7 +129,7 @@ Template.updateReservationDates.onRendered(function () {
     startDate: "today",
     todayBtn: "linked",
     clearBtn: true,
-    calendarWeeks: true,
+    calendarWeeks: false,
     autoclose: true,
     todayHighlight: true
   });
