@@ -83,7 +83,7 @@ Reaction.registerPackage({
   }, {
     route: "/dashboard/advanced-fulfillment/orders/pdf/selected",
     name: "orders.printSelected",
-    template: "advancedFulfillmentOrdersPrint",
+    template: "advancedFulfillmentPDF",
     workflow: "afPrint"
   }, {
     route: "/dashboard/advanced-fulfillment/returns",
@@ -183,7 +183,7 @@ Reaction.registerPackage({
     theme: "default",
     enabled: true,
     structure: {
-      template: "advancedFulfillmentOrdersPrint",
+      template: "advancedFulfillmentPDF",
       layoutHeader: "",
       layoutFooter: "",
       notFound: "advancedFulfillmentPDF",
@@ -198,7 +198,7 @@ Reaction.registerPackage({
     theme: "default",
     enabled: true,
     structure: {
-      template: "advancedFulfillmentOrdersPrint",
+      template: "advancedFulfillmentPDF",
       layoutHeader: "",
       layoutFooter: "",
       notFound: "advancedFulfillmentPDF",
