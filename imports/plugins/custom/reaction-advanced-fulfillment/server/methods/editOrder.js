@@ -33,7 +33,7 @@ const updateReservation = new ValidatedMethod({
         "advancedFulfillment.transitTime": update.transitTime,
         "advancedFulfillment.shipmentDate": update.shipmentDate,
         "advancedFulfillment.returnDate": update.returnDate,
-        "advancedFulfillment.arriveBy": update.arrivalDate,
+        "advancedFulfillment.arriveBy": update.arriveBy,
         "advancedFulfillment.shipReturnBy": update.returnBy,
         "shipping.0.address": update.address
       },
