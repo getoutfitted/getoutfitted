@@ -1,105 +1,72 @@
-import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
-import { Reaction } from '/client/api';
-import { Orders, Products } from '/lib/collections';
-import { Session } from 'meteor/session';
-import $ from 'jquery';
-import 'bootstrap-datepicker';
+import $ from "jquery";
+import "bootstrap-datepicker";
 
-import './orderUpdate.html';
+import { Template } from "meteor/templating";
+import { Session } from "meteor/session";
+import { ReactiveDict } from "meteor/reactive-dict";
 
-function findOrderItem(order, itemId) {
-  return _.findWhere(order.items, {_id: itemId});
-}
+import { Reaction } from "/client/api";
+import { Orders, Products } from "/lib/collections";
+
+export const Backpack = {};
 
 Template.updateOrder.onCreated(function () {
+  const orderId = () => Reaction.Router.getParam("_id");
+  Backpack.addingItems = new ReactiveDict();
+  Backpack.exchangingItem = new ReactiveDict();
   this.autorun(() => {
-    let orderId = Reaction.Router.getParam('_id');
-    this.subscribe('afProducts');
-    this.subscribe('advancedFulfillmentOrder', orderId);
+    this.subscribe("afProducts");
+    this.subscribe("advancedFulfillmentOrder", orderId());
   });
-});
-
-Template.updateOrder.onRendered(function () {
-  const orderId = Reaction.Router.getParam('_id');
-  Session.setDefault('cancel-order-' + orderId, false);
 });
 
 Template.updateOrder.helpers({
   order: function () {
-    const orderId = Reaction.Router.getParam('_id');
-    return Orders.findOne({ _id: orderId});
+    const orderId = () => Reaction.Router.getParam("_id");
+    return Orders.findOne({_id: orderId()});
   },
-  afItems: function () {
-    return this.advancedFulfillment.items;
+  bundles: function () {
+    const orderId = () => Reaction.Router.getParam("_id");
+    const order = Orders.findOne({_id: orderId()});
+    const index = {};
+    const bundles = order.items.reduce(function (acc, item) {
+      if (item.variants.functionalType === "bundleVariant") {
+        if (index[item.productId]) {
+          index[item.productId] += 1;
+        } else {
+          index[item.productId] = 1;
+        }
+        acc.push(Object.assign({index: index[item.productId]}, item));
+      }
+      return acc;
+    }, []);
+    return bundles;
   },
-  colorOptions: function (item) {
-    let productId = item.productId;
-    let product = Products.findOne(productId);
-    if (product) {
-      return product.colors;
-    }
+  itemsByBundle: function (bundle) {
+    const orderId = Reaction.Router.getParam("_id");
+    const order = Orders.findOne({ _id: orderId});
+    itemsByBundle = order.items.filter(function (item) {
+      itemMatches = item.bundleProductId === bundle.productId;
+      indexMatches = item.bundleIndex === bundle.index;
+      return itemMatches && indexMatches;
+    });
+    return itemsByBundle;
   },
-  sizeOptions: function (item) {
-    let productId = item.productId;
-    let product = Products.findOne(productId);
-    let selectedColor = Session.get('colorSelectorFor-' + item._id);
-    let variantsWithSelectedColor = _.where(product.variants, {color: selectedColor});
-    return _.map(variantsWithSelectedColor, function (variant) {
-      return {
-        size: variant.size,
-        _id: variant._id
-      };
+  nonBundleItems() {
+    const order = this;
+    return order.items.filter(function (item) {
+      const notBundleVariant = item.variants.functionalType !== "bundleVariant";
+      const notBundleComponent = item.customerViewType !== "bundleComponent";
+      return notBundleVariant && notBundleComponent;
     });
   },
-  sizeAndColorSelected: function (item) {
-    let itemId = item._id;
-    let color = Session.get('colorSelectorFor-' + itemId);
-    let size = Session.get('sizeSelectorFor-' + itemId);
-    if (color && size) {
-      return true;
-    }
-    return false;
-  },
-  color: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      return orderItem.variants.color;
-    }
-  },
-  size: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      return orderItem.variants.size;
-    }
-  },
-  colorAndSize: function (item) {
-    let itemId = item._id;
-    let order = this;
-    let orderItem = findOrderItem(order, itemId);
-    if (orderItem) {
-      if (orderItem.variants.size &&  orderItem.variants.color) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  },
-  readyToSelectSize: function (item) {
-    let itemId = item._id;
-    let session = Session.get('colorSelectorFor-' + itemId);
-    if (session) {
-      return true;
-    }
-    return false;
-  },
-  addingItems: function () {
-    let addingItems = Session.get('addItems');
+  addingItems: function (bundleId) {
+    const addingItems = Backpack.addingItems.get(bundleId);
     return addingItems || false;
+  },
+  exchangingItem(itemId) {
+    const exchangingItem = Backpack.exchangingItem.get(itemId);
+    return exchangingItem || false;
   }
 });
 
@@ -125,39 +92,42 @@ Template.updateCustomerDetails.helpers({
 });
 
 Template.updateOrder.events({
-  'change .color-selector': function (event) {
-    event.preventDefault();
-    let itemId = event.target.dataset.id;
-    let selectedColor = event.target.value;
-    Session.set('sizeSelectorFor-' + itemId, undefined);
-    Session.set('colorSelectorFor-' + itemId, selectedColor);
+  "click .add-item-start": function (event) {
+    const bundleId = event.currentTarget.dataset.bundleId;
+    const orderId = event.currentTarget.dataset.orderId;
+    if (bundleId) {
+      return Backpack.addingItems.set(bundleId, true);
+    }
+    return Backpack.addingItems.set(orderId, true);
   },
-  'change .size-selector': function (event) {
-    event.preventDefault();
-    let itemId = event.target.dataset.id;
-    let selectedSize = event.target.value;
-    Session.set('sizeSelectorFor-' + itemId, selectedSize);
+  "click .add-item-cancel": function (event) {
+    const bundleId = event.currentTarget.dataset.bundleId;
+    const orderId = event.currentTarget.dataset.orderId;
+    if (bundleId) {
+      return Backpack.addingItems.set(bundleId, false);
+    }
+    return Backpack.addingItems.set(orderId, false);
   },
-  'click .save-item': function (event) {
-    event.preventDefault();
-    let itemId = event.target.dataset.id;
-    let productId = event.target.dataset.productId;
-    let newVariantId = Session.get('sizeSelectorFor-' + itemId);
-    let order = this;
-    let user = Meteor.user();
-    Meteor.call('advancedFulfillment/updateItemsColorAndSize', order, itemId, productId, newVariantId, user);
+  "click .exchange-item-start": function (event) {
+    const itemId = event.currentTarget.dataset.itemId;
+    return Backpack.exchangingItem.set(itemId, true);
   },
-  'click .add-new-item': function (event) {
-    event.preventDefault();
-    let addingItems = !Session.get('addItems') || false;
-    Session.set('addItems', addingItems);
+  "click .exchange-item-cancel": function (event) {
+    const itemId = event.currentTarget.dataset.itemId;
+    return Backpack.exchangingItem.set(itemId, false);
+  },
+  "click .remove-item": function (event) {
+    const orderId = Reaction.Router.getParam("_id");
+    const cartItemId = event.currentTarget.dataset.itemId;
+    const variantId = event.currentTarget.dataset.itemProductId;
+    Meteor.call("advancedFulfillment/removeItem", {orderId, cartItemId, variantId});
   }
 });
 
-Template.updateCustomerDates.onRendered(function () {
-  $('.picker .input-daterange').datepicker({
-    startDate: 'today',
-    todayBtn: 'linked',
+Template.updateReservationDates.onRendered(function () {
+  $(".picker .input-daterange").datepicker({
+    startDate: "today",
+    todayBtn: "linked",
     clearBtn: true,
     calendarWeeks: true,
     autoclose: true,
@@ -165,39 +135,112 @@ Template.updateCustomerDates.onRendered(function () {
   });
 });
 
-Template.updateCustomerDates.events({
-  'click .update-rental-dates': function (event) {
+Template.updateReservationDates.events({
+  "submit #updateReservationDates": function (event) {
     event.preventDefault();
-    let orderId = this._id;
-    let startDate = new Date($('#' + orderId + ' [name="start"]').val());
-    let endDate = new Date($('#' + orderId + ' [name="end"]').val());
-    let user = Meteor.user();
-    Meteor.call('advancedFulfillment/updateRentalDates', orderId, startDate, endDate, user);
-    Alerts.removeSeen();
-    Alerts.add('Rental Dates updated', 'success', {
-      autoHide: true
+    const orderId = this._id;
+    const form = event.currentTarget;
+    const startReservation = new Date(form.start.value);
+    const endReservation = new Date(form.end.value);
+    Alerts.alert({
+      title: "Change Reservation Dates",
+      text: "If the all items in the order are available to be shipped for the new reservation, the reservation will be changed.",
+      type: "warning",
+      reverseButtons: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Change Reservation",
+      confirmButtonColor: "#AACBC9",
+      showLoaderOnConfirm: true,
+      preConfirm: function () {
+        return new Promise(function (resolve, reject) {
+          Meteor.call("advancedFulfillment/updateRentalDates", orderId, startReservation, endReservation, function (error, result) {
+            if (error) {
+              reject("Error checking availability of new rental dates");
+            }
+            if (result.successful) {
+              resolve();
+            } else {
+              if (result.inventoryNotAvailable) {
+                const products = result.inventoryNotAvailable.map(function (variantId) {
+                  return Products.findOne({_id: variantId}).sku;
+                });
+                reject("The following items were not available with a reservation change: " + products.join(", "));
+              }
+              reject("Some items were not available, but there was an error determining which ones.");
+            }
+          });
+        });
+      },
+      allowOutsideClick: false
+    }, (isConfirm) => {
+      if (isConfirm) {
+        Alerts.alert({
+          type: "success",
+          title: "Reservation Date Change Successful"
+        });
+      }
     });
   }
 });
 
 Template.updateCustomerDetails.events({
-  'submit #updateShippingAddressForm': function (event) {
+  "submit #updateShippingAddressForm": function (event) {
     event.preventDefault();
     const form = event.currentTarget;
-    let address = this.shipping[0].address;
+    const order = this;
+    const orderId = this._id;
+    const address = order.shipping[0].address;
     address.fullName = form.shippingName.value;
+    address.company = form.company.value;
     address.address1 = form.shippingAddress1.value;
     address.address2 = form.shippingAddress2.value;
     address.city = form.shippingCity.value;
     address.postal = form.shippingPostal.value;
     address.region = form.shippingRegion.value;
     if (address.fullName && address.address1 && address.city && address.postal && address.region) {
-      Meteor.call('advancedFulfillment/updateShippingAddress', this._id, address);
-      Alerts.removeSeen();
-      Alerts.add('Shipping Address Updated', 'success', {autoHide: true});
+      Alerts.alert({
+        title: "Change Destination Address",
+        text: "If the all items in the order are available to be shipped for the new address, the address will be changed.",
+        type: "warning",
+        reverseButtons: true,
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Change Destination",
+        confirmButtonColor: "#AACBC9",
+        showLoaderOnConfirm: true,
+        preConfirm: function () {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("advancedFulfillment/updateShippingAddress", orderId, address, function (error, result) {
+              if (error) {
+                reject("Error checking destination availability");
+              }
+              if (result.successful) {
+                resolve();
+              } else {
+                if (result.inventoryNotAvailable) {
+                  const products = result.inventoryNotAvailable.map(function (variantId) {
+                    return Products.findOne({_id: variantId}).sku;
+                  });
+                  reject("The following items were not available with an address change: " + products.join(", "));
+                }
+                reject("Some items were not available, but there was an error determining which ones.");
+              }
+            });
+          });
+        },
+        allowOutsideClick: false
+      }, (isConfirm) => {
+        if (isConfirm) {
+          Alerts.alert({
+            type: "success",
+            title: "Destination Address Change Successful"
+          });
+        }
+      });
     } else {
       Alerts.removeSeen();
-      Alerts.add('All fields required except Address 2', 'danger');
+      Alerts.add("All fields required except Address 2 and Company", "danger");
     }
   },
   'submit #updateContactInformationForm': function (event) {
@@ -213,20 +256,28 @@ Template.updateCustomerDetails.events({
       Alerts.removeSeen();
       Alerts.add('Phone and Email are both required', 'danger');
     }
-  },
-  'click .confirm-to-cancel': function (event) {
-    event.preventDefault();
-    const orderId = this._id;
-    Session.set('cancel-order-' + orderId, !Session.get('cancel-order-' + orderId));
-  },
-  'click .cancel-order': function (event) {
-    event.preventDefault();
-    const orderId = this._id;
-    Meteor.call('advancedFulfillment/cancelOrder', orderId, Meteor.userId());
-    Alerts.removeSeen();
-    Alerts.add('Order #' + this.shopifyOrderNumber + ' has been cancelled', 'info', {
-      autoHide: true
+  }
+});
+
+Template.backpackCancelOrder.events({
+  "click .cancel-order": function () {
+    const orderId = Reaction.Router.getParam("_id");
+    const order = Orders.findOne({_id: orderId});
+    const orderNumber = order.orderNumber;
+    Alerts.alert({
+      title: "Are You Sure?",
+      text: `You are about to cancel order #${orderNumber}. This is an irreversible decision.`,
+      type: "warning",
+      reverseButtons: true,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes, Cancel Order",
+      confirmButtonColor: "#BB3526"
+    }, (isConfirm) => {
+      if (isConfirm) {
+        Meteor.call("advancedFulfillment/cancelOrder", orderId);
+        Reaction.Router.go("orderDetails", {_id: orderId});
+      }
     });
-    Session.set('cancel-order-' + orderId, !Session.get('cancel-order-' + orderId));
   }
 });

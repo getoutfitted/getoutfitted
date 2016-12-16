@@ -1,14 +1,19 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Reaction } from '/server/api';
-import  RentalProducts from '../api';
-import { _ } from 'meteor/underscore';
-import { InventoryVariants } from '../../lib/collections';
-import { Products } from '/lib/collections';
-import moment from 'moment';
-import 'moment-timezone';
-import 'twix';
-import { Random } from 'meteor/random';
+import { _ } from "meteor/underscore";
+import moment from "moment";
+import "moment-timezone";
+import "twix";
+
+import { Meteor } from "meteor/meteor";
+import { Random } from "meteor/random";
+import { check } from "meteor/check";
+
+import { Reaction } from "/server/api";
+import { Products } from "/lib/collections";
+
+import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
+import  RentalProducts from "../api";
+import { InventoryVariants } from "../../lib/collections";
+
 
 function adjustLocalToDenverTime(time) {
   let here = moment(time);
@@ -35,59 +40,107 @@ Meteor.methods({
    * only need to supply updated information
    * returns array of available (inventory) variant ids
    */
-  "rentalProducts/checkInventoryAvailability": function (variantId, reservationRequest, quantity = 1, searchLeastBookedFirst = true) {
+  "rentalProducts/checkInventoryAvailability": function (variantId, reservationRequest, quantity = 1, searchLeastBookedFirst = false) {
     check(variantId, String);
     check(reservationRequest, {
       startTime: Date,
       endTime: Date
     });
     check(quantity, Number);
-    check(searchLeastBookedFirst, Match.Optional(Boolean));
+    check(searchLeastBookedFirst, Match.Maybe(Boolean));
 
-    // let InventoryVariants = ReactionCore.Collections.InventoryVariants;
-
-    let requestedVariants = [];
-    let requestedDates = [];
-    let sortDirection = searchLeastBookedFirst ? 1 : -1;
-
-    let iter = moment(reservationRequest.startTime).twix(reservationRequest.endTime, {
-      allDay: true
-    }).iterate("days");
-
-    while (iter.hasNext()) {
-      requestedDates.push(adjustLocalToDenverTime(iter.next()));
-    }
-
-    // Sort by length of inventory variants unavailableDates array
-    let inventoryVariants = InventoryVariants.find(
-      {
-        productId: variantId,
-        active: true
-      }, {sort: {
-        numberOfDatesBooked: sortDirection
-      }}
-    ).fetch();
-
-    if (inventoryVariants.length > 0) {
-      // if this variant has multiple inventory
-      for (let uid of inventoryVariants) {
-        // Check to see if any of the dates requested are unavailable
-        // if so, this item is unavailable for requested time period
-        if (RentalProducts.checkAvailability(uid.unavailableDates, requestedDates)) {
-          requestedVariants.push(uid._id);
-          if (requestedVariants.length >= quantity) {
-            break;
+    const inventoryVariants = InventoryVariants.find({
+      productId: variantId,
+      unavailableDates: {
+        $not: {
+          $elemMatch: {
+            $gte: reservationRequest.startTime,
+            $lte: reservationRequest.endTime
           }
         }
       }
-    // TODO: Update single inventory existing on variant for future
-    } else if (RentalProducts.checkAvailability(variant.unavailableDates, requestedDates)) {
-      // else if there is only one of this variant
-      requestedVariants.push(variant._id);
-    }
-    // return requested variants array  (an array consisting of available variantIds)
-    return requestedVariants;
+    }, {
+      fields: {
+        productId: 1
+      },
+      limit: quantity
+    }).fetch();
+
+    // Return an array of available ids;
+    return inventoryVariants.map(inventory => inventory._id);
   },
+
+  "rentalProducts/checkMultiInventoryAvailability": function (quantityByVariantId, reservationRequest, searchLeastBookedFirst = false) {
+    check(quantityByVariantId, Match.Any);
+    check(reservationRequest, {
+      startTime: Date,
+      endTime: Date
+    });
+    check(searchLeastBookedFirst, Match.Maybe(Boolean));
+
+    const variantIds = Object.keys(quantityByVariantId);
+
+    // Returns an object where the variantId is the key, and an array of available
+    // InventoryVariants is the value.
+    return variantIds.reduce(function (availabilityByVariantId, variantId) {
+      const inventoryAvailable = InventoryVariants.find({
+        productId: variantId,
+        unavailableDates: {
+          $not: {
+            $elemMatch: {
+              $gte: reservationRequest.startTime,
+              $lte: reservationRequest.endTime
+            }
+          }
+        }
+      }, {
+        fields: {
+          productId: 1
+        },
+        limit: parseInt(quantityByVariantId[variantId], 10),
+        sort: {
+          numberOfDatesBooked: -1
+        }
+      }).fetch();
+
+      availabilityByVariantId[variantId] = inventoryAvailable.map(inventory => inventory._id);
+      return availabilityByVariantId;
+    }, {});
+  },
+
+  /**
+   * bulkCheckInventoryAvailability
+   * Checks each variantId supplied in array
+   * Returns object with variantIds as keys and boolean availablity status as values
+   */
+
+  "rentalProducts/bulkCheckInventoryAvailability": function (variantIds, reservationRequest) {
+    check(variantIds, [String]);
+    check(reservationRequest, {
+      startTime: Date,
+      endTime: Date
+    });
+
+    const inventoryAvailability = variantIds.reduce(function (obj, variantId) {
+      const availableCount = InventoryVariants.find({
+        productId: variantId,
+        unavailableDates: {
+          $not: {
+            $elemMatch: {
+              $gte: reservationRequest.startTime,
+              $lte: reservationRequest.endTime
+            }
+          }
+        }
+      }).count();
+
+      obj[variantId] = availableCount;
+      return obj;
+    }, {});
+
+    return inventoryAvailability;
+  },
+
 
   /*
    * TODO: Move inventory event creation to AdvancedFulfillment

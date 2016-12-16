@@ -1,5 +1,6 @@
-import './orderDetail';
-import './itemDetails';
-import './klaviyo';
-import './bulkActions';
-import './slack';
+import "./orderDetail";
+import "./editOrder";
+import "./itemDetails";
+import "./klaviyo";
+import "./bulkActions";
+import "./slack";

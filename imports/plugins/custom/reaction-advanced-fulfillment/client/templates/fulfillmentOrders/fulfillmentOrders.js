@@ -137,7 +137,7 @@ Template.fulfillmentOrders.helpers({
     } else if (_.contains(routeComponents, 'local-delivery')) {
       return 'Local Deliveries for ' + Reaction.Router.getParam('date');
     } else if (Reaction.Router.getParam('status')) {
-      return AdvancedFulfillment.humanOrderStatuses[Reaction.Router.getParam('status')] + ' Orders';
+      return AdvancedFulfillment.humanOrderStatus[Reaction.Router.getParam('status')] + ' Orders';
     }
   },
   showPrintOrdersLink: function () {
@@ -236,7 +236,7 @@ Template.fulfillmentOrder.helpers({
     return false;
   },
   status: function () {
-    return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
+    return AdvancedFulfillment.humanOrderStatus[this.advancedFulfillment.workflow.status];
   },
   contactInfo: function () {
     return this.email || 'Checked Out As Guest';
@@ -254,7 +254,7 @@ Template.fulfillmentOrder.helpers({
   },
   nextStatus: function () {
     let currentStatus = this.advancedFulfillment.workflow.status;
-    let options = AdvancedFulfillment.workflow;
+    let options = AdvancedFulfillment.workflowSteps;
     let indexOfStatus = _.indexOf(options, currentStatus);
     return options[indexOfStatus + 1];
   },

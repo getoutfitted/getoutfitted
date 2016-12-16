@@ -1,0 +1,54 @@
+<template name="orderCreatedActions">
+  <a href="{{pathFor 'advancedFulfillmentPDF' _id=this._id }}" target='_blank' class='btn btn-lg btn-block btn-success advanceOrder' data-order-id="{{_id}}">Print Invoice</a>
+</template>
+
+<template name="orderPickingActions">
+  <button class='btn btn-success btn-lg btn-block' id='all-items-picked-new-order'>Mark As Picked &amp; Get New Order</button>
+  <br>
+  <button class='btn btn-info btn-lg btn-block' id='all-items-picked' href="#">Mark As Picked</button>
+  {{> taskTimer}}
+</template>
+
+<template name="orderAssignmentActions">
+  <button class='btn btn-lg btn-block btn-success advanceOrder' data-status='{{status}}' href='#'>{{actionStatus}}</button>
+</template>
+
+<template name="orderPackingActions">
+  <button class='btn btn-success btn-lg btn-block' id="all-items-packed">Mark as Packed</button>
+</template>
+
+<template name="orderPackedActions">
+  {{#if localDelivery}}
+    <a href="{{pathFor 'localDeliveryLabelPDF' _id=_id}}" target='_blank' class='btn btn-lg btn-block btn-success js-label-print'>Print Local Label</a>
+  {{else}}
+    <a href='https://ss5.shipstation.com/#/orders' target='_blank' class='btn btn-block btn-lg btn-success js-label-print'>Print Shipstation Label</a>
+  {{/if}}
+
+</template>
+
+<template name="orderReadyToShipActions">
+  <button id="order-shipped" class="order-progress btn btn-block btn-lg btn-success js-mark-as-shipped">Mark as Shipped</button>
+  <br>
+  <p class="alert alert-info">When hooked into AfterShip, shipped status will automatically update when order is picked up by carrier</p>
+</template>
+
+<template name="orderReturnedActions">
+  <button class='btn btn-block btn-success btn-lg items-inspected' href="#">All Items Inspected</button>
+</template>
+
+<template name="orderIncompleteActions">
+  <p class="alert alert-warning">This order has been marked as <strong>incomplete</strong> because there are damaged or missing items on it.
+    If those items are returned or fixed, this order can be resolved from the customer service section.</p>
+  <a href="{{pathFor 'advancedFulfillment'}}" class="btn btn-block btn-success btn-lg"><i class="fa fa-chevron-left"></i> Back to Order List</a>
+</template>
+
+<template name="orderCompletedActions">
+  <p class="alert alert-success">This order has been marked as <strong>complete.</strong> All items came back on time and undamaged.</p>
+  <a href="{{pathFor 'advancedFulfillment'}}" class="btn btn-block btn-success btn-lg"><i class="fa fa-chevron-left"></i> Back to Order List</a>
+</template>
+
+<template name="taskTimer">
+  <div class="alert alert-default">
+    <em>{{tasker}}</em> | {{taskTimer}}
+  </div>
+</template>

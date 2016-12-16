@@ -1,124 +1,174 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Reaction } from '/server/api';
-import AdvancedFulfillment from '../api';
-import { Orders } from '/lib/collections';
+import { Meteor } from "meteor/meteor";
+import { check } from "meteor/check";
+import { Reaction } from "/server/api";
+import AdvancedFulfillment from "../api";
+import { Orders } from "/lib/collections";
 
 Meteor.methods({
-  'advancedFulfillment/updateItemWorkflow': function (orderId, itemId, itemStatus) {
+  "advancedFulfillment/updateItemWorkflow": function (orderId, itemId, itemStatus) {
     check(orderId, String);
     check(itemId, String);
     check(itemStatus, String);
+
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error(403, "Access Denied");
     }
-    let workflow = {
-      'In Stock': 'picked',
-      'picked': 'packed',
-      'packed': 'shipped',
-      'shipped': 'returned',
-      'returned': 'completed'
-    };
+
+    const workflow = AdvancedFulfillment.itemWorkflow;
     Orders.update({
-      '_id': orderId,
-      'advancedFulfillment.items._id': itemId
+      "_id": orderId,
+      "advancedFulfillment.items._id": itemId
     }, {
-      $set: { 'advancedFulfillment.items.$.workflow.status': workflow[itemStatus] },
-      $addToSet: {'advancedFulfillment.items.$.workflow.workflow': itemStatus }
+      $set: { "advancedFulfillment.items.$.workflow.status": workflow[itemStatus] },
+      $addToSet: {"advancedFulfillment.items.$.workflow.workflow": itemStatus }
     });
   },
 
-  'advancedFulfillment/updateAllItems': function (order, currentItemStatus) {
+  /**
+   * advancedFulfillment/updateAllItems
+   */
+
+  "advancedFulfillment/updateAllItems": function (order, itemStatus) {
     check(order, Object);
-    check(currentItemStatus, String);
+    check(itemStatus, String);
+
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error(403, "Access Denied");
     }
-    let items = order.advancedFulfillment.items;
-    let allItems = _.every(items, function (item) {
-      return item.workflow.status === currentItemStatus;
-    });
-    if (!allItems) {
-      throw new Meteor.Error('Invalid Item Status');
+
+    // Check to make sure all pickable items have current status
+    const items = order.advancedFulfillment.items.filter(item => item.functionalType !== "bundleVariant");
+    const itemsHaveCurrentStatus = items.every(item => item.workflow.status === itemStatus);
+    if (!itemsHaveCurrentStatus) {
+      // if they don't, throw an error.
+      throw new Meteor.Error("Invalid Item Status", itemStatus);
+      // TODO: should invalidate transaction / roll back updates to order.
     }
-    let indexOfNextStatus = AdvancedFulfillment.itemStatus.indexOf(currentItemStatus) + 1;
-    _.each(items, function (item) {
-      item.workflow.status = AdvancedFulfillment.itemStatus[indexOfNextStatus];
-      item.workflow.workflow.push(currentItemStatus);
+
+    // update
+    const updatedItems = order.advancedFulfillment.items.map(function (item) {
+      if (item.functionalType !== "bundleVariant") {
+        // Push completed step into workflow log
+        item.workflow.workflow.push(itemStatus);
+        // Update status to next workflow step
+        item.workflow.status = AdvancedFulfillment.itemWorkflow[itemStatus];
+      }
+      return item;
     });
+
     Orders.update({
       _id: order._id
     }, {
       $set: {
-        'advancedFulfillment.items': items
+        "advancedFulfillment.items": updatedItems
       }
     });
   },
 
-  'advancedFulfillment/itemIssue': function (orderId, itemId, userId, issue) {
+  "advancedFulfillment/itemIssue": function (orderId, itemId, issue) {
     check(orderId, String);
     check(itemId, String);
-    check(userId, String);
     check(issue, String);
-    // TODO XXX: Check to see if issue is actually a valid status
 
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error(403, "Access Denied");
     }
-    let historyEvent = {
-      event: issue + 'Item',
+
+    const userId = Meteor.userId();
+    const historyEvent = {
+      event: issue + " Item",
       userId: userId,
       updatedAt: new Date()
     };
+
     Orders.update({
-      '_id': orderId,
-      'advancedFulfillment.items._id': itemId
+      "_id": orderId,
+      "advancedFulfillment.items._id": itemId
     }, {
-      $set: {'advancedFulfillment.items.$.workflow.status': issue},
+      $set: {"advancedFulfillment.items.$.workflow.status": issue},
       $addToSet: {
-        'history': historyEvent,
-        'advancedFulfillment.items.$.workflow.workflow': issue
+        "history": historyEvent,
+        "advancedFulfillment.items.$.workflow.workflow": issue
       }
     });
+
+    const capitalizedIssue = issue[0].toUpperCase() + issue.slice(1);
+    const note = `Item ${itemId} was ${issue} when returned.`;
+    const noteType = `${capitalizedIssue} Product`;
+
+    Meteor.call("advancedFulfillment/addOrderNote", orderId, note, noteType);
   },
 
-  'advancedFulfillment/itemResolved': function (orderId, itemId, issue) {
+  "advancedFulfillment/itemResolved": function (orderId, itemId, issue) {
     check(orderId, String);
     check(itemId, String);
     check(issue, String);
-        // TODO XXX: Check to see if issue is actually a valid status
+
     if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
-      throw new Meteor.Error(403, 'Access Denied');
+      throw new Meteor.Error(403, "Access Denied");
     }
+
+    // TODO: Check to see if issue is actually a valid status
+
     ReactionCore.Collections.Orders.update({
-      '_id': orderId,
-      'advancedFulfillment.items._id': itemId
+      "_id": orderId,
+      "advancedFulfillment.items._id": itemId
     }, {
       $set: {
-        'advancedFulfillment.items.$.workflow.status': 'returned'
+        "advancedFulfillment.items.$.workflow.status": "returned"
       },
       $addToSet: {
-        'advancedFulfillment.items.$.workflow.workflow': issue
+        "advancedFulfillment.items.$.workflow.workflow": issue
       }
     });
     return Orders.findOne(orderId);
   },
-  'advancedFulfillment/updateAllItemsToSpecificStatus': function (order, desiredItemStatus) {
-    check(order, Object);
-    check(desiredItemStatus, String);
-    // TODO XXX: Check to see if status is actually a valid status
-    let items = order.advancedFulfillment.items;
-    _.each(items, function (item) {
-      item.workflow.status = desiredItemStatus;
+
+  "advancedFulfillment/setOrderItemsToStatus": function (orderId, status) {
+    check(orderId, String);
+    check(status, String);
+
+    // TODO: Check to see if status is actually a valid status
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+    const order = Orders.findOne({_id: orderId});
+    const items = order.advancedFulfillment.items;
+    const updatedItems = items.map(function(item) {
+      item.workflow.status = status;
+      return item;
     });
+
     Orders.update({
       _id: order._id
     }, {
       $set: {
-        'advancedFulfillment.items': items
+        "advancedFulfillment.items": updatedItems
       }
     });
+
+    const note = `Set all items to ${status}.`;
+    Meteor.call("advancedFulfillment/addOrderNote", orderId, note, "Status Revision");
   },
+
+  // "advancedFulfillment/updateAllItemsToSpecificStatus": function (order, desiredItemStatus) {
+  //   check(order, Object);
+  //   check(desiredItemStatus, String);
+  //   // TODO XXX: Check to see if status is actually a valid status
+  //   let items = order.advancedFulfillment.items;
+  //   _.each(items, function (item) {
+  //     item.workflow.status = desiredItemStatus;
+  //   });
+  //   Orders.update({
+  //     _id: order._id
+  //   }, {
+  //     $set: {
+  //       "advancedFulfillment.items": items
+  //     }
+  //   });
+  // },
+
+
   'advancedFulfillment/updateItemsToShippedOrCompleted': function (order) {
     check(order, Object);
     let items = order.advancedFulfillment.items;

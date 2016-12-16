@@ -108,7 +108,7 @@ Template.returnOrder.helpers({
     return this.shipping[0].address.city + ', ' + this.shipping[0].address.region;
   },
   status: function () {
-    return AdvancedFulfillment.humanOrderStatuses[this.advancedFulfillment.workflow.status];
+    return AdvancedFulfillment.humanOrderStatus[this.advancedFulfillment.workflow.status];
   }
 });
 

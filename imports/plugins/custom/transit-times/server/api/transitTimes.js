@@ -34,30 +34,20 @@ formatAddress = function (address) {
   return shippingAddress;
 };
 
-// Note begin Transit for shipping will be shipping day end will be arrival day
-// On returning begin should be return ship date and end should be returndate
 function holidayCount(beginTransit, endTransit) {
-  // check(shippingOrReturning, String);
-  // check(useDate, Date);
-  // check(shipDate, Date);
   const transitPack = Packages.findOne({
     name: 'transit-times',
     shopId: getShopId()
   });
-  const beginDate = +beginTransit;
-  const endDate = + endTransit;
-  let holidays;
   let numberOfHolidaysWhileInTransit = 0;
   if (transitPack && transitPack.settings && transitPack.settings.shippingHolidays) {
-    holidays = transitPack.settings.shippingHolidays.map(function (date) {
-      return +date;
-    });
-    const holidaysDuringTransit = holidays.filter(function(holiday) {
-      if (holiday >= beginTransit && holiday <= endTransit) {
-        return holiday;
+    const holidays = transitPack.settings.shippingHolidays;
+
+    holidays.forEach(function (holiday) {
+      if (+holiday >= +beginTransit && +holiday <= +endTransit) {
+        numberOfHolidaysWhileInTransit++;
       }
     });
-    numberOfHolidaysWhileInTransit = holidaysDuringTransit.length;
   }
   return numberOfHolidaysWhileInTransit;
 }
@@ -78,9 +68,32 @@ export class Transit {
       this.returnDate = this.calculateReturnDay();
     }
   }
+  getStartTime() {
+    return this.startTime;
+  }
+
+  getEndTime() {
+    return this.endTime;
+  }
 
   getSelectedProvider() {
     return this.settings.selectedShippingProvider;
+  }
+
+  getArriveBy() {
+    return this.arriveBy;
+  }
+
+  getShipReturnBy() {
+    return this.shipReturnBy;
+  }
+
+  getShipmentDate() {
+    return this.shipmentDate;
+  }
+
+  getReturnDate() {
+    return this.returnDate;
   }
 
   getAPIAuth() {
@@ -88,29 +101,36 @@ export class Transit {
       let provider = this.settings.selectedShippingProvider;
       provider = provider.toLowerCase();
       return this.settings[provider];
-    } else {
-      Logger.warn('No Shipping Provided Selected');
-      return;
     }
+    Logger.warn('No Shipping Provided Selected');
+    return false;
   }
 
   isLocalDelivery() {
-    return _.contains(this.settings.localPostalCodes, this.postal);
+    if (this.settings && this.settings.localDeliveryPostalCodes) {
+      return this.settings.localDeliveryPostalCodes.indexOf(this.postal) !== -1;
+    }
+    return false;
   }
 
+  // TODO: Not sure why this is uppercase - should refactor to camelcase.
   TransitTimesCache() {
     const transitTime = TransitTimesCache.findOne({
       postal: this.postal
     });
-    if (transitTime && this.settings.selectedShippingProvider) {
-      const provider = this.settings.selectedShippingProvider.toLowerCase();
+    if (transitTime) {
+      let provider = "ups";
+      if (this.settings && this.settings.selectedShippingProvider) {
+        provider = this.settings.selectedShippingProvider.toLowerCase();
+      }
+
       this.transitTime = transitTime[provider + 'TransitTime'];
-      Logger.info('TransitTimeCache found transitTime');
       return transitTime[provider + 'TransitTime'];
-    } else {
-      Logger.warn(`Transit Time for ${this.postal} is not in transtimescache`);
-      return false;
     }
+    // XXX: what happens when we return false here?
+    Logger.warn(`Transit Time for ${this.postal} is not in transtimescache`);
+    // Should hit API instead of returning false.
+    return false;
   }
 
   calculateTransitTime() {
@@ -148,17 +168,13 @@ export class Transit {
       weekendArrivalDays = weekendArrivalDays + 2;
     }
 
+    const holidays = holidayCount(moment(start).subtract(weekendArrivalDays + this.transitTime, "days").toDate(), this.arriveBy);
+    weekendArrivalDays += holidays;
+    const shippingDay = moment(start).subtract(this.transitTime + weekendArrivalDays, "days");
+    if (shippingDay.isoWeekday() + this.transitTime >= 6) {
+      shippingDay.subtract(2, "days");
+    }
 
-    let shippingDay = moment(start).subtract(this.transitTime  + weekendArrivalDays, 'days');
-    if (shippingDay.isoWeekday() + this.transitTime  >= 6) {
-      shippingDay.subtract(2, 'days');
-    }
-    const countOfHolidays = holidayCount(shippingDay.toDate(), this.startTime);
-    if (countOfHolidays > 0) {
-      Logger.info(`Order ${this.orderNumber} subtracted ${countOfHolidays} for holiday shipping`);
-      shippingDay.subtract(countOfHolidays, 'days');
-      shippingDay = moment(dateHelper.ifWeekendSetPreviousBizDay(shippingDay.toDate()));
-    }
     return shippingDay.toDate();
   }
 
@@ -174,26 +190,26 @@ export class Transit {
       weekendReturnDays = weekendReturnDays + 1;
     }
 
-    const dropoffDay = moment(end).add(weekendReturnDays, 'days');
-    let returnDay = moment(end).add(this.transitTime + weekendReturnDays, 'days');
-    if (dropoffDay.isoWeekday() + this.transitTime >= 6) {
-      returnDay.add(2, 'days');
-    }
-    const countOfHolidays = holidayCount(this.endTime, returnDay.toDate());
-    if (countOfHolidays > 0) {
-      Logger.info(`Order ${this.orderNumber} added ${countOfHolidays} for holiday returning`);
-      returnDay.add(countOfHolidays, 'days');
-      returnDay = moment(dateHelper.ifWeekendSetNextBizDay(returnDay.toDate()));
+    weekendReturnDays += holidayCount(this.shipReturnBy, moment(end).add(weekendReturnDays + this.transitTime, "days").toDate());
+    const returnDay = moment(end).add(this.transitTime + weekendReturnDays, "days");
+    const weekday = returnDay.isoWeekday();
+    if (weekday + this.transitTime >= 6) {
+      // Bunch of weird edge cases here, math doesn't work out for returns the same
+      // as it does for shipping. If isoWeekday is 5 (Fri) or 4 (Thu) and transit time is 2,3, or 4
+      // we don't overlap a weekend.
+      if (weekday < 4 || weekday > 5 || weekday <= this.transitTime) {
+        returnDay.add(2, "days");
+      }
     }
     return returnDay.toDate();
   }
 
   calculateTotalShippingDays() {
     if (this.transitTime === 0) {
-      return 0;
+      return 1;
     }
 
-    const start = moment(this.startTime);
+    const start = moment(this.arriveBy);
     let days = 0;
     if (start.isoWeekday() === 6) {
       days = days + 1;
@@ -202,19 +218,22 @@ export class Transit {
     }
 
     days = days + this.transitTime;
-    const shippingDay = moment(start).subtract(days, 'days');
+    const holidays = holidayCount(moment(start).subtract(days, "days").toDate(), this.arriveBy);
+    days += holidays;
+
+    const shippingDay = moment(start).subtract(days, "days");
     if (shippingDay.isoWeekday() + this.transitTime >= 6) {
       days = days + 2;
     }
-    return days;
+    return days + 1;
   }
 
   calculateTotalReturnDays() {
     if (this.transitTime === 0) {
-      return 0;
+      return 1;
     }
 
-    const end = moment(this.endTime);
+    const end = moment(this.shipReturnBy);
     let days = 0;
     if (end.isoWeekday() === 6) {
       days = days + 2;
@@ -222,11 +241,20 @@ export class Transit {
       days = days + 1;
     }
 
-    const dropoffDay = moment(end).add(days, 'days');
-    days = days + this.transitTime;
-    if (dropoffDay.isoWeekday() + this.transitTime >= 6) {
-      days = days + 2;
+    days += this.transitTime;
+    const holidays = holidayCount(this.shipReturnBy, moment(end).add(days, "days").toDate());
+    days += holidays;
+
+    const weekday = end.isoWeekday();
+    if (weekday + this.transitTime >= 6) {
+      // Bunch of weird edge cases here, math doesn't work out for returns the same
+      // as it does for shipping. If isoWeekday is 5 (Fri) or 4 (Thu) and transit time is 2,3, or 4
+      // we don't overlap a weekend.
+      if (weekday < 4 || weekday > 5 || weekday <= this.transitTime) {
+        days += 2;
+      }
     }
-    return days;
+    console.log(days);
+    return days + 1;
   }
 }

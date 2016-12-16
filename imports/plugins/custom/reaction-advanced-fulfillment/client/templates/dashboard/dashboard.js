@@ -107,7 +107,8 @@ Template.dashboardAdvancedFulfillmment.events({
     let startDate = date.startOf('day').toDate();
     let endDate = date2.endOf('day').toDate();
     if (date.isValid()) {
-      Meteor.call('advancedFulfillment/printInvoices', startDate, endDate, Meteor.userId());
+      // Deprecated
+      // Meteor.call('advancedFulfillment/printInvoices', startDate, endDate, Meteor.userId());
       window.open(window.location.origin + Router.path('orders.printAllForDate', {date: date.format('MM-DD-YYYY')}));
     } else {
       Alerts.removeSeen();

@@ -32,13 +32,13 @@
   transition: background-color 300ms ease-out, color 300ms ease-out;
   font-size: 16px;
   &:hover { background: fade( @snow, 30%) }
-  
+
   &.blue {
     border-color: @primary-color;
     color: @primary-color;
     &:hover { background: @primary-color; color: @white; }
   }
-  
+
   &.grey {
     border-color: @aluminum;
     color: @oil;
@@ -47,7 +47,7 @@
   &.btn-lg {
     font-size: 20px;
   }
-  
+
 }
 
 .btn.wire.white {
@@ -97,4 +97,13 @@
 
 .btn-v-middle {
   margin-top: 25%;
+}
+
+.btn.btn-remove {
+  background: transparent;
+  border: none;
+  color: @danger-color;
+  &:hover {
+    color: darken(@danger-color, 10%);
+  }
 }

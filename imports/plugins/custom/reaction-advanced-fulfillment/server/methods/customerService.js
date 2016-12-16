@@ -20,51 +20,10 @@ function anyOrderNotes(orderNotes) {
 }
 
 Meteor.methods({
-  // TODO: Cancelling order should cancel items reservations
-  'advancedFulfillment/cancelOrder': function (orderId, userId) {
-    check(orderId, String);
-    check(userId, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
-      throw new Meteor.Error(403, 'Access Denied');
-    }
-    const history = {
-      event: 'orderCancelled',
-      userId: userId,
-      updatedAt: new Date()
-    };
-    const userObj = Meteor.users.findOne(userId);
-    // TODO: XXX: We shouldn'get get this clause because permission but should we throw an an error here instead
-    let userName = 'Guest';
-    if (userObj) {
-      userName = userNameDeterminer(userObj);
-    }
-    let order = ReactionCore.Collections.Orders.findOne({
-      _id: orderId
-    }, {
-      fields: {
-        orderNotes: 1
-      }
-    });
-    let orderNotes = anyOrderNotes(order.orderNotes);
-    orderNotes = orderNotes + '<p><strong>Order Cancelled</strong>' + noteFormattedUser(userName) + '</p>';
-
-    ReactionCore.Collections.Orders.update({
-      _id: orderId
-    }, {
-      $addToSet: {
-        history: history
-      },
-      $set: {
-        'advancedFulfillment.workflow.status': 'orderCancelled',
-        'advancedFulfillment.impossibleShipDate': false,
-        'orderNotes': orderNotes
-      }
-    });
-  },
   'advancedFulfillment/bundleColorConfirmation': function (orderId, userId) {
     check(orderId, String);
     check(userId, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     let history = {
@@ -90,7 +49,7 @@ Meteor.methods({
     check(age, Number);
     check(shoeSize, String);
     check(level, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     let history = {
@@ -116,7 +75,7 @@ Meteor.methods({
   'advancedFulfillment/nonWarehouseOrder': function (orderId, userId) {
     check(orderId, String);
     check(userId, String);
-    if (!ReactionCore.hasPermission(AdvancedFulfillment.server.permissions)) {
+    if (!Reaction.hasPermission(AdvancedFulfillment.server.permissions)) {
       throw new Meteor.Error(403, 'Access Denied');
     }
     let history = {
