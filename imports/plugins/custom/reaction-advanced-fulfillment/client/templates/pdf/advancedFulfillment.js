@@ -8,20 +8,68 @@ import './advancedFulfillment.html';
 
 Template.advancedFulfillmentPDF.onCreated(function () {
   Blaze._allowJavascriptUrls();
-  const orderId = Reaction.Router.getParam('_id');
-  this.subscribe('advancedFulfillmentOrder', orderId);
+  const instance = this;
+  const orderId = () => Reaction.Router.getParam("_id");
+  const date = () => Reaction.Router.getParam("date");
+  const selectedOrders = () => JSON.parse(localStorage.getItem("selectedOrdersToPrint"));
+
+  instance.autorun(() => {
+    if (orderId()) {
+      instance.subscribe("advancedFulfillmentOrder", orderId());
+    } else if (selectedOrders()) {
+      instance.subscribe("selectedOrders", selectedOrders());
+    } else if (date()) {
+      instance.subscribe("ordersShippingOnDate", date);
+    }
+  });
 });
 
 Template.advancedFulfillmentPDF.onRendered(function () {
-  BlazeLayout.render('advancedFulfillmentPDF');
+  BlazeLayout.render("advancedFulfillmentPDF");
 });
 
 Template.advancedFulfillmentPDF.helpers({
   orders: function () {
+    const selectedOrders = JSON.parse(localStorage.selectedOrdersToPrint || "[]");
+    if (selectedOrders.length > 0) {
+      return Orders.find({
+        "_id": {
+          $in: selectedOrders
+        },
+        "advancedFulfillment.workflow.status": {
+          $in: AdvancedFulfillment.orderActive
+        }
+      });
+    }
+
+    // Find individual orders
     const orderId = Reaction.Router.getParam("_id");
-    return Orders.find({
-      _id: orderId
-    });
+    if (orderId) {
+      return Orders.find({
+        _id: orderId
+      });
+    }
+
+    // Find all orders by Date
+    const day = Reaction.Router.getParam("date");
+    if (day) {
+      return Orders.find({
+        "advancedFulfillment.workflow.status": {
+          $in: AdvancedFulfillment.orderActive
+        },
+        "advancedFulfillment.shipmentDate": {
+          $gte: moment(day, "MM-DD-YYYY").startOf("day").toDate(),
+          $lte: moment(day, "MM-DD-YYYY").endOf("day").toDate()
+        }
+      }, {
+        sort: {
+          orderNumber: 1
+        }
+      });
+    }
+
+    // No relevant orders found.
+    return false;
   },
   shippingDate: function () {
     let date = this.advancedFulfillment.shipmentDate;
