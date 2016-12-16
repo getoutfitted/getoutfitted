@@ -4,6 +4,10 @@ import "./main.less";
 // Scripts
 import "bootstrap/dist/js/npm.js";
 
+
+// Escaped Fragment
+import "./escapedFragment";
+
 // App Defaults
 import "./defaults";
 
