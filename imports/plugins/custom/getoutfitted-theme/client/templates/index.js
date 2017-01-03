@@ -1,6 +1,7 @@
 // GetOutfitted Layout
 import "./layouts/index.html";
 import "./layouts/notFound.html";
+import "./layouts/notFound.js";
 import "./account";
 import "./product";
 import "./checkout";
