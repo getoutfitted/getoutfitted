@@ -52,6 +52,7 @@
     "mbsy": "0.0.4",
     "meteor-node-stubs": "^0.2.3",
     "moment": "^2.15.1",
+    "moment-business": "^3.0.1",
     "moment-timezone": "^0.5.5",
     "money": "^0.2.0",
     "node-geocoder": "^3.15.0",

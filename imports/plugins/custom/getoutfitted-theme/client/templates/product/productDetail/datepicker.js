@@ -9,6 +9,7 @@ import "bootstrap-datepicker";
 import moment from "moment";
 import "twix";
 import "moment-timezone";
+import momentBusiness from "moment-business";
 import RentalProducts  from "/imports/plugins/custom/reaction-rental-products/lib/api";
 
 const TransitTimes = {};
@@ -153,7 +154,7 @@ Template.reservationDatepicker.onRendered(function () {
   Session.setDefault("reservationLength", defaultReservationLength); // inclusive of return day, exclusive of arrivalDay
   Session.setDefault("nextMonthHighlight", 0);
   $("#rental-start").datepicker({
-    startDate: "+4d",
+    startDate: "+5d",
     autoclose: true,
     endDate: "+540d",
     maxViewMode: 0,
@@ -208,12 +209,12 @@ Template.reservationDatepicker.onRendered(function () {
         inRange = true; // to highlight a range of dates
         return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, your adventure begins!"};
       } else if (+compareDate === +selectedDate.subtract(1, "days")) {
-        return {enabled: available, classes: "arrivalSet", tooltip: "Your gear arrives!"};
+        return {enabled: available, classes: "delivery-day", tooltip: "Your gear arrives!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
         return {enabled: available, classes: "selected selected-end", tooltip: "Rental day, have fun!"};
       }  else if (+compareDate === +reservationEndDate.add(1, "days")) {
-        return {enabled: available, classes: "returnSet", tooltip: "Drop gear off at UPS by 3pm to be returned"};
+        return {enabled: available, classes: "return-day", tooltip: "Drop gear off at UPS by 3pm to be returned"};
       } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
         inRange = true;
       } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
@@ -318,27 +319,27 @@ const calendarHtml = "<div class='calendar-header'>" +
                      "<a class='thursday-modal-link'>How it works</a>" +
                      "</div>";
 
-const calendarLegendHtml = `
-  <div class='row calendar-footer'>
-    <div class='arrival-day-legend'>
-      <div class='cal-square'></div>
-      <label>Your first ski day!</label>
-    </div>
-    <div class='return-day-legend'>
-      <div class='cal-square'></div>
-      <label>Your last ski day</label>
-    </div>
-  </div>
-  <div class='row shipping'>
-    <div class='arrival-day-legend'>
-      <div class='cal-square'></div>
-      <label>We'll deliver your gear<br>before 8:00pm</label>
-    </div>
-    <div class='return-day-legend'>
-      <div class='cal-square'></div>
-      <label>Return to a UPS<br>location by 5:00pm</label>
-    </div>
-  </div>`;
+// const calendarLegendHtml = `
+//   <div class='row calendar-footer'>
+//     <div class='arrival-day-legend'>
+//       <div class='cal-square'></div>
+//       <label>Your first ski day!</label>
+//     </div>
+//     <div class='return-day-legend'>
+//       <div class='cal-square'></div>
+//       <label>Your last ski day</label>
+//     </div>
+//   </div>
+//   <div class='row shipping'>
+//     <div class='arrival-day-legend'>
+//       <div class='cal-square'></div>
+//       <label>We'll deliver your gear<br>before 8:00pm</label>
+//     </div>
+//     <div class='return-day-legend'>
+//       <div class='cal-square'></div>
+//       <label>Return to a UPS<br>location by 5:00pm</label>
+//     </div>
+//   </div>`;
 
 Template.reservationDatepicker.events({
   "click .show-start": function () {
@@ -413,24 +414,28 @@ Template.bundleReservationDatepicker.onRendered(function () {
   Session.setDefault("nextMonthHighlight", 0);
 
   $("#rental-start").datepicker({
-    startDate: "+4d",
+    startDate: "+1d",
     autoclose: true,
     endDate: "+540d",
     maxViewMode: 0,
     beforeShowDay: function (date) {
       const reservationLength = Session.get("reservationLength");
       let available;
-      let classes = "";
+      const classes = "";
       let tooltip = "";
         // Change date checkers to check against Denver time
       const s = adjustLocalToDenverTime(moment(date).startOf("day"));
       const e = adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
-      const shippingDay = TransitTimes.calculateShippingDay(s, 4); // Default of 4 shipping days until zip-calculation is done
-      const returnDay = TransitTimes.calculateReturnDay(e, 4); // Default of 4
+
+      // TODO: Pickup from here - calendar update
+      // const earliestShippableDate =
+      const shippingDay = TransitTimes.calculateShippingDay(s, 5); // Default of 4 shipping days until zip-calculation is done
+      const returnDay = TransitTimes.calculateReturnDay(e, 5); // Default of 4
       const selectedVariantIds = Session.get("selectedBundleOptions");
       const selectedVariantsCount = _.countBy(selectedVariantIds);
         // Should give us {variantId: 1, variantId2: 1}
       const keys = Object.keys(selectedVariantsCount);
+
       available = _.every(keys, function (variantId) {
         const inventoryVariantsAvailable = RentalProducts.checkInventoryAvailability(
           variantId,
@@ -475,12 +480,12 @@ Template.bundleReservationDatepicker.onRendered(function () {
         inRange = true; // to highlight a range of dates
         return {enabled: available, classes: "selected selected-start", tooltip: "Woohoo, your adventure begins!"};
       } else if (+compareDate === +selectedDate.subtract(1, "days")) {
-        return {enabled: available, classes: "arrivalSet", tooltip: "Your gear arrives!"};
+        return {enabled: available, classes: "delivery-day", tooltip: "Your gear arrives!"};
       } else if (+compareDate === +reservationEndDate) {
         if (inRange) inRange = false;  // to stop the highlight of dates ranges
         return {enabled: available, classes: "selected selected-end", tooltip: "Rental day, have fun!"};
       }  else if (+compareDate === +reservationEndDate.add(1, "days")) {
-        return {enabled: available, classes: "returnSet", tooltip: "Drop gear off at UPS by 3pm to be returned"};
+        return {enabled: available, classes: "return-day", tooltip: "Drop gear off at UPS by 3pm to be returned"};
       } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
         inRange = true;
       } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
@@ -552,6 +557,12 @@ Template.bundleReservationDatepicker.onRendered(function () {
         Session.set("reservationStart", startDate);
         $("#rental-start").datepicker("update");
       }
+    },
+    show() {
+      $(".datepicker-days").tooltip({
+        selector: ".day",
+        container: "body"
+      });
     }
   });
 });
@@ -592,11 +603,11 @@ Template.bundleReservationDatepicker.events({
     $("#rental-start").datepicker("show");
     if ($(".datepicker-days .calendar-header").length === 0) {
       $(".datepicker-days").prepend(calendarHtml);
-      $(".datepicker-days").append(calendarLegendHtml);
-      $(".datepicker-days").tooltip({
-        selector: ".day",
-        container: "body"
-      });
+      // $(".datepicker-days").append(calendarLegendHtml);
+      // $(".datepicker-days").tooltip({
+      //   selector: ".day",
+      //   container: "body"
+      // });
     }
     $(".datepicker-days .calendar-header").on("click", ".thursday-modal-link", function () {
       Modal.show("thursdayDeliveryExplanation");
