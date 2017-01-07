@@ -4,11 +4,15 @@
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{> rentOutfitsLink}}
-        {{> rentWomensLink}}
-        {{> rentMensLink}}
-        {{> rentKidsLink}}
-        {{> rentSkisLink}}
+        {{#if reservationDatesSelected}}
+          {{! TODO: ANIMATE IN}}
+          {{> rentGoPlusLink}}
+          {{> rentOutfitsLink}}
+          {{> rentWomensLink}}
+          {{> rentMensLink}}
+          {{> rentKidsLink}}
+          {{> rentSkisLink}}
+        {{/if}}
       </ul>
     </div>
     <div class="cart">{{> cartIcon}}</div>
@@ -41,10 +45,15 @@
       <div class="menu">
         <ul class="nav navbar-nav">
           {{> phoneNumberLink}}
-          {{> rentOutfitsLink}}
-          {{> rentWomensLink}}
-          {{> rentMensLink}}
-          {{> rentKidsLink}}
+          {{#if reservationDatesSelected}}
+            {{! TODO: ANIMATE IN}}
+            {{> rentGoPlusLink}}
+            {{> rentOutfitsLink}}
+            {{> rentWomensLink}}
+            {{> rentMensLink}}
+            {{> rentKidsLink}}
+            {{> rentSkisLink}}
+          {{/if}}
         </ul>
       </div>
     </div>
@@ -62,6 +71,12 @@
 <template name="phoneNumberLink">
   <li>
     <a href="tel:8886180305" class="dropdown-toggle">888-618-0305</a>
+  </li>
+</template>
+
+<template name="rentGoPlusLink">
+  <li>
+    <a href="/collections/plus" class="dropdown-toggle">Go Plus</a>
   </li>
 </template>
 

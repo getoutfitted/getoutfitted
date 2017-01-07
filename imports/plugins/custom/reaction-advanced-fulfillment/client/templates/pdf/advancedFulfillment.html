@@ -117,6 +117,10 @@
             <tr>&nbsp;</tr>
         {{/each}}
       </table>
+      {{! TODO: Add Notes to Invoice}}
+      {{#each note in notes}}
+        <div>Order Notes</div>
+      {{/each}}
       <div class="summary">&nbsp;</div>
     {{/each}}
   {{/if}}

@@ -45,32 +45,32 @@
 
   .active.day {
   background: #3fa5bc;
-  color: white;
+  color: @brand-dark-color;
   }
 
   .day:hover, .selected.day:hover {
-  background: @brand-secondary-color;
-  color: white;
+  background: @rental-day-color;
+  color: @brand-dark-color;
   }
 
   .selected.day, .selected.day.disabled {
-    background: @brand-primary-color;
-    color: white;
+    background: @rental-day-color;
+    color: @brand-dark-color;
   }
 
-  .arrive-by.day, .arrivalSet{
-    background: #bbb88c;
-    color: white;
+  .arrive-by.day, .delivery-day {
+    background: @shipping-day-color;
+    color: @brand-dark-color;
   }
 
-  .return-by.day, .returnSet{
-    background: #b88cbb;
-    color: white;
+  .return-by.day, .return-day {
+    background: @shipping-day-color;
+    color: @brand-dark-color;
   }
 
   .highlight.day, .highlight.day.disabled {
-    background: @brand-secondary-color;
-    color: white;
+    background: @rental-day-color;
+    color: @brand-dark-color;
   }
 }
 
@@ -93,13 +93,13 @@
     background-color: @primary-color-shadow;
     border: 6px solid @primary-color-shadow;
     position: absolute;
-    bottom: 0;
+    top: 0;
     right: 0;
     margin-right: -7px;
-    margin-bottom:  -16px;
-    -ms-transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    transform: rotate(45deg);
+    margin-top:  -16px;
+    -ms-transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
 }
 
 // Calendar Legend
@@ -123,6 +123,31 @@
   float: left;
   overflow: hidden;
   position: relative;
+}
+
+.day::after {
+  font-size: 8px;
+  text-transform: capitalize;
+  text-align: center;
+  margin-left: 0;
+  margin-right: 0;
+  position: absolute;
+  bottom: 0;
+  width: 45px;
+  left: 0;
+}
+
+.arrive-by.day::after, .day.delivery-day::after {
+  content: "Delivered";
+}
+.day:not(.disabled):hover::after, .day.selected.selected-start::after {
+  content: "First Day";
+}
+.day.highlight.last-day::after, .day.selected.selected-end::after {
+  content: "Last Day";
+}
+.return-by.day::after, .day.return-day::after {
+  content: "Drop-Off";
 }
 
 .return-day-legend .cal-square {

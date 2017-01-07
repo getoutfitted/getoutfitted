@@ -12,6 +12,7 @@ import "./components";
 import "./layouts/header/header.html";
 import "./layouts/header/header.js";
 import "./layouts/header/navigation.html";
+import "./layouts/header/navigation.js";
 
 // GetOutfitted Footer
 import "./layouts/footer/footer.html";
