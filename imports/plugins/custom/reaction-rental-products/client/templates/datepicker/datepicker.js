@@ -17,7 +17,13 @@ import { Cart } from "/lib/collections";
 // GetOutfitted Imports
 import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
+Template.goReservationDatepicker.onCreated(function () {
+  const instance = this;
+  instance.reservation = new ReactiveVar({startDate: null, endDate: null});
+});
+
 Template.goReservationDatepicker.onRendered(function () {
+  const instance = this;
   const cart = Cart.findOne();
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
@@ -30,9 +36,16 @@ Template.goReservationDatepicker.onRendered(function () {
   if (!GetOutfitted.clientReservationDetails.get("nextMonthHighlight")) {
     GetOutfitted.clientReservationDetails.set("nextMonthHighlight", 0);
   }
+  if (!instance.reservation.get() || !instance.reservation.get().startTime) {
+    if (cart.startTime && cart.endTime) {
+      instance.reservation.set({startTime: cart.startTime, endTime: cart.endTime});
+    }
+  }
   // Session.setDefault("reservationLength", 2); // inclusive of return day, exclusive of arrivalDay
   // Session.setDefault("nextMonthHighlight", 0);
   $("#rental-start").datepicker({
+    container: "#datepicker-container",
+    orientation: "left",
     startDate: "+1d",
     autoclose: true,
     endDate: "+540d",
@@ -41,7 +54,7 @@ Template.goReservationDatepicker.onRendered(function () {
       const reservationLength = GetOutfitted.clientReservationDetails.get("reservationLength");
       let available;
       let inRange = false;
-      const classes = "";
+      let classes = "";
       const tooltip = "";
 
       // Change date checkers to check against Denver time
@@ -53,21 +66,25 @@ Template.goReservationDatepicker.onRendered(function () {
         momentBusiness.addWeekDays(moment().startOf("day"), 5)
       );
 
+      let selectedDate = $("#rental-start").val();
+      if (!selectedDate) {
+        return {enabled: available, classes: classes, tooltip: tooltip};
+      }
+      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
+      const reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
+      const compareDate = moment(date).startOf("day");
+
       if (+start < +firstShippableDay) {
+        // The we can only potentially have delivery days before the first "shippable" day.
+        if (+compareDate === +moment(selectedDate).subtract(1, "days")) {
+          classes += "delivery-day";
+        }
         return {
           enabled: false,
           classes: classes,
           tooltip: "We're sorry but we can't ship gear to your destination by this date."
         };
       }
-
-      let selectedDate = $("#rental-start").val();
-      if (!selectedDate) {
-        return {enabled: available, classes: classes, tooltip: tooltip};
-      }
-      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
-      reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
-      const compareDate = moment(date).startOf("day");
 
       // TODO: Clean this up, impossible to read.
       if (+compareDate === +selectedDate) {
@@ -133,6 +150,21 @@ Template.goReservationDatepicker.onRendered(function () {
     }
   }, ".day:not(.disabled)");
 
+  $(document).on({
+    mouseenter() {
+      days = document.getElementsByClassName("day");
+      for (let i = 0; i < days.length; i++) {
+        days[i].classList.add("hover");
+      }
+    },
+    mouseleave() {
+      days = document.getElementsByClassName("day");
+      for (let i = 0; i < days.length; i++) {
+        days[i].classList.remove("hover");
+      }
+    }
+  }, ".datepicker-days tbody");
+
   $("#rental-start").on({
     changeDate: function (event) {
       $(".tooltip").remove();
@@ -140,14 +172,12 @@ Template.goReservationDatepicker.onRendered(function () {
       const reservationLength = GetOutfitted.clientReservationDetails.get("reservationLength");
 
       // Sets cart dates to Denver time - need to set as local time on display.
-      const startDate = GetOutfitted.adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day"));
-      const endDate = GetOutfitted.adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").add(reservationLength, "days"));
+      const startTime = GetOutfitted.adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day"));
+      const endTime = GetOutfitted.adjustLocalToDenverTime(moment(event.currentTarget.value, "MM/DD/YYYY").startOf("day").add(reservationLength, "days"));
 
-      if (+startDate !== +cart.startTime || +endDate !== +cart.endTime) {
-        Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate, endDate);
-        Session.set("reservationStart", startDate);
-        $("#rental-start").datepicker("update");
-      }
+      // Set temp reservation
+      instance.reservation.set({startTime, endTime});
+      $("#rental-start").datepicker("update");
     }
   });
 });
@@ -161,12 +191,20 @@ Template.goReservationDatepicker.helpers({
     return "";
   },
 
-  startDateHuman: function () {
+  reservationHuman: function () {
+    const instance = Template.instance();
     const cart = Cart.findOne();
     const resLength = GetOutfitted.clientReservationDetails.get("reservationLength");
-    if (cart && cart.startTime) {
-      return moment(GetOutfitted.adjustDenverToLocalTime(moment(cart.startTime))).format("ddd M/DD")
-        + " - " + moment(GetOutfitted.adjustDenverToLocalTime(moment(cart.startTime).add(resLength, "days"))).format("ddd M/DD");
+
+    let reservation = instance.reservation.get();
+    if (!reservation || !reservation.startTime) {
+      reservation = { startTime: cart.startTime, endTime: cart.endTime };
+    }
+    if (reservation && reservation.startTime) {
+      const start = moment(GetOutfitted.adjustDenverToLocalTime(moment(reservation.startTime))).format("ddd M/DD");
+      const end = moment(GetOutfitted.adjustDenverToLocalTime(moment(reservation.startTime).add(resLength, "days"))).format("ddd M/DD");
+
+      return `${start} - ${end}`;
     }
     return "";
   },
@@ -180,10 +218,7 @@ Template.goReservationDatepicker.helpers({
   }
 });
 
-const calendarHtml = "<div class='calendar-header'>" +
-                     "<h4>Please select a your first ski day.</h4>" +
-                     "<a class='thursday-modal-link'>How it works</a>" +
-                     "</div>";
+const calendarHelp = "<small><a class='calendar-help-link'><i class='fa fa-question-circle'></i> </a></small>";
 
 Template.goReservationDatepicker.events({
   "click .show-start": function () {
@@ -191,18 +226,17 @@ Template.goReservationDatepicker.events({
   },
   "click #display-date": function () {
     $("#rental-start").datepicker("show");
-    if ($(".datepicker-days .calendar-header").length === 0) {
-      $(".datepicker-days").prepend(calendarHtml);
-      $(".datepicker-days").tooltip({
-        selector: ".day",
-        container: "body"
-      });
+    if ($(".datepicker-switch .calendar-help-link").length === 0) {
+      $(".datepicker-switch").prepend(calendarHelp);
     }
-    $(".datepicker-days .calendar-header").on("click", ".thursday-modal-link", function () {
-      Modal.show("thursdayDeliveryExplanation");
+    $(".datepicker-switch").on("click", ".calendar-help-link", function () {
+      Modal.show("goCalendarHelp");
     });
   },
   "change #lengthSelect": function (event) {
-    GetOutfitted.clientReservationDetails.set("reservationLength", parseInt(event.currentTarget.value, 10));
+    GetOutfitted.clientReservationDetails.set("reservationLength", parseInt(event.currentTarget.value, 10) - 1);
+  },
+  "click .calendar-help-link": function () {
+    Modal.show("goCalendarHelp");
   }
 });

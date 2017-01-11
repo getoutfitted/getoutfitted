@@ -1,3 +1,24 @@
+// Inline Form Flex Definition
+.form-flex .form-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.form-flex .input-group {
+  margin: 0 20px;
+  justify-content: flex-start;
+}
+
+.form-flex .input-group.input-button {
+  margin: 20px 20px 0 -10px;
+}
+
+.form-flex .alert {
+  margin-bottom: 0;
+}
+
 .prefix.large, .postfix.large {
   height: 3.25rem;
   line-height: 3.25rem;
@@ -61,4 +82,8 @@ select.hero-select {
   color: @oil;
   line-height: normal;
   height: 4.75rem;
+}
+
+.input-group.date input {
+  cursor: pointer;
 }

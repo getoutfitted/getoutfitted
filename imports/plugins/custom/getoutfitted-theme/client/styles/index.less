@@ -13,12 +13,12 @@
 // Date and Destination Form
 .date-and-destination-section {
   position: absolute;
-  text-align: center;
+  text-align: left;
   bottom: 0;
   left: 0;
   width: 100%;
-  background: rgba(0,0,0,0.4);
-  padding: 25px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 15px 15px 5px 15px;
 
   .form-control::placeholder {
     color: @jumbo;
@@ -37,16 +37,47 @@
   }
 }
 
-.input-group.date input {
-  cursor: pointer;
+
+.date-and-destination select,
+.date-and-destination input[type="text"].form-control {
+  background-color: transparent;
+  border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition: none;
+  -o-transition: none;
+  transition: border-color;
+  border-bottom: 1px solid #3FA5BC;
+  border-radius: 0;
+  font-size: 18px;
+  height: 48px;
+}
+
+.date-and-destination button.btn {
+  font-size: 18px;
+  height: 48px;
+  background: @vivid-color;
+  &:hover {
+    background: @vivid-color-shadow;
+  }
+}
+
+.input-group.date input[type="text"] {
+  max-width: 250px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+input#rental-start {
+  width: 0;
 }
 
 .media-coverage {
-  background: @silver;
+  background: @white;
 }
 
 .go-how-it-works {
-  background: @white;
+  background: #F4F3F2;
 }
 
 .product-container .go-how-it-works .container {

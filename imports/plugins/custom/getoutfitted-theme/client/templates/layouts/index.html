@@ -29,22 +29,28 @@
 
 <template name="goDateAndDestinationForm">
   <section class="date-and-destination-section" id="dateAndDestinationSection">
-    <form class="form-inline" id="dateAndDestinationForm">
+    <form class="form-flex date-and-destination" id="dateAndDestinationForm">
       <div class="form-group">
-        {{> goReservationDatepicker}}
-
-        <label class="sr-only" for="destinationSelect">Destination</label>
         <div class="input-group">
+          <span>
+            Where Are You Skiing?
+          </span><br>
+          <label class="sr-only" for="destinationSelect">Destination</label>
           <select class='form-control destinationSelect' id="destinationSelect">
-            <option disabled selected>Where are you skiing?</option>
-            {{#each destination in destinations}}
-              <option class="form-control" value="{{destination.value}}">{{destination.label}}</option>
+            <option disabled selected>Choose Resort</option>
+            <option class="form-control" value="other">Other</option>
+            <option class="form-control" disabled>-------</option>
+            {{#each resort in resorts}}
+              <option class="form-control" value="{{resort.postal}}">{{resort.name}}</option>
             {{/each}}
-              <option class="form-control" value="other">Other</option>
           </select>
+          <div>{{> inlineAlerts placement="reservationResortSelect"}}</div>
+        </div>
+        {{> goReservationDatepicker}}
+        <div class="input-group input-button">
+          <button type="submit" class="btn btn-brand-primary">Browse Gear</button>
         </div>
       </div>
-      <button type="submit" class="btn btn-brand-primary">Browse Gear</button>
     </form>
   </section>
 </template>
