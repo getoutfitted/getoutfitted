@@ -1,4 +1,11 @@
+import moment from "moment";
+
+import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
+
+import { Cart } from "/lib/collections";
+
+import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
 Template.goDateAndDestinationForm.helpers({
   resorts: function () {
@@ -76,13 +83,24 @@ Template.goDateAndDestinationForm.helpers({
 Template.goDateAndDestinationForm.events({
   "submit #dateAndDestinationForm": function (event, instance) {
     event.preventDefault();
+    const cart = Cart.findOne({_id: Meteor.userId()});
+
     Alerts.removeSeen();
     Alerts.inline("Please choose your resort from the list.", "danger", {
       autoHide: false,
       placement: "reservationResortSelect"
     });
+
+    const resStart = instance.$(".start").value;
+    const startDate = GetOutfitted.adjustLocalToDenverTime(moment(resStart, "MM/DD/YYYY").startOf("day").toDate());
+
+    const endDate = moment(startDate).add(reservationLength, "days").toDate();
+
+    Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate, endDate);
   },
   "change #destinationSelect": function (event, instance) {
+    instance;
+    event;
     Alerts.removeSeen();
   }
 });
