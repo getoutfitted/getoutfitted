@@ -15,23 +15,26 @@ import './dashboard.html';
 */
 
 const DefaultFields = {
-  'orderNumber': '#',
-  'billing.address.fullName': 'Customer',
-  'shipping.address.fullName': 'Shipping To',
-  'email': 'Email',
-  'billing.address.phone': 'Phone',
-  'billing.invoice.total': 'Total',
-  'createdAt': 'Created',
-  'advancedFulfillment.transitTime': 'Transit',
-  'advancedFulfillment.shipmentDate': 'Shipping',
+  'orderNumber': 'Number',
+  'rentalDays': 'Length',
   'startTime': 'Rental Start',
   'endTime': 'Rental End',
-  'advancedFulfillment.returnDate': 'Returning',
-  'rentalDays': 'Length',
-  'shipping.address.region': 'Ship To',
-  'billing.address.region': 'Bill To',
-  'advancedFulfillment.workflow.status': 'Status',
-  'advancedFulfillment.localDelivery': 'Local'
+  'createdAt': 'Created',
+  'email': 'Email',
+  'advancedFulfillment.transitTime': 'Transit',
+  'advancedFulfillment.shipmentDate': 'Ship Date',
+  'advancedFulfillment.returnDate': 'Return Date',
+  'shipping.address.fullName': 'Shipping Name',
+  'shipping.address.region': 'Ship Region',
+  'shipping.address.city': 'Ship City',
+  'billing.address.fullName': 'Billing Name',
+  'billing.address.region': 'Bill Region',
+  'billing.address.phone': 'Phone',
+  'billing.invoice.subtotal': 'Subtotal',
+  'billing.invoice.taxes': 'Taxes',
+  'billing.invoice.total': 'Total',
+  'advancedFulfillment.localDelivery': 'Local',
+  'advancedFulfillment.workflow.status': 'Status'
 };
 
 
@@ -119,9 +122,16 @@ Template.trailGuideDashboard.events({
     displaySettings[field] = !displaySettings[field];
     Session.set('enabledFields', displaySettings);
   },
+  'submit #findByOrderNumber': function (event) {
+    event.preventDefault();
+    const find = Session.get('find');
+    const orderNumber = parseInt(event.target.findOrderNumber.value, 10);
+    find.orderNumber = orderNumber;
+    Session.set('find', find);
+  },
   'submit .advancedSearchFilters': function (event) {
     event.preventDefault();
-    let find = Session.get('find');
+    const find = Session.get('find');
     const billingName = event.target.billingName.value;
     if (billingName) {
       find['billing.address.fullName'] = billingName;
@@ -209,41 +219,23 @@ Template.columnMainRow.helpers({
     if (!Template.parentData().advancedFulfillment) {
       return;
     }
-    const field = this.valueOf();
-    switch (field) {
-    // Using Fall through technique which is || in Switch
-    case 'billing.address.fullName':
-    case 'shipping.address.fullName':
-      const billOrShip = field.split('.')[0];
-      return Template.parentData()[billOrShip][0].address.fullName;
-    case 'billing.address.phone':
-      return Template.parentData().billing[0].address.phone;
-    case 'advancedFulfillment.localDelivery':
-    case 'advancedFulfillment.transitTime':
-      const afField = field.split('.')[1];
-      return Template.parentData().advancedFulfillment[afField];
-    case 'createdAt':
-    case 'startTime':
-    case 'endTime':
-      const date = Template.parentData()[this.valueOf()];
-      return moment(date).format('M/D/YY');
-    case 'advancedFulfillment.shipmentDate':
-      const shipDate = Template.parentData().advancedFulfillment.shipmentDate;
-      return moment(shipDate).format('M/D/YY');
-    case 'advancedFulfillment.returnDate':
-      const returnDate = Template.parentData().advancedFulfillment.returnDate;
-      return moment(returnDate).format('M/D/YY');
-    case 'shipping.address.region':
-    case 'billing.address.region':
-      const billingOrShipping = field.split('.')[0];
-      return Template.parentData()[billingOrShipping][0].address.region;
-    case 'billing.invoice.total':
-      return `$${Template.parentData().billing[0].invoice.total}`;
-    case 'advancedFulfillment.workflow.status':
-      const status = Template.parentData().advancedFulfillment.workflow.status;
-      return AdvancedFulfillment.humanOrderStatuses[status];
-    default:
-      return Template.parentData()[this.valueOf()];
+    const order = Template.parentData();
+    const fields = this.valueOf().split('.');
+
+    let search = order;
+    for (let i = 0; i < fields.length; i++) {
+      search = search[fields[i]];
+
+      if (fields[i] === 'shipping' || fields[i] === 'billing') {
+        search = search[0];
+      }
     }
+
+    /* eslint-disable consistent-return */
+    if (search instanceof Date) {
+      return moment(search).format('M/D/YY');
+    }
+    return search;
+    /* eslint-enable consistent-return */
   }
 });

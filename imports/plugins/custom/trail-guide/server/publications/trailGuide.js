@@ -9,14 +9,14 @@ Meteor.publish('trailGuideAllOrders', function (find, limit, sort, fields) {
   check(limit, Number);
   check(sort, Object);
   check(fields, Object);
-  let returnFields = {};
+  const returnFields = {};
   _.each(fields, function (value, index) {
     if (value) {
       returnFields[index] = 1;
     }
   });
   const shopId = Reaction.getShopId();
-  let findCriteria = _.clone(find);
+  const findCriteria = _.clone(find);
   findCriteria.shopId = shopId;
   if (findCriteria['billing.address.fullName']) {
     findCriteria['billing.address.fullName'] = new RegExp(findCriteria['billing.address.fullName'], 'i');
