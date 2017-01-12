@@ -52,30 +52,23 @@ Template.goReservationDatepicker.onRendered(function () {
     maxViewMode: 0,
     beforeShowDay: function (date) {
       const reservationLength = GetOutfitted.clientReservationDetails.get("reservationLength");
-      let available;
-      let inRange = false;
       let classes = "";
-      const tooltip = "";
 
       // Change date checkers to check against Denver time
       const start = GetOutfitted.adjustLocalToDenverTime(moment(date).startOf("day"));
-      // const end = GetOutfitted.adjustLocalToDenverTime(moment(date).startOf("day").add(reservationLength, "days"));
+
       // Calculate the first day we could possibly ship to based on destination
       // Should include holidays in here as well in the future.
       const firstShippableDay = GetOutfitted.adjustLocalToDenverTime(
         momentBusiness.addWeekDays(moment().startOf("day"), 5)
       );
 
-      let selectedDate = $("#rental-start").val();
-      if (!selectedDate) {
-        return {enabled: available, classes: classes, tooltip: tooltip};
-      }
-      selectedDate = moment(selectedDate, "MM/DD/YYYY").startOf("day");
+      const selectedDate = moment($("#rental-start").val(), "MM/DD/YYYY").startOf("day"); // Get currently selected date from #rental-start input
       const reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
       const compareDate = moment(date).startOf("day");
 
       if (+start < +firstShippableDay) {
-        // The we can only potentially have delivery days before the first "shippable" day.
+        // The only valid coloring for a preshippable date is "delivery"
         if (+compareDate === +moment(selectedDate).subtract(1, "days")) {
           classes += "delivery-day";
         }
@@ -86,27 +79,26 @@ Template.goReservationDatepicker.onRendered(function () {
         };
       }
 
-      // TODO: Clean this up, impossible to read.
-      if (+compareDate === +selectedDate) {
-        inRange = true; // to highlight a range of dates
-        return {enabled: available, classes: "selected selected-start", tooltip: "First Ski Day!" };
-      } else if (+compareDate === +moment(selectedDate).subtract(1, "days")) {
-        return {enabled: available, classes: "delivery-day", tooltip: "Gear Delivered!" };
-      } else if (+compareDate === +reservationEndDate) {
-        if (inRange) { inRange = false; } // to stop the highlight of dates ranges
-        return { enabled: available, classes: "selected selected-end", tooltip: "Ski Day!" };
-      } else if (+compareDate === +moment(reservationEndDate).add(1, "days")) {
-        return { enabled: available, classes: "return-day", tooltip: "Drop gear off at UPS by 3pm to be returned" };
-      } else if (+compareDate > +selectedDate && +compareDate < +reservationEndDate) {
-        inRange = true;
-      } else if (+compareDate < +selectedDate || +compareDate > +reservationEndDate) {
-        inRange = false;
+      // important dates for calendar
+      const firstSkiDay = +compareDate === +selectedDate;
+      const lastSkiDay = +compareDate === +reservationEndDate;
+      const deliveryDay = +compareDate === +moment(selectedDate).subtract(1, "days"); // Day gear is delivered
+      const dropoffDay = +compareDate === +moment(reservationEndDate).add(1, "days"); // Day customer drops off or returns gear at UPS
+      const reservedDay = +compareDate > +selectedDate && +compareDate < +reservationEndDate; // Reserved day other than first/last
+
+      if (deliveryDay) {
+        classes = "delivery-day";
+      } else if (firstSkiDay) {
+        classes = "selected selected-start";
+      } else if (lastSkiDay) {
+        classes = "selected selected-end";
+      } else if (dropoffDay) {
+        classes = "return-day";
+      } else if (reservedDay) {
+        classes = "selected selected-range";
       }
 
-      if (inRange) {
-        return {enabled: available, classes: "selected selected-range", tooltip: "Rental day, have fun!"}; // create a custom class in css with back color you want
-      }
-      return {enabled: available, classes: classes, tooltip: tooltip};
+      return {enabled: true, classes: classes, tooltip: ""};
     }
   });
 

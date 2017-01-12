@@ -83,24 +83,35 @@ Template.goDateAndDestinationForm.helpers({
 Template.goDateAndDestinationForm.events({
   "submit #dateAndDestinationForm": function (event, instance) {
     event.preventDefault();
-    const cart = Cart.findOne({_id: Meteor.userId()});
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    const resort = event.target.destinationSelect.value;
+    const start = event.target.start.value;
+    const length = parseInt(event.target.lengthSelect.value, 10);
 
     Alerts.removeSeen();
-    Alerts.inline("Please choose your resort from the list.", "danger", {
-      autoHide: false,
-      placement: "reservationResortSelect"
-    });
+    if (resort === "" || start === "") {
+      if (resort === "") {
+        Alerts.inline("Please choose your resort from the list.", "danger", {
+          autoHide: false,
+          placement: "reservationResortSelect"
+        });
+      }
+      if (start === "") {
+        Alerts.inline("Please select your ski dates.", "danger", {
+          autoHide: false,
+          placement: "reservationDatepicker"
+        });
+      }
+      return;
+    }
 
-    const resStart = instance.$(".start").value;
-    const startDate = GetOutfitted.adjustLocalToDenverTime(moment(resStart, "MM/DD/YYYY").startOf("day").toDate());
+    const startTime = GetOutfitted.adjustLocalToDenverTime(moment(start, "MM/DD/YYYY").startOf("day").toDate());
 
-    const endDate = moment(startDate).add(reservationLength, "days").toDate();
+    const endTime = moment(startTime).add(length - 1, "days").toDate();
 
-    Meteor.call("rentalProducts/setRentalPeriod", cart._id, startDate, endDate);
+    Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime, resort});
   },
-  "change #destinationSelect": function (event, instance) {
-    instance;
-    event;
+  "change #destinationSelect": function () {
     Alerts.removeSeen();
   }
 });
