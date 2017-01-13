@@ -14,8 +14,27 @@
           {{> rentSkisLink}}
         {{/if}}
       </ul>
+      <ul class="nav navbar-nav pull-right reservation-change">
+        <li>
+          <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+            {{reservationDates}} <i class="fa fa-caret-down"></i>
+          </a>
+          <ul id="login-dp" class="dropdown-menu dropdown-menu-right">
+      			<li>
+      				 <div>
+                 <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
+                 <input type="hidden" id="nav-datepicker-start" value="{{reservationStart}}">
+      				 </div>
+      			</li>
+      		</ul>
+
+        </li>
+      </ul>
     </div>
-    <div class="cart">{{> cartIcon}}</div>
+
+    <div class="cart">
+      {{> cartIcon}}
+    </div>
   </div>
   <div class="rui navbar hidden-lg hidden-md hidden-sm">
     <div class=navbar-left>
