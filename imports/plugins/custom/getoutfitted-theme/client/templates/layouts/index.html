@@ -37,11 +37,11 @@
           </span><br>
           <label class="sr-only" for="destinationSelect">Destination</label>
           <select class='form-control destinationSelect' id="destinationSelect" name="destinationSelect">
-            <option disabled selected value="">Choose Resort</option>
-            <option class="form-control" value="other">Other</option>
+            <option disabled {{currentResort ""}} value="">Choose Resort</option>
+            <option class="form-control" {{currentResort "other"}} value="other">Other</option>
             <option class="form-control" disabled value="">-------</option>
             {{#each resort in resorts}}
-              <option class="form-control" value="{{resort.postal}}">{{resort.name}}</option>
+              <option class="form-control" value="{{resort.postal}}" {{currentResort resort.postal}}>{{resort.name}}</option>
             {{/each}}
           </select>
           <div>{{> inlineAlerts placement="reservationResortSelect"}}</div>

@@ -8,6 +8,14 @@ import { Cart } from "/lib/collections";
 import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
 Template.goDateAndDestinationForm.helpers({
+  currentResort(resort) {
+    strResort = `${resort}`;
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    if (cart && cart.resort) {
+      return strResort === cart.resort ? "selected" : "";
+    }
+    return strResort === "" ? "selected" : "";
+  },
   resorts: function () {
     return [{
       name: "Aspen",
@@ -15,7 +23,7 @@ Template.goDateAndDestinationForm.helpers({
     },
     {
       name: "Beaver Creek",
-      postal: 81657
+      postal: 81620
     },
     {
       name: "Big Sky",
@@ -27,11 +35,11 @@ Template.goDateAndDestinationForm.helpers({
     },
     {
       name: "Copper",
-      postal: 80424
+      postal: 80443
     },
     {
       name: "Deer Valley",
-      postal: 84060
+      postal: 84068
     },
     {
       name: "Jackson Hole",
@@ -39,7 +47,7 @@ Template.goDateAndDestinationForm.helpers({
     },
     {
       name: "Keystone",
-      postal: 80424
+      postal: 80435
     },
     {
       name: "North Lake Tahoe",
@@ -55,7 +63,7 @@ Template.goDateAndDestinationForm.helpers({
     },
     {
       name: "Snowmass",
-      postal: 81611
+      postal: 81654
     },
     {
       name: "South Lake Tahoe",
