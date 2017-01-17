@@ -30,7 +30,11 @@ Template.goReservationDatepicker.onRendered(function () {
   // So duration is default to 5 for a 6 day rental.
 
   if (!GetOutfitted.clientReservationDetails.get("reservationLength")) {
-    GetOutfitted.clientReservationDetails.set("reservationLength", 1);
+    if (cart.rentalDays) {
+      GetOutfitted.clientReservationDetails.set("reservationLength", cart.rentalDays - 1);
+    } else {
+      GetOutfitted.clientReservationDetails.set("reservationLength", 1);
+    }
   }
 
   if (!GetOutfitted.clientReservationDetails.get("nextMonthHighlight")) {
@@ -199,6 +203,11 @@ Template.goReservationDatepicker.helpers({
       return `${start} - ${end}`;
     }
     return "";
+  },
+
+  selectedResLength: function (len) {
+    const setLen = GetOutfitted.clientReservationDetails.get("reservationLength") || 1;
+    return len === setLen + 1 ? "selected" : "";
   },
 
   rentalLength: function () {

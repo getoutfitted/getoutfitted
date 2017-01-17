@@ -17,9 +17,12 @@
       <ul class="nav navbar-nav pull-right reservation-change">
         <li>
           <a href="#" data-toggle="dropdown" class="dropdown-toggle">
-            {{reservationDates}} <i class="fa fa-caret-down"></i>
+            {{reservationDates}}
+            {{#if reservationDatesSelected}}
+              <i class="fa fa-caret-down"></i>
+            {{/if}}
           </a>
-          <ul id="login-dp" class="dropdown-menu dropdown-menu-right">
+          <ul class="dropdown-menu dropdown-menu-right">
       			<li>
       				 <div>
                  <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
@@ -106,25 +109,25 @@
 </template>
 
 <template name="rentMensLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/mens" class="dropdown-toggle">Mens</a>
   </li>
 </template>
 
 <template name="rentWomensLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/womens" class="dropdown-toggle">Womens</a>
   </li>
 </template>
 
 <template name="rentKidsLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/kids" class="dropdown-toggle">Kids</a>
   </li>
 </template>
 
 <template name="rentSkisLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/skis" class="dropdown-toggle">Skis + Snowboards</a>
   </li>
 </template>

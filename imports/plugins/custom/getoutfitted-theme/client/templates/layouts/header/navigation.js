@@ -15,7 +15,11 @@ Template.goNavigationBar.onRendered(function () {
   const cart = Cart.findOne();
 
   if (!GetOutfitted.clientReservationDetails.get("reservationLength")) {
-    GetOutfitted.clientReservationDetails.set("reservationLength", 1);
+    if (cart.rentalDays) {
+      GetOutfitted.clientReservationDetails.set("reservationLength", cart.rentalDays - 1);
+    } else {
+      GetOutfitted.clientReservationDetails.set("reservationLength", 1);
+    }
   }
 
   if (!GetOutfitted.clientReservationDetails.get("nextMonthHighlight")) {
@@ -45,7 +49,8 @@ Template.goNavigationBar.onRendered(function () {
           momentBusiness.addWeekDays(moment().startOf("day"), 5)
         );
 
-        const selectedDate = moment($("#nav-datepicker-start").val(), "MM/DD/YYYY").startOf("day"); // Get currently selected date from #rental-start input
+        // const selectedDate = moment($("#nav-datepicker-start").val(), "MM/DD/YYYY").startOf("day"); // Get currently selected date from #rental-start input
+        const selectedDate = cart.startTime;
         const reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
         const compareDate = moment(date).startOf("day");
 
@@ -83,7 +88,7 @@ Template.goNavigationBar.onRendered(function () {
         return {enabled: true, classes: classes, tooltip: ""};
       }
     });
-  })
+  });
 });
 
 Template.goNavigationBar.helpers({
@@ -97,8 +102,11 @@ Template.goNavigationBar.helpers({
   },
   reservationDates() {
     const cart = Cart.findOne({userId: Meteor.userId()});
-    const start = moment(cart.startTime).format("ddd M/DD");
-    const end = moment(cart.endTime).format("ddd M/DD");
-    return `${start} - ${end}`;
+    if (cart.startTime && cart.endTime) {
+      const start = moment(cart.startTime).format("ddd M/DD");
+      const end = moment(cart.endTime).format("ddd M/DD");
+      return `${start} - ${end}`;
+    }
+    return "";
   }
 });
