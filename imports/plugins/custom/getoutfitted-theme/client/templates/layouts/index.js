@@ -89,7 +89,7 @@ Template.goDateAndDestinationForm.helpers({
 });
 
 Template.goDateAndDestinationForm.events({
-  "submit #dateAndDestinationForm": function (event, instance) {
+  "submit #dateAndDestinationForm": function (event) {
     event.preventDefault();
     const cart = Cart.findOne({userId: Meteor.userId()});
     const resort = event.target.destinationSelect.value;

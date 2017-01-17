@@ -227,6 +227,7 @@ Template.goReservationDatepicker.events({
   },
   "change #lengthSelect": function (event) {
     GetOutfitted.clientReservationDetails.set("reservationLength", parseInt(event.currentTarget.value, 10) - 1);
+    $("#rental-start").datepicker("update");
   },
   "click .calendar-help-link": function () {
     Modal.show("goCalendarHelp");
