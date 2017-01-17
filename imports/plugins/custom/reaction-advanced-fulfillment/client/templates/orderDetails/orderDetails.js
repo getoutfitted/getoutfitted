@@ -52,6 +52,7 @@ Template.orderDetails.helpers({
       "orderPicked",
       "orderPacking",
       "orderPacked",
+      "orderReadyToShip",
       "orderShipped",
       "orderReturned",
       "orderIncomplete",
