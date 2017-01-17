@@ -68,12 +68,28 @@
 // remove 20px bottom margin on xs devices;
 .lead { margin-bottom : 0; }
 
-@media (max-width: @screen-sm-max) {
-  .rui.navbar .navbar-nav.nav > li > a {
-    font-size: 11px;
-  }
-  
+// Caret for calendar dropdown.
+.nav.reservation-change i.fa.fa-caret-down {
+  margin-left: 5px;
+}
+
+@media (max-width: @screen-md-max) {
   html:not(.rtl) .rui.navbar .dropdown-toggle {
-    padding-left: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+    font-size: 13px;
   }
+  .rui.navbar .menu {
+    margin: 0 0px;
+  }
+}
+
+@media (max-width: @screen-sm-max) {
+  // .rui.navbar .navbar-nav.nav > li > a {
+  //   font-size: 13px;
+  // }
+  //
+  // html:not(.rtl) .rui.navbar .dropdown-toggle {
+  //   padding-left: 5px;
+  // }
 }

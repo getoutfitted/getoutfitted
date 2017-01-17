@@ -111,6 +111,9 @@
 
 @media (max-width: @screen-xs-max) {
   .hero:after { padding-top: 72.5%; } // 5:3 ratio
+  .hero-container {
+    background-position: 92% center;
+  }
   .hero-container h1 {
     margin-top: 35px;
     padding: 0 15%;
@@ -134,6 +137,9 @@
 
 @media (min-width: @screen-xs-max) and (max-width: @screen-sm-max) {
   .hero:after { padding-top: 65%; } // 5:3 ratio
+  .hero-container {
+    background-position: 80% center;
+  }
   .hero-container h1 {
     margin-top: 30px;
   }
@@ -156,6 +162,7 @@
 
 @media (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
   .hero:after { padding-top: 45%; } // 5:2 ratio
+
   .hero-container h1 {
     margin-top: 50px;
   }
@@ -163,6 +170,9 @@
 
 @media (min-width: @screen-md-min) {
   .hero:after { padding-top: 40%; } // 5:2 ratio
+  .hero-container {
+    background-position: 80% center;
+  }
   .hero-container h1 {
     font-size: 36px;
     margin-top: 12%;
@@ -179,6 +189,9 @@
 
 @media (min-width: @screen-lg-min) {
   .hero:after { padding-top: 28%; }
+  .hero-container {
+    background-position: center center;
+  }
   .hero-container h1 .hero-line-2 {
     font-size: 32px;
     margin-top: 0;
