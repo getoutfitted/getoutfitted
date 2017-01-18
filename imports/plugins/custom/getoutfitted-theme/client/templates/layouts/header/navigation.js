@@ -96,10 +96,10 @@ Template.goNavigationBar.onRendered(function () {
     });
   });
 
-  $('#nav-datepicker').on('changeDate', function(event) {
-    $('#nav-datepicker-start').val($('#nav-datepicker').datepicker('getFormattedDate'));
-    instance.startTime.set($('#nav-datepicker').datepicker('getDate'));
-    $('#nav-datepicker').datepicker('update', instance.startTime.get());
+  $("#nav-datepicker").on("changeDate", function () {
+    $("#navDatepickerStart").val($("#nav-datepicker").datepicker("getFormattedDate"));
+    instance.startTime.set($("#nav-datepicker").datepicker("getDate"));
+    $("#nav-datepicker").datepicker("update", instance.startTime.get());
   });
 });
 
@@ -134,5 +134,17 @@ Template.goNavigationBar.events({
   "change #navLengthSelect": function (event) {
     GetOutfitted.clientReservationDetails.set("reservationLength", parseInt(event.currentTarget.value, 10) - 1);
     $("#nav-datepicker").datepicker("update");
+  },
+  "submit #navReservationForm": function (event) {
+    event.preventDefault();
+
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    const start = event.target.navDatepickerStart.value;
+    const length = parseInt(event.target.navLengthSelect.value, 10);
+    const startTime = GetOutfitted.adjustLocalToDenverTime(moment(start, "MM/DD/YYYY").startOf("day").toDate());
+    const endTime = moment(startTime).add(length - 1, "days").toDate();
+
+    Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime});
+    // $("#rental-start").datepicker("update", start);
   }
 });

@@ -40,7 +40,7 @@ Meteor.methods({
     check(reservation, Object);
     check(reservation.startTime, Date);
     check(reservation.endTime, Date);
-    check(reservation.resort, String);
+    check(reservation.resort, Match.Maybe(String));
 
     const cart = Cart.findOne(cartId);
     // Make sure that cart is owned by current user.
@@ -58,6 +58,10 @@ Meteor.methods({
     update.days = rental.count("days");
     update.hours = rental.count("hours");
     update.minutes = rental.count("minutes");
+
+    if (!update.resort) {
+      update.resort = cart.resort;
+    }
 
     // If no items in cart, update immediately
     if (!cart.items || cart.items.length === 0) {

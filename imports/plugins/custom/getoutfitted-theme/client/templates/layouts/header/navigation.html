@@ -27,7 +27,7 @@
                 <form id="navReservationForm">
                   <div class="col-xs-12 nav-datepicker-container">
                     <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
-                    <input type="hidden" id="nav-datepicker-start" value="{{reservationStart}}">
+                    <input type="hidden" name="navDatepickerStart" id="navDatepickerStart" value="{{reservationStart}}">
                   </div>
                   <div class="col-xs-6">
                     <label class="sr-only" for="navLengthSelect">Reservation Length</label>
@@ -46,7 +46,7 @@
                     </select>
                   </div>
                   <div class="col-xs-6">
-                    <button type="submit" class="btn btn-success btn-block">Change Dates</button>
+                    <button type="submit" id="navChangeDateSubmit" class="btn btn-success btn-block">Change Dates</button>
                   </div>
                 </form>
       				</div>
