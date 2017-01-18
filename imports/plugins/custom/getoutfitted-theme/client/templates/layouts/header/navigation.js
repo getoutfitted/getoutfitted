@@ -104,6 +104,10 @@ Template.goNavigationBar.onRendered(function () {
 });
 
 Template.goNavigationBar.helpers({
+  selectedResLength: function (len) {
+    const setLen = GetOutfitted.clientReservationDetails.get("reservationLength") || 1;
+    return len === setLen + 1 ? "selected" : "";
+  },
   reservationDatesSelected() {
     const cart = Cart.findOne({userId: Meteor.userId()});
     return cart.startTime && cart.endTime;
@@ -120,5 +124,11 @@ Template.goNavigationBar.helpers({
       return `${start} - ${end}`;
     }
     return "";
+  }
+});
+
+Template.goNavigationBar.events({
+  "click .length-select": function (event) {
+    event.stopPropagation();
   }
 });
