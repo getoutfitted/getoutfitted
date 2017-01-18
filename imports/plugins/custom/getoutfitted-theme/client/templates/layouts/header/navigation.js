@@ -130,5 +130,9 @@ Template.goNavigationBar.helpers({
 Template.goNavigationBar.events({
   "click .length-select": function (event) {
     event.stopPropagation();
+  },
+  "change #navLengthSelect": function (event) {
+    GetOutfitted.clientReservationDetails.set("reservationLength", parseInt(event.currentTarget.value, 10) - 1);
+    $("#nav-datepicker").datepicker("update");
   }
 });
