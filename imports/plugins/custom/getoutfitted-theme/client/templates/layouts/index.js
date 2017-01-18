@@ -118,6 +118,7 @@ Template.goDateAndDestinationForm.events({
     const endTime = moment(startTime).add(length - 1, "days").toDate();
 
     Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime, resort});
+    $("#nav-datepicker").datepicker("update", start);
   },
   "change #destinationSelect": function () {
     Alerts.removeSeen();
