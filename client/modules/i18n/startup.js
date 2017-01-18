@@ -40,7 +40,7 @@ Meteor.startup(() => {
   Tracker.autorun(function () {
     if (Reaction.Subscriptions.Shops.ready() && Meteor.user()) {
       const shop = Shops.findOne(Reaction.getShopId());
-      let language = shop.language;
+      let language = shop.language || "en";
       if (Meteor.user() && Meteor.user().profile && Meteor.user().profile.lang) {
         language = Meteor.user().profile.lang;
       }
