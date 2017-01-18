@@ -24,29 +24,31 @@
           <ul class="dropdown-menu dropdown-menu-right">
       			<li>
      				  <div class="row">
-                <div class="col-xs-12 nav-datepicker-container">
-                  <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
-                  <input type="hidden" id="nav-datepicker-start" value="{{reservationStart}}">
-                </div>
-                <div class="col-xs-6">
-                  <label class="sr-only" for="navLengthSelect">Reservation Length</label>
-                  <select class='form-control length-select' id="navLengthSelect" name="navLengthSelect">
-                    <option class="length-select-option" value="2" {{selectedResLength 2}}>2 Days</option>
-                    <option class="length-select-option" value="3" {{selectedResLength 3}}>3 Days</option>
-                    <option class="length-select-option" value="4" {{selectedResLength 4}}>4 Days</option>
-                    <option class="length-select-option" value="5" {{selectedResLength 5}}>5 Days</option>
-                    <option class="length-select-option" value="6" {{selectedResLength 6}}>6 Days</option>
-                    <option class="length-select-option" value="7" {{selectedResLength 7}}>7 Days</option>
-                    <option class="length-select-option" value="8" {{selectedResLength 8}}>8 Days</option>
-                    <option class="length-select-option" value="9" {{selectedResLength 9}}>9 Days</option>
-                    <option class="length-select-option" value="10" {{selectedResLength 10}}>10 Days</option>
-                    <option class="length-select-option" value="11" {{selectedResLength 11}}>11 Days</option>
-                    <option class="length-select-option" value="12" {{selectedResLength 12}}>12 Days</option>
-                  </select>
-                </div>
-                <div class="col-xs-6">
-                  <button class="btn btn-success btn-block">Change Dates</button>
-                </div>
+                <form id="navReservationForm">
+                  <div class="col-xs-12 nav-datepicker-container">
+                    <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
+                    <input type="hidden" id="nav-datepicker-start" value="{{reservationStart}}">
+                  </div>
+                  <div class="col-xs-6">
+                    <label class="sr-only" for="navLengthSelect">Reservation Length</label>
+                    <select class='form-control length-select' id="navLengthSelect" name="navLengthSelect">
+                      <option class="length-select-option" value="2" {{selectedResLength 2}}>2 Days</option>
+                      <option class="length-select-option" value="3" {{selectedResLength 3}}>3 Days</option>
+                      <option class="length-select-option" value="4" {{selectedResLength 4}}>4 Days</option>
+                      <option class="length-select-option" value="5" {{selectedResLength 5}}>5 Days</option>
+                      <option class="length-select-option" value="6" {{selectedResLength 6}}>6 Days</option>
+                      <option class="length-select-option" value="7" {{selectedResLength 7}}>7 Days</option>
+                      <option class="length-select-option" value="8" {{selectedResLength 8}}>8 Days</option>
+                      <option class="length-select-option" value="9" {{selectedResLength 9}}>9 Days</option>
+                      <option class="length-select-option" value="10" {{selectedResLength 10}}>10 Days</option>
+                      <option class="length-select-option" value="11" {{selectedResLength 11}}>11 Days</option>
+                      <option class="length-select-option" value="12" {{selectedResLength 12}}>12 Days</option>
+                    </select>
+                  </div>
+                  <div class="col-xs-6">
+                    <button type="submit" class="btn btn-success btn-block">Change Dates</button>
+                  </div>
+                </form>
       				</div>
       			</li>
       		</ul>
