@@ -8,6 +8,7 @@ import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api"
 Template.goNavigationBar.onCreated(function () {
   const instance = this;
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
+  instance.startTime = new ReactiveVar(null);
 });
 
 Template.goNavigationBar.onRendered(function () {
@@ -30,6 +31,11 @@ Template.goNavigationBar.onRendered(function () {
       instance.reservation.set({startTime: cart.startTime, endTime: cart.endTime});
     }
   }
+  if (!instance.startTime.get()) {
+    if (cart.startTime) {
+      instance.startTime.set(cart.startTime);
+    }
+  }
 
   this.autorun(function () {
     $("#nav-datepicker").datepicker({
@@ -50,7 +56,7 @@ Template.goNavigationBar.onRendered(function () {
         );
 
         // const selectedDate = moment($("#nav-datepicker-start").val(), "MM/DD/YYYY").startOf("day"); // Get currently selected date from #rental-start input
-        const selectedDate = cart.startTime;
+        const selectedDate = instance.startTime.get();
         const reservationEndDate = moment(selectedDate).startOf("day").add(reservationLength, "days");
         const compareDate = moment(date).startOf("day");
 
@@ -88,6 +94,12 @@ Template.goNavigationBar.onRendered(function () {
         return {enabled: true, classes: classes, tooltip: ""};
       }
     });
+  });
+
+  $('#nav-datepicker').on('changeDate', function(event) {
+    $('#nav-datepicker-start').val($('#nav-datepicker').datepicker('getFormattedDate'));
+    instance.startTime.set($('#nav-datepicker').datepicker('getDate'));
+    $('#nav-datepicker').datepicker('update', instance.startTime.get());
   });
 });
 
