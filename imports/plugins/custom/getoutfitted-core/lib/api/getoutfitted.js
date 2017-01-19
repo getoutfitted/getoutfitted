@@ -1,4 +1,4 @@
-import { ReactiveDict } from "meteor/reactive-dict"
+import { ReactiveDict } from "meteor/reactive-dict";
 import moment from "moment";
 import "moment-timezone";
 
