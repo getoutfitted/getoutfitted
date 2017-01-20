@@ -128,11 +128,11 @@ Meteor.methods({
     const inventoryToReserve = [];
     const inventoryNotAvailable = [];
     // Check to make sure we have enough of each item.
-    for (const vId in availablityByVariantId) {
-      if (quantityByVariantId[vId] !== availablityByVariantId[vId].length) {
+    for (const vId in availabilityByVariantId) {
+      if (quantityByVariantId[vId] !== availabilityByVariantId[vId].length) {
         inventoryNotAvailable.push(vId);
       }
-      availablityByVariantId[vId].forEach(function (inventoryVariantId) {
+      availabilityByVariantId[vId].forEach(function (inventoryVariantId) {
         inventoryToReserve.push(inventoryVariantId);
       });
     }
