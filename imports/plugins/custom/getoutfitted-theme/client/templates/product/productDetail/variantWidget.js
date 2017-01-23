@@ -253,7 +253,6 @@ Template.bundleVariantOptions.onRendered(function () {
     selectedOptions.forEach(function (variantId) {
       const subExists = InventoryVariants.findOne({productId: variantId});
       if (!subExists) {
-        // console.log(`subscribing to: ${variantId}`);
         instance.subscribe("variantReservationStatus", {start: start, end: end}, variantId);
       }
     });
@@ -266,7 +265,11 @@ Template.bundleVariantOptions.onRendered(function () {
   const componentVariantIds = variantIdsByComponent.reduce((ids, id) => ids.concat(id), []);
 
   // TODO: Reservation Request should take shipping time into account.
-  const reservationRequest = {startTime: cart.startTime, endTime: cart.endTime};
+  let reservationRequest = {startTime: cart.startTime, endTime: cart.endTime};
+
+  if (cart.shippingTime && cart.restockTime) {
+    reservationRequest = {startTime: cart.shippingTime, endTime: cart.restockTime};
+  }
 
   // Build object to hold variantIds + quantities that have already been added to cart. This allows us to take into account the number of items that are in the cart when showing availability.
   const cartItemReservations = cart.items
@@ -284,7 +287,6 @@ Template.bundleVariantOptions.onRendered(function () {
 
   this.autorun(function () {
     Session.set("goCartItemReservations", cartItemReservations);
-    console.log(cartItemReservations);
     Meteor.call("rentalProducts/bulkCheckInventoryAvailability", componentVariantIds, reservationRequest, function (error, result) {
       if (error) {
         Logger.warn("Error during rentalProducts/bulkCheckInventoryAvailability", error);
@@ -308,22 +310,6 @@ Template.bundleVariantOptions.onRendered(function () {
       }
     });
   });
-
-
-  // const bundleVariants = Products.findOne({
-  //   ancestors: {
-  //     $size: 1
-  //   }
-  // });
-  // const defaultSelectedVariants = [];
-  // _.each(bundleVariants.bundleProducts, function (bundleOptions) {
-  //   defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
-  // });
-  // Session.set("selectedBundleOptions", defaultSelectedVariants);
-  // Tracker.autorun(function () {
-  //   console.log("selectedOptions", selectedOptions);
-  //   console.log("inventoryVariants", _.countBy(_.map(InventoryVariants.find().fetch(), 'productId')));
-  // });
 });
 
 Template.bundleVariantOptions.helpers({
@@ -340,7 +326,7 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    let variantProduct = Products.findOne(this.variantId);
+    const variantProduct = Products.findOne(this.variantId);
     if (variantProduct) {
       return variantProduct.size + "-" + variantProductvariant.color;
     }
@@ -358,7 +344,6 @@ Template.bundleVariantOptions.helpers({
     const cartItemReservations = Session.get("goCartItemReservations");
     const quantityInCart = cartItemReservations[variantId] || 0;
     const availability = instance.availability.get();
-    console.log(variantId, availability[variantId], quantityInCart);
     return (availability[variantId] - quantityInCart) === 0 ? "disabled" : "";
   },
   inventoryAvailableCount(variantId) {
