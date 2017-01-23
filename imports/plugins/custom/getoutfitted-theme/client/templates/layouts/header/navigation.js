@@ -5,6 +5,66 @@ import { Cart } from "/lib/collections";
 import momentBusiness from "moment-business";
 import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
+
+changeReservationDates = function (options) {
+  const {cart, startTime, endTime} = options;
+
+  Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime}, function (error, result) {
+    if (error) {
+      Alerts.alert(
+        "Error Changing Dates!",
+        "If this problem persists please call or live-chat our customer support team. 888-618-0305",
+        {
+          type: "error"
+        });
+    }
+    if (result.successful) {
+      Alerts.alert(
+        {
+          title: "Reservation dates changed successfully!",
+          type: "success"
+        });
+    } else {
+      itemsToRemove = result.inventoryNotAvailable.reduce(function (items, variantId) {
+        const itemInCart = cart.items.find(i => i.variants.selectedBundleOptions.find(sbo => sbo.variantId === variantId));
+        const variant = itemInCart.variants.selectedBundleOptions.find(v => v.variantId === variantId);
+        const constructedTitle = `${itemInCart.title} : ${variant.cartLabel}`;
+        items.names.push(constructedTitle);
+        items.ids.push(itemInCart._id);
+        return items;
+      }, {names: [], ids: []});
+
+      Alerts.alert({
+        title: "Can't update reservation!",
+        html: `
+          The following items in your cart were not available for your requested dates.
+          <br><br>
+          ${itemsToRemove.names.join("<br>")}
+          <br><br>
+          You can remove those items from your cart and try again or keep your current dates.
+        `,
+        type: "warning",
+        reverseButtons: true,
+        showCancelButton: true,
+        cancelButtonText: "Keep Cart",
+        confirmButtonText: "Remove items from cart",
+        confirmButtonColor: "#AACBC9"
+      }, (isConfirm) => {
+        if (isConfirm) {
+          Meteor.call("cart/removeFromCartBulk", itemsToRemove.ids, function (err) {
+            if (error) {
+              Logger.error("Error removing items from cart", err);
+            } else {
+              changeReservationDates(options);
+            }
+          });
+        }
+      });
+    }
+  });
+};
+
+
 Template.goNavigationBar.onCreated(function () {
   const instance = this;
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
@@ -144,7 +204,6 @@ Template.goNavigationBar.events({
     const startTime = GetOutfitted.adjustLocalToDenverTime(moment(start, "MM/DD/YYYY").startOf("day").toDate());
     const endTime = moment(startTime).add(length - 1, "days").toDate();
 
-    Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime});
-    // $("#rental-start").datepicker("update", start);
+    changeReservationDates({cart, startTime, endTime});
   }
 });
