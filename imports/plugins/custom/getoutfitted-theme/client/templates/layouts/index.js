@@ -4,6 +4,7 @@ import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 
 import { Cart } from "/lib/collections";
+import { Router } from "/client/api";
 
 import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
@@ -119,6 +120,11 @@ Template.goDateAndDestinationForm.events({
 
     Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime, resort});
     $("#nav-datepicker").datepicker("update", start);
+    if (resort === "other") {
+      Router.go("/collections/outfits");
+    } else {
+      Router.go("/collections/plus");
+    }
   },
   "change #destinationSelect": function () {
     Alerts.removeSeen();
