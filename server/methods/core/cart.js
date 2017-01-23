@@ -549,6 +549,58 @@ Meteor.methods({
     });
   },
 
+
+  /**
+   * XXX: GETOUTFITTED MOD - Bulk remove from cart
+   * cart/removeFromCartBulk
+   * @summary removes or adjust quantity of a variant from the cart
+   * @param {[String]} itemIds - array of item ids to remove from cart
+   * @returns {Number} returns Mongo update result
+   */
+  "cart/removeFromCartBulk": function (itemIds) {
+    check(itemId, [String]);
+
+    const userId = Meteor.userId();
+    const cart = Collections.Cart.findOne({
+      userId: userId
+    });
+    if (!cart) {
+      Logger.error(`Cart not found for user: ${this.userId}`);
+      throw new Meteor.Error("cart-not-found", "Cart not found for user with such id");
+    }
+
+    let cartItems;
+
+    if (cart.items) {
+      cartItems = cart.items.filter(item => itemIds.indexOf(item) !== -1);
+    }
+
+    // extra check of item exists
+    if (!array.isArray(cartItems) || cartItems.length === 0) {
+      Logger.error(`Unable to find an item that matches any of ${cartItems} within the cart: ${cart._id}`);
+      throw new Meteor.Error("cart-item-not-found", "Unable to find an item with such id in cart.");
+    }
+
+    return Collections.Cart.update({
+      _id: cart._id
+    }, {
+      $pull: {
+        items: {
+          _id: {$in: itemIds}
+        }
+      }
+    }, (error, result) => {
+      if (error) {
+        Logger.error(error);
+        Logger.error(Collections.Cart.simpleSchema().namedContext().invalidKeys(),
+          "error removing from cart");
+        return error;
+      }
+      Logger.info(`cart: deleted cart items that match ids ${cartItems}`);
+      return result;
+    });
+  },
+
   /**
    * cart/copyCartToOrder
    * @summary transform cart to order when a payment is processed we want to
