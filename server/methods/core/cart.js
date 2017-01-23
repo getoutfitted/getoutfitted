@@ -558,7 +558,7 @@ Meteor.methods({
    * @returns {Number} returns Mongo update result
    */
   "cart/removeFromCartBulk": function (itemIds) {
-    check(itemId, [String]);
+    check(itemIds, [String]);
 
     const userId = Meteor.userId();
     const cart = Collections.Cart.findOne({
@@ -572,11 +572,11 @@ Meteor.methods({
     let cartItems;
 
     if (cart.items) {
-      cartItems = cart.items.filter(item => itemIds.indexOf(item) !== -1);
+      cartItems = cart.items.filter(item => itemIds.indexOf(item._id) !== -1);
     }
 
     // extra check of item exists
-    if (!array.isArray(cartItems) || cartItems.length === 0) {
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
       Logger.error(`Unable to find an item that matches any of ${cartItems} within the cart: ${cart._id}`);
       throw new Meteor.Error("cart-item-not-found", "Unable to find an item with such id in cart.");
     }
