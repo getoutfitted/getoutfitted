@@ -17,6 +17,8 @@ function updateCartReservation(cartId, update) {
     $set: {
       startTime: update.startTime,
       endTime: update.endTime,
+      shippingTime: update.shippingTime,
+      restockTime: update.restockTime,
       rentalMonths: update.months,
       rentalWeeks: update.weeks,
       rentalDays: update.days,
@@ -64,21 +66,6 @@ Meteor.methods({
       update.resort = cart.resort;
     }
 
-    // If no items in cart, update immediately
-    if (!cart.items || cart.items.length === 0) {
-      update.items = [];
-      updateCartReservation(cart._id, update);
-      return { successful: true };
-    }
-
-    // If we change dates or change length of reservation
-    // we need to do the following
-    // 1. Check availability of all items currently in the cart
-    // 2. IF anything unavailable - return unsuccessful and notify what is unavailable
-    // 3. If all available, update prices for all items in cart and change dates.
-    //
-    // TODO: Should be done on client as part of callback / promise.
-    // X. Offer to remove unavailable items and change dates anyway or cancel date change.
     const shipping = [{
       address: {
         postal: update.resort
@@ -98,6 +85,24 @@ Meteor.methods({
       localDelivery: transit.isLocalDelivery(),
       restockDay: transit.calculateRestockDay()
     };
+
+    // Set shipping and restock days.
+    update.shippingTime = delivery.shipmentDate;
+    update.restockTime = delivery.restockDay;
+
+    // If no items in cart, update immediately
+    if (!cart.items || cart.items.length === 0) {
+      console.log(update);
+      update.items = [];
+      updateCartReservation(cart._id, update);
+      return { successful: true };
+    }
+
+    // If we change dates or change length of reservation
+    // we need to do the following
+    // 1. Check availability of all items currently in the cart
+    // 2. IF anything unavailable - return unsuccessful and notify what is unavailable
+    // 3. If all available, update prices for all items in cart and change dates.
 
     // 1A) Aggregate qty of all variants in the cart
     const quantityByVariantId = cart.items.reduce(function (qtyByVariantId, item) {
