@@ -1,45 +1,31 @@
 machine:
   node:
-    version: 4.6.0
+    version: 7.4.0
   services:
     - docker
-  pre:
-    - hash meteor 2>/dev/null || curl https://install.meteor.com | /bin/sh
 
 dependencies:
   cache_directories:
     - "~/.meteor"
-    - "~/docker"
   override:
-    - cd $HOME/getoutfitted
-    - .reaction/scripts/clone-packages.sh
-    - .reaction/docker/scripts/plugin-loader.sh
+    - if [[ -L ~/.meteor/meteor ]]; then ln -s ~/.meteor/meteor ~/bin/meteor; export PATH="$PATH:~/bin"; fi
+    - hash meteor 2>/dev/null || curl https://install.meteor.com | /bin/sh
+    - npm i -g reaction-cli
+    - meteor npm install
 
 test:
   override:
-    - cd $HOME/getoutfitted
-    - meteor npm install
-    - SERVER_TEST_REPORTER="dot" meteor test --once --full-app --headless --driver-package dispatch:mocha
-    - .getoutfitted/docker/scripts/ci-build.sh
+    - reaction test
+    - .reaction/ci/build.sh
 
 deployment:
-  development:
+  prequel:
     branch: development
     commands:
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker tag getoutfitted/base:latest getoutfitted/base:staging
-      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging
-      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
-      - docker push getoutfitted/base:staging
-      - docker push getoutfitted/getoutfitted:staging-$CIRCLE_BUILD_NUM
-      - docker push getoutfitted/getoutfitted:staging
+      - .reaction/ci/deploy.sh
+
   release:
-    branch: master
+    tag: /v[0-9]+(\.[0-9]+)*/
+    owner: reactioncommerce
     commands:
-      - docker tag getoutfitted/base:latest getoutfitted/base:$CIRCLE_BUILD_NUM
-      - docker tag getoutfitted/getoutfitted:latest getoutfitted/getoutfitted:$CIRCLE_BUILD_NUM
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push getoutfitted/base:$CIRCLE_BUILD_NUM
-      - docker push getoutfitted/base:latest
-      - docker push getoutfitted/getoutfitted:$CIRCLE_BUILD_NUM
-      - docker push getoutfitted/getoutfitted:latest
+      - .reaction/ci/deploy.sh
