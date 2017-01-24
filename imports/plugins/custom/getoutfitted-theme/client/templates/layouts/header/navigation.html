@@ -4,14 +4,62 @@
     <div class="menu">
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
-        {{> rentOutfitsLink}}
-        {{> rentWomensLink}}
-        {{> rentMensLink}}
-        {{> rentKidsLink}}
-        {{> rentSkisLink}}
+        {{#if reservationDatesSelected}}
+          {{> rentGoPlusLink}}
+          {{> rentOutfitsLink}}
+          {{> rentWomensLink}}
+          {{> rentMensLink}}
+          {{> rentKidsLink}}
+          {{> rentSkisLink}}
+        {{/if}}
+      </ul>
+      <ul class="nav navbar-nav pull-right reservation-change">
+        <li>
+          <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+            {{reservationDates}}
+            {{#if reservationDatesSelected}}
+              <i class="fa fa-caret-down"></i>
+            {{/if}}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-right">
+      			<li>
+     				  <div class="row">
+                <form id="navReservationForm">
+                  <div class="col-xs-12 nav-datepicker-container">
+                    <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
+                    <input type="hidden" name="navDatepickerStart" id="navDatepickerStart" value="{{reservationStart}}">
+                  </div>
+                  <div class="col-xs-6">
+                    <label class="sr-only" for="navLengthSelect">Reservation Length</label>
+                    <select class='form-control length-select' id="navLengthSelect" name="navLengthSelect">
+                      <option class="length-select-option" value="2" {{selectedResLength 2}}>2 Days</option>
+                      <option class="length-select-option" value="3" {{selectedResLength 3}}>3 Days</option>
+                      <option class="length-select-option" value="4" {{selectedResLength 4}}>4 Days</option>
+                      <option class="length-select-option" value="5" {{selectedResLength 5}}>5 Days</option>
+                      <option class="length-select-option" value="6" {{selectedResLength 6}}>6 Days</option>
+                      <option class="length-select-option" value="7" {{selectedResLength 7}}>7 Days</option>
+                      <option class="length-select-option" value="8" {{selectedResLength 8}}>8 Days</option>
+                      <option class="length-select-option" value="9" {{selectedResLength 9}}>9 Days</option>
+                      <option class="length-select-option" value="10" {{selectedResLength 10}}>10 Days</option>
+                      <option class="length-select-option" value="11" {{selectedResLength 11}}>11 Days</option>
+                      <option class="length-select-option" value="12" {{selectedResLength 12}}>12 Days</option>
+                    </select>
+                  </div>
+                  <div class="col-xs-6">
+                    <button type="submit" id="navChangeDateSubmit" class="btn btn-success btn-block">Change Dates</button>
+                  </div>
+                </form>
+      				</div>
+      			</li>
+      		</ul>
+
+        </li>
       </ul>
     </div>
-    <div class="cart">{{> cartIcon}}</div>
+
+    <div class="cart">
+      {{> cartIcon}}
+    </div>
   </div>
   <div class="rui navbar hidden-lg hidden-md hidden-sm">
     <div class=navbar-left>
@@ -41,10 +89,15 @@
       <div class="menu">
         <ul class="nav navbar-nav">
           {{> phoneNumberLink}}
-          {{> rentOutfitsLink}}
-          {{> rentWomensLink}}
-          {{> rentMensLink}}
-          {{> rentKidsLink}}
+          {{#if reservationDatesSelected}}
+            {{! TODO: ANIMATE IN}}
+            {{> rentGoPlusLink}}
+            {{> rentOutfitsLink}}
+            {{> rentWomensLink}}
+            {{> rentMensLink}}
+            {{> rentKidsLink}}
+            {{> rentSkisLink}}
+          {{/if}}
         </ul>
       </div>
     </div>
@@ -65,6 +118,12 @@
   </li>
 </template>
 
+<template name="rentGoPlusLink">
+  <li>
+    <a href="/collections/plus" class="dropdown-toggle">Go Plus</a>
+  </li>
+</template>
+
 <template name="rentOutfitsLink">
   <li>
     <a href="/collections/outfits" class="dropdown-toggle">Outfits</a>
@@ -72,25 +131,25 @@
 </template>
 
 <template name="rentMensLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/mens" class="dropdown-toggle">Mens</a>
   </li>
 </template>
 
 <template name="rentWomensLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/womens" class="dropdown-toggle">Womens</a>
   </li>
 </template>
 
 <template name="rentKidsLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/kids" class="dropdown-toggle">Kids</a>
   </li>
 </template>
 
 <template name="rentSkisLink">
-  <li>
+  <li class="hidden-sm">
     <a href="/collections/skis" class="dropdown-toggle">Skis + Snowboards</a>
   </li>
 </template>

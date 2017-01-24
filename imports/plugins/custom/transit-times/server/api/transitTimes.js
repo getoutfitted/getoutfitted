@@ -8,6 +8,7 @@ import { FedExApi } from './transitOptions/fedex';
 import { UPSAPI } from './transitOptions/ups';
 import { dateHelper } from './transitOptions/dateHelpers';
 import { Logger } from '/server/api';
+import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/server/api";
 
 function getSettings() {
   const tt = Packages.findOne({
@@ -66,6 +67,7 @@ export class Transit {
     if (order.endTime) {
       this.shipReturnBy = dateHelper.determineShipReturnByDate(this.endTime);
       this.returnDate = this.calculateReturnDay();
+      this.restockDay = this.calculateRestockDay();
     }
   }
   getStartTime() {
@@ -204,6 +206,13 @@ export class Transit {
     return returnDay.toDate();
   }
 
+  // Item is available for shipping the day after Restock Day
+  calculateRestockDay() {
+    const returnDay = this.returnDate;
+    const turnaroundTime = GetOutfitted.settings.getTurnaroundTime();
+    return moment(returnDay).add(turnaroundTime, "days").toDate();
+  }
+
   calculateTotalShippingDays() {
     if (this.transitTime === 0) {
       return 1;
@@ -254,7 +263,6 @@ export class Transit {
         days += 2;
       }
     }
-    console.log(days);
     return days + 1;
   }
 }

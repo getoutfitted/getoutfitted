@@ -111,7 +111,7 @@ Meteor.methods({
   /**
    * bulkCheckInventoryAvailability
    * Checks each variantId supplied in array
-   * Returns object with variantIds as keys and boolean availablity status as values
+   * Returns object with variantIds as keys and number of available inventory as values
    */
 
   "rentalProducts/bulkCheckInventoryAvailability": function (variantIds, reservationRequest) {
