@@ -92,7 +92,6 @@ Meteor.methods({
 
     // If no items in cart, update immediately
     if (!cart.items || cart.items.length === 0) {
-      console.log(update);
       update.items = [];
       updateCartReservation(cart._id, update);
       return { successful: true };

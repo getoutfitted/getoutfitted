@@ -162,10 +162,14 @@ Template.bundleVariantWidget.onCreated(function () {
     }
   });
   const defaultSelectedVariants = [];
-  _.each(bundleVariants.bundleProducts, function (bundleOptions) {
-    defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
+  this.autorun(function () {
+    if (bundleVariants) {
+      _.each(bundleVariants.bundleProducts, function (bundleOptions) {
+        defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
+      });
+      Session.set("selectedBundleOptions", defaultSelectedVariants);
+    }
   });
-  Session.set("selectedBundleOptions", defaultSelectedVariants);
 });
 
 Template.bundleVariantWidget.onRendered(function () {
@@ -207,6 +211,9 @@ Template.bundleVariantWidget.helpers({
     const cart = Cart.findOne({userId: Meteor.userId()});
     const resLength = cart.rentalDays;
     const current = ReactionProduct.selectedVariant();
+    if (!current || !current.rentalPriceBuckets) {
+      throw new Meteor.Error("Current product error");
+    }
     const priceBucket = current.rentalPriceBuckets.find(bucket => bucket.duration === resLength);
     if (!priceBucket) {
       throw new Meteor.Error("Price not found!");
