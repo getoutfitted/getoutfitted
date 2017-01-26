@@ -156,6 +156,46 @@ Template.goNavigationBar.onRendered(function () {
     });
   });
 
+  $(document).on({
+    mouseenter() {
+      if ($(".day").length === 0) {
+        return false;
+      }
+
+      // This code calculates what to highlight on the calendar.
+      const $nextWeeks = $(this).parent().nextAll().find(".day");
+      const $remainingDaysThisWeek = $(this).nextAll();
+      let numDaysToHighlight = GetOutfitted.clientReservationDetails.get("reservationLength");
+      let $arrivalDay = $(this).prev();
+      let $returnDay;
+      if ($arrivalDay.length === 0) {
+        $arrivalDay = $(this).parent().prev().children().last();
+      }
+
+      $arrivalDay.addClass("arrive-by");
+      if ($remainingDaysThisWeek.length >= numDaysToHighlight) {
+        $remainingDaysThisWeek.slice(0, numDaysToHighlight).addClass("highlight");
+        $returnDay = $remainingDaysThisWeek.slice(numDaysToHighlight, numDaysToHighlight + 1);
+        if ($returnDay.length === 0) {
+          $returnDay = $(this).parent().next().children().first();
+        }
+        $returnDay.addClass("return-by");
+        return $remainingDaysThisWeek.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
+      }
+
+      $remainingDaysThisWeek.addClass("highlight");
+      numDaysToHighlight = numDaysToHighlight - $remainingDaysThisWeek.length;
+      $nextWeeks.slice(0, numDaysToHighlight).addClass("highlight");
+      $returnDay = $nextWeeks.slice(numDaysToHighlight, numDaysToHighlight + 1);
+      $returnDay.addClass("return-by");
+      return $nextWeeks.slice(numDaysToHighlight - 1, numDaysToHighlight).addClass("last-day");
+    },
+
+    mouseleave() {
+      $(".day").removeClass("highlight").removeClass("arrive-by").removeClass("last-day").removeClass("return-by");
+    }
+  }, "#nav-datepicker .day:not(.disabled)");
+
   $("#nav-datepicker").on("changeDate", function () {
     $("#navDatepickerStart").val($("#nav-datepicker").datepicker("getFormattedDate"));
     instance.startTime.set($("#nav-datepicker").datepicker("getDate"));

@@ -262,7 +262,6 @@
     .day:hover:not(.disabled)::before,
     .highlight.day:not(.disabled)::before,
     .return-by.day:not(.disabled)::before {
-      border: 2px solid fadeout(@brand-primary-color, 50%);
       background: transparent;
       content: "";
       border-radius: 150px;
@@ -278,13 +277,16 @@
       -ms-transform: initial;
     }
 
+    .day:hover:not(.disabled)::before {
+      border: 2px solid fadeout(@brand-primary-color, 50%);
+    }
     .highlight.day:not(.disabled)::before {
-      border: 2px solid fadeout(@brand-primary-color, 80%);
+      border: 2px solid fadeout(@brand-primary-color, 70%);
     }
 
     .arrive-by.day::before,
     .return-by.day::before {
-      border: 2px solid fadeout(@brand-secondary-color, 80%);
+      border: 2px solid fadeout(@brand-secondary-color, 70%);
     }
   }
 }
