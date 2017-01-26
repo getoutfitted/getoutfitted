@@ -35,6 +35,7 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    text-align: center;
   }
 
   .disabled.day, .disabled.day:hover {
@@ -234,6 +235,57 @@
     background: transparent;
     text-transform: none;
     margin-bottom: 30px;
+  }
+}
+
+
+
+
+// Nav Datepicker Styling
+
+.nav-datepicker-container {
+  .datepicker-days {
+    .arrive-by.day:not(.disabled) {
+      background: transparent;
+    }
+    .day:not(.disabled):hover {
+      background: transparent;
+    }
+    .highlight.day {
+      background: transparent;
+    }
+    .return-by.day {
+      background: transparent;
+    }
+
+    .arrive-by.day:not(.disabled)::before,
+    .day:hover:not(.disabled)::before,
+    .highlight.day:not(.disabled)::before,
+    .return-by.day:not(.disabled)::before {
+      border: 2px solid fadeout(@brand-primary-color, 50%);
+      background: transparent;
+      content: "";
+      border-radius: 150px;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0px;
+      right: 0px;
+      color: #32312d;
+      margin: 0;
+      transform: initial;
+      -webkit-transform: initial;
+      -ms-transform: initial;
+    }
+
+    .highlight.day:not(.disabled)::before {
+      border: 2px solid fadeout(@brand-primary-color, 80%);
+    }
+
+    .arrive-by.day::before,
+    .return-by.day::before {
+      border: 2px solid fadeout(@brand-secondary-color, 80%);
+    }
   }
 }
 

@@ -159,7 +159,7 @@ Template.goReservationDatepicker.onRendered(function () {
         days[i].classList.remove("hover");
       }
     }
-  }, ".datepicker-days tbody");
+  }, "#datepicker-container .datepicker-days tbody");
 
   $("#rental-start").on({
     changeDate: function (event) {
