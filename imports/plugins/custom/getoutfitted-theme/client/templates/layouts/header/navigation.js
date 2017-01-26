@@ -184,6 +184,13 @@ Template.goNavigationBar.helpers({
       return `${start} - ${end}`;
     }
     return "";
+  },
+  goPlusLocation() {
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    if (cart && cart.resort && cart.resort !== "other") {
+      return true;
+    }
+    return false;
   }
 });
 

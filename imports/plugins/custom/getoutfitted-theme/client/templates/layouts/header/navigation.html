@@ -5,12 +5,16 @@
       <ul class="nav navbar-nav">
         {{> phoneNumberLink}}
         {{#if reservationDatesSelected}}
-          {{> rentGoPlusLink}}
+          {{#if goPlusLocation}}
+            {{> rentGoPlusLink}}
+          {{/if}}
           {{> rentOutfitsLink}}
           {{> rentWomensLink}}
           {{> rentMensLink}}
           {{> rentKidsLink}}
-          {{> rentSkisLink}}
+          {{#if goPlusLocation}}
+            {{> rentSkisLink}}
+          {{/if}}
         {{/if}}
       </ul>
       <ul class="nav navbar-nav pull-right reservation-change">
