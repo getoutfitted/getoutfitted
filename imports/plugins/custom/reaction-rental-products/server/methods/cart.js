@@ -66,9 +66,15 @@ Meteor.methods({
       update.resort = cart.resort;
     }
 
+    let shippingPostal = update.resort;
+
+    if (update.resort === "other") {
+      shippingPostal = "02108";
+    }
+
     const shipping = [{
       address: {
-        postal: update.resort
+        postal: shippingPostal
       }
     }];
 
@@ -92,7 +98,6 @@ Meteor.methods({
 
     // If no items in cart, update immediately
     if (!cart.items || cart.items.length === 0) {
-      console.log(update);
       update.items = [];
       updateCartReservation(cart._id, update);
       return { successful: true };
