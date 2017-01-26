@@ -66,9 +66,15 @@ Meteor.methods({
       update.resort = cart.resort;
     }
 
+    let shippingPostal = update.resort;
+
+    if (update.resort === "other") {
+      shippingPostal = "02108";
+    }
+
     const shipping = [{
       address: {
-        postal: update.resort
+        postal: shippingPostal
       }
     }];
 
