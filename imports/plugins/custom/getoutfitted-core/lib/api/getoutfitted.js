@@ -1,3 +1,4 @@
+import { ReactiveDict } from "meteor/reactive-dict";
 import moment from "moment";
 import "moment-timezone";
 
@@ -16,3 +17,6 @@ GetOutfitted.adjustDenverToLocalTime = function (time) {
   here.add(denver.utcOffset() - here.utcOffset(), "minutes");
   return here.toDate();
 };
+
+// TODO: Maybe move this into rental products?
+GetOutfitted.clientReservationDetails = new ReactiveDict();

@@ -1,37 +1,31 @@
 <template name='advancedFulfillmentPDF'>
-    <head>
+  <head>
     <style type='text/css'>
-
       #non-printable {
         padding: 20px 0;
       }
-
       @media print {
         #non-printable {
           display: none;
         }
-
         @page {
           size: 330mm 427mm;
           margin: 14mm;
         }
-
         body {
           margin: 0;
           padding 0 !important;
           min-width: 768px;
         }
-
         .container {
           width: auto;
           min-width: 750px;
         }
-
         .summary {page-break-after: always;}
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
 
   <div id='non-printable' class='container'>
     <div class='col-xs-6 col-xs-offset-3 '>
@@ -60,6 +54,7 @@
             <h3 style='margin-top:1em'>Ship To</h3>
             {{#with shippingAddress this}}
               <p><strong>{{fullName}}</strong></p>
+              <p>{{company}}</p>
               <p>{{address1}}</p>
               <p>{{address2}}</p>
               <p>{{city}}, {{region}} {{postal}} {{country}}</p>
@@ -70,15 +65,35 @@
             <h3 style='margin-top:1em'>Bill To</h3>
             {{#with billingAddress this}}
               <p><strong>{{fullName}}</strong></p>
+              <p>{{company}}</p>
               <p>{{address1}}</p>
-              <p>{{#if address2}}{{address2}},{{/if}}</p>
+              <p>{{address2}}</p>
               <p>{{city}}, {{region}} {{postal}} {{country}}</p>
               <p>{{phone}}</p>
             {{/with}}
           </div>
           <div class="col-xs-4">
-            <h3 style='margin-top:1em'>Rental Dates</h3>
-            <h4>{{formattedRange startTime endTime}}</h4>
+            <h3 style="margin-top: 1em">Invoice</h3>
+            {{#with paymentDetails this}}
+              <div class="row">
+                <div class="col-xs-6">
+                  <p>
+                    Subtotal<br>
+                    Taxes<br>
+                    Shipping<br>
+                    <strong>Total</strong>
+                  </p>
+                </div>
+                <div class="col-xs-6">
+                  <p>
+                    {{formatPrice subtotal}}<br>
+                    {{formatPrice taxes}}<br>
+                    {{formatPrice shipping}}<br>
+                    {{formatPrice total}}
+                  </p>
+                </div>
+              </div>
+            {{/with}}
           </div>
         </div>
       </div>
@@ -117,6 +132,22 @@
             <tr>&nbsp;</tr>
         {{/each}}
       </table>
+      <hr>
+      <div class="row">
+        <div class="col-xs-6">
+          <h3>Dates</h3>
+          <h4 style='margin-top:1em'>{{formattedRange startTime endTime}}</h4>
+          <h3 style='margin-top:1em'><strong>Your Return Date:</strong> {{formattedDate advancedFulfillment.shipReturnBy}}</h3>
+        </div>
+        <div class="col-xs-6">
+          {{#if hasNotes}}
+            <h3>Notes</h3>
+          {{/if}}
+          {{#each note in notes}}
+            <p>{{note.note}}</p>
+          {{/each}}
+        </div>
+      </div>
       <div class="summary">&nbsp;</div>
     {{/each}}
   {{/if}}

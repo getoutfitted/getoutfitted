@@ -1,3 +1,24 @@
+// Inline Form Flex Definition
+.form-flex .form-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.form-flex .input-group {
+  margin: 0 20px;
+  justify-content: flex-start;
+}
+
+.form-flex .input-group.input-button {
+  margin: 20px 20px 0 -10px;
+}
+
+.form-flex .alert {
+  margin-bottom: 0;
+}
+
 .prefix.large, .postfix.large {
   height: 3.25rem;
   line-height: 3.25rem;
@@ -21,6 +42,14 @@ input[type="text"].form-control {
   -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+input[type="text"].form-control.input-lg {
+  height: 46px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
 }
 
 input[type="text"].large, input[type="email"].large, input[type="number"].large {
@@ -53,4 +82,8 @@ select.hero-select {
   color: @oil;
   line-height: normal;
   height: 4.75rem;
+}
+
+.input-group.date input {
+  cursor: pointer;
 }

@@ -52,8 +52,8 @@ Template.variantWidget.onRendered(function () {
   if (window.innerWidth > 767) {
     stickyWidget();
   }
-  const product = ReactionProduct.selectedProduct();
-  const variant = ReactionProduct.selectedVariant();
+  // const product = ReactionProduct.selectedProduct();
+  // const variant = ReactionProduct.selectedVariant();
   // const props = ReactionAnalytics.getProductTrackingProps(product, variant);
   // ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
 });
@@ -155,17 +155,37 @@ Template.variantWidget.helpers({
   }
 });
 
+Template.bundleVariantWidget.onCreated(function () {
+  const bundleVariants = Products.findOne({
+    ancestors: {
+      $size: 1
+    }
+  });
+  const defaultSelectedVariants = [];
+  this.autorun(function () {
+    if (bundleVariants) {
+      _.each(bundleVariants.bundleProducts, function (bundleOptions) {
+        defaultSelectedVariants.push(bundleOptions.variantIds[0].variantId);
+      });
+      Session.set("selectedBundleOptions", defaultSelectedVariants);
+    }
+  });
+});
+
 Template.bundleVariantWidget.onRendered(function () {
   if (window.innerWidth > 767) {
     stickyWidget();
   }
-  const product = ReactionProduct.selectedProduct();
-  const variant = ReactionProduct.selectedVariant();
+  // const product = ReactionProduct.selectedProduct();
+  // const variant = ReactionProduct.selectedVariant();
   // const props = ReactionAnalytics.getProductTrackingProps(product, variant);
   // ReactionAnalytics.trackEventWhenReady("Viewed Product", props);
 });
 
 Template.bundleVariantWidget.helpers({
+  availableToBook() {
+    return Session.get("goProductAvailable");
+  },
   bundleProduct: function () {
     return this.functionalType === "bundle";
   },
@@ -187,86 +207,29 @@ Template.bundleVariantWidget.helpers({
     }
     return "";
   },
-  reservation: () => {
+  bundlePriceBucket() {
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    const resLength = cart.rentalDays;
     const current = ReactionProduct.selectedVariant();
-    const reservationLength = Session.get("reservationLength");
-    const cart = Cart.findOne({userId: Meteor.userId()});
-
-    if (typeof current === "object" && reservationLength) {
-      const childVariants = ReactionProduct.getVariants(current._id);
-      if (childVariants.length === 0 && current.functionalType === "bundleVariant") {
-        let selectedReservation = _.find(current.rentalPriceBuckets, function (priceBucket) {
-          return priceBucket.duration === reservationLength + 1;
-        });
-        if (selectedReservation) {
-          Session.set("compatibleReservationAvailable", {available: true, reason: "Available"});
-          return selectedReservation;
-        }
-
-        // Setup default reservation length from current product default price bucket.
-        if (current.rentalPriceBuckets && current.rentalPriceBuckets[0]) {
-          defaultReservationLength = current.rentalPriceBuckets[0].duration - 1;
-        }
-
-        // Determine if product can be added to current cart/reservation.
-        if (cart && cart.startTime && cart.endTime) {
-          if (cart.items && cart.items.length > 0) {
-            Session.set("compatibleReservationAvailable", {
-              available: false,
-              reason: `<strong>Oh no!</strong><br />
-                      It appears that the product you are browsing is not available for your selected rental dates.
-                      <br /><br />Please <a href="/catalog">try another product</a>.`
-            });
-            return {};
-          }
-          // reservation length is different than selected dates
-          Session.set("reservationLength", defaultReservationLength);
-          Meteor.call("rentalProducts/setRentalPeriod", cart._id, cart.startTime, moment(cart.startTime).add(defaultReservationLength, "days").toDate());
-          Session.set("compatibleReservationAvailable", {available: true, reason: "Available"});
-          return current.rentalPriceBuckets[0];
-        } else if (cart && !cart.startTime && !cart.endTime) {
-          if (current.rentalPriceBuckets && current.rentalPriceBuckets[0]) {
-            Session.set("reservationLength", current.rentalPriceBuckets[0].duration - 1);
-            Session.set("compatibleReservationAvailable", {available: true, reason: "Available"});
-            return current.rentalPriceBuckets[0];
-          }
-        }
-        if (current.rentalPriceBuckets) {
-          return current.rentalPriceBuckets[0];
-        }
-      }
+    if (!current || !current.rentalPriceBuckets) {
+      throw new Meteor.Error("Current product error");
     }
-    return {};
-  },
-  availableToBook: function () {
-    const cart = Cart.findOne({userId: Meteor.userId()});
-    const compatibleReservationAvailable = Session.get("compatibleReservationAvailable");
-    if (compatibleReservationAvailable) {
-      return compatibleReservationAvailable.available || !cart.items || cart.items && cart.items.length === 0;
+    const priceBucket = current.rentalPriceBuckets.find(bucket => bucket.duration === resLength);
+    if (!priceBucket) {
+      throw new Meteor.Error("Price not found!");
     }
-    return true;
-  },
-  unavailableReason: function () {
-    compatibleReservationAvailable = Session.get("compatibleReservationAvailable");
-    if (compatibleReservationAvailable) {
-      return compatibleReservationAvailable.reason;
-    }
-    return "";
+    return priceBucket;
   }
 });
 
-// Template.bundleVariantOptions.onCreated(function () {
-//   Tracker.autorun(() => {
-//     const selectedOptions = Session.get("selectedBundleOptions");
-//     if (selectedOptions) {
-//       this.subscribe("bundleReservationStatus", selectedOptions);
-//     }
-//   });
-//   this.subscribe("productTypeAndTitle");
-// });
+Template.bundleVariantOptions.onCreated(function () {
+  const instance = this;
+  instance.availability = new ReactiveVar();
+});
 
 Template.bundleVariantOptions.onRendered(function () {
   const cart = Cart.findOne({userId: Meteor.userId()});
+  const current = ReactionProduct.selectedVariant();
   let start;
   let end;
   if (cart.startTime) {
@@ -297,22 +260,63 @@ Template.bundleVariantOptions.onRendered(function () {
     selectedOptions.forEach(function (variantId) {
       const subExists = InventoryVariants.findOne({productId: variantId});
       if (!subExists) {
-        // console.log(`subscribing to: ${variantId}`);
         instance.subscribe("variantReservationStatus", {start: start, end: end}, variantId);
       }
     });
   }
-  // this.subscribe("bundleReservationStatus", selectedOptions);
 
-  // XXX: Removed subscription to all products type and title as we now use this.label
+  // Extract arrays of the componentIds
+  variantIdsByComponent = this.data.bundleProducts.map(p => p.variantIds.map(v => v.variantId));
+
   // Builds a flat array of all variantIds associated with this bundle
-  // const componentVariantIds = this.data.bundleProducts.map(p => p.variantIds.map(v => v.variantId)).reduce((a, b) => a.concat(b), []);
-  // this.subscribe("productTypeAndTitle", componentVariantIds);
+  const componentVariantIds = variantIdsByComponent.reduce((ids, id) => ids.concat(id), []);
 
-  // Tracker.autorun(function () {
-  //   console.log("selectedOptions", selectedOptions);
-  //   console.log("inventoryVariants", _.countBy(_.map(InventoryVariants.find().fetch(), 'productId')));
-  // });
+  // TODO: Reservation Request should take shipping time into account.
+  let reservationRequest = {startTime: cart.startTime, endTime: cart.endTime};
+
+  if (cart.shippingTime && cart.restockTime) {
+    reservationRequest = {startTime: cart.shippingTime, endTime: cart.restockTime};
+  }
+
+  // Build object to hold variantIds + quantities that have already been added to cart. This allows us to take into account the number of items that are in the cart when showing availability.
+  const cartItemReservations = cart.items
+    .map(i => i.variants.selectedBundleOptions
+    .map(b => b.variantId))
+    .reduce((ids, id) => ids.concat(id), [])
+    .reduce(function (ids, id) {
+      if (ids[id]) {
+        ids[id]++;
+      } else {
+        ids[id] = 1;
+      }
+      return ids;
+    }, {});
+
+  this.autorun(function () {
+    Session.set("goCartItemReservations", cartItemReservations);
+    Meteor.call("rentalProducts/bulkCheckInventoryAvailability", componentVariantIds, reservationRequest, function (error, result) {
+      if (error) {
+        Logger.warn("Error during rentalProducts/bulkCheckInventoryAvailability", error);
+      } else {
+        const selectedVariants = [];
+        Session.set("goProductAvailable", true);
+        instance.availability.set(result);
+        variantIdsByComponent.forEach(function (component) {
+          const defaultVariant = component.find(function (vId) {
+            const numberInCart = cartItemReservations[vId] || 0;
+            return (result[vId] - numberInCart) > 0;
+          });
+          if (defaultVariant) {
+            selectedVariants.push(defaultVariant);
+          } else {
+            // bundle is not available because at least one component is sold out.
+            Session.set("goProductAvailable", false);
+          }
+        });
+        Session.set("selectedBundleOptions", selectedVariants);
+      }
+    });
+  });
 });
 
 Template.bundleVariantOptions.helpers({
@@ -323,19 +327,13 @@ Template.bundleVariantOptions.helpers({
     if (this.label) {
       return this.label;
     }
-    // XXX: Removed in favor of always using this.label
-    // Perhaps we can eliminate that publication now as well?
-    // let product = Products.findOne(this.productId);
-    // if (product) {
-    //   return product.productType || product.title;
-    // }
     return "Option";
   },
   variantDisplay: function () {
     if (this.label) {
       return this.label;
     }
-    let variantProduct = Products.findOne(this.variantId);
+    const variantProduct = Products.findOne(this.variantId);
     if (variantProduct) {
       return variantProduct.size + "-" + variantProductvariant.color;
     }
@@ -343,6 +341,30 @@ Template.bundleVariantOptions.helpers({
   },
   hasOptions: function () {
     return this.variantIds.length > 1;
+  },
+  availabilityReady() {
+    const instance = Template.instance();
+    return instance.availability.get();
+  },
+  checkInventoryAvailability(variantId) {
+    const instance = Template.instance();
+    const cartItemReservations = Session.get("goCartItemReservations");
+    const quantityInCart = cartItemReservations[variantId] || 0;
+    const availability = instance.availability.get();
+    return (availability[variantId] - quantityInCart) === 0 ? "disabled" : "";
+  },
+  inventoryAvailableCount(variantId) {
+    const instance = Template.instance();
+    const cartItemReservations = Session.get("goCartItemReservations");
+    const quantityInCart = cartItemReservations[variantId] || 0;
+    const availability = instance.availability.get();
+    if (availability[variantId] - quantityInCart === 0) {
+      return "Fully Booked!";
+    }
+    if (availability[variantId] - quantityInCart < 5) {
+      return ` (${availability[variantId] - quantityInCart} left!)`;
+    }
+    return "";
   }
 });
 

@@ -1,0 +1,35 @@
+<template name="goReservationDatepicker">
+    <div class="input-group">
+      <span>
+        How many ski days?
+      </span><br>
+      <label class="sr-only" for="lengthSelect">Reservation Length</label>
+      <select class='form-control length-select' id="lengthSelect" name="lengthSelect">
+        <option class="length-select-option" value="2" {{selectedResLength 2}}>2 Days</option>
+        <option class="length-select-option" value="3" {{selectedResLength 3}}>3 Days</option>
+        <option class="length-select-option" value="4" {{selectedResLength 4}}>4 Days</option>
+        <option class="length-select-option" value="5" {{selectedResLength 5}}>5 Days</option>
+        <option class="length-select-option" value="6" {{selectedResLength 6}}>6 Days</option>
+        <option class="length-select-option" value="7" {{selectedResLength 7}}>7 Days</option>
+        <option class="length-select-option" value="8" {{selectedResLength 8}}>8 Days</option>
+        <option class="length-select-option" value="9" {{selectedResLength 9}}>9 Days</option>
+        <option class="length-select-option" value="10" {{selectedResLength 10}}>10 Days</option>
+        <option class="length-select-option" value="11" {{selectedResLength 11}}>11 Days</option>
+        <option class="length-select-option" value="12" {{selectedResLength 12}}>12 Days</option>
+      </select>
+      <div>{{> inlineAlerts placement="reservationLengthSelect"}}</div>
+    </div>
+
+    <div class="input-group">
+      <div id="datepicker" class="date">
+        <span>
+          When do you need gear? <a class="calendar-help-link"><i class="fa fa-question-circle"></i></a>
+        </span>
+        <div id="datepicker-container">
+          <input type="text" class="form-control start" style="height: 0; margin: 0; padding: 0; border: 0;" id="rental-start" name="start" placeholder="Select Arrival Date" value={{startDate}} />
+          <input type="text" class="form-control display-date" id="display-date" placeholder="Select First Ski Day" value={{reservationHuman}} />
+        </div>
+      </div>
+      <div>{{> inlineAlerts placement="reservationDatepicker"}}</div>
+    </div>
+</template>

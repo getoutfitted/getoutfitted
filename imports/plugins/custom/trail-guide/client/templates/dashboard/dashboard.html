@@ -20,6 +20,13 @@
                   <input type="number" id='limitFilter' min="1" class="form-control limitFilter" value={{currentLimit}} name="limit">
                 </div>
             </form>
+            <form class='form-inline' id="findByOrderNumber">
+              <div class="form-group">
+                <label for="findOrderNumber">Number:</label>
+                <input type="number" id='findOrderNumber' min="1" class="form-control findOrderNumber" value={{currentOrderNumber}} name="findOrderNumber">
+              </div>
+              <button type="submit" class="btn btn-primary">Find</button>
+            </form>
           </div>
           <div class='col-xs-9'>
             <div class='row'>

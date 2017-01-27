@@ -12,14 +12,6 @@
               <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
             {{/if}}
           </span>
-          {{#unless hasPermission "createProduct"}}
-            {{#if rentalProduct}}
-              <div class="row reservation-calendar-container">
-                {{> reservationDatepicker}}
-                {{> inlineAlerts placement="datepicker"}}
-              </div>
-            {{/if}}
-          {{/unless}}
           {{!-- Variants & Options --}}
           <div class="row options-add-to-cart">
             {{#if hasPermission "createProduct"}}
@@ -28,9 +20,6 @@
               </div>
             {{else}}
               {{#if rentalProduct}}
-                <div class="col-xs-12">
-                  {{>rentalLengthOptions}}
-                </div>
                 <div class="col-xs-12">
                   {{> variantList}}
                 </div>
@@ -72,79 +61,69 @@
 <template name='bundleVariantWidget'>
   <div id="variantWidget" class="variant-widget col-xs-12 col-sm-5 col-md-4 col-lg-4">
     {{> goProductWidgetImage}}
-    {{#if availableToBook reservation}}
-      <div class='row'>
-        <div class='col-xs-12'>
-          <span class="rental-price">
-            {{#if bundleProduct}}
-              <span id="price" itemprop="price">{{formatPrice reservation.price}}</span>
-              <span id="reservationPeriod">/ {{reservation.duration}} {{displayTimeUnit reservation.timeUnit}} rental</span>
-            {{else}}
-              <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
-            {{/if}}
-          </span>
-        </div>
+    <div class='row'>
+      <div class='col-xs-12'>
+        <span class="rental-price">
+          {{#if bundleProduct}}
+            <span id="price" itemprop="price">{{formatPrice bundlePriceBucket.price}}</span>
+            <span id="reservationPeriod">/ {{bundlePriceBucket.duration}} {{displayTimeUnit bundlePriceBucket.timeUnit}} rental</span>
+          {{else}}
+            <span id="price" itemprop="price">{{formatPrice actualPrice}}</span>
+          {{/if}}
+        </span>
       </div>
-      <div class="row">
-        {{#unless hasPermission "createProduct"}}
-          <div class="reservation-calendar-container">
-              {{> bundleReservationDatepicker}}
-              {{> inlineAlerts placement="datepicker"}}
-              {{> rentalLengthOptions}}
-          </div>
-        {{/unless}}
-        <div class="col-xs-12">
-          {{#with bundleVariant}}
-            {{> bundleVariantOptions}}
-            {{> bundleVariantDefaults}}
-          {{/with}}
-        </div>
-        <div class="row form-horizontal">
-            <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
-            <div class="form-group hide">
-              <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
-              <div class="col-xs-2">
-                <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
-              </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        {{#with bundleVariant}}
+          {{> bundleVariantOptions}}
+          {{> bundleVariantDefaults}}
+        {{/with}}
+      </div>
+      <div class="row form-horizontal">
+          <span id="product-alerts">{{> inlineAlerts placement="productDetail"}}</span>
+          <div class="form-group hide">
+            <label for="addToCartQty" class="control-label col-xs-2">Qty</label>
+            <div class="col-xs-2">
+              <input type="number" class="form-control" name="addToCartQty" id="add-to-cart-quantity" value="1" min="1"/>
             </div>
           </div>
-        <div class='row'>
-          <div class="col-xs-12">
-              <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="add-to-cart" data-i18n="productDetail.addToCart">Book</button>
-          </div>
         </div>
-      </div>
-    {{else}}
       <div class='row'>
         <div class="col-xs-12">
-          <div class="alert alert-warning" role="alert">
-            <i class="fa fa-warning"></i><small> {{{unavailableReason}}}</small>
-          </div>
-          <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="unavailable-add-to-cart" disabled>Unavailable</button>
+          {{#if availableToBook}}
+            <button class="add-to-cart-text btn btn-success btn-lg btn-block" id="add-to-cart" data-i18n="productDetail.addToCart">Book</button>
+          {{else}}
+            <button class="add-to-cart-text btn btn-lg btn-block" id="add-to-cart" disabled>Sold Out!</button>
+          {{/if}}
         </div>
       </div>
-    {{/if}}
+    </div>
   </div>
 </template>
 
 <template name="bundleVariantOptions">
-  {{#each bundleOptions}}
-    {{#if hasOptions}}
-      <form class="form-horizontal bundle-options">
-        <div class="form-group">
-          <!-- <label class="control-label col-xs-4 text-right" for="{{productId}}">{{displayLabel}}</label> -->
-          <div class="input-group">
-            <span class="input-group-addon"><label class="control-label" for="{{productId}}">{{displayLabel}}</label></span>
-            <select data-index="{{@index}}" id="{{productId}}" class="form-control selectedProduct">
-              {{#each variantIds}}
-                <option value='{{variantId}}'>{{variantDisplay}}</option>
-              {{/each}}
-            </select>
+  {{#if availabilityReady}}
+    {{#each bundleOptions}}
+      {{#if hasOptions}}
+        <form class="form-horizontal bundle-options">
+          <div class="form-group">
+            <!-- <label class="control-label col-xs-4 text-right" for="{{productId}}">{{displayLabel}}</label> -->
+            <div class="input-group">
+              <span class="input-group-addon"><label class="control-label" for="{{productId}}">{{displayLabel}}</label></span>
+              <select data-index="{{@index}}" id="{{productId}}" class="form-control selectedProduct">
+                {{#each variantIds}}
+                  <option value='{{variantId}}' {{checkInventoryAvailability variantId}}>{{variantDisplay}} {{inventoryAvailableCount variantId}}</option>
+                {{/each}}
+              </select>
+            </div>
           </div>
-        </div>
-      </form>
-    {{/if}}
-  {{/each}}
+        </form>
+      {{/if}}
+    {{/each}}
+  {{else}}
+    Checking Availability <i class="fa fa-spin fa-circle-o-notch"></i>
+  {{/if}}
 </template>
 
 <template name="bundleVariantDefaults">
