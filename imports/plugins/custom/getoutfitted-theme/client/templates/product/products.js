@@ -1,6 +1,7 @@
+import { Meteor } from "meteor/meteor";
 import { Reaction } from "/client/api";
 import { ReactionProduct } from "/lib/api";
-import { Products, Tags } from "/lib/collections";
+import { Products, Tags, Cart } from "/lib/collections";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { ITEMS_INCREMENT } from "/client/config/defaults";
@@ -39,6 +40,7 @@ function loadMoreProducts() {
 
 
 Template.products.onCreated(function () {
+  const cart = Cart.findOne({userId: Meteor.userId()});
   this.products = ReactiveVar();
   this.state = new ReactiveDict();
   this.state.setDefault({
@@ -53,6 +55,7 @@ Template.products.onCreated(function () {
     const tag = Tags.findOne({ slug: slug }) || Tags.findOne(slug);
     const scrollLimit = Session.get("productScrollLimit");
     let tags = {}; // this could be shop default implementation needed
+    const goPlus = {goPlus: false};
 
     if (tag) {
       tags = {tags: [tag._id]};
@@ -67,9 +70,13 @@ Template.products.onCreated(function () {
       this.state.set("initialLoad", true);
     }
 
+    if (cart.resort && cart.resort !== "other") {
+      goPlus.goPlus = true;
+    }
+
     this.state.set("slug", slug);
 
-    const queryParams = Object.assign({}, tags, Reaction.Router.current().queryParams);
+    const queryParams = Object.assign({}, goPlus, tags, Reaction.Router.current().queryParams);
     this.subscribe("Products", scrollLimit, queryParams);
 
     // we are caching `currentTag` or if we are not inside tag route, we will
