@@ -58,6 +58,10 @@ const filters = new SimpleSchema({
   "weight.max": {
     type: String,
     optional: true
+  },
+  "goPlus": {
+    type: Boolean,
+    optional: true
   }
 });
 
@@ -221,6 +225,11 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
         });
       }
     }
+
+    if (!productFilters["goPlus"]) {
+      _.extend(selector, { title: {$not: /With Skis/i}});
+    }
+
 
     // Authorized content curators fo the shop get special publication of the product
     // all all relevant revisions all is one package
