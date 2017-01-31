@@ -67,6 +67,10 @@ Template.productGridItems.helpers({
       sort: { "metadata.priority": 1, "uploadedAt": 1 }
     });
 
+    if (catalogMedia) {
+      return catalogMedia;
+    }
+
     const media = Media.findOne({
       "metadata.productId": this._id,
       "metadata.toGrid": 1
@@ -74,11 +78,11 @@ Template.productGridItems.helpers({
       sort: { "metadata.priority": 1, "uploadedAt": 1 }
     });
 
-    if (catalogMedia instanceof FS.File) {
-      return catalogMedia;
+    if (media) {
+      return media;
     }
 
-    return media instanceof FS.File ? media : false;
+    return false;
   },
   additionalMedia: function () {
     const mediaArray = Media.find({
