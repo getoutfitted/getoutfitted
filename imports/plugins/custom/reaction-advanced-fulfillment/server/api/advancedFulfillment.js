@@ -10,7 +10,7 @@ import AdvancedFulfillment from "../../lib/api";
 AdvancedFulfillment.itemsToAFItems = function (items) {
   check(items, [Object]);
   return _.map(items, function (item) {
-    let product = Products.findOne(item.productId);
+    const product = Products.findOne(item.productId);
     let itemDescription = item.variants.title;
     if (product && product.gender && product.vendor) {
       itemDescription = product.gender + " - " + product.vendor + " - " + product.title;
@@ -38,7 +38,7 @@ AdvancedFulfillment.itemsToAFItems = function (items) {
 };
 
 AdvancedFulfillment.findAndUpdateNextOrderNumber = function () {
-  let counter = AFCounter.findOne({
+  const counter = AFCounter.findOne({
     name: "advancedFulfillment",
     shopId: Reaction.getShopId()
   });
@@ -53,8 +53,8 @@ AdvancedFulfillment.findAndUpdateNextOrderNumber = function () {
 };
 
 AdvancedFulfillment.findHighestOrderNumber = function () {
-  let order = Orders.findOne({}, {sort: {orderNumber: -1}});
-  let nextOrder = order.orderNumber + 1;
+  const order = Orders.findOne({}, {sort: {orderNumber: -1}});
+  const nextOrder = order.orderNumber + 1;
   AFCounter.update({
     name: "advancedFulfillment",
     shopId: Reaction.getShopId()
