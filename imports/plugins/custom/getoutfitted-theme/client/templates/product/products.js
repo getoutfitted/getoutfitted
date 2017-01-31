@@ -70,7 +70,7 @@ Template.products.onCreated(function () {
       this.state.set("initialLoad", true);
     }
 
-    if (cart.resort && cart.resort !== "other") {
+    if (cart && cart.resort && cart.resort !== "other") {
       goPlus.goPlus = true;
     }
 
