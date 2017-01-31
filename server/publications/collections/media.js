@@ -79,7 +79,7 @@ Meteor.publish("FeaturedMediaByTag", function (slug) {
   const productIds = Products.find(productSelector).fetch().map(prod => prod._id);
   const selector = {
     "metadata.productId": {$in: productIds},
-    "metadata.purpose": "featured"
+    "metadata.purpose": {$in: ["featured", "catalog"]}
   };
   return Media.find(selector, {
     fields: {
