@@ -10,20 +10,22 @@
             <div class="col-xs-6 col-md-4">
               <ul>
                 <li><strong>Rent Ski Clothing</strong></li>
-                <li><a href="/collections/outfits">All Outfits</a></li>
-                <li><a href="/collections/womens">Womens</a></li>
-                <li><a href="/collections/mens">Mens</a></li>
-                <li><a href="/collections/mens">Kids</a></li>
+                {{#if reservationDatesSelected }}
+                  <li><a href="/collections/outfits">All Outfits</a></li>
+                  <li><a href="/collections/womens">Womens</a></li>
+                  <li><a href="/collections/mens">Mens</a></li>
+                  <li><a href="/collections/mens">Kids</a></li>
+                {{/if}}
               </ul>
             </div>
             <div class="col-xs-6 col-md-3">
               <ul>
                 <li><strong>Support</strong></li>
                 <li><a href="https://getoutfitted.zendesk.com/hc">Help Center</a></li>
-                <li><a href="/about">About GetOutfitted</a></li>
+                <!-- <li><a href="/about">About GetOutfitted</a></li> -->
                 <li class="hidden-xs hidden-sm"><a href="https://getoutfitted.getambassador.com/">Affiliates</a></li>
-                <li class="hidden-xs hidden-sm"><a href="/press">Press Feed</a></li>
-                <li><a href="/groups">Group Sales</a></li>
+                <!-- <li class="hidden-xs hidden-sm"><a href="/press">Press Feed</a></li> -->
+                <!-- <li><a href="/groups">Group Sales</a></li> -->
               </ul>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-5 text-center-sm text-center-xs small-only-gap">
@@ -45,8 +47,8 @@
             <img class="opp-badge" src="/custom/images/opp-87.png">
           </div>
           <div class="col-sm-12 col-md-4 lh-38">
-            <a href="/privacy">Privacy</a>
-            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="/about">About</a>
+            <!-- <a href="/privacy">Privacy</a>
+            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="/about">About</a> -->
           </div>
         </div>
       </section>

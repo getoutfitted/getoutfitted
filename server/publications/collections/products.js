@@ -1,4 +1,4 @@
-import { Products, Revisions } from "/lib/collections";
+import { Products, Revisions, Cart } from "/lib/collections";
 import { Reaction } from "/server/api";
 import { RevisionApi } from "/imports/plugins/core/revisions/lib/api/revisions";
 
@@ -77,6 +77,7 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
   check(sort, Match.OneOf(undefined, Object));
 
   const shop = Reaction.getCurrentShop();
+  const cart = Cart.findOne({userId: this.userId});
 
   if (typeof shop !== "object") {
     return this.ready();
@@ -226,10 +227,11 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
       }
     }
 
-    if (!productFilters["goPlus"]) {
-      _.extend(selector, { title: {$not: /With Skis/i}});
+    if (!cart.resort || cart.resort === "other") {
+      if (!productFilters.goPlus && (cart.resort && cart)) {
+        _.extend(selector, { title: {$not: /With Skis/i}});
+      }
     }
-
 
     // Authorized content curators fo the shop get special publication of the product
     // all all relevant revisions all is one package
