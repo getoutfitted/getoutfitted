@@ -214,7 +214,7 @@
 <template name="backpackAddress">
   <p class="address">
     <span class="name">{{fullName}}</span><br>
-    {{#if business}}{{business}}<br>{{/if}}
+    {{#if company}}<span class="company">{{company}}</span><br>{{/if}}
     {{address1}}<br>
     {{#if address2}}{{address2}}<br>{{/if}}
     {{city}} {{region}}, {{postal}}<br>

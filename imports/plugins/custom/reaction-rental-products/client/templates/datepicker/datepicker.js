@@ -42,7 +42,10 @@ Template.goReservationDatepicker.onRendered(function () {
   }
   if (!instance.reservation.get() || !instance.reservation.get().startTime) {
     if (cart.startTime && cart.endTime) {
-      instance.reservation.set({startTime: cart.startTime, endTime: cart.endTime});
+      instance.reservation.set({
+        startTime: GetOutfitted.adjustDenverToLocalTime(cart.startTime),
+        endTime: GetOutfitted.adjustDenverToLocalTime(cart.endTime)
+      });
     }
   }
   // Session.setDefault("reservationLength", 2); // inclusive of return day, exclusive of arrivalDay

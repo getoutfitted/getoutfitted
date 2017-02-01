@@ -88,12 +88,15 @@ Template.goNavigationBar.onRendered(function () {
   }
   if (!instance.reservation.get() || !instance.reservation.get().startTime) {
     if (cart.startTime && cart.endTime) {
-      instance.reservation.set({startTime: cart.startTime, endTime: cart.endTime});
+      instance.reservation.set({
+        startTime: GetOutfitted.adjustDenverToLocalTime(cart.startTime),
+        endTime: GetOutfitted.adjustDenverToLocalTime(cart.endTime)
+      });
     }
   }
   if (!instance.startTime.get()) {
     if (cart.startTime) {
-      instance.startTime.set(cart.startTime);
+      instance.startTime.set(GetOutfitted.adjustDenverToLocalTime(cart.startTime));
     }
   }
 
@@ -214,13 +217,13 @@ Template.goNavigationBar.helpers({
   },
   reservationStart() {
     const cart = Cart.findOne({userId: Meteor.userId()});
-    return moment(cart.startTime).format("MM/DD/YYYY");
+    return moment(GetOutfitted.adjustDenverToLocalTime(cart.startTime)).format("MM/DD/YYYY");
   },
   reservationDates() {
     const cart = Cart.findOne({userId: Meteor.userId()});
     if (cart.startTime && cart.endTime) {
-      const start = moment(cart.startTime).format("ddd M/DD");
-      const end = moment(cart.endTime).format("ddd M/DD");
+      const start = moment(GetOutfitted.adjustDenverToLocalTime(cart.startTime)).format("ddd M/DD");
+      const end = moment(GetOutfitted.adjustDenverToLocalTime(cart.endTime)).format("ddd M/DD");
       return `${start} - ${end}`;
     }
     return "";

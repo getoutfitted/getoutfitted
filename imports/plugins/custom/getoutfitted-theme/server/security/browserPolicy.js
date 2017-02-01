@@ -14,4 +14,7 @@ BrowserPolicy.content.allowFrameOrigin("www.youtube.com");
 
 // allow frames to connect to host (Safari fails without this)
 BrowserPolicy.content.allowFrameOrigin(`${hostname}`);
+
+// Analytics
 BrowserPolicy.content.allowOriginForAll("www.fullstory.com");
+BrowserPolicy.content.allowOriginForAll("r.fullstory.com");
