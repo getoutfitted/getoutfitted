@@ -101,10 +101,19 @@ Template.dashboardVariantAvailability.helpers({
     return "hide";
   },
   isWeekendDay: function (day) {
+    if (+day.start() === +moment().startOf("day")) {
+      return "inventory-day-today";
+    }
     if (day.start().isoWeekday() >= 6) {
       return "inventory-day-weekend";
     }
     return "inventory-day-weekday";
+  },
+  isAvailableProduct: function () {
+    if (this.active) {
+      return "";
+    }
+    return "inactive";
   }
 });
 

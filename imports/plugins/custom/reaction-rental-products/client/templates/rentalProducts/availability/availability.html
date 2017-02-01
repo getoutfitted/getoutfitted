@@ -37,8 +37,10 @@
 
 <template name="dashboardVariantAvailability">
   {{! context is inventoryVariant }}
-  <tr>
-    <th>{{barcode}}<br><small style="font-weight: 400">{{_id}}</small></th>
+  <tr class="{{isAvailableProduct}}">
+    <th nowrap class="short-header">
+      <span class="barcode">{{barcode}}</span>
+      <small style="font-weight: 400">{{_id}}</small></th>
     {{#each day in days}}
       <td class="{{isWeekendDay day}}">
         <i class="{{reservationStatus day unavailableDetails}}"></i>
