@@ -58,7 +58,8 @@ Meteor.methods({
             $lte: reservationRequest.endTime
           }
         }
-      }
+      },
+      active: true
     }, {
       fields: {
         productId: 1
@@ -92,7 +93,8 @@ Meteor.methods({
               $lte: reservationRequest.endTime
             }
           }
-        }
+        },
+        active: true
       }, {
         fields: {
           productId: 1
@@ -131,7 +133,8 @@ Meteor.methods({
               $lte: reservationRequest.endTime
             }
           }
-        }
+        },
+        active: true
       }).count();
 
       obj[variantId] = availableCount;
