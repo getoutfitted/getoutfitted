@@ -17,10 +17,38 @@
   padding: 3px 0;
 }
 
+.availability-table .short-header {
+  max-width: 150px;
+  &:hover .barcode {
+    display: none;
+  }
+  .barcode {
+    float: right;
+  }
+  small {
+    display: none;
+  }
+  &:hover small {
+    display: inline;
+  }
+}
+
 .inventory-day-weekend {
   background: rgba(180, 180, 180, 0.25);
 }
 
 .inventory-day-weekday i, .inventory-day-weekend i {
   font-size: 16px;
+}
+
+.inventory-day-today {
+  background: rgba(0, 200, 45, 0.4)
+}
+
+.inactive th,
+.inactive td,
+.inactive .inventory-day-today,
+.inactive .inventory-day-weekend,
+.inactive .inventory-day-weekday {
+  background: rgba(180, 0, 0, 0.6);
 }
