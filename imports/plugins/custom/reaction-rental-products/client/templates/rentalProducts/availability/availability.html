@@ -4,9 +4,9 @@
   <div class='container'>
     <h1 class="availability-header"><a href="{{pathFor 'rentalProducts'}}"><i class="fa fa-chevron-left"></i> Inventory List</a> | {{parent.vendor}} {{parent.gender}} {{parent.title}} {{product.color}} {{product.size}}</h1>
   </div>
-  <span class="pull-left viewPrevCalendar"><i class="fa fa-3x fa-chevron-left"></i> Prev Month</span>
-  <span>{{currentMonth}}</span>
-  <span class="pull-right viewNextCalendar"><i class="fa fa-3x fa-chevron-right"></i> Next Month</span>
+  <div class="pull-left viewPrevCalendar"><i class="fa fa-3x fa-chevron-left"></i> Prev Month</div>
+  <div>{{currentMonth}}</div>
+  <div class="pull-right viewNextCalendar"><i class="fa fa-3x fa-chevron-right"></i> Next Month</div>
   <div class='container'>
     <div class="row">
       <div class="col-md-12">
@@ -15,7 +15,10 @@
     </div>
     <table class="table table-hover table-striped availability-table">
       <thead>
-        <th>Barcode</th>
+        <th>
+          Barcode<br>
+          <input type="checkbox" id="showInactive" {{showInactiveInventoryVariants}}> Show inactive?
+        </th>
         {{#each days}}
           {{> dashboardCalendarDay}}
         {{/each}}
@@ -37,8 +40,10 @@
 
 <template name="dashboardVariantAvailability">
   {{! context is inventoryVariant }}
-  <tr>
-    <th>{{barcode}}<br><small style="font-weight: 400">{{_id}}</small></th>
+  <tr class="{{isAvailableProduct}} {{showInactiveInventoryVariants}}">
+    <th nowrap class="short-header">
+      <span class="barcode">{{barcode}}</span>
+      <small style="font-weight: 400">{{_id}}</small></th>
     {{#each day in days}}
       <td class="{{isWeekendDay day}}">
         <i class="{{reservationStatus day unavailableDetails}}"></i>

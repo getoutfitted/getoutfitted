@@ -19,6 +19,7 @@ function adjustLocalToDenverTime(time) {
 Template.dashboardRentalProductAvailability.onRendered(function () {
   const instance = this;
   const productId = Reaction.Router.getParam("_id");
+  Session.setDefault("showInactiveInventoryVariants", false);
 
   instance.autorun(() => {
     instance.subscribe("inventoryVariantsById", productId);
@@ -59,6 +60,16 @@ Template.dashboardRentalProductAvailability.helpers({
     let viewStart = Session.get("dashboardViewStart");
     let viewEnd = Session.get("dashboardViewEnd");
     return moment(viewStart).twix(moment(viewEnd)).split(1, "day");
+  },
+  showInactiveInventoryVariants() {
+    return Session.get("showInactiveInventoryVariants") ? "checked" : "";
+  }
+});
+
+Template.dashboardRentalProductAvailability.events({
+  "click #showInactive": function () {
+    const showing = Session.get("showInactiveInventoryVariants");
+    Session.set("showInactiveInventoryVariants", !showing);
   }
 });
 
@@ -101,10 +112,25 @@ Template.dashboardVariantAvailability.helpers({
     return "hide";
   },
   isWeekendDay: function (day) {
+    if (+day.start() === +moment().startOf("day")) {
+      return "inventory-day-today";
+    }
     if (day.start().isoWeekday() >= 6) {
       return "inventory-day-weekend";
     }
     return "inventory-day-weekday";
+  },
+  isAvailableProduct: function () {
+    if (this.active) {
+      return "";
+    }
+    return "inactive";
+  },
+  showInactiveInventoryVariants() {
+    if (this.active) {
+      return "";
+    }
+    return Session.get("showInactiveInventoryVariants") ? "" : "hidden";
   }
 });
 
