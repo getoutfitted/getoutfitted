@@ -1,3 +1,4 @@
+import $ from "jquery";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
 import { Cart } from "/lib/collections";
@@ -69,6 +70,7 @@ Template.goNavigationBar.onCreated(function () {
   const instance = this;
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
   instance.startTime = new ReactiveVar(null);
+  instance.mobileCalendar = new ReactiveVar(false);
 });
 
 Template.goNavigationBar.onRendered(function () {
@@ -255,5 +257,21 @@ Template.goNavigationBar.events({
     const endTime = moment(startTime).add(length - 1, "days").toDate();
 
     changeReservationDates({cart, startTime, endTime});
+  },
+  // Toggles to move the calendar from desktop menu to mobile menu and vice versa
+  "click #mobileCalendarToggle": function (event, template) {
+    const instance = Template.instance();
+    if (!instance.mobileCalendar.get()) {
+      template.$("#mobileCalendarContainer").prepend(template.$("#navReservationContainer"));
+      template.$("#mobileCalendarContainer .datepicker-days .table-condensed").css("margin", "0 auto");
+      instance.mobileCalendar.set(true);
+    }
+  },
+  "click #desktopCalendarToggle": function (event, template) {
+    const instance = Template.instance();
+    if (instance.mobileCalendar.get()) {
+      template.$("#desktopCalendarContainer").prepend(template.$("#navReservationContainer"));
+      instance.mobileCalendar.set(false);
+    }
   }
 });
