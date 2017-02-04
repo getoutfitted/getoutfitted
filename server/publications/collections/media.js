@@ -94,6 +94,9 @@ Meteor.publish("FeaturedMediaByTag", function (slug) {
 Meteor.publish("CartMedia", function (userId) {
   check(userId, String);
   const cart = Cart.findOne({userId: userId});
+  if (!cart || !cart.items) {
+    return this.ready();
+  }
 
   const productIds = cart.items.map(prod => prod.productId);
   const selector = {
@@ -114,6 +117,10 @@ Meteor.publish("CartMedia", function (userId) {
 Meteor.publish("OrderMedia", function (cartId) {
   check(cartId, String);
   const order = Orders.findOne({cartId: cartId});
+
+  if (!order || !order.items) {
+    return this.ready();
+  }
 
   const productIds = order.items.map(prod => prod.productId);
   const selector = {
