@@ -19,7 +19,9 @@ import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api"
 
 Template.goReservationDatepicker.onCreated(function () {
   const instance = this;
+  const cart = Cart.findOne({userId: Meteor.userId()});
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
+  instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
 });
 
 Template.goReservationDatepicker.onRendered(function () {
@@ -223,34 +225,39 @@ Template.goReservationDatepicker.helpers({
 });
 
 const calendarHelp = "<small><a class='calendar-help-link'><i class='fa fa-question-circle'></i> </a></small>";
-const rushCheckbox = `
-  <div class='rush-checkbox-container'>
-    <span class='rush-span'><input type='checkbox' name='indexRushCheckbox' id='indexRushCheckbox'> Rush Order</span>
-  </div>
-`;
 
 Template.goReservationDatepicker.events({
   "click .show-start": function () {
     $("#rental-start").datepicker("show");
   },
   "click #display-date": function () {
+    const instance = Template.instance();
+    const faCheckbox = instance.rush.get() ? "fa-check-square-o" : "fa-square-o";
+    const rushCheckbox = `
+      <div class='rush-checkbox-container'>
+        <span class='rush-span'><i class="fa ${faCheckbox}"></i> Rush Order</span>
+      </div>
+    `;
+
     $("#rental-start").datepicker("show");
+
     if ($(".datepicker-switch .calendar-help-link").length === 0) {
       $(".datepicker-switch").prepend(calendarHelp);
       $(".datepicker.datepicker-dropdown").prepend(rushCheckbox);
     } else {
       $(".rush-checkbox-container").show();
     }
+
     $(".datepicker-switch").on("click", ".calendar-help-link", function () {
       Modal.show("goCalendarHelp");
     });
-    $(".datepicker").on("click", ".rush-checkbox-container", function () {
-      if (!$(".rush-checkbox-container input").prop("checked")) {
-        $(".rush-span").prop("checked", true);
-      } else {
-        $(".rush-span").prop("checked", false);
-      }
+
+    $(".datepicker").on("click", ".rush-span", function () {
+      instance.rush.set(!instance.rush.get());
+      $(".rush-span i").removeClass("fa-check-square-o fa-square-o");
+      $(".rush-span i").addClass(instance.rush.get() ? "fa-check-square-o" : "fa-square-o");
     });
+
     $(".datepicker-switch").on("click", function (event) {
       event.stopPropagation();
     });
