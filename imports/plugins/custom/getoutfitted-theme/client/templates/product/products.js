@@ -66,10 +66,6 @@ Template.products.onCreated(function () {
       return;
     }
 
-    if (this.state.equals("slug", slug) === false && this.state.equals("initialLoad", false)) {
-      this.state.set("initialLoad", true);
-    }
-
     if (cart && cart.resort && cart.resort !== "other") {
       goPlus.goPlus = true;
     }
@@ -126,10 +122,6 @@ Template.products.helpers({
 
   loadMoreProducts() {
     return Template.instance().state.equals("canLoadMoreProducts", true);
-  },
-
-  initialLoad() {
-    return Template.instance().state.set("initialLoad", true);
   },
 
   ready() {
