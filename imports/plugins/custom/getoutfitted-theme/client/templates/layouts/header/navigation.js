@@ -222,14 +222,19 @@ Template.goNavigationBar.helpers({
   },
   reservationStart() {
     const cart = Cart.findOne({userId: Meteor.userId()});
-    return moment(GetOutfitted.adjustDenverToLocalTime(cart.startTime)).format("MM/DD/YYYY");
+    if (cart) {
+      return moment(GetOutfitted.adjustDenverToLocalTime(cart.startTime)).format("MM/DD/YYYY");
+    }
+    return "";
   },
   reservationDates() {
     const cart = Cart.findOne({userId: Meteor.userId()});
-    if (cart.startTime && cart.endTime) {
-      const start = moment(GetOutfitted.adjustDenverToLocalTime(cart.startTime)).format("ddd M/DD");
-      const end = moment(GetOutfitted.adjustDenverToLocalTime(cart.endTime)).format("ddd M/DD");
-      return `${start} - ${end}`;
+    if (cart) {
+      if (cart.startTime && cart.endTime) {
+        const start = moment(GetOutfitted.adjustDenverToLocalTime(cart.startTime)).format("ddd M/DD");
+        const end = moment(GetOutfitted.adjustDenverToLocalTime(cart.endTime)).format("ddd M/DD");
+        return `${start} - ${end}`;
+      }
     }
     return "";
   },
