@@ -148,6 +148,9 @@ export function ReactionLayout(options = {}) {
           const layoutToRender = Object.assign({}, newLayout.structure, options, unauthorized);
           BlazeLayout.render(layout, layoutToRender);
         }
+      } else {
+        // XXX: GETOUTFITTED MOD - This is where the app was hanging. Refresh the page if we get here.
+        window.location.reload();
       }
     }
   });
