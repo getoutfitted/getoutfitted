@@ -8,7 +8,7 @@ import "../cart";
 MethodHooks.after("cart/submitPayment", function (options) {
   // if cart/submit had an error we won't copy cart to Order
   // and we'll throw an error.
-  Logger.debug("MethodHooks after cart/submitPayment", options);
+  // Logger.debug("MethodHooks after cart/submitPayment", options);
   // Default return value is the return value of previous call in method chain
   // or an empty object if there's no result yet.
   const result = options.result || {};
@@ -23,7 +23,7 @@ MethodHooks.after("cart/submitPayment", function (options) {
     // create order
     if (cart) {
       if (!cart.billing) {
-        Logger.info("MethodHooks after cart/submitPayment. No billing address after payment! userId:", Meteor.userId(), "options:", options);
+        Logger.info(`MethodHooks after cart/submitPayment. No billing address after payment! userId: ${Meteor.userId()}, shopId: ${result.shopId}`);
       }
 
       if (cart.items && cart.billing && cart.billing[0].paymentMethod) {

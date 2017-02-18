@@ -6,6 +6,8 @@ import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { ITEMS_INCREMENT } from "/client/config/defaults";
 
+import { Subscriptions } from "/client/modules/core/subscriptions";
+
 /**
  * loadMoreProducts
  * @summary whenever #productScrollLimitLoader becomes visible, retrieve more results
@@ -55,19 +57,17 @@ Template.products.onCreated(function () {
     const tag = Tags.findOne({ slug: slug }) || Tags.findOne(slug);
     const scrollLimit = Session.get("productScrollLimit");
     let tags = {}; // this could be shop default implementation needed
+    let hashtags = {};
     const goPlus = {goPlus: false};
 
     if (tag) {
       tags = {tags: [tag._id]};
+      hashtags = {hashtags: tag._id};
     }
 
     // if we get an invalid slug, don't return all products
     if (!tag && slug) {
       return;
-    }
-
-    if (this.state.equals("slug", slug) === false && this.state.equals("initialLoad", false)) {
-      this.state.set("initialLoad", true);
     }
 
     if (cart && cart.resort && cart.resort !== "other") {
@@ -77,16 +77,16 @@ Template.products.onCreated(function () {
     this.state.set("slug", slug);
 
     const queryParams = Object.assign({}, goPlus, tags, Reaction.Router.current().queryParams);
-    this.subscribe("Products", scrollLimit, queryParams);
+    Subscriptions.Products = Subscriptions.Manager.subscribe("Products", scrollLimit, queryParams);
+
 
     // we are caching `currentTag` or if we are not inside tag route, we will
     // use shop name as `base` name for `positions` object
     const currentTag = ReactionProduct.getTag();
-    const products = Products.find({
-      ancestors: []
-      // keep this, as an example
-      // type: { $in: ["simple"] }
-    }, {
+    const localQueryParams = Object.assign({ancestors: []}, hashtags);
+    // keep this, as an example
+    // type: { $in: ["simple"] }
+    const products = Products.find(localQueryParams, {
       sort: {
         [`positions.${currentTag}.position`]: 1,
         [`positions.${currentTag}.createdAt`]: 1,
@@ -126,10 +126,6 @@ Template.products.helpers({
 
   loadMoreProducts() {
     return Template.instance().state.equals("canLoadMoreProducts", true);
-  },
-
-  initialLoad() {
-    return Template.instance().state.set("initialLoad", true);
   },
 
   ready() {
