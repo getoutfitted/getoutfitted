@@ -6,10 +6,6 @@ import $ from 'jquery';
 
 import './afNavbar.html';
 
-Template.afNavbar.onCreated(function () {
-  this.subscribe('searchOrders');
-});
-
 Template.afNavbar.onRendered(function () {
   $('.navbar-primary-tags').hide();
   $('.admin-controls-menu').hide();
@@ -28,24 +24,18 @@ Template.afNavbar.helpers({
 });
 
 Template.afNavbar.events({
-  'submit .subnav-search-form, submit .navbar-search-form': function (event) {
+  "submit .subnav-search-form, submit .navbar-search-form": function (event) {
     event.preventDefault();
-    let searchValue = event.target.orderNumber.value;
-    let order = Orders.findOne({
-      $or : [
-        { _id: searchValue},
-        { orderNumber: parseInt(searchValue, 10)}
-      ]
+    const orderNumber = event.target.orderNumber.value;
+    Meteor.call("advancedFulfillment/findOrderByOrderNumber", orderNumber, function (error, result) {
+      if (error) {
+        console.error(`
+          Error calling advancedFulfillment/findOrderByOrderNumber
+        `);
+      } else {
+        Reaction.Router.go('orderDetails', {_id: result});
+      }
     });
-    if (order) {
-      Reaction.Router.go('orderDetails', {_id: order._id});
-      event.target.orderNumber.value = '';
-    } else {
-      Alerts.removeSeen();
-      Alerts.add(searchValue + ' is not a valid order number or order id, please try your search again.', 'danger', {
-        autoHide: true
-      });
-    }
   },
   'click #afShipButton': function (event) {
     event.preventDefault();

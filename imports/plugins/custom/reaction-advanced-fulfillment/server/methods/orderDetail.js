@@ -18,7 +18,10 @@ Meteor.methods({
     const workflow = AdvancedFulfillment.workflow;
 
     if (status !== currentStatus) {
-      throw new Meteor.Error("500", `Error updating update order from ${currentStatus} to ${workflow[status]} - incongruent steps`);
+      throw new Meteor.Error("500", `
+        Error updating update order from ${currentStatus} to ${workflow[status]} - incongruent steps.
+        Order ID: ${orderId}, status: ${status}
+      `);
     }
 
     const historyEvent = {
