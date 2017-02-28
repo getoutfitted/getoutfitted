@@ -78,7 +78,7 @@ Template.goNavigationBar.onRendered(function () {
   const cart = Cart.findOne();
 
   if (!GetOutfitted.clientReservationDetails.get("reservationLength")) {
-    if (cart.rentalDays) {
+    if (cart && cart.rentalDays) {
       GetOutfitted.clientReservationDetails.set("reservationLength", cart.rentalDays - 1);
     } else {
       GetOutfitted.clientReservationDetails.set("reservationLength", 1);
@@ -89,7 +89,7 @@ Template.goNavigationBar.onRendered(function () {
     GetOutfitted.clientReservationDetails.set("nextMonthHighlight", 0);
   }
   if (!instance.reservation.get() || !instance.reservation.get().startTime) {
-    if (cart.startTime && cart.endTime) {
+    if (cart && cart.startTime && cart.endTime) {
       instance.reservation.set({
         startTime: GetOutfitted.adjustDenverToLocalTime(cart.startTime),
         endTime: GetOutfitted.adjustDenverToLocalTime(cart.endTime)
@@ -97,7 +97,7 @@ Template.goNavigationBar.onRendered(function () {
     }
   }
   if (!instance.startTime.get()) {
-    if (cart.startTime) {
+    if (cart && cart.startTime) {
       instance.startTime.set(GetOutfitted.adjustDenverToLocalTime(cart.startTime));
     }
   }
