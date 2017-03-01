@@ -227,12 +227,13 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
       }
     }
 
-    if (!cart.resort || cart.resort === "other") {
-      if (!productFilters.goPlus && (cart.resort && cart)) {
-        _.extend(selector, { title: {$not: /With Skis/i}});
+    if (cart) {
+      if (!cart.resort || cart.resort === "other") {
+        if (!productFilters.goPlus && (cart.resort && cart)) {
+          _.extend(selector, { title: {$not: /With Skis/i}});
+        }
       }
     }
-
     // Authorized content curators fo the shop get special publication of the product
     // all all relevant revisions all is one package
 
