@@ -8,6 +8,12 @@ import { Router } from "/client/api";
 
 import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api";
 
+Template.goDateAndDestinationForm.onCreated(function () {
+  const instance = this;
+  const cart = Cart.findOne({userId: Meteor.userId()});
+  instance.rush = new ReactiveVar(cart.isRushDelivery);
+});
+
 Template.goDateAndDestinationForm.helpers({
   currentResort(resort) {
     strResort = `${resort}`;
@@ -92,10 +98,12 @@ Template.goDateAndDestinationForm.helpers({
 Template.goDateAndDestinationForm.events({
   "submit #dateAndDestinationForm": function (event) {
     event.preventDefault();
+    const instance = Template.instance();
     const cart = Cart.findOne({userId: Meteor.userId()});
     const resort = event.target.destinationSelect.value;
     const start = event.target.start.value;
     const length = parseInt(event.target.lengthSelect.value, 10);
+    const rush = instance.rush.get();
 
     Alerts.removeSeen();
     if (resort === "" || start === "") {
@@ -118,7 +126,7 @@ Template.goDateAndDestinationForm.events({
 
     const endTime = moment(startTime).add(length - 1, "days").toDate();
 
-    Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime, resort});
+    Meteor.call("rentalProducts/setReservation", cart._id, {startTime, endTime, resort, rush});
     $("#nav-datepicker").datepicker("update", start);
     if (resort === "other") {
       Router.go("/collections/outfits");

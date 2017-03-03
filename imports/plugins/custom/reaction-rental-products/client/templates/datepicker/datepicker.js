@@ -21,11 +21,12 @@ Template.goReservationDatepicker.onCreated(function () {
   const instance = this;
   const cart = Cart.findOne({userId: Meteor.userId()});
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
-  instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
+  // instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
 });
 
 Template.goReservationDatepicker.onRendered(function () {
   const instance = this;
+  const parent = instance.view.parentView.templateInstance();
   const cart = Cart.findOne();
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
@@ -68,7 +69,7 @@ Template.goReservationDatepicker.onRendered(function () {
 
       // We require 5 business days lead time unless "Rush Shipping" has been selected.
       let processingDelay = 5;
-      if (instance.rush.get()) {
+      if (parent.rush.get()) {
         processingDelay = localDestination ? 1 : 3;
       }
 
@@ -241,7 +242,8 @@ Template.goReservationDatepicker.events({
   },
   "click #display-date": function () {
     const instance = Template.instance();
-    const faCheckbox = instance.rush.get() ? "fa-check-square-o" : "fa-square-o";
+    const parent = instance.view.parentView.templateInstance()
+    const faCheckbox = parent.rush.get() ? "fa-check-square-o" : "fa-square-o";
     const rushCheckbox = `
       <div class='rush-checkbox-container'>
         <p class="rush-description">
@@ -264,7 +266,7 @@ Template.goReservationDatepicker.events({
       Blaze.renderWithData(Template.rushAlertContainer, {}, $(".rush-checkbox-container")[0]);
       $(".datepicker").on("click", ".rush-checkbox-container", function () {
         const selectedStartDate = $("#rental-start").val();
-        if (instance.rush.get() && selectedStartDate !== "") {
+        if (parent.rush.get() && selectedStartDate !== "") {
           const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
           // Check to see if selected date is within rush window
           if (firstShippableDay > moment(selectedStartDate, "MM/DD/YYYY")) {
@@ -277,10 +279,11 @@ Template.goReservationDatepicker.events({
             return;
           }
         }
-
-        instance.rush.set(!instance.rush.get());
+        // If rush isn't selected, or the date isn't within the rush window, flip the flag
+        // instance.rush.set(!instance.rush.get());
+        parent.rush.set(!parent.rush.get());
         $(".rush-span i").removeClass("fa-check-square-o fa-square-o");
-        $(".rush-span i").addClass(instance.rush.get() ? "fa-check-square-o" : "fa-square-o");
+        $(".rush-span i").addClass(parent.rush.get() ? "fa-check-square-o" : "fa-square-o");
         // Refresh datepicker
         $("#rental-start").datepicker("update");
       });
