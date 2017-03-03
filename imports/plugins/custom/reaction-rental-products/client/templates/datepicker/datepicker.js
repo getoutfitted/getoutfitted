@@ -19,11 +19,14 @@ import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api"
 
 Template.goReservationDatepicker.onCreated(function () {
   const instance = this;
+  const cart = Cart.findOne({userId: Meteor.userId()});
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
+  // instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
 });
 
 Template.goReservationDatepicker.onRendered(function () {
   const instance = this;
+  const parent = instance.view.parentView.templateInstance();
   const cart = Cart.findOne();
   // default reservation length is one less than customer facing and rental
   // bucket lengths because the datepicker includes the selected day
@@ -60,6 +63,15 @@ Template.goReservationDatepicker.onRendered(function () {
     beforeShowDay: function (date) {
       const reservationLength = GetOutfitted.clientReservationDetails.get("reservationLength");
       let classes = "";
+      const localDestinations = [80424, 80443, 80435];
+      const destination = parseInt($("#destinationSelect").val(), 10);
+      const localDestination = localDestinations.indexOf(destination) !== -1;
+
+      // We require 5 business days lead time unless "Rush Shipping" has been selected.
+      let processingDelay = 5;
+      if (parent.rush.get()) {
+        processingDelay = localDestination ? 1 : 3;
+      }
 
       // Change date checkers to check against Denver time
       const start = GetOutfitted.adjustLocalToDenverTime(moment(date).startOf("day"));
@@ -67,7 +79,7 @@ Template.goReservationDatepicker.onRendered(function () {
       // Calculate the first day we could possibly ship to based on destination
       // Should include holidays in here as well in the future.
       const firstShippableDay = GetOutfitted.adjustLocalToDenverTime(
-        momentBusiness.addWeekDays(moment().startOf("day"), 5)
+        momentBusiness.addWeekDays(moment().startOf("day"), processingDelay)
       );
 
       const selectedDate = moment($("#rental-start").val(), "MM/DD/YYYY").startOf("day"); // Get currently selected date from #rental-start input
@@ -229,12 +241,62 @@ Template.goReservationDatepicker.events({
     $("#rental-start").datepicker("show");
   },
   "click #display-date": function () {
+    const instance = Template.instance();
+    const parent = instance.view.parentView.templateInstance()
+    const faCheckbox = parent.rush.get() ? "fa-check-square-o" : "fa-square-o";
+    const rushCheckbox = `
+      <div class='rush-checkbox-container'>
+        <p class="rush-description">
+          Need it sooner?
+        </p>
+        <span class='rush-span'>
+          <i class="fa ${faCheckbox}"></i>
+          <span class="rush-text">Rush Order ($39)</span>
+        </span>
+      </div>
+    `;
+
     $("#rental-start").datepicker("show");
+
     if ($(".datepicker-switch .calendar-help-link").length === 0) {
       $(".datepicker-switch").prepend(calendarHelp);
+      $(".datepicker.datepicker-dropdown").append(rushCheckbox);
+
+      // Register event listener for rush checkbox
+      Blaze.renderWithData(Template.rushAlertContainer, {}, $(".rush-checkbox-container")[0]);
+      $(".datepicker").on("click", ".rush-checkbox-container", function () {
+        const selectedStartDate = $("#rental-start").val();
+        if (parent.rush.get() && selectedStartDate !== "") {
+          const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
+          // Check to see if selected date is within rush window
+          if (firstShippableDay > moment(selectedStartDate, "MM/DD/YYYY")) {
+            // Inform user.
+            Alerts.removeSeen();
+            Alerts.inline(`${selectedStartDate} is only available with rush delivery. Please select a later ski date to remove Rush Delivery.`, "danger", {
+              autoHide: false,
+              placement: "rushAlertContainer"
+            });
+            return;
+          }
+        }
+        // If rush isn't selected, or the date isn't within the rush window, flip the flag
+        // instance.rush.set(!instance.rush.get());
+        parent.rush.set(!parent.rush.get());
+        $(".rush-span i").removeClass("fa-check-square-o fa-square-o");
+        $(".rush-span i").addClass(parent.rush.get() ? "fa-check-square-o" : "fa-square-o");
+        // Refresh datepicker
+        $("#rental-start").datepicker("update");
+      });
+    } else {
+      $(".rush-checkbox-container").show();
     }
+
     $(".datepicker-switch").on("click", ".calendar-help-link", function () {
       Modal.show("goCalendarHelp");
+    });
+
+    $(".datepicker-switch").on("click", function (event) {
+      event.stopPropagation();
     });
   },
   "change #lengthSelect": function (event) {
