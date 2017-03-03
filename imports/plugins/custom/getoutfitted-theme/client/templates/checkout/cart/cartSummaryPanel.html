@@ -18,12 +18,12 @@
         <td>
           {{#if isZero cartShipping}}
             {{#if isRushDelivery}}
-              $39.00
+              $39.00 Rush Charge
             {{else}}
               FREE!
             {{/if}}
           {{else}}
-            {{formatPrice cartShipping}}
+            {{formatPrice cartShipping}} Rush Charge
           {{/if}}
         </td>
       </tr>
