@@ -62,9 +62,8 @@ Template.goReservationDatepicker.onRendered(function () {
     beforeShowDay: function (date) {
       const reservationLength = GetOutfitted.clientReservationDetails.get("reservationLength");
       let classes = "";
-      const localDestinations = [80424, 80443, 80435];
       const destination = parseInt($("#destinationSelect").val(), 10);
-      const localDestination = localDestinations.indexOf(destination) !== -1;
+      const localDestination = GetOutfitted.localDestinations.indexOf(destination) !== -1;
 
       // We require 5 business days lead time unless "Rush Shipping" has been selected.
       let processingDelay = 5;
