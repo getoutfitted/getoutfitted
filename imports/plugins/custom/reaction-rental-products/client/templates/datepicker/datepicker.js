@@ -187,6 +187,19 @@ Template.goReservationDatepicker.onRendered(function () {
 
       // Set temp reservation
       instance.reservation.set({startTime, endTime});
+
+      if (parent.rush.get()) {
+        const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
+        const selectedMoment = moment(event.currentTarget.value, "MM/DD/YYYY");
+        // Check to see if selected date is within rush window
+        if (firstShippableDay <= selectedMoment) {
+          parent.rush.set(false);
+          $(".rush-span i").removeClass("fa-check-square-o");
+          $(".rush-span i").addClass("fa-square-o");
+        }
+      }
+
+      // Update Datepicker
       $("#rental-start").datepicker("update");
     }
   });
