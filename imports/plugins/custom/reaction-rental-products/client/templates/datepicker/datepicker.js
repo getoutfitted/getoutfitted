@@ -5,6 +5,7 @@ import moment from "moment";
 import "twix";
 import "moment-timezone";
 import momentBusiness from "moment-business";
+import smoothscroll from "smoothscroll-polyfill";
 
 // Meteor Imports
 import { Meteor } from "meteor/meteor";
@@ -22,6 +23,7 @@ Template.goReservationDatepicker.onCreated(function () {
   const cart = Cart.findOne({userId: Meteor.userId()});
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
   // instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
+  smoothscroll.polyfill();
 });
 
 Template.goReservationDatepicker.onRendered(function () {
@@ -302,8 +304,14 @@ Template.goReservationDatepicker.events({
         // Refresh datepicker
         $("#rental-start").datepicker("update");
       });
+      window.scroll({
+        left: 0,
+        top: $(".datepicker.datepicker-dropdown").offset().top,
+        behavior: "smooth"
+      });
     } else {
       $(".rush-checkbox-container").show();
+      window.scroll(0, $(".datepicker.datepicker-dropdown").offset().top);
     }
 
     $(".datepicker-switch").on("click", ".calendar-help-link", function () {
