@@ -1,4 +1,5 @@
 import moment from "moment";
+import momentBusiness from "moment-business";
 
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
@@ -15,6 +16,13 @@ Template.goDateAndDestinationForm.onCreated(function () {
 });
 
 Template.goDateAndDestinationForm.helpers({
+  selectedResort() {
+    const cart = Cart.findOne({userId: Meteor.userId()});
+    if (cart && cart.resort) {
+      return cart.resort;
+    }
+    return "";
+  },
   currentResort(resort) {
     strResort = `${resort}`;
     const cart = Cart.findOne({userId: Meteor.userId()});
@@ -134,7 +142,28 @@ Template.goDateAndDestinationForm.events({
       Router.go("/collections/plus");
     }
   },
-  "change #destinationSelect": function () {
+  "change #destinationSelect": function (event) {
     Alerts.removeSeen();
+    const instance = Template.instance();
+    if (instance.rush.get()) {
+      const destination = parseInt(event.currentTarget.value, 10);
+      const localDestination = GetOutfitted.localDestinations.indexOf(destination) !== -1;
+      if (!localDestination) {
+        const selectedStartDate = $("#rental-start").val();
+        const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 3);
+        const selectedMoment = moment(selectedStartDate, "MM/DD/YYYY");
+        // Check to see if selected date is within non-local rush window
+        if (firstShippableDay > selectedMoment) {
+          event.currentTarget.value = event.currentTarget.dataset.prevResort
+          Alerts.inline(`
+            A ${selectedMoment.format("MMM D")} ski date is only available to Breckenridge, Keystone, or Copper.
+            Please select a date on or after ${firstShippableDay.format("MMM D")} to select a different resort.
+          `, "danger", {
+            autoHide: false,
+            placement: "reservationResortSelect"
+          });
+        }
+      }
+    }
   }
 });
