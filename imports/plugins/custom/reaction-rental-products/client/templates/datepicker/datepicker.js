@@ -5,6 +5,7 @@ import moment from "moment";
 import "twix";
 import "moment-timezone";
 import momentBusiness from "moment-business";
+import smoothscroll from "smoothscroll-polyfill";
 
 // Meteor Imports
 import { Meteor } from "meteor/meteor";
@@ -22,6 +23,7 @@ Template.goReservationDatepicker.onCreated(function () {
   const cart = Cart.findOne({userId: Meteor.userId()});
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
   // instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
+  smoothscroll.polyfill();
 });
 
 Template.goReservationDatepicker.onRendered(function () {
@@ -51,8 +53,7 @@ Template.goReservationDatepicker.onRendered(function () {
       });
     }
   }
-  // Session.setDefault("reservationLength", 2); // inclusive of return day, exclusive of arrivalDay
-  // Session.setDefault("nextMonthHighlight", 0);
+
   $("#rental-start").datepicker({
     container: "#datepicker-container",
     orientation: "left",
@@ -63,9 +64,8 @@ Template.goReservationDatepicker.onRendered(function () {
     beforeShowDay: function (date) {
       const reservationLength = GetOutfitted.clientReservationDetails.get("reservationLength");
       let classes = "";
-      const localDestinations = [80424, 80443, 80435];
       const destination = parseInt($("#destinationSelect").val(), 10);
-      const localDestination = localDestinations.indexOf(destination) !== -1;
+      const localDestination = GetOutfitted.localDestinations.indexOf(destination) !== -1;
 
       // We require 5 business days lead time unless "Rush Shipping" has been selected.
       let processingDelay = 5;
@@ -188,6 +188,19 @@ Template.goReservationDatepicker.onRendered(function () {
 
       // Set temp reservation
       instance.reservation.set({startTime, endTime});
+
+      if (parent.rush.get()) {
+        const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
+        const selectedMoment = moment(event.currentTarget.value, "MM/DD/YYYY");
+        // Check to see if selected date is within rush window
+        if (firstShippableDay <= selectedMoment) {
+          parent.rush.set(false);
+          $(".rush-span i").removeClass("fa-check-square-o");
+          $(".rush-span i").addClass("fa-square-o");
+        }
+      }
+
+      // Update Datepicker
       $("#rental-start").datepicker("update");
     }
   });
@@ -242,7 +255,7 @@ Template.goReservationDatepicker.events({
   },
   "click #display-date": function () {
     const instance = Template.instance();
-    const parent = instance.view.parentView.templateInstance()
+    const parent = instance.view.parentView.templateInstance();
     const faCheckbox = parent.rush.get() ? "fa-check-square-o" : "fa-square-o";
     const rushCheckbox = `
       <div class='rush-checkbox-container'>
@@ -268,11 +281,15 @@ Template.goReservationDatepicker.events({
         const selectedStartDate = $("#rental-start").val();
         if (parent.rush.get() && selectedStartDate !== "") {
           const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
+          const selectedMoment = moment(selectedStartDate, "MM/DD/YYYY");
           // Check to see if selected date is within rush window
-          if (firstShippableDay > moment(selectedStartDate, "MM/DD/YYYY")) {
+          if (firstShippableDay > selectedMoment) {
             // Inform user.
             Alerts.removeSeen();
-            Alerts.inline(`${selectedStartDate} is only available with rush delivery. Please select a later ski date to remove Rush Delivery.`, "danger", {
+            Alerts.inline(`
+              ${selectedMoment.format("MMM D")} is only available with Rush Order.
+              Please select a date on or after ${firstShippableDay.format("MMM D")} to remove Rush Delivery.
+            `, "danger", {
               autoHide: false,
               placement: "rushAlertContainer"
             });
@@ -287,8 +304,14 @@ Template.goReservationDatepicker.events({
         // Refresh datepicker
         $("#rental-start").datepicker("update");
       });
+      window.scroll({
+        left: 0,
+        top: $(".datepicker.datepicker-dropdown").offset().top,
+        behavior: "smooth"
+      });
     } else {
       $(".rush-checkbox-container").show();
+      window.scroll(0, $(".datepicker.datepicker-dropdown").offset().top);
     }
 
     $(".datepicker-switch").on("click", ".calendar-help-link", function () {

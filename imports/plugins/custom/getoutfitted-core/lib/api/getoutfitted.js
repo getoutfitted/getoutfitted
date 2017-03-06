@@ -4,6 +4,8 @@ import "moment-timezone";
 
 export const GetOutfitted = {};
 
+GetOutfitted.localDestinations = [80424, 80443, 80435];
+
 GetOutfitted.adjustLocalToDenverTime = function (time) {
   const here = moment(time);
   const denver = here.clone().tz("America/Denver");

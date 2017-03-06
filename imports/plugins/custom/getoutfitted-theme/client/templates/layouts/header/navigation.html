@@ -33,6 +33,13 @@
                     <div id="nav-datepicker" data-date="{{reservationStart}}"></div>
                     <input type="hidden" name="navDatepickerStart" id="navDatepickerStart" value="{{reservationStart}}">
                   </div>
+                  <div class="col-xs-12 nav-datepicker-rush-container">
+                    <span class="nav-rush-span">
+                      <i class="fa {{isRushDelivery}}"></i>
+                      <span class="nav-rush-text">Rush Order ($39)</span>
+                    </span>
+                    {{> inlineAlerts placement="navRushContainer"}}
+                  </div>
                   <div class="col-xs-5 col-xs-offset-1 col-md-6 col-md-offset-0">
                     <label class="sr-only" for="navLengthSelect">Reservation Length</label>
                     <select class='form-control length-select' id="navLengthSelect" name="navLengthSelect">
