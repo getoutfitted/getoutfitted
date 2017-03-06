@@ -268,11 +268,15 @@ Template.goReservationDatepicker.events({
         const selectedStartDate = $("#rental-start").val();
         if (parent.rush.get() && selectedStartDate !== "") {
           const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
+          const selectedMoment = moment(selectedStartDate, "MM/DD/YYYY");
           // Check to see if selected date is within rush window
-          if (firstShippableDay > moment(selectedStartDate, "MM/DD/YYYY")) {
+          if (firstShippableDay > selectedMoment) {
             // Inform user.
             Alerts.removeSeen();
-            Alerts.inline(`${selectedStartDate} is only available with rush delivery. Please select a later ski date to remove Rush Delivery.`, "danger", {
+            Alerts.inline(`
+              ${selectedMoment.format("MMM D")} is only available with Rush Order.
+              Please select a date on or after ${firstShippableDay.format("MMM D")} to remove Rush Delivery.
+            `, "danger", {
               autoHide: false,
               placement: "rushAlertContainer"
             });
