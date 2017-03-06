@@ -51,8 +51,7 @@ Template.goReservationDatepicker.onRendered(function () {
       });
     }
   }
-  // Session.setDefault("reservationLength", 2); // inclusive of return day, exclusive of arrivalDay
-  // Session.setDefault("nextMonthHighlight", 0);
+
   $("#rental-start").datepicker({
     container: "#datepicker-container",
     orientation: "left",
@@ -242,7 +241,7 @@ Template.goReservationDatepicker.events({
   },
   "click #display-date": function () {
     const instance = Template.instance();
-    const parent = instance.view.parentView.templateInstance()
+    const parent = instance.view.parentView.templateInstance();
     const faCheckbox = parent.rush.get() ? "fa-check-square-o" : "fa-square-o";
     const rushCheckbox = `
       <div class='rush-checkbox-container'>
