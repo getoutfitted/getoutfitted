@@ -25,7 +25,8 @@ function updateCartReservation(cartId, update) {
       rentalHours: update.hours,
       rentalMinutes: update.minutes,
       items: update.items,
-      resort: update.resort
+      resort: update.resort,
+      isRushDelivery: update.isRushDelivery
     }
   });
 }
@@ -44,6 +45,7 @@ Meteor.methods({
     check(reservation.startTime, Date);
     check(reservation.endTime, Date);
     check(reservation.resort, Match.Maybe(String));
+    check(reservation.rush, Match.Maybe(Boolean));
 
     const cart = Cart.findOne(cartId);
     // Make sure that cart is owned by current user.
@@ -52,9 +54,10 @@ Meteor.methods({
     }
 
     // Setup Update Object.
-    const {startTime, endTime, resort} = reservation;
+    const {startTime, endTime, resort, rush} = reservation;
     const rental = moment(startTime).twix(endTime);
     const update = {startTime, endTime, resort};
+    update.isRushDelivery = rush;
     update.cartId = cart._id;
     update.months = rental.count("months");
     update.weeks = rental.count("weeks");

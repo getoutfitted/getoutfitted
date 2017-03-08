@@ -21,17 +21,17 @@ const freeShippingMethod = {
   handling: 0
 };
 
-// const rushShippingMethod = {
-//   name: "Rush",
-//   label: "Rush Handling and Delivery",
-//   group: "Express",
-//   enabled: true,
-//   rate: 50,
-//   validLocales: [ { deliveryBegin: 2, deliveryEnd: 7 } ],
-//   validRanges: [ { begin: 50 } ],
-//   _id: "GoRushShippingMethod",
-//   handling: 0
-// }
+const rushShippingMethod = {
+  name: "Rush",
+  label: "Rush Handling and Delivery",
+  group: "Express",
+  enabled: true,
+  rate: 39,
+  validLocales: [ { deliveryBegin: 2, deliveryEnd: 7 } ],
+  validRanges: [ { begin: 50 } ],
+  _id: "GoRushShippingMethod",
+  handling: 0
+};
 
 Template.cartCheckout.onCreated(function () {
   Reaction.Subscriptions.Manager.subscribe("CartMedia", Meteor.userId());
@@ -63,7 +63,11 @@ Template.cartCheckout.onCreated(function () {
       // if user logged in as normal user, we must pass it through the first stage
       // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
       // XXX: GetOutfitted MOD: use custom cart workflow
-      Meteor.call("cart/setShipmentMethod", cart._id, freeShippingMethod);
+      if (!cart.rushShipping) {
+        Meteor.call("cart/setShipmentMethod", cart._id, rushShippingMethod);
+      } else {
+        Meteor.call("cart/setShipmentMethod", cart._id, freeShippingMethod);
+      }
       // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingAddress");
       // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress");
       // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutTermsOfService");

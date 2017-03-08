@@ -42,12 +42,12 @@
   <section class="date-and-destination-section" id="dateAndDestinationSection">
     <form class="form-flex date-and-destination" id="dateAndDestinationForm">
       <div class="form-group">
-        <div class="input-group">
+        <div class="input-group destination-select">
           <span>
             Where are you skiing?
           </span><br>
           <label class="sr-only" for="destinationSelect">Destination</label>
-          <select class='form-control destinationSelect' id="destinationSelect" name="destinationSelect">
+          <select class='form-control destinationSelect' id="destinationSelect" name="destinationSelect" data-prev-resort="{{selectedResort}}">
             <option disabled {{currentResort ""}} value="">Choose Resort</option>
             <option class="form-control" {{currentResort "other"}} value="other">Other</option>
             <option class="form-control" disabled value="">-------</option>
@@ -159,4 +159,8 @@
       </div>
     </div>
   </section>
+</template>
+
+<template name="rushAlertContainer">
+  <div>{{> inlineAlerts placement="rushAlertContainer"}}</div>
 </template>

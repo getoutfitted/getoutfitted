@@ -17,9 +17,13 @@
       <tr><strong><td data-i18n='cartSubTotals.shipping'>Shipping</td></strong>
         <td>
           {{#if isZero cartShipping}}
-            FREE!
+            {{#if isRushDelivery}}
+              $39.00 Rush Charge
+            {{else}}
+              FREE!
+            {{/if}}
           {{else}}
-            {{formatPrice cartShipping}}
+            {{formatPrice cartShipping}} Rush Charge
           {{/if}}
         </td>
       </tr>
