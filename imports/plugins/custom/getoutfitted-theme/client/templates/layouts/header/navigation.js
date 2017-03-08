@@ -107,7 +107,6 @@ Template.goNavigationBar.onRendered(function () {
   }
 
   this.autorun(function () {
-    console.log("rerunning datepicker");
     instance.rush.set(cart.isRushDelivery);
 
     $("#nav-datepicker").datepicker({
