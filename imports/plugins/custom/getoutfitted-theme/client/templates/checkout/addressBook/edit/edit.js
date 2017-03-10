@@ -15,7 +15,29 @@ AutoForm.hooks({
         if (error) {
           Alerts.toast(i18next.t("addressBookEdit.somethingWentWrong", { err: error.message }), "error");
           this.done(new Error(error));
-          return false;
+          return;
+        }
+        if (result) {
+          this.done();
+
+          // Show the grid
+          addressBook.trigger($.Event("showMainView"));
+        }
+      });
+      if (insertDoc.email) {
+        Meteor.call("checkout/addEmailToCart", insertDoc.email);
+      }
+    }
+  },
+  billingAddressEditForm: {
+    onSubmit: function (insertDoc) {
+      this.event.preventDefault();
+      const addressBook = $(this.template.firstNode).closest(".address-book");
+      Meteor.call("accounts/addressBookUpdate", insertDoc, (error, result) => {
+        if (error) {
+          Alerts.toast(i18next.t("addressBookEdit.somethingWentWrong", { err: error.message }), "error");
+          this.done(new Error(error));
+          return;
         }
         if (result) {
           this.done();
@@ -29,4 +51,5 @@ AutoForm.hooks({
       }
     }
   }
+
 });
