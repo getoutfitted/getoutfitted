@@ -12,3 +12,18 @@
   {{/autoForm}}
   </div>
 </template>
+
+<template name="billingAddressEdit">
+  <div class="panel-body">
+  {{#autoForm schema=Schemas.Address id="billingAddressEditForm" doc=address type="normal" class="form-horizontal"}}
+    <fieldset>
+      {{> billingAddressForm}}
+      <div class="row text-right">
+        <button type="submit" class="btn btn-primary" data-i18n="app.save" data-event-action="saveAddress">Save</button>
+        <button type="reset" class="btn btn-default" data-i18n="app.cancel" data-event-action="cancelAddressEdit">Cancel</button>
+      </div>
+      {{>afFieldInput name="_id" value=thisAddress._id type="hidden"}}
+    </fieldset>
+  {{/autoForm}}
+  </div>
+</template>
