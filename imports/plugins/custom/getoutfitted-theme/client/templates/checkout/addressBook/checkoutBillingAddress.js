@@ -89,7 +89,7 @@ Template.goCheckoutBillingAddress.events({
       address: this
     });
 
-    Template.instance().currentAddressTemplate.set("shippingAddressEdit");
+    Template.instance().currentAddressTemplate.set("billingAddressEdit");
   },
 
   "click [data-event-action=cancelAddressEdit], form submit, showMainView": function (event) {

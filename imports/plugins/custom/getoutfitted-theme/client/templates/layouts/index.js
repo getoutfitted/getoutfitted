@@ -154,7 +154,7 @@ Template.goDateAndDestinationForm.events({
         const selectedMoment = moment(selectedStartDate, "MM/DD/YYYY");
         // Check to see if selected date is within non-local rush window
         if (firstShippableDay > selectedMoment) {
-          event.currentTarget.value = event.currentTarget.dataset.prevResort
+          event.currentTarget.value = event.currentTarget.dataset.prevResort;
           Alerts.inline(`
             A ${selectedMoment.format("MMM D")} ski date is only available to Breckenridge, Keystone, or Copper.
             Please select a date on or after ${firstShippableDay.format("MMM D")} to select a different resort.
