@@ -1,20 +1,27 @@
-import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
-import { Reaction } from '/client/api';
-import { Products } from '/lib/collections';
-import { InventoryVariants } from '../../../../lib/collections';
-import moment from 'moment';
-import 'moment-timezone';
-import 'twix';
+import { Template } from "meteor/templating";
+import { Session } from "meteor/session";
+import { ReactiveVar } from "meteor/reactive-var";
 
-import './availability.html';
+import { Reaction } from "/client/api";
+import { Products } from "/lib/collections";
+import { InventoryVariants } from "../../../../lib/collections";
+import moment from "moment";
+import "moment-timezone";
+import "twix";
+
+import "./availability.html";
 
 function adjustLocalToDenverTime(time) {
-  let here = moment(time);
-  let denver = here.clone().tz("America/Denver");
+  const here = moment(time);
+  const denver = here.clone().tz("America/Denver");
   denver.add(here.utcOffset() - denver.utcOffset(), "minutes");
   return denver.toDate();
 }
+
+Template.dashboardRentalProductAvailability.onCreated(function () {
+  const instance = this;
+  instance.inventoryMarkedForInactivity = new ReactiveVar(false);
+});
 
 Template.dashboardRentalProductAvailability.onRendered(function () {
   const instance = this;
@@ -57,12 +64,20 @@ Template.dashboardRentalProductAvailability.helpers({
     Session.get("dashboardViewEnd");
   },
   days: () => {
-    let viewStart = Session.get("dashboardViewStart");
-    let viewEnd = Session.get("dashboardViewEnd");
+    const viewStart = Session.get("dashboardViewStart");
+    const viewEnd = Session.get("dashboardViewEnd");
     return moment(viewStart).twix(moment(viewEnd)).split(1, "day");
   },
   showInactiveInventoryVariants() {
     return Session.get("showInactiveInventoryVariants") ? "checked" : "";
+  },
+  showInactiveToggle() {
+    const instance = Template.instance();
+    return instance.inventoryMarkedForInactivity.get() ? "hidden" : "";
+  },
+  showDeactivateButton() {
+    const instance = Template.instance();
+    return instance.inventoryMarkedForInactivity.get() ? "" : "hidden";
   }
 });
 
@@ -148,18 +163,41 @@ Template.dashboardCalendarDay.helpers({
 
 
 Template.dashboardRentalProductAvailability.events({
-  'click .viewPrevCalendar': function () {
-    let viewMonth = moment(Session.get('dashboardViewStart')).subtract(1, 'month');
-    let viewStart = moment(viewMonth).startOf('month').toDate();
-    let viewEnd = moment(viewMonth).endOf('month').toDate();
-    Session.set('dashboardViewStart', viewStart);
-    Session.set('dashboardViewEnd', viewEnd);
+  "click .viewPrevCalendar": function () {
+    const viewMonth = moment(Session.get("dashboardViewStart")).subtract(1, "month");
+    const viewStart = moment(viewMonth).startOf("month").toDate();
+    const viewEnd = moment(viewMonth).endOf("month").toDate();
+    Session.set("dashboardViewStart", viewStart);
+    Session.set("dashboardViewEnd", viewEnd);
   },
-  'click .viewNextCalendar': function () {
-    let viewMonth = moment(Session.get('dashboardViewStart')).add(1, 'month');
-    let viewStart = moment(viewMonth).startOf('month').toDate();
-    let viewEnd = moment(viewMonth).endOf('month').toDate();
-    Session.set('dashboardViewStart', viewStart);
-    Session.set('dashboardViewEnd', viewEnd);
+  "click .viewNextCalendar": function () {
+    const viewMonth = moment(Session.get("dashboardViewStart")).add(1, "month");
+    const viewStart = moment(viewMonth).startOf("month").toDate();
+    const viewEnd = moment(viewMonth).endOf("month").toDate();
+    Session.set("dashboardViewStart", viewStart);
+    Session.set("dashboardViewEnd", viewEnd);
+  },
+  "click .deactivateSelectedInventory": function () {
+    const instance = Template.instance();
+    const selectedInventory = document.querySelectorAll(".variantItemSelect:checked");
+    const variantIds = [...selectedInventory].map(i => i.dataset.id);
+    Meteor.call("rentalProducts/markInventoryVariantInactive", variantIds);
+    $("th.short-header:has(.variantItemSelect:checked)").removeClass("item-selected");
+    $(".variantItemSelect").prop("checked", false);
+    instance.inventoryMarkedForInactivity.set(false);
+  }
+});
+
+Template.dashboardRentalProductAvailability.events({
+  "click .variantItemSelect": function () {
+    instance = Template.instance();
+    $("th.short-header:has(.variantItemSelect:checked)").addClass("item-selected");
+    $("th.short-header:has(.variantItemSelect:not(:checked))").removeClass("item-selected");
+
+    if ($("th.short-header:has(.variantItemSelect:checked)").length > 0) {
+      instance.inventoryMarkedForInactivity.set(true);
+    } else {
+      instance.inventoryMarkedForInactivity.set(false);
+    }
   }
 });
