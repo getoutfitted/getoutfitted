@@ -322,6 +322,7 @@ Template.goNavigationBar.events({
   "click .nav-rush-span": function (event) {
     event.stopPropagation();
     const instance = Template.instance();
+    const cart = Cart.findOne({userId: Meteor.userId()});
     const selectedStartDate = $("#navDatepickerStart").val();
     if (instance.rush.get() && selectedStartDate !== "") {
       const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
