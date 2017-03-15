@@ -10,6 +10,9 @@ Template.layoutFooter.helpers({
   },
   reservationDatesSelected() {
     const cart = Cart.findOne({userId: Meteor.userId()});
-    return cart.startTime && cart.endTime;
+    if (cart) {
+      return cart.startTime && cart.endTime;
+    }
+    return false;
   }
 });
