@@ -34,6 +34,20 @@ const options = {
 
 
 Meteor.startup(() => {
+  if (typeof localStorage === "object") {
+    try {
+      localStorage.setItem("localStorage", 1);
+      localStorage.removeItem("localStorage");
+    } catch (e) {
+      Storage.prototype._setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function () {};
+      console.log(`Your web browser does not support storing settings locally.
+        In Safari, the most common cause of this is using 'Private Browsing Mode'.
+        Some settings may not save or some features may not work properly for you.
+      `);
+    }
+  }
+
   // use tracker autorun to detect language changes
   // this only runs on initial page loaded
   // and when user.profile.lang updates
@@ -57,7 +71,7 @@ Meteor.startup(() => {
             _id: 0
           }
         }).fetch();
-  
+
         // map reduce translations into i18next formatting
         const resources = translations.reduce(function (x, y) {
           const ns = Object.keys(y.translation)[0];
@@ -69,7 +83,7 @@ Meteor.startup(() => {
           }
           return x;
         }, {});
-  
+
         //
         // initialize i18next
         //
@@ -100,13 +114,13 @@ Meteor.startup(() => {
                 ss.messages(getMessagesFor(ss, schema));
               }
             }
-  
+
             i18nextDep.changed();
-  
+
             // global first time init event finds and replaces
             // data-i18n attributes in html/template source.
             $elements = $("[data-i18n]").localize();
-  
+
             // apply language direction to html
             if (t("languageDirection") === "rtl") {
               return $("html").addClass("rtl");
