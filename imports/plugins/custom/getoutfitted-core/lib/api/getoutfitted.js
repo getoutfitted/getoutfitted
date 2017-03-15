@@ -22,3 +22,29 @@ GetOutfitted.adjustDenverToLocalTime = function (time) {
 
 // TODO: Maybe move this into rental products?
 GetOutfitted.clientReservationDetails = new ReactiveDict();
+
+GetOutfitted.shippingMethods = {};
+
+GetOutfitted.shippingMethods.freeShippingMethod = {
+  name: "Free",
+  label: "Free Shipping",
+  group: "Ground",
+  enabled: true,
+  rate: 0,
+  validLocales: [ { deliveryBegin: 2, deliveryEnd: 7 } ],
+  validRanges: [ { begin: 50 } ],
+  _id: "GoFreeShippingMethod",
+  handling: 0
+};
+
+GetOutfitted.shippingMethods.rushShippingMethod = {
+  name: "Rush",
+  label: "Rush Handling and Delivery",
+  group: "Express",
+  enabled: true,
+  rate: 39,
+  validLocales: [ { deliveryBegin: 2, deliveryEnd: 7 } ],
+  validRanges: [ { begin: 50 } ],
+  _id: "GoRushShippingMethod",
+  handling: 0
+};
