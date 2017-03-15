@@ -20,9 +20,7 @@ import { GetOutfitted } from "/imports/plugins/custom/getoutfitted-core/lib/api"
 
 Template.goReservationDatepicker.onCreated(function () {
   const instance = this;
-  const cart = Cart.findOne({userId: Meteor.userId()});
   instance.reservation = new ReactiveVar({startDate: null, endDate: null});
-  // instance.rush = new ReactiveVar(cart.rushDeliveryRequested);
   smoothscroll.polyfill();
 });
 
@@ -195,6 +193,7 @@ Template.goReservationDatepicker.onRendered(function () {
         // Check to see if selected date is within rush window
         if (firstShippableDay <= selectedMoment) {
           parent.rush.set(false);
+          Meteor.call("cart/setShipmentMethod", cart._id, GetOutfitted.shippingMethods.freeShippingMethod);
           $(".rush-span i").removeClass("fa-check-square-o");
           $(".rush-span i").addClass("fa-square-o");
         }
@@ -256,6 +255,7 @@ Template.goReservationDatepicker.events({
   "click #display-date": function () {
     const instance = Template.instance();
     const parent = instance.view.parentView.templateInstance();
+    const cart = Cart.findOne({userId: Meteor.userId()});
     const faCheckbox = parent.rush.get() ? "fa-check-square-o" : "fa-square-o";
     const rushCheckbox = `
       <div class='rush-checkbox-container'>
@@ -297,8 +297,10 @@ Template.goReservationDatepicker.events({
           }
         }
         // If rush isn't selected, or the date isn't within the rush window, flip the flag
-        // instance.rush.set(!instance.rush.get());
-        parent.rush.set(!parent.rush.get());
+        const newRushValue = !parent.rush.get();
+        const shippingMethod = newRushValue ? GetOutfitted.shippingMethods.rushShippingMethod : GetOutfitted.shippingMethods.freeShippingMethod;
+        parent.rush.set(newRushValue);
+        Meteor.call("cart/setShipmentMethod", cart._id, shippingMethod);
         $(".rush-span i").removeClass("fa-check-square-o fa-square-o");
         $(".rush-span i").addClass(parent.rush.get() ? "fa-check-square-o" : "fa-square-o");
         // Refresh datepicker
