@@ -269,6 +269,7 @@ Template.reservationDatepicker.onRendered(function () {
   $("#rental-start").on({
     changeDate: function (event) {
       $(".tooltip").remove();
+      $("#display-date").prop("placeholder", "");
 
       const reservationLength = Session.get("reservationLength");
 
