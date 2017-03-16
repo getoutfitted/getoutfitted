@@ -63,14 +63,11 @@ Template.cartCheckout.onCreated(function () {
       // if user logged in as normal user, we must pass it through the first stage
       // Meteor.call("workflow/pushCartWorkflow", "coreCartWorkflow", "checkoutLogin", cart._id);
       // XXX: GetOutfitted MOD: use custom cart workflow
-      if (cart.rushShipping) {
+      if (cart.isRushDelivery) {
         Meteor.call("cart/setShipmentMethod", cart._id, rushShippingMethod);
       } else {
         Meteor.call("cart/setShipmentMethod", cart._id, freeShippingMethod);
       }
-      // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutShippingAddress");
-      // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutBillingAddress");
-      // Meteor.call("workflow/pushCartWorkflow", "goCartWorkflow", "goCheckoutTermsOfService");
     }
   }
 });

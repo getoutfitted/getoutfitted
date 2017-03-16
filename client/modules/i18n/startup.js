@@ -57,7 +57,7 @@ Meteor.startup(() => {
             _id: 0
           }
         }).fetch();
-  
+
         // map reduce translations into i18next formatting
         const resources = translations.reduce(function (x, y) {
           const ns = Object.keys(y.translation)[0];
@@ -69,7 +69,7 @@ Meteor.startup(() => {
           }
           return x;
         }, {});
-  
+
         //
         // initialize i18next
         //
@@ -100,13 +100,13 @@ Meteor.startup(() => {
                 ss.messages(getMessagesFor(ss, schema));
               }
             }
-  
+
             i18nextDep.changed();
-  
+
             // global first time init event finds and replaces
             // data-i18n attributes in html/template source.
             $elements = $("[data-i18n]").localize();
-  
+
             // apply language direction to html
             if (t("languageDirection") === "rtl") {
               return $("html").addClass("rtl");

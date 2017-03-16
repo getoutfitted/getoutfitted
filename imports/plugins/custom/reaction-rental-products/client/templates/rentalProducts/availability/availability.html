@@ -16,8 +16,11 @@
     <table class="table table-hover table-striped availability-table">
       <thead>
         <th>
-          Barcode<br>
-          <input type="checkbox" id="showInactive" {{showInactiveInventoryVariants}}> Show inactive?
+          <span class="defaultView {{showInactiveToggle}}">
+            Barcode<br>
+            <input type="checkbox" id="showInactive" {{showInactiveInventoryVariants}}> Show inactive?
+          </span>
+          <button class="deactivateSelectedInventory btn btn-sm btn-danger {{showDeactivateButton}}">Mark As Inactive</button>
         </th>
         {{#each days}}
           {{> dashboardCalendarDay}}
@@ -41,9 +44,12 @@
 <template name="dashboardVariantAvailability">
   {{! context is inventoryVariant }}
   <tr class="{{isAvailableProduct}} {{showInactiveInventoryVariants}}">
-    <th nowrap class="short-header">
+    <th nowrap class="short-header" data-id="{{_id}}">
       <span class="barcode">{{barcode}}</span>
-      <small style="font-weight: 400">{{_id}}</small></th>
+      <small style="font-weight: 400; float: right">
+        <input class="variantItemSelect" type="checkbox" data-id="{{_id}}" {{isSelected}} /> {{_id}}
+      </small>
+    </th>
     {{#each day in days}}
       <td class="{{isWeekendDay day}}">
         <i class="{{reservationStatus day unavailableDetails}}"></i>

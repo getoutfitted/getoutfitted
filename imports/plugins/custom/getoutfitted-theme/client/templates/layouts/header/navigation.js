@@ -82,7 +82,7 @@ Template.goNavigationBar.onRendered(function () {
   const cart = Cart.findOne();
 
   if (!GetOutfitted.clientReservationDetails.get("reservationLength")) {
-    if (cart.rentalDays) {
+    if (cart && cart.rentalDays) {
       GetOutfitted.clientReservationDetails.set("reservationLength", cart.rentalDays - 1);
     } else {
       GetOutfitted.clientReservationDetails.set("reservationLength", 1);
@@ -93,7 +93,7 @@ Template.goNavigationBar.onRendered(function () {
     GetOutfitted.clientReservationDetails.set("nextMonthHighlight", 0);
   }
   if (!instance.reservation.get() || !instance.reservation.get().startTime) {
-    if (cart.startTime && cart.endTime) {
+    if (cart && cart.startTime && cart.endTime) {
       instance.reservation.set({
         startTime: GetOutfitted.adjustDenverToLocalTime(cart.startTime),
         endTime: GetOutfitted.adjustDenverToLocalTime(cart.endTime)
@@ -101,12 +101,16 @@ Template.goNavigationBar.onRendered(function () {
     }
   }
   if (!instance.startTime.get()) {
-    if (cart.startTime) {
+    if (cart && cart.startTime) {
       instance.startTime.set(GetOutfitted.adjustDenverToLocalTime(cart.startTime));
     }
   }
 
   this.autorun(function () {
+    if (!cart) {
+      return;
+    }
+
     instance.rush.set(cart.isRushDelivery);
 
     $("#nav-datepicker").datepicker({
@@ -215,8 +219,8 @@ Template.goNavigationBar.onRendered(function () {
     }
   }, "#nav-datepicker .day:not(.disabled)");
 
-  $("#nav-datepicker").on("changeDate", function (event) {
-    const selectedDate = $("#nav-datepicker").datepicker("getFormattedDate")
+  $("#nav-datepicker").on("changeDate", function () {
+    const selectedDate = $("#nav-datepicker").datepicker("getFormattedDate");
     $("#navDatepickerStart").val(selectedDate);
     instance.startTime.set($("#nav-datepicker").datepicker("getDate"));
 
@@ -226,6 +230,7 @@ Template.goNavigationBar.onRendered(function () {
       // Check to see if selected date is within rush window
       if (+firstShippableDay <= +selectedMoment) {
         instance.rush.set(false);
+        Meteor.call("cart/setShipmentMethod", cart._id, GetOutfitted.shippingMethods.freeShippingMethod);
         $(".nav-rush-span i").removeClass("fa-check-square-o");
         $(".nav-rush-span i").addClass("fa-square-o");
       }
@@ -321,6 +326,7 @@ Template.goNavigationBar.events({
   "click .nav-rush-span": function (event) {
     event.stopPropagation();
     const instance = Template.instance();
+    const cart = Cart.findOne({userId: Meteor.userId()});
     const selectedStartDate = $("#navDatepickerStart").val();
     if (instance.rush.get() && selectedStartDate !== "") {
       const firstShippableDay = momentBusiness.addWeekDays(moment().startOf("day"), 5);
@@ -340,8 +346,11 @@ Template.goNavigationBar.events({
       }
     }
     // If rush isn't selected, or the date isn't within the rush window, flip the flag
-    // instance.rush.set(!instance.rush.get());
-    instance.rush.set(!instance.rush.get());
+    const newRushValue = !instance.rush.get();
+    instance.rush.set(newRushValue);
+    const shippingMethod = newRushValue ? GetOutfitted.shippingMethods.rushShippingMethod : GetOutfitted.shippingMethods.freeShippingMethod;
+    Meteor.call("cart/setShipmentMethod", cart._id, shippingMethod);
+
     $(".nav-rush-span i").removeClass("fa-check-square-o fa-square-o");
     $(".nav-rush-span i").addClass(instance.rush.get() ? "fa-check-square-o" : "fa-square-o");
     // Refresh datepicker

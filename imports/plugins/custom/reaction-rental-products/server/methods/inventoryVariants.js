@@ -1,14 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { Reaction, Logger } from '/server/api';
-import { _ } from 'meteor/underscore';
-import { InventoryVariants } from '../../lib/collections';
-import { EJSON } from 'meteor/ejson';
-import moment from 'moment';
-import 'moment-timezone';
-import  RentalProducts from '../api';
-import * as Schemas from '/lib/collections/schemas';
-import { ReactionProduct } from '/lib/api';
+import { _ } from "meteor/underscore";
+import moment from "moment";
+import "moment-timezone";
+
+import { Meteor } from "meteor/meteor";
+import { check } from "meteor/check";
+import { Random } from "meteor/random";
+import { EJSON } from "meteor/ejson";
+
+import { Reaction, Logger } from "/server/api";
+import * as Schemas from "/lib/collections/schemas";
+
+import { InventoryVariants } from "../../lib/collections";
+import  RentalProducts from "../api";
+import { ReactionProduct } from "/lib/api";
 
 Meteor.methods({
   /**
@@ -297,5 +301,62 @@ Meteor.methods({
     }
     // returns the total amount of new inventory created
     return totalNewInventory;
+  },
+
+  /**
+   * rentalProducts/markInventoryVariantInactive
+   * @summary mark one or more inventory variants inactive
+   * @param {String|Array} inventoryVariantIds - inventoryVariantIds to delete
+   * @returns {Number} returns number of removed products
+   */
+  "rentalProducts/markInventoryVariantInactive": function (inventoryVariantIds, options) {
+    check(inventoryVariantIds, Match.OneOf(Array, String));
+    check(options, Match.Maybe(Object));
+    if (options) {
+      check(options.itemStatus, Match.Maybe(String));
+      check(options.title, Match.Maybe(String));
+      check(options.description, Match.Maybe(String));
+    }
+
+    // must have createProdut permission to mark inactive
+    if (!ReactionCore.hasPermission("createProduct")) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    const event = Object.assign({
+      itemStatus: "Damaged/Missing",
+      title: "Damaged/Missing",
+      description: "Item marked damaged or missing, but details not provided."
+    }, options);
+
+    let inventoryVariantIdsArray;
+
+    if (!Array.isArray(inventoryVariantIds)) {
+      inventoryVariantIdsArray = [inventoryVariantIds];
+    } else {
+      inventoryVariantIdsArray = inventoryVariantIds;
+    }
+
+    const qtyUpdated = InventoryVariants.update({
+      _id: {
+        $in: inventoryVariantIdsArray
+      }
+    }, {
+      $set: {
+        "active": false,
+        "workflow.status": event.itemStatus,
+        "updatedAt": new Date()
+      },
+      $push: {
+        events: {
+          _id: Random.id(),
+          title: event.title,
+          description: event.description,
+          createdAt: new Date()
+        }
+      }
+    }, {multi: true});
+
+    return qtyUpdated;
   }
 });
